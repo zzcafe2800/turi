@@ -26,6 +26,17 @@
       --navCurrent: var(--navExpanded);
       --safeTop: env(safe-area-inset-top, 0px);
       --safeBottom: env(safe-area-inset-bottom, 0px);
+      --uiScale: 1;
+      --basePad: calc(14px * var(--uiScale));
+      --baseGap: calc(12px * var(--uiScale));
+      --baseRadius: calc(18px * var(--uiScale));
+      --fieldH: calc(42px * var(--uiScale));
+      --btnH: calc(44px * var(--uiScale));
+      --font12: calc(12px * var(--uiScale));
+      --font13: calc(13px * var(--uiScale));
+      --font14: calc(14px * var(--uiScale));
+      --font18: calc(18px * var(--uiScale));
+      --timerSize: min(20vw, 210px);
     }
 
     * { box-sizing: border-box; }
@@ -46,135 +57,72 @@
     }
     #app.nav-collapsed { --navCurrent: var(--navCollapsed); }
     #app.time-day {
-      --bgTop: #8dd0ff;
-      --bgMid: #68b5ea;
-      --bgBottom: #2e6f96;
-      --sea1: #3696c8;
-      --sea2: #1f739e;
-      --sea3: #175a7a;
+      --bgTop: #8dd0ff; --bgMid: #68b5ea; --bgBottom: #2e6f96;
+      --sea1: #3696c8; --sea2: #1f739e; --sea3: #175a7a;
     }
     #app.time-evening {
-      --bgTop: #f4b783;
-      --bgMid: #cd7e6f;
-      --bgBottom: #513f7a;
-      --sea1: #955d8a;
-      --sea2: #6c4a80;
-      --sea3: #3d3b6d;
+      --bgTop: #f4b783; --bgMid: #cd7e6f; --bgBottom: #513f7a;
+      --sea1: #955d8a; --sea2: #6c4a80; --sea3: #3d3b6d;
     }
     #app.time-night {
-      --bgTop: #0b1e42;
-      --bgMid: #102851;
-      --bgBottom: #09162d;
-      --sea1: #113562;
-      --sea2: #0d2749;
-      --sea3: #07162e;
+      --bgTop: #0b1e42; --bgMid: #102851; --bgBottom: #09162d;
+      --sea1: #113562; --sea2: #0d2749; --sea3: #07162e;
     }
 
     .horizon {
-      position: absolute;
-      left: 0; right: 0;
-      top: 36%;
-      height: 2px;
+      position: absolute; left: 0; right: 0; top: 36%; height: 2px;
       background: linear-gradient(to right, transparent, rgba(255,255,255,0.45), transparent);
-      opacity: 0.45;
-      filter: blur(0.4px);
+      opacity: 0.45; filter: blur(0.4px);
     }
     .sea {
-      position: absolute;
-      left: -6%; right: -6%; bottom: -14%;
-      height: 56%;
+      position: absolute; left: -6%; right: -6%; bottom: -14%; height: 56%;
       background:
         radial-gradient(circle at 18% 10%, rgba(255,255,255,0.10), transparent 16%),
         radial-gradient(circle at 77% 13%, rgba(255,255,255,0.09), transparent 18%),
         linear-gradient(to bottom, var(--sea1), var(--sea2) 50%, var(--sea3));
-      border-top-left-radius: 48% 14%;
-      border-top-right-radius: 48% 16%;
+      border-top-left-radius: 48% 14%; border-top-right-radius: 48% 16%;
       animation: seaBob 7s ease-in-out infinite alternate;
       box-shadow: inset 0 14px 24px rgba(255,255,255,0.08), inset 0 -20px 30px rgba(0,0,0,0.14);
     }
-    .sea::before,
-    .sea::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background-repeat: repeat-x;
-      opacity: 0.34;
-      pointer-events: none;
+    .sea::before, .sea::after {
+      content: ""; position: absolute; inset: 0; background-repeat: repeat-x; opacity: 0.34; pointer-events: none;
     }
     .sea::before {
       background-image:
         radial-gradient(42px 8px at 40px 24px, rgba(255,255,255,0.22), transparent 70%),
         radial-gradient(58px 10px at 140px 38px, rgba(255,255,255,0.15), transparent 72%),
         radial-gradient(76px 10px at 300px 34px, rgba(255,255,255,0.14), transparent 72%);
-      background-size: 380px 64px;
-      animation: waveFlow 18s linear infinite;
+      background-size: 380px 64px; animation: waveFlow 18s linear infinite;
     }
     .sea::after {
       background-image:
         radial-gradient(60px 7px at 50px 52px, rgba(255,255,255,0.14), transparent 72%),
         radial-gradient(70px 7px at 210px 52px, rgba(255,255,255,0.12), transparent 72%);
-      background-size: 320px 78px;
-      animation: waveFlow 24s linear infinite reverse;
-      opacity: 0.22;
+      background-size: 320px 78px; animation: waveFlow 24s linear infinite reverse; opacity: 0.22;
     }
 
     .bobber {
-      position: absolute;
-      left: 52%;
-      top: 58%;
-      width: 18px;
-      height: 34px;
-      margin-left: -9px;
-      opacity: 0;
-      transform-origin: 50% 90%;
-      transition: opacity 0.3s ease;
-      pointer-events: none;
-      z-index: 3;
+      position: absolute; left: 52%; top: 58%; width: 18px; height: 34px; margin-left: -9px; opacity: 0;
+      transform-origin: 50% 90%; transition: opacity 0.3s ease; pointer-events: none; z-index: 3;
     }
     .bobber.visible { opacity: 1; animation: bobberFloat 2.6s ease-in-out infinite; }
     .bobber::before {
-      content: "";
-      position: absolute;
-      left: 50%;
-      top: 0;
-      width: 6px;
-      height: 10px;
-      margin-left: -3px;
-      background: #ff4d57;
-      border-radius: 8px 8px 3px 3px;
-      box-shadow: 0 0 0 1px rgba(255,255,255,0.3);
+      content: ""; position: absolute; left: 50%; top: 0; width: 6px; height: 10px; margin-left: -3px;
+      background: #ff4d57; border-radius: 8px 8px 3px 3px; box-shadow: 0 0 0 1px rgba(255,255,255,0.3);
     }
     .bobber::after {
-      content: "";
-      position: absolute;
-      left: 50%;
-      top: 8px;
-      width: 16px;
-      height: 20px;
-      margin-left: -8px;
+      content: ""; position: absolute; left: 50%; top: 8px; width: 16px; height: 20px; margin-left: -8px;
       background: linear-gradient(to bottom, #ffffff, #f0f4ff 56%, #ff7f7f 57%, #ff4b4b 100%);
-      border-radius: 50% 50% 48% 48%;
-      box-shadow: 0 10px 16px rgba(0,0,0,0.14);
+      border-radius: 50% 50% 48% 48%; box-shadow: 0 10px 16px rgba(0,0,0,0.14);
     }
     .bobber.sinking { animation: bobberSink 0.9s ease forwards; }
 
     .splash {
-      position: absolute;
-      left: 52%;
-      top: 60%;
-      width: 160px;
-      height: 90px;
-      margin-left: -80px;
-      opacity: 0;
-      pointer-events: none;
-      z-index: 4;
+      position: absolute; left: 52%; top: 60%; width: 160px; height: 90px; margin-left: -80px; opacity: 0; pointer-events: none; z-index: 4;
     }
     .splash.show { animation: splashFx 1s ease forwards; }
-    .splash::before,
-    .splash::after {
-      content: "";
-      position: absolute;
-      inset: 0;
+    .splash::before, .splash::after {
+      content: ""; position: absolute; inset: 0;
       background:
         radial-gradient(circle at 22% 66%, rgba(255,255,255,0.9), transparent 10%),
         radial-gradient(circle at 34% 58%, rgba(255,255,255,0.85), transparent 8%),
@@ -183,858 +131,310 @@
         radial-gradient(circle at 78% 66%, rgba(255,255,255,0.86), transparent 10%);
     }
     .splash::after {
-      background: radial-gradient(80px 20px at 50% 78%, rgba(255,255,255,0.3), transparent 70%);
-      filter: blur(2px);
+      background: radial-gradient(80px 20px at 50% 78%, rgba(255,255,255,0.3), transparent 70%); filter: blur(2px);
     }
     .rod-line {
-      position: absolute;
-      right: 20%;
-      top: 26%;
-      width: 2px;
-      height: 36%;
+      position: absolute; right: 20%; top: 26%; width: 2px; height: 36%;
       background: linear-gradient(to bottom, rgba(255,255,255,0.35), rgba(255,255,255,0.08));
-      transform: rotate(12deg);
-      transform-origin: top center;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      z-index: 2;
+      transform: rotate(12deg); transform-origin: top center; opacity: 0; transition: opacity 0.3s ease; z-index: 2;
     }
     .rod-line.visible { opacity: 1; }
     .rod-line.pull { animation: rodPull 0.8s ease; }
 
     .floating-ui {
-      position: absolute;
-      z-index: 10;
-      backdrop-filter: var(--panelBlur);
-      -webkit-backdrop-filter: var(--panelBlur);
-      background: rgba(12, 26, 41, 0.14);
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      box-shadow: var(--shadow);
+      position: absolute; z-index: 10; backdrop-filter: var(--panelBlur); -webkit-backdrop-filter: var(--panelBlur);
+      background: rgba(12, 26, 41, 0.14); border: 1px solid var(--line); border-radius: calc(18px * var(--uiScale)); box-shadow: var(--shadow);
     }
 
     .nav-toggle {
-      position: absolute;
-      top: calc(var(--safeTop) + 16px);
-      left: 12px;
-      z-index: 25;
-      width: 36px;
-      height: 36px;
-      border: 0;
-      border-radius: 999px;
-      background: rgba(8,18,29,0.48);
-      color: var(--text);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.16);
-      box-shadow: var(--shadow);
-      display: grid;
-      place-items: center;
-      font-size: 18px;
-      padding: 0;
+      position: absolute; top: calc(var(--safeTop) + 16px); left: 12px; z-index: 25; width: 36px; height: 36px;
+      border: 0; border-radius: 999px; background: rgba(8,18,29,0.48); color: var(--text); backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.16); box-shadow: var(--shadow); display: grid; place-items: center; font-size: 18px; padding: 0;
     }
-
     .side-nav {
-      position: absolute;
-      top: calc(var(--safeTop) + 58px);
-      left: 12px;
-      bottom: calc(var(--safeBottom) + 16px);
-      width: var(--navExpanded);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 10px;
-      z-index: 20;
-      background: rgba(8, 18, 29, 0.18);
-      border: 1px solid rgba(255,255,255,0.16);
-      border-radius: 28px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      transition: transform 0.22s ease, opacity 0.22s ease;
+      position: absolute; top: calc(var(--safeTop) + 58px); left: 12px; bottom: calc(var(--safeBottom) + 16px); width: var(--navExpanded);
+      display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 14px 10px; z-index: 20;
+      background: rgba(8, 18, 29, 0.18); border: 1px solid rgba(255,255,255,0.16); border-radius: 28px; box-shadow: var(--shadow);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: transform 0.22s ease, opacity 0.22s ease;
     }
-    #app.nav-collapsed .side-nav {
-      transform: translateX(calc(-100% - 18px));
-      opacity: 0;
-      pointer-events: none;
-    }
+    #app.nav-collapsed .side-nav { transform: translateX(calc(-100% - 18px)); opacity: 0; pointer-events: none; }
 
     .nav-btn {
-      width: 52px;
-      height: 52px;
-      border: 0;
-      border-radius: 18px;
-      color: var(--text);
-      background: rgba(255,255,255,0.08);
-      display: grid;
-      place-items: center;
-      transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
-      position: relative;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
-      padding: 0;
+      width: 52px; height: 52px; border: 0; border-radius: 18px; color: var(--text); background: rgba(255,255,255,0.08);
+      display: grid; place-items: center; transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+      position: relative; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08); padding: 0;
     }
     .nav-btn:hover, .nav-btn.active {
-      transform: translateY(-1px) scale(1.02);
-      background: rgba(255,255,255,0.18);
+      transform: translateY(-1px) scale(1.02); background: rgba(255,255,255,0.18);
       box-shadow: 0 8px 16px rgba(0,0,0,0.2), inset 0 0 0 1px rgba(255,255,255,0.14);
     }
-    .nav-btn svg {
-      width: 24px;
-      height: 24px;
-      stroke: currentColor;
-      fill: none;
-      stroke-width: 1.9;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      opacity: 0.95;
-    }
+    .nav-btn svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; opacity: 0.95; }
     .nav-btn .tip {
-      position: absolute;
-      left: calc(100% + 10px);
-      top: 50%;
-      transform: translateY(-50%);
-      padding: 7px 10px;
-      border-radius: 12px;
-      background: rgba(10,18,28,0.78);
-      font-size: 12px;
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.16s ease;
+      position: absolute; left: calc(100% + 10px); top: 50%; transform: translateY(-50%); padding: 7px 10px; border-radius: 12px;
+      background: rgba(10,18,28,0.78); font-size: 12px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.16s ease;
       border: 1px solid rgba(255,255,255,0.12);
     }
     .nav-btn:hover .tip { opacity: 1; }
     .user-pill {
-      margin-top: auto;
-      width: 100%;
-      font-size: 11px;
-      color: var(--muted);
-      text-align: center;
-      line-height: 1.45;
-      padding: 10px 4px 2px;
-      border-top: 1px solid rgba(255,255,255,0.14);
-      word-break: break-word;
+      margin-top: auto; width: 100%; font-size: 11px; color: var(--muted); text-align: center; line-height: 1.45;
+      padding: 10px 4px 2px; border-top: 1px solid rgba(255,255,255,0.14); word-break: break-word;
     }
 
-    .screen {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.26s ease;
-    }
-    .screen.active {
-      opacity: 1;
-      pointer-events: auto;
-    }
+    .screen { position: absolute; inset: 0; opacity: 0; pointer-events: none; transition: opacity 0.26s ease; }
+    .screen.active { opacity: 1; pointer-events: auto; }
 
     .top-right {
-      position: absolute;
-      top: calc(var(--safeTop) + 18px);
-      right: 18px;
-      z-index: 12;
-      display: flex;
-      gap: 10px;
-      align-items: center;
+      position: absolute; top: calc(var(--safeTop) + 18px); right: 18px; z-index: 12; display: flex; gap: 10px; align-items: center;
     }
     .money-mini {
-      padding: 0 12px;
-      min-height: 42px;
-      border-radius: 999px;
-      display: flex;
-      align-items: center;
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--gold);
-      background: rgba(10,18,28,0.34);
-      border: 1px solid rgba(255,255,255,0.14);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      padding: 0 12px; min-height: 42px; border-radius: 999px; display: flex; align-items: center; font-size: 14px; font-weight: 700;
+      color: var(--gold); background: rgba(10,18,28,0.34); border: 1px solid rgba(255,255,255,0.14); box-shadow: var(--shadow);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
     }
     .info-icon {
-      width: 56px;
-      height: 56px;
-      position: relative;
-      display: grid;
-      place-items: center;
-      font-size: 24px;
-      background: rgba(6, 15, 24, 0.22);
-      border: 1px solid rgba(255,255,255,0.14);
-      border-radius: 18px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
+      width: 56px; height: 56px; position: relative; display: grid; place-items: center; font-size: 24px;
+      background: rgba(6, 15, 24, 0.22); border: 1px solid rgba(255,255,255,0.14); border-radius: 18px; box-shadow: var(--shadow); backdrop-filter: blur(10px);
     }
     .info-icon .balloon {
-      position: absolute;
-      top: calc(100% + 8px);
-      left: 50%;
-      transform: translateX(-50%);
-      min-width: 96px;
-      padding: 8px 10px;
-      text-align: center;
-      font-size: 12px;
-      border-radius: 12px;
-      background: rgba(10,18,28,0.84);
-      color: var(--text);
-      border: 1px solid rgba(255,255,255,0.12);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.16s ease;
-      white-space: nowrap;
+      position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%); min-width: 96px; padding: 8px 10px; text-align: center;
+      font-size: 12px; border-radius: 12px; background: rgba(10,18,28,0.84); color: var(--text); border: 1px solid rgba(255,255,255,0.12);
+      opacity: 0; pointer-events: none; transition: opacity 0.16s ease; white-space: nowrap;
     }
     .info-icon:hover .balloon { opacity: 1; }
 
     .fishing-stage {
-      position: absolute;
-      inset: calc(var(--safeTop) + 10px) 14px calc(var(--safeBottom) + 14px) calc(var(--navCurrent) + 22px);
-      z-index: 9;
-      transition: inset 0.22s ease;
+      position: absolute; inset: calc(var(--safeTop) + 10px) 14px calc(var(--safeBottom) + 14px) calc(var(--navCurrent) + 22px); z-index: 9; transition: inset 0.22s ease;
+      overflow: hidden;
     }
 
-    .timer-center {
-      position: absolute;
-      left: 50%;
-      top: 48%;
-      transform: translate(-50%, -50%);
-      width: min(34vw, 340px);
-      aspect-ratio: 1;
-      min-width: 220px;
-      max-width: 340px;
-      z-index: 12;
-      display: grid;
-      place-items: center;
+    .timer-box {
+      position: absolute; top: 0; left: 0; z-index: 12; width: var(--timerSize); min-width: 150px; max-width: 210px; aspect-ratio: 1;
       pointer-events: none;
     }
-    .timer-gauge {
-      width: 100%;
-      height: 100%;
-      filter: drop-shadow(0 14px 36px rgba(0,0,0,0.2));
-    }
-    .timer-gauge .track {
-      fill: none;
-      stroke: rgba(255,255,255,0.18);
-      stroke-width: 8;
-    }
-    .timer-gauge .progress {
-      fill: none;
-      stroke: var(--accent);
-      stroke-width: 10;
-      stroke-linecap: round;
-      transform: rotate(-90deg);
-      transform-origin: 50% 50%;
-      transition: stroke-dashoffset 0.35s linear;
-    }
-    .timer-gauge .glow {
-      fill: none;
-      stroke: rgba(183,241,255,0.28);
-      stroke-width: 18;
-      stroke-linecap: round;
-      transform: rotate(-90deg);
-      transform-origin: 50% 50%;
-      filter: blur(6px);
-      transition: stroke-dashoffset 0.35s linear;
-    }
+    .timer-gauge { width: 100%; height: 100%; filter: drop-shadow(0 14px 36px rgba(0,0,0,0.2)); }
+    .timer-gauge .track { fill: none; stroke: rgba(255,255,255,0.18); stroke-width: 8; }
+    .timer-gauge .progress { fill: none; stroke: var(--accent); stroke-width: 10; stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; transition: stroke-dashoffset 0.35s linear; }
+    .timer-gauge .glow { fill: none; stroke: rgba(183,241,255,0.28); stroke-width: 18; stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; filter: blur(6px); transition: stroke-dashoffset 0.35s linear; }
     .timer-core {
-      position: absolute;
-      inset: 18%;
-      border-radius: 50%;
-      background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.15), rgba(11,24,37,0.46));
-      border: 1px solid rgba(255,255,255,0.14);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      padding: 20px;
-      pointer-events: auto;
+      position: absolute; inset: 20%; border-radius: 50%; background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.15), rgba(11,24,37,0.46));
+      border: 1px solid rgba(255,255,255,0.14); box-shadow: var(--shadow); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 12px; pointer-events: auto;
     }
-    .timer-main-time {
-      font-size: clamp(28px, 4vw, 54px);
-      font-weight: 800;
-      letter-spacing: 0.05em;
-      line-height: 1;
-    }
-    .timer-mini-plan {
-      font-size: 12px;
-      color: var(--muted);
-      letter-spacing: 0.06em;
-    }
+    .timer-main-time { font-size: clamp(20px, 2.2vw, 34px); font-weight: 800; letter-spacing: 0.05em; line-height: 1; }
+    .timer-mini-plan { font-size: clamp(10px, 0.9vw, 12px); color: var(--muted); letter-spacing: 0.06em; }
     .timer-bottom-actions {
-      position: absolute;
-      bottom: 10%;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 12px;
-      pointer-events: auto;
+      position: absolute; bottom: 6%; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; pointer-events: auto;
     }
     .timer-icon-btn {
-      width: 42px;
-      height: 42px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(8,18,29,0.48);
-      color: var(--text);
-      display: grid;
-      place-items: center;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      width: clamp(28px, 2.4vw, 36px); height: clamp(28px, 2.4vw, 36px); border-radius: 999px; border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(8,18,29,0.48); color: var(--text); display: grid; place-items: center; box-shadow: var(--shadow); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      padding: 0;
     }
-    .timer-icon-btn svg {
-      width: 18px;
-      height: 18px;
-      stroke: currentColor;
-      fill: currentColor;
-      stroke-width: 1.8;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
+    .timer-icon-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
     .timer-subtle {
-      position: absolute;
-      top: calc(100% + 10px);
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 12px;
-      color: var(--muted);
-      text-align: center;
-      white-space: nowrap;
+      position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--muted); text-align: center; white-space: nowrap;
+      max-width: 180px;
     }
 
     .bottom-left, .bottom-right {
-      position: absolute;
-      bottom: calc(var(--safeBottom) + 12px);
-      z-index: 12;
+      position: absolute; bottom: 0; z-index: 12; max-width: calc(50% - 8px);
     }
     .bottom-left { left: 0; }
     .bottom-right { right: 0; }
 
     .equip-strip {
-      min-width: 240px;
-      max-width: min(36vw, 360px);
-      padding: 12px 14px;
-      display: flex;
-      gap: 12px;
-      align-items: center;
+      width: min(31vw, 320px); max-width: 100%; padding: var(--basePad); display: flex; gap: calc(10px * var(--uiScale)); align-items: center;
     }
-    .equip-slot {
-      width: 62px;
-      text-align: center;
-      font-size: 11px;
-      color: var(--muted);
-    }
+    .equip-slot { width: 30%; min-width: 0; text-align: center; font-size: calc(11px * var(--uiScale)); color: var(--muted); }
     .equip-icon {
-      width: 48px;
-      height: 48px;
-      margin: 0 auto 6px;
-      border-radius: 16px;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.14);
-      display: grid;
-      place-items: center;
-      font-size: 22px;
+      width: calc(48px * var(--uiScale)); height: calc(48px * var(--uiScale)); margin: 0 auto 6px; border-radius: calc(16px * var(--uiScale));
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.14); display: grid; place-items: center; font-size: calc(22px * var(--uiScale));
     }
 
     .fish-controls {
-      padding: 14px;
-      min-width: min(44vw, 520px);
-      max-width: min(48vw, 620px);
-      display: flex;
-      align-items: end;
-      gap: 12px;
-      flex-wrap: wrap;
+      width: min(42vw, 520px); max-width: 100%; padding: var(--basePad); display: flex; align-items: end; gap: var(--baseGap); flex-wrap: wrap;
     }
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      min-width: 120px;
-      flex: 1 1 120px;
-    }
-    .field label { font-size: 12px; color: var(--muted); }
+    .field { display: flex; flex-direction: column; gap: 6px; min-width: 92px; flex: 1 1 92px; }
+    .field label { font-size: var(--font12); color: var(--muted); }
     .field select, .field input {
-      border: 1px solid rgba(255,255,255,0.16);
-      background: rgba(9, 19, 31, 0.34);
-      color: var(--text);
-      border-radius: 14px;
-      height: 42px;
-      padding: 0 12px;
-      outline: none;
-      min-width: 0;
+      border: 1px solid rgba(255,255,255,0.16); background: rgba(9, 19, 31, 0.34); color: var(--text); border-radius: calc(14px * var(--uiScale));
+      height: var(--fieldH); padding: 0 calc(12px * var(--uiScale)); outline: none; min-width: 0; font-size: var(--font13);
     }
 
-    .primary-btn, .soft-btn {
-      border: 0;
-      border-radius: 999px;
-      min-height: 44px;
-      padding: 0 18px;
-      color: #0d2131;
-      font-weight: 700;
-      transition: transform 0.18s ease, filter 0.18s ease, opacity 0.18s ease;
-      flex: 0 0 auto;
+    .primary-btn, .soft-btn, .danger-btn {
+      border: 0; border-radius: 999px; min-height: var(--btnH); padding: 0 calc(18px * var(--uiScale)); color: #0d2131; font-weight: 700;
+      transition: transform 0.18s ease, filter 0.18s ease, opacity 0.18s ease; flex: 0 0 auto; font-size: var(--font13);
     }
-    .primary-btn:hover, .soft-btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
-    .primary-btn:disabled, .soft-btn:disabled { opacity: 0.5; cursor: default; transform: none; }
+    .primary-btn:hover, .soft-btn:hover, .danger-btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
+    .primary-btn:disabled, .soft-btn:disabled, .danger-btn:disabled { opacity: 0.5; cursor: default; transform: none; }
     .primary-btn { background: linear-gradient(135deg, #b8f8f1, #78e9d3); }
     .soft-btn { background: linear-gradient(135deg, #f5f0d4, #f5d88e); }
+    .danger-btn { background: linear-gradient(135deg, #ffd2d2, #ff9f9f); }
 
     .content-shell {
-      position: absolute;
-      inset: calc(var(--safeTop) + 12px) 14px calc(var(--safeBottom) + 14px) calc(var(--navCurrent) + 22px);
-      padding: 22px 22px 24px;
-      overflow: auto;
-      border-radius: 28px;
-      background: rgba(8, 17, 28, 0.18);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,255,255,0.12);
-      box-shadow: var(--shadow);
-      transition: inset 0.22s ease;
+      position: absolute; inset: calc(var(--safeTop) + 12px) 14px calc(var(--safeBottom) + 14px) calc(var(--navCurrent) + 22px); padding: 22px 22px 24px;
+      overflow: auto; border-radius: 28px; background: rgba(8, 17, 28, 0.18); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.12); box-shadow: var(--shadow); transition: inset 0.22s ease;
     }
-    .section-title {
-      font-size: 26px;
-      font-weight: 800;
-      margin: 0 0 8px;
-      letter-spacing: 0.02em;
-    }
-    .section-sub {
-      font-size: 13px;
-      color: var(--muted);
-      margin: 0 0 18px;
-      line-height: 1.7;
-    }
-    .money-line {
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 16px;
-      color: var(--gold);
-    }
-    .stat-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-    .stat-chip {
-      padding: 10px 14px;
-      border-radius: 999px;
-      font-size: 13px;
-      color: var(--text);
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.12);
-    }
-
-    .shop-grid {
-      display: grid;
-      gap: 14px;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
+    .section-title { font-size: 26px; font-weight: 800; margin: 0 0 8px; letter-spacing: 0.02em; }
+    .section-sub { font-size: 13px; color: var(--muted); margin: 0 0 18px; line-height: 1.7; }
+    .money-line { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--gold); }
+    .stat-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+    .stat-chip { padding: 10px 14px; border-radius: 999px; font-size: 13px; color: var(--text); background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); }
+    .shop-grid { display: grid; gap: 14px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .line-item {
-      padding: 14px 14px 14px 16px;
-      border-radius: 22px;
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.06);
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      min-height: 98px;
-      min-width: 0;
-      overflow: hidden;
+      padding: 14px 14px 14px 16px; border-radius: 22px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.06);
+      display: flex; gap: 12px; align-items: center; min-height: 98px; min-width: 0; overflow: hidden;
     }
     .line-item .thumb {
-      width: 58px;
-      height: 58px;
-      border-radius: 18px;
-      display: grid;
-      place-items: center;
-      font-size: 28px;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.14);
-      flex: 0 0 auto;
+      width: 58px; height: 58px; border-radius: 18px; display: grid; place-items: center; font-size: 28px; background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.14); flex: 0 0 auto;
     }
     .line-item .meta { flex: 1; min-width: 0; }
-    .line-item .name {
-      font-weight: 700;
-      margin-bottom: 6px;
-      word-break: break-word;
-      overflow-wrap: anywhere;
-    }
-    .line-item .desc {
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.55;
-      word-break: break-word;
-      overflow-wrap: anywhere;
-    }
-    .line-item .price {
-      font-weight: 800;
-      color: var(--gold);
-      white-space: nowrap;
-      flex: 0 0 auto;
-    }
-    .line-item .actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      flex: 0 0 auto;
-    }
+    .line-item .name { font-weight: 700; margin-bottom: 6px; word-break: break-word; overflow-wrap: anywhere; }
+    .line-item .desc { font-size: 12px; color: var(--muted); line-height: 1.55; word-break: break-word; overflow-wrap: anywhere; }
+    .line-item .price { font-weight: 800; color: var(--gold); white-space: nowrap; flex: 0 0 auto; }
+    .line-item .actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; flex: 0 0 auto; }
 
-    .grid-list {
-      display: grid;
-      gap: 14px;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    }
-    .ency-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 14px;
-    }
+    .grid-list { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+    .ency-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
     .fish-card {
-      padding: 16px;
-      border-radius: 24px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.12);
-      min-height: 200px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+      padding: 16px; border-radius: 24px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); min-height: 200px;
+      display: flex; flex-direction: column; gap: 10px;
     }
-    .fish-art {
-      width: 64px;
-      height: 64px;
-      border-radius: 18px;
-      display: grid;
-      place-items: center;
-      font-size: 32px;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.14);
-    }
-    .fish-card.unknown .fish-art,
-    .fish-card.unknown .fish-name,
-    .fish-card.unknown .fish-meta {
-      filter: grayscale(1);
-      opacity: 0.5;
-    }
+    .fish-art { width: 64px; height: 64px; border-radius: 18px; display: grid; place-items: center; font-size: 32px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.14); }
+    .fish-card.unknown .fish-art, .fish-card.unknown .fish-name, .fish-card.unknown .fish-meta { filter: grayscale(1); opacity: 0.5; }
     .fish-name { font-size: 18px; font-weight: 700; }
     .fish-meta { font-size: 12px; color: var(--muted); line-height: 1.6; }
     .record { color: var(--gold); }
     .plus-size { color: #b7f1ff; }
     .minus-size { color: #ffd1c7; }
 
-    .settings-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 14px;
-    }
-    .settings-box {
-      padding: 18px;
-      border-radius: 24px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.12);
-    }
+    .settings-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+    .settings-box { padding: 18px; border-radius: 24px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); }
     .settings-box h3 { margin: 0 0 12px; }
     .settings-box .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
     .settings-box .row:last-child { margin-bottom: 0; }
     .toggle {
-      appearance: none;
-      width: 52px;
-      height: 30px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.18);
-      position: relative;
-      outline: none;
-      border: 1px solid rgba(255,255,255,0.18);
+      appearance: none; width: 52px; height: 30px; border-radius: 999px; background: rgba(255,255,255,0.18); position: relative; outline: none; border: 1px solid rgba(255,255,255,0.18);
     }
-    .toggle::after {
-      content: "";
-      position: absolute;
-      left: 3px;
-      top: 3px;
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      background: white;
-      transition: transform 0.18s ease;
-    }
+    .toggle::after { content: ""; position: absolute; left: 3px; top: 3px; width: 22px; height: 22px; border-radius: 50%; background: white; transition: transform 0.18s ease; }
     .toggle:checked { background: rgba(126,242,197,0.55); }
     .toggle:checked::after { transform: translateX(22px); }
 
     .modal {
-      position: absolute;
-      inset: 0;
-      z-index: 50;
-      display: none;
-      place-items: center;
-      background: rgba(2, 8, 14, 0.46);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      padding: 24px;
+      position: absolute; inset: 0; z-index: 50; display: none; place-items: center; background: rgba(2, 8, 14, 0.46); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); padding: 24px;
     }
     .modal.show { display: grid; }
     .modal-card {
-      width: min(540px, 100%);
-      border-radius: 30px;
-      padding: 22px;
-      background: linear-gradient(180deg, rgba(17,33,48,0.92), rgba(8,17,28,0.96));
-      border: 1px solid rgba(255,255,255,0.14);
-      box-shadow: 0 28px 60px rgba(0,0,0,0.38);
-      position: relative;
-      overflow: hidden;
+      width: min(540px, 100%); border-radius: 30px; padding: 22px; background: linear-gradient(180deg, rgba(17,33,48,0.92), rgba(8,17,28,0.96));
+      border: 1px solid rgba(255,255,255,0.14); box-shadow: 0 28px 60px rgba(0,0,0,0.38); position: relative; overflow: hidden;
     }
-    .modal-card.rare::before,
-    .modal-card.record::after {
-      content: "";
-      position: absolute;
-      inset: -20% -20% auto auto;
-      width: 220px;
-      height: 220px;
-      background: radial-gradient(circle, rgba(255,216,109,0.26), transparent 66%);
-      filter: blur(6px);
-      pointer-events: none;
+    .modal-card.rare::before, .modal-card.record::after {
+      content: ""; position: absolute; inset: -20% -20% auto auto; width: 220px; height: 220px; background: radial-gradient(circle, rgba(255,216,109,0.26), transparent 66%); filter: blur(6px); pointer-events: none;
     }
-    .modal-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
+    .modal-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
     .modal-top h2 { margin: 0; font-size: 28px; }
-    .close-btn {
-      border: 0;
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.1);
-      color: var(--text);
-      font-size: 20px;
-    }
-    .result-core {
-      display: grid;
-      grid-template-columns: 110px 1fr;
-      gap: 16px;
-      align-items: center;
-      margin-bottom: 16px;
-    }
-    .result-art {
-      width: 110px;
-      height: 110px;
-      border-radius: 28px;
-      display: grid;
-      place-items: center;
-      font-size: 54px;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.14);
-    }
+    .close-btn { border: 0; width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,0.1); color: var(--text); font-size: 20px; }
+    .result-core { display: grid; grid-template-columns: 110px 1fr; gap: 16px; align-items: center; margin-bottom: 16px; }
+    .result-art { width: 110px; height: 110px; border-radius: 28px; display: grid; place-items: center; font-size: 54px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14); }
     .result-title { font-size: 26px; font-weight: 800; margin-bottom: 6px; }
     .result-lines { font-size: 14px; line-height: 1.8; color: var(--muted); }
-    .result-flags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin: 14px 0 18px;
-    }
-    .flag {
-      padding: 8px 12px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.12);
-      font-size: 12px;
-    }
+    .result-flags { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 18px; }
+    .flag { padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); font-size: 12px; }
     .flag.rare { color: var(--gold); }
     .flag.record { color: #ffe79f; }
     .flag.huge { color: #ffcfb7; }
-    .modal-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
+    .modal-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
 
-    .toast-wrap {
-      position: absolute;
-      right: 18px;
-      top: calc(var(--safeTop) + 20px);
-      z-index: 60;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      pointer-events: none;
-    }
+    .toast-wrap { position: absolute; right: 18px; top: calc(var(--safeTop) + 20px); z-index: 60; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
     .toast {
-      min-width: 220px;
-      max-width: 320px;
-      border-radius: 18px;
-      padding: 12px 14px;
-      background: rgba(8,17,28,0.82);
-      border: 1px solid rgba(255,255,255,0.12);
-      box-shadow: var(--shadow);
-      color: var(--text);
-      font-size: 13px;
-      line-height: 1.6;
-      transform: translateY(-6px);
-      opacity: 0;
-      animation: toastInOut 3.6s ease forwards;
+      min-width: 220px; max-width: 320px; border-radius: 18px; padding: 12px 14px; background: rgba(8,17,28,0.82); border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: var(--shadow); color: var(--text); font-size: 13px; line-height: 1.6; transform: translateY(-6px); opacity: 0; animation: toastInOut 3.6s ease forwards;
     }
 
     .auth-overlay {
-      position: absolute;
-      inset: 0;
-      z-index: 70;
-      display: grid;
-      place-items: center;
-      background: rgba(4, 10, 18, 0.46);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      padding: 24px;
+      position: absolute; inset: 0; z-index: 70; display: grid; place-items: center; background: rgba(4, 10, 18, 0.46); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 24px;
     }
     .auth-card {
-      width: min(560px, 100%);
-      padding: 26px;
-      border-radius: 34px;
-      background: linear-gradient(180deg, rgba(17,33,48,0.9), rgba(8,17,28,0.96));
-      border: 1px solid rgba(255,255,255,0.14);
-      box-shadow: 0 28px 60px rgba(0,0,0,0.38);
+      width: min(560px, 100%); padding: 26px; border-radius: 34px; background: linear-gradient(180deg, rgba(17,33,48,0.9), rgba(8,17,28,0.96));
+      border: 1px solid rgba(255,255,255,0.14); box-shadow: 0 28px 60px rgba(0,0,0,0.38);
     }
     .auth-title { font-size: 30px; font-weight: 800; margin-bottom: 10px; }
     .auth-text { color: var(--muted); line-height: 1.8; margin-bottom: 18px; font-size: 14px; }
-    .name-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-      margin-top: 16px;
-    }
+    .name-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 16px; }
     .name-row input {
-      flex: 1;
-      min-width: 160px;
-      height: 46px;
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(255,255,255,0.07);
-      color: var(--text);
-      padding: 0 14px;
+      flex: 1; min-width: 160px; height: 46px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.07); color: var(--text); padding: 0 14px;
     }
     .auth-note { font-size: 12px; color: var(--muted); margin-top: 10px; line-height: 1.7; }
     .shaker { animation: screenShake 0.55s ease; }
 
-    @keyframes seaBob {
-      from { transform: translateY(0px) rotate(0deg); }
-      to { transform: translateY(8px) rotate(0.4deg); }
-    }
+    @keyframes seaBob { from { transform: translateY(0px) rotate(0deg); } to { transform: translateY(8px) rotate(0.4deg); } }
     @keyframes waveFlow { from { background-position-x: 0; } to { background-position-x: 900px; } }
-    @keyframes bobberFloat {
-      0%, 100% { transform: translateY(0px) rotate(-3deg); }
-      50% { transform: translateY(7px) rotate(4deg); }
-    }
-    @keyframes bobberSink {
-      0% { transform: translateY(0) scale(1); opacity: 1; }
-      45% { transform: translateY(10px) scale(0.96); opacity: 1; }
-      100% { transform: translateY(42px) scale(0.84); opacity: 0; }
-    }
-    @keyframes rodPull {
-      0% { transform: rotate(12deg); }
-      38% { transform: rotate(4deg); }
-      100% { transform: rotate(12deg); }
-    }
-    @keyframes splashFx {
-      0% { opacity: 0; transform: scale(0.7) translateY(4px); }
-      18% { opacity: 1; }
-      100% { opacity: 0; transform: scale(1.18) translateY(-10px); }
-    }
-    @keyframes toastInOut {
-      0% { opacity: 0; transform: translateY(-6px); }
-      10%, 82% { opacity: 1; transform: translateY(0); }
-      100% { opacity: 0; transform: translateY(-8px); }
-    }
-    @keyframes screenShake {
-      0%, 100% { transform: translateX(0); }
-      20% { transform: translateX(-6px); }
-      40% { transform: translateX(5px); }
-      60% { transform: translateX(-4px); }
-      80% { transform: translateX(3px); }
+    @keyframes bobberFloat { 0%, 100% { transform: translateY(0px) rotate(-3deg); } 50% { transform: translateY(7px) rotate(4deg); } }
+    @keyframes bobberSink { 0% { transform: translateY(0) scale(1); opacity: 1; } 45% { transform: translateY(10px) scale(0.96); opacity: 1; } 100% { transform: translateY(42px) scale(0.84); opacity: 0; } }
+    @keyframes rodPull { 0% { transform: rotate(12deg); } 38% { transform: rotate(4deg); } 100% { transform: rotate(12deg); } }
+    @keyframes splashFx { 0% { opacity: 0; transform: scale(0.7) translateY(4px); } 18% { opacity: 1; } 100% { opacity: 0; transform: scale(1.18) translateY(-10px); } }
+    @keyframes toastInOut { 0% { opacity: 0; transform: translateY(-6px); } 10%, 82% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-8px); } }
+    @keyframes screenShake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-6px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(3px); } }
+
+    @media (max-width: 1200px) {
+      :root { --uiScale: 0.92; --timerSize: min(22vw, 190px); }
+      .fish-controls { width: min(46vw, 500px); }
+      .equip-strip { width: min(34vw, 300px); }
+      .shop-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
 
-    @media (max-width: 1100px) {
-      .shop-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .fish-controls { min-width: min(58vw, 560px); max-width: min(62vw, 620px); }
-      .equip-strip { max-width: min(42vw, 360px); }
-      .timer-center { width: min(40vw, 320px); }
+    @media (max-width: 900px) {
+      :root { --uiScale: 0.82; --timerSize: min(24vw, 170px); }
+      .bottom-left, .bottom-right { max-width: calc(50% - 6px); }
+      .fish-controls { width: min(48vw, 430px); }
+      .equip-strip { width: min(36vw, 250px); }
     }
 
     @media (max-width: 760px) {
       :root {
-        --navExpanded: 72px;
-        --navCollapsed: 22px;
+        --navExpanded: 72px; --navCollapsed: 22px; --uiScale: 0.68; --timerSize: 132px;
       }
-      .nav-toggle {
-        top: calc(var(--safeTop) + 10px);
-        left: 10px;
-      }
+      .nav-toggle { top: calc(var(--safeTop) + 10px); left: 10px; }
       .side-nav {
-        top: calc(var(--safeTop) + 48px);
-        left: 10px;
-        bottom: calc(var(--safeBottom) + 10px);
-        width: var(--navExpanded);
-        padding: 12px 8px;
+        top: calc(var(--safeTop) + 48px); left: 10px; bottom: calc(var(--safeBottom) + 10px); width: var(--navExpanded); padding: 10px 7px;
       }
-      .fishing-stage,
-      .content-shell {
-        inset: calc(var(--safeTop) + 8px) 10px calc(var(--safeBottom) + 10px) calc(var(--navCurrent) + 16px);
+      .fishing-stage, .content-shell {
+        inset: calc(var(--safeTop) + 8px) 8px calc(var(--safeBottom) + 8px) calc(var(--navCurrent) + 14px);
       }
-      .top-right {
-        top: calc(var(--safeTop) + 8px);
-        right: 10px;
-        gap: 8px;
-      }
-      .money-mini { min-height: 38px; font-size: 13px; padding: 0 10px; }
-      .info-icon { width: 44px; height: 44px; font-size: 18px; border-radius: 14px; }
-      .fishing-stage {
-        display: grid;
-        grid-template-columns: 1fr;
-        grid-template-rows: auto 1fr auto auto;
-      }
-      .timer-center {
-        position: relative;
-        left: auto;
-        top: auto;
-        transform: none;
-        margin: 60px auto 0;
-        width: min(62vw, 300px);
-        min-width: 210px;
-      }
+      .top-right { top: calc(var(--safeTop) + 8px); right: 8px; gap: 6px; }
+      .money-mini { min-height: 30px; font-size: 11px; padding: 0 8px; }
+      .info-icon { width: 34px; height: 34px; font-size: 15px; border-radius: 12px; }
+      .fishing-stage { overflow: hidden; }
+      .timer-box { width: var(--timerSize); min-width: 132px; max-width: 132px; }
+      .timer-subtle { max-width: 132px; font-size: 10px; }
       .bottom-left, .bottom-right {
-        position: relative;
-        bottom: auto;
+        max-width: calc(50% - 4px); bottom: 2px;
       }
-      .bottom-left { margin-top: 18px; }
-      .bottom-right { margin-top: 12px; justify-self: end; }
       .fish-controls {
-        min-width: 0;
-        max-width: none;
-        width: 100%;
-        padding: 12px;
+        width: 100%; max-width: 100%; padding: 8px; gap: 6px;
       }
       .equip-strip {
-        min-width: 0;
-        max-width: none;
-        width: auto;
+        width: 100%; max-width: 100%; padding: 8px; gap: 6px;
       }
-      .field { min-width: calc(50% - 6px); }
+      .field { min-width: 64px; flex: 1 1 64px; }
+      .primary-btn, .soft-btn, .danger-btn { padding: 0 10px; }
       .shop-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .line-item {
-        flex-direction: column;
-        align-items: flex-start;
-        min-height: 0;
-      }
+      .line-item { flex-direction: column; align-items: flex-start; min-height: 0; }
       .line-item .actions { width: 100%; justify-content: flex-start; }
       .result-core { grid-template-columns: 1fr; }
       .user-pill { display: none; }
+    }
+
+    @media (max-width: 520px) {
+      :root { --uiScale: 0.58; --timerSize: 120px; }
+      .bottom-left, .bottom-right { max-width: calc(50% - 3px); }
+      .money-mini { display: none; }
+      .fish-controls, .equip-strip { padding: 7px; }
+      .field label { font-size: 10px; }
+      .line-item .thumb { width: 46px; height: 46px; font-size: 22px; }
+      .section-title { font-size: 22px; }
     }
   </style>
 </head>
@@ -1080,7 +480,7 @@
       </div>
 
       <div class="fishing-stage">
-        <div class="timer-center">
+        <div class="timer-box">
           <svg class="timer-gauge" viewBox="0 0 220 220" aria-hidden="true">
             <circle class="track" cx="110" cy="110" r="88"></circle>
             <circle id="timerGlow" class="glow" cx="110" cy="110" r="88"></circle>
@@ -1091,11 +491,11 @@
             <div id="timerPlanMini" class="timer-mini-plan">5min</div>
           </div>
           <div class="timer-bottom-actions">
-            <button id="resumeFishingBtn" class="timer-icon-btn" aria-label="再開">
-              <svg viewBox="0 0 24 24"><path d="M8 6v12l10-6z"/></svg>
+            <button id="toggleFishingBtn" class="timer-icon-btn" aria-label="停止または再開">
+              <svg id="toggleFishingIcon" viewBox="0 0 24 24"></svg>
             </button>
-            <button id="pauseFishingBtn" class="timer-icon-btn" aria-label="一時停止">
-              <svg viewBox="0 0 24 24"><path d="M8 6v12"/><path d="M16 6v12"/></svg>
+            <button id="cancelFishingBtn" class="timer-icon-btn" aria-label="報酬なし終了">
+              <svg viewBox="0 0 24 24"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg>
             </button>
           </div>
           <div id="timerSubtle" class="timer-subtle">まだ釣りを始めていません</div>
@@ -1248,20 +648,8 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
     import { getAnalytics, isSupported as analyticsSupported } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
-    import {
-      getAuth,
-      GoogleAuthProvider,
-      signInWithPopup,
-      onAuthStateChanged,
-      signOut,
-    } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
-    import {
-      getFirestore,
-      doc,
-      getDoc,
-      setDoc,
-      serverTimestamp,
-    } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyC8kG1I73YuEuqrg6FEwKykkRxbQTOj3dw",
@@ -1273,7 +661,7 @@
       measurementId: "G-H7P3WR4DR3"
     };
 
-    const LS_KEY = "zz_fishing_subsite_save_v2";
+    const LS_KEY = "zz_fishing_subsite_save_v3";
     const ENCY_TOP_LIMIT = 50;
     const SELL_RATE_ITEM = 0.5;
     const TIMER_R = 88;
@@ -1317,7 +705,7 @@
     ];
 
     const DEFAULT_STATE = {
-      version: 2,
+      version: 3,
       ui: { navCollapsed: false },
       user: { uid: null, isGuest: true, displayName: "つりびと", photoURL: null },
       money: 220,
@@ -1327,18 +715,8 @@
       encyclopedia: {},
       settings: { waveSound: false, catchSound: true, browserNotify: false, shakeOnFinish: true },
       fishing: {
-        inProgress: false,
-        paused: false,
-        startAt: null,
-        endAt: null,
-        pausedAt: null,
-        remainingMs: null,
-        durationMin: 5,
-        rodId: "rod_small_01",
-        baitId: "bait_basic_01",
-        supportId: null,
-        weather: null,
-        timeOfDay: null,
+        inProgress: false, paused: false, startAt: null, endAt: null, pausedAt: null, remainingMs: null,
+        durationMin: 5, rodId: "rod_small_01", baitId: "bait_basic_01", supportId: null, weather: null, timeOfDay: null,
       },
       lastCatch: null,
       lastUsedSetup: { rodId: "rod_small_01", baitId: "bait_basic_01", supportId: null, durationMin: 5 },
@@ -1373,8 +751,9 @@
       timerSubtle: document.getElementById("timerSubtle"),
       timerProgress: document.getElementById("timerProgress"),
       timerGlow: document.getElementById("timerGlow"),
-      pauseFishingBtn: document.getElementById("pauseFishingBtn"),
-      resumeFishingBtn: document.getElementById("resumeFishingBtn"),
+      toggleFishingBtn: document.getElementById("toggleFishingBtn"),
+      toggleFishingIcon: document.getElementById("toggleFishingIcon"),
+      cancelFishingBtn: document.getElementById("cancelFishingBtn"),
       weatherIcon: document.getElementById("weatherIcon"),
       weatherBalloon: document.getElementById("weatherBalloon"),
       timeIcon: document.getElementById("timeIcon"),
@@ -1430,6 +809,7 @@
 
     async function boot() {
       initTimerGauge();
+      updateToggleTimerIcon(false);
       tryInitFirebase();
       bindEvents();
       fillQuickSelectors();
@@ -1464,70 +844,40 @@
             state.user.photoURL = user.photoURL || null;
             const remote = await loadRemoteUser(user.uid);
             if (remote) mergeLoadedState(remote);
-            if (!state.user.displayName || state.user.displayName === "つりびと") {
-              state.user.displayName = safeName(el.authDisplayNameInput.value || user.displayName || "つりびと");
-            }
+            if (!state.user.displayName || state.user.displayName === "つりびと") state.user.displayName = safeName(el.authDisplayNameInput.value || user.displayName || "つりびと");
             el.authOverlay.style.display = "none";
             firebaseSyncOk = true;
             toast("Googleログインしました。保存はFirebaseに同期されます。");
-            saveAll();
-            renderAll();
+            saveAll(); renderAll();
           } else {
-            firebaseSyncOk = false;
-            renderAll();
+            firebaseSyncOk = false; renderAll();
           }
         });
       } catch (err) {
-        console.error(err);
-        firebaseReady = false;
-        firebaseSyncOk = false;
+        console.error(err); firebaseReady = false; firebaseSyncOk = false;
       }
     }
 
     function bindEvents() {
-      el.navToggle.addEventListener("click", () => {
-        state.ui.navCollapsed = !state.ui.navCollapsed;
-        applyNavState();
-        saveAll();
-      });
+      el.navToggle.addEventListener("click", () => { state.ui.navCollapsed = !state.ui.navCollapsed; applyNavState(); saveAll(); });
       el.navBtns.forEach(btn => btn.addEventListener("click", () => switchScreen(btn.dataset.screen)));
-      el.rodSelect.addEventListener("change", () => {
-        state.equipped.rodId = el.rodSelect.value;
-        rebuildCourseOptions();
-        state.lastUsedSetup.rodId = state.equipped.rodId;
-        saveAll(); renderAll();
-      });
-      el.courseSelect.addEventListener("change", () => {
-        state.lastUsedSetup.durationMin = Number(el.courseSelect.value);
-        renderFishingStatus();
-        saveAll();
-      });
-      el.baitSelectQuick.addEventListener("change", () => {
-        state.equipped.baitId = el.baitSelectQuick.value;
-        state.lastUsedSetup.baitId = state.equipped.baitId;
-        saveAll(); renderAll();
-      });
+      el.rodSelect.addEventListener("change", () => { state.equipped.rodId = el.rodSelect.value; rebuildCourseOptions(); state.lastUsedSetup.rodId = state.equipped.rodId; saveAll(); renderAll(); });
+      el.courseSelect.addEventListener("change", () => { state.lastUsedSetup.durationMin = Number(el.courseSelect.value); renderFishingStatus(); saveAll(); });
+      el.baitSelectQuick.addEventListener("change", () => { state.equipped.baitId = el.baitSelectQuick.value; state.lastUsedSetup.baitId = state.equipped.baitId; saveAll(); renderAll(); });
       el.startFishingBtn.addEventListener("click", startFishingFromCurrent);
       el.repeatFishingBtn.addEventListener("click", repeatFishing);
-      el.pauseFishingBtn.addEventListener("click", pauseFishing);
-      el.resumeFishingBtn.addEventListener("click", resumeFishing);
+      el.toggleFishingBtn.addEventListener("click", toggleFishingPauseResume);
+      el.cancelFishingBtn.addEventListener("click", cancelFishingNoReward);
       el.closeResultBtn.addEventListener("click", closeResultModal);
       el.keepResultBtn.addEventListener("click", keepPendingResult);
       el.sellResultBtn.addEventListener("click", sellPendingResult);
       el.googleLoginBtn.addEventListener("click", googleLogin);
       el.guestStartBtn.addEventListener("click", startGuest);
-      el.saveDisplayNameBtn.addEventListener("click", () => {
-        const v = safeName(el.displayNameInput.value);
-        state.user.displayName = v || "つりびと";
-        toast("表示名を保存しました。");
-        saveAll(); renderAll();
-      });
+      el.saveDisplayNameBtn.addEventListener("click", () => { const v = safeName(el.displayNameInput.value); state.user.displayName = v || "つりびと"; toast("表示名を保存しました。"); saveAll(); renderAll(); });
       el.toggleWave.addEventListener("change", () => updateSetting("waveSound", el.toggleWave.checked));
       el.toggleCatch.addEventListener("change", () => updateSetting("catchSound", el.toggleCatch.checked));
       el.toggleNotify.addEventListener("change", async () => {
-        if (el.toggleNotify.checked && Notification && Notification.permission === "default") {
-          try { await Notification.requestPermission(); } catch {}
-        }
+        if (el.toggleNotify.checked && Notification && Notification.permission === "default") { try { await Notification.requestPermission(); } catch {} }
         updateSetting("browserNotify", el.toggleNotify.checked && Notification && Notification.permission === "granted");
       });
       el.toggleShake.addEventListener("change", () => updateSetting("shakeOnFinish", el.toggleShake.checked));
@@ -1552,15 +902,9 @@
 
     function fillQuickSelectors() {
       el.rodSelect.innerHTML = "";
-      RODS.filter(rod => owns("rods", rod.id)).forEach(rod => {
-        const option = document.createElement("option");
-        option.value = rod.id; option.textContent = `${rod.icon} ${rod.name}`; el.rodSelect.appendChild(option);
-      });
+      RODS.filter(rod => owns("rods", rod.id)).forEach(rod => { const option = document.createElement("option"); option.value = rod.id; option.textContent = `${rod.icon} ${rod.name}`; el.rodSelect.appendChild(option); });
       el.baitSelectQuick.innerHTML = "";
-      BAITS.filter(bait => owns("baits", bait.id)).forEach(bait => {
-        const option = document.createElement("option");
-        option.value = bait.id; option.textContent = `${bait.icon} ${bait.name}`; el.baitSelectQuick.appendChild(option);
-      });
+      BAITS.filter(bait => owns("baits", bait.id)).forEach(bait => { const option = document.createElement("option"); option.value = bait.id; option.textContent = `${bait.icon} ${bait.name}`; el.baitSelectQuick.appendChild(option); });
       applyStateToSelectors(); rebuildCourseOptions();
     }
 
@@ -1587,10 +931,7 @@
     function rebuildCourseOptions() {
       const rod = getById(RODS, state.equipped.rodId) || RODS[0];
       el.courseSelect.innerHTML = "";
-      rod.courses.forEach(min => {
-        const option = document.createElement("option");
-        option.value = String(min); option.textContent = `${min}分`; el.courseSelect.appendChild(option);
-      });
+      rod.courses.forEach(min => { const option = document.createElement("option"); option.value = String(min); option.textContent = `${min}分`; el.courseSelect.appendChild(option); });
       const desired = state.lastUsedSetup.durationMin;
       const selected = rod.courses.includes(desired) ? desired : rod.courses[0];
       el.courseSelect.value = String(selected);
@@ -1622,23 +963,15 @@
       el.app.classList.add(`time-${timeOfDay}`);
       const weatherMap = { sunny: ["☀️", "晴れ"], cloudy: ["☁️", "曇り"], rainy: ["🌧️", "雨"] };
       const timeMap = { day: ["🌤️", "昼"], evening: ["🌆", "夕方"], night: ["🌙", "夜"] };
-      setIconEmoji(el.weatherIcon, weatherMap[weather][0]);
+      el.weatherIcon.childNodes[0].nodeValue = weatherMap[weather][0];
       el.weatherBalloon.textContent = weatherMap[weather][1];
-      setIconEmoji(el.timeIcon, timeMap[timeOfDay][0]);
+      el.timeIcon.childNodes[0].nodeValue = timeMap[timeOfDay][0];
       el.timeBalloon.textContent = timeMap[timeOfDay][1];
-    }
-
-    function setIconEmoji(node, text) {
-      node.childNodes[0].nodeValue = text;
     }
 
     function startFishingFromCurrent() {
       if (state.fishing.inProgress) { toast("いま釣り中です。終わるまで待ってください。"); return; }
-      const rodId = state.equipped.rodId;
-      const baitId = state.equipped.baitId;
-      const supportId = state.equipped.supportId;
-      const durationMin = Number(el.courseSelect.value);
-      startFishing({ rodId, baitId, supportId, durationMin });
+      startFishing({ rodId: state.equipped.rodId, baitId: state.equipped.baitId, supportId: state.equipped.supportId, durationMin: Number(el.courseSelect.value) });
     }
 
     function repeatFishing() {
@@ -1658,6 +991,11 @@
       if (state.settings.catchSound) playTimeMp3();
       toast(`${durationMin}分コースを開始しました。作業どうぞ。`);
       saveAll(); renderAll(); startTimerTick();
+    }
+
+    function toggleFishingPauseResume() {
+      if (!state.fishing.inProgress) return;
+      if (state.fishing.paused) resumeFishing(); else pauseFishing();
     }
 
     function pauseFishing() {
@@ -1680,17 +1018,27 @@
       saveAll(); renderFishingStatus(); startTimerTick();
     }
 
+    function cancelFishingNoReward() {
+      if (!state.fishing.inProgress) return;
+      stopTimerTick();
+      state.fishing.inProgress = false;
+      state.fishing.paused = false;
+      state.fishing.remainingMs = null;
+      state.fishing.pausedAt = null;
+      el.rodLine.classList.remove("visible", "pull");
+      el.bobber.classList.remove("visible", "sinking");
+      el.splash.classList.remove("show");
+      setGaugeProgress(0);
+      toast("タイマーを終了しました。報酬はありません。");
+      saveAll(); renderAll();
+    }
+
     function restoreFishingTimer() {
       if (state.fishing.inProgress) {
-        el.bobber.classList.add("visible");
-        el.rodLine.classList.add("visible");
-        if (state.fishing.paused) {
-          renderFishingStatus();
-        } else if (Date.now() >= state.fishing.endAt) {
-          finishFishing();
-        } else {
-          startTimerTick();
-        }
+        el.bobber.classList.add("visible"); el.rodLine.classList.add("visible");
+        if (state.fishing.paused) renderFishingStatus();
+        else if (Date.now() >= state.fishing.endAt) finishFishing();
+        else startTimerTick();
       } else {
         el.bobber.classList.remove("visible"); el.rodLine.classList.remove("visible");
       }
@@ -1704,7 +1052,6 @@
         renderFishingStatus();
       }, 300);
     }
-
     function stopTimerTick() { if (timerTickHandle) { clearInterval(timerTickHandle); timerTickHandle = null; } }
 
     async function finishFishing() {
@@ -1825,9 +1172,7 @@
     }
 
     function renderAll() {
-      fillQuickSelectors(); applyStateToSelectors(); applyNavState();
-      renderFishingStatus(); renderEquipStrip(); renderStore(); renderBag(); renderEncyclopedia(); renderSettings(); renderUserPill(); updateSyncStatus();
-      el.fishMoneyMini.textContent = `${state.money} zz`;
+      fillQuickSelectors(); applyStateToSelectors(); applyNavState(); renderFishingStatus(); renderEquipStrip(); renderStore(); renderBag(); renderEncyclopedia(); renderSettings(); renderUserPill(); updateSyncStatus(); el.fishMoneyMini.textContent = `${state.money} zz`;
     }
 
     function renderFishingStatus() {
@@ -1844,19 +1189,29 @@
         el.timerPlanMini.textContent = `${state.fishing.durationMin}min`;
         el.timerSubtle.textContent = state.fishing.paused ? "一時停止中" : `${state.fishing.durationMin}分コース進行中`;
         el.startFishingBtn.disabled = true;
-        el.pauseFishingBtn.disabled = !!state.fishing.paused;
-        el.resumeFishingBtn.disabled = !state.fishing.paused;
+        el.cancelFishingBtn.disabled = false;
+        updateToggleTimerIcon(state.fishing.paused);
       } else {
         const planned = Number(el.courseSelect.value) || state.lastUsedSetup.durationMin || 5;
         el.timerText.textContent = "--:--";
         el.timerPlanMini.textContent = `${planned}min`;
         el.timerSubtle.textContent = "まだ釣りを始めていません";
         el.startFishingBtn.disabled = false;
-        el.pauseFishingBtn.disabled = true;
-        el.resumeFishingBtn.disabled = true;
+        el.cancelFishingBtn.disabled = true;
+        updateToggleTimerIcon(false, true);
       }
       setGaugeProgress(progress);
       el.repeatFishingBtn.disabled = !!state.fishing.inProgress;
+      el.toggleFishingBtn.disabled = !state.fishing.inProgress;
+    }
+
+    function updateToggleTimerIcon(paused, noActive = false) {
+      if (noActive) {
+        el.toggleFishingIcon.innerHTML = '<path d="M8 6v12l10-6z"/>';
+        return;
+      }
+      if (paused) el.toggleFishingIcon.innerHTML = '<path d="M8 6v12l10-6z"/>';
+      else el.toggleFishingIcon.innerHTML = '<path d="M8 6v12"/><path d="M16 6v12"/>';
     }
 
     function setGaugeProgress(progress) {
@@ -1947,9 +1302,7 @@
     function renderEncyclopedia() {
       const caughtCount = Object.keys(state.encyclopedia).length;
       el.encyStats.innerHTML = "";
-      [`発見 ${caughtCount} / ${FISHES.length}`, `世界記録読込 ${Object.keys(globalRecords).length}件`].forEach(text => {
-        const chip = document.createElement("div"); chip.className = "stat-chip"; chip.textContent = text; el.encyStats.appendChild(chip);
-      });
+      [`発見 ${caughtCount} / ${FISHES.length}`, `世界記録読込 ${Object.keys(globalRecords).length}件`].forEach(text => { const chip = document.createElement("div"); chip.className = "stat-chip"; chip.textContent = text; el.encyStats.appendChild(chip); });
       el.encyList.innerHTML = "";
       FISHES.forEach(fish => {
         const own = state.encyclopedia[fish.id];
@@ -1990,9 +1343,7 @@
       if (type === "support") { state.equipped.supportId = id; state.lastUsedSetup.supportId = id; }
       toast("装備を変更しました。"); fillQuickSelectors(); saveAll(); renderAll();
     }
-    function updateSetting(key, value) {
-      state.settings[key] = value; if (key === "waveSound" && value) warmAudio(); toast("設定を更新しました。"); saveAll(); renderAll();
-    }
+    function updateSetting(key, value) { state.settings[key] = value; if (key === "waveSound" && value) warmAudio(); toast("設定を更新しました。"); saveAll(); renderAll(); }
 
     async function googleLogin() {
       if (!firebaseReady || !auth) { toast("Firebaseが使えないため、いまはローカルのみで始めます。"); startGuest(); return; }
@@ -2026,12 +1377,7 @@
       } catch (err) { console.error(err); globalRecords = {}; }
     }
 
-    async function saveAll(force = false) {
-      state.lastSavedAt = Date.now(); saveLocalState(state);
-      if (force || (!state.user.isGuest && firebaseSyncOk)) await saveRemoteUser();
-      renderSettings();
-    }
-
+    async function saveAll(force = false) { state.lastSavedAt = Date.now(); saveLocalState(state); if (force || (!state.user.isGuest && firebaseSyncOk)) await saveRemoteUser(); renderSettings(); }
     function exportSave() {
       const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = `zz_fishing_save_${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(url);
