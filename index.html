@@ -8,12 +8,12 @@
     :root {
       --text: rgba(255,255,255,0.96);
       --muted: rgba(255,255,255,0.72);
-      --soft: rgba(255,255,255,0.14);
-      --line: rgba(255,255,255,0.2);
+      --line: rgba(255,255,255,0.18);
       --shadow: 0 12px 38px rgba(0,0,0,0.25);
       --gold: #ffd86d;
       --accent: #7bdff5;
       --accent-2: #b7f1ff;
+      --danger: #ffb1b1;
       --bgTop: #77b9e8;
       --bgMid: #5fa7d9;
       --bgBottom: #2c6e96;
@@ -30,13 +30,13 @@
       --basePad: calc(14px * var(--uiScale));
       --baseGap: calc(12px * var(--uiScale));
       --fieldH: calc(42px * var(--uiScale));
-      --btnH: calc(44px * var(--uiScale));
+      --btnH: calc(46px * var(--uiScale));
       --font12: calc(12px * var(--uiScale));
       --font13: calc(13px * var(--uiScale));
       --font14: calc(14px * var(--uiScale));
       --font18: calc(18px * var(--uiScale));
-      --timerSize: 168px;
-      --stageTopPad: calc(var(--timerSize) + 18px);
+      --timerSizeIdle: 118px;
+      --timerSizeActive: 180px;
     }
 
     * { box-sizing: border-box; }
@@ -269,6 +269,7 @@
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       transition: transform 0.22s ease, opacity 0.22s ease;
+      overflow: hidden;
     }
     #app.nav-collapsed .side-nav {
       transform: translateX(calc(-100% - 18px));
@@ -289,6 +290,7 @@
       position: relative;
       box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
       padding: 0;
+      flex: 0 0 auto;
     }
     .nav-btn:hover,
     .nav-btn.active {
@@ -322,8 +324,62 @@
       border: 1px solid rgba(255,255,255,0.12);
     }
     .nav-btn:hover .tip { opacity: 1; }
-    .user-pill {
+    .nav-equip-wrap {
       margin-top: auto;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+      min-height: 0;
+    }
+    .nav-equip-title {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      text-align: center;
+    }
+    .nav-equip-list {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .nav-equip-item {
+      width: 100%;
+      min-height: 54px;
+      padding: 6px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 4px;
+      overflow: hidden;
+    }
+    .nav-equip-icon {
+      width: 26px;
+      height: 26px;
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      line-height: 1;
+    }
+    .nav-equip-label {
+      font-size: 9px;
+      color: var(--muted);
+      line-height: 1;
+    }
+    .nav-equip-name {
+      font-size: 10px;
+      line-height: 1.2;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+    .user-pill {
       width: 100%;
       font-size: 11px;
       color: var(--muted);
@@ -332,6 +388,7 @@
       padding: 10px 4px 2px;
       border-top: 1px solid rgba(255,255,255,0.14);
       word-break: break-word;
+      flex: 0 0 auto;
     }
 
     .screen {
@@ -408,7 +465,7 @@
       inset: calc(var(--safeTop) + 10px) 14px calc(var(--safeBottom) + 14px) calc(var(--navCurrent) + 22px);
       z-index: 9;
       transition: inset 0.22s ease;
-      padding-top: var(--stageTopPad);
+      padding-top: 0;
     }
 
     .timer-box {
@@ -416,11 +473,14 @@
       top: 0;
       left: 0;
       z-index: 12;
-      width: var(--timerSize);
+      width: var(--timerSizeIdle);
       aspect-ratio: 1;
-      min-width: 104px;
+      min-width: 92px;
       pointer-events: none;
+      transition: width 0.22s ease, transform 0.22s ease;
+      transform-origin: top left;
     }
+    .timer-box.active { width: var(--timerSizeActive); }
     .timer-gauge {
       width: 100%;
       height: 100%;
@@ -468,7 +528,7 @@
       pointer-events: auto;
     }
     .timer-main-time {
-      font-size: clamp(18px, 2vw, 30px);
+      font-size: clamp(16px, 2vw, 30px);
       font-weight: 800;
       letter-spacing: 0.05em;
       line-height: 1;
@@ -517,77 +577,46 @@
     .timer-subtle {
       position: absolute;
       top: calc(100% + 8px);
-      left: 50%;
-      transform: translateX(-50%);
+      left: 0;
       font-size: 11px;
       color: var(--muted);
-      text-align: center;
+      text-align: left;
       white-space: nowrap;
-      max-width: 180px;
+      max-width: 240px;
     }
 
-    .fishing-bottom-dock {
+    .fishing-layout {
+      position: absolute;
+      inset: 0;
+    }
+    .fishing-controls {
       position: absolute;
       left: 0;
-      right: 0;
       bottom: 0;
-      display: grid;
-      grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
-      gap: var(--baseGap);
-      align-items: end;
-    }
-    .bottom-left,
-    .bottom-right {
-      min-width: 0;
-      width: 100%;
-    }
-    .bottom-right {
-      justify-self: end;
-    }
-
-    .equip-strip {
-      width: 100%;
-      max-width: 100%;
-      padding: var(--basePad);
       display: flex;
+      flex-direction: column;
       gap: calc(10px * var(--uiScale));
-      align-items: center;
-    }
-    .equip-slot {
-      width: 33.333%;
-      min-width: 0;
-      text-align: center;
-      font-size: calc(11px * var(--uiScale));
-      color: var(--muted);
-      overflow-wrap: anywhere;
-    }
-    .equip-icon {
-      width: calc(44px * var(--uiScale));
-      height: calc(44px * var(--uiScale));
-      margin: 0 auto 6px;
-      border-radius: calc(14px * var(--uiScale));
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.14);
-      display: grid;
-      place-items: center;
-      font-size: calc(20px * var(--uiScale));
-    }
-
-    .fish-controls {
+      max-width: min(48vw, 520px);
       width: 100%;
-      max-width: 100%;
-      padding: var(--basePad);
+      transition: opacity 0.18s ease;
+    }
+    .fishing-controls.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .fish-setup {
+      width: 100%;
       display: flex;
-      align-items: end;
-      gap: var(--baseGap);
       flex-wrap: wrap;
+      gap: calc(10px * var(--uiScale));
+      align-items: flex-end;
     }
     .field {
       display: flex;
       flex-direction: column;
       gap: 6px;
-      min-width: 84px;
-      flex: 1 1 84px;
+      min-width: 76px;
+      flex: 1 1 110px;
       min-width: 0;
     }
     .field label {
@@ -607,26 +636,21 @@
       font-size: var(--font13);
       width: 100%;
     }
-
-    .primary-btn,
-    .soft-btn {
+    .catch-button {
+      width: min(320px, 100%);
+      min-height: calc(58px * var(--uiScale));
       border: 0;
       border-radius: 999px;
-      min-height: var(--btnH);
-      padding: 0 calc(14px * var(--uiScale));
+      background: linear-gradient(135deg, #b8f8f1, #78e9d3);
       color: #0d2131;
-      font-weight: 700;
-      transition: transform 0.18s ease, filter 0.18s ease, opacity 0.18s ease;
-      flex: 0 1 auto;
-      font-size: var(--font13);
-      max-width: 100%;
+      font-weight: 800;
+      font-size: calc(18px * var(--uiScale));
+      letter-spacing: 0.04em;
+      box-shadow: var(--shadow);
+      transition: transform 0.18s ease, filter 0.18s ease;
     }
-    .primary-btn:hover,
-    .soft-btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
-    .primary-btn:disabled,
-    .soft-btn:disabled { opacity: 0.5; cursor: default; transform: none; }
-    .primary-btn { background: linear-gradient(135deg, #b8f8f1, #78e9d3); }
-    .soft-btn { background: linear-gradient(135deg, #f5f0d4, #f5d88e); }
+    .catch-button:hover { transform: translateY(-1px); filter: brightness(1.05); }
+    .catch-button:disabled { opacity: 0.5; cursor: default; transform: none; }
 
     .content-shell {
       position: absolute;
@@ -902,6 +926,255 @@
       padding: 0 14px;
     }
     .auth-note { font-size: 12px; color: var(--muted); margin-top: 10px; line-height: 1.7; }
+
+    .room-shell {
+      position: absolute;
+      inset: calc(var(--safeTop) + 10px) 14px calc(var(--safeBottom) + 14px) calc(var(--navCurrent) + 22px);
+      padding: 20px;
+      border-radius: 28px;
+      background: rgba(8, 17, 28, 0.14);
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      transition: inset 0.22s ease;
+      overflow: hidden;
+    }
+    .room-list-screen,
+    .room-play-screen {
+      position: absolute;
+      inset: 20px;
+      display: none;
+    }
+    .room-list-screen.active,
+    .room-play-screen.active {
+      display: block;
+    }
+    .room-list-inner {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      gap: 18px;
+    }
+    .room-title {
+      font-size: clamp(28px, 4vw, 48px);
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+    .room-sub {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.8;
+      max-width: 560px;
+    }
+    .play-start-btn {
+      min-width: 180px;
+      min-height: 58px;
+      padding: 0 28px;
+      border: 0;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #b8f8f1, #78e9d3);
+      color: #0d2131;
+      font-weight: 800;
+      font-size: 22px;
+      box-shadow: var(--shadow);
+    }
+    .room-board {
+      position: absolute;
+      inset: 0;
+    }
+    .pond-surface {
+      position: absolute;
+      left: 4%;
+      right: 4%;
+      top: 24%;
+      height: 42%;
+      border-radius: 50% 50% 44% 44%;
+      background:
+        radial-gradient(circle at 30% 35%, rgba(255,255,255,0.14), transparent 12%),
+        radial-gradient(circle at 64% 42%, rgba(255,255,255,0.10), transparent 12%),
+        linear-gradient(180deg, rgba(108,195,232,0.78), rgba(34,108,148,0.82));
+      box-shadow: inset 0 16px 28px rgba(255,255,255,0.08), inset 0 -24px 32px rgba(0,0,0,0.16), 0 18px 40px rgba(0,0,0,0.16);
+      overflow: hidden;
+    }
+    .pond-surface::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(60px 10px at 10% 26%, rgba(255,255,255,0.14), transparent 72%),
+        radial-gradient(80px 12px at 42% 52%, rgba(255,255,255,0.12), transparent 72%),
+        radial-gradient(70px 10px at 76% 28%, rgba(255,255,255,0.1), transparent 72%);
+      animation: waveFlow 20s linear infinite;
+      opacity: 0.65;
+    }
+    .seat {
+      position: absolute;
+      width: 26%;
+      top: 56%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      transform: translateX(-50%);
+    }
+    .seat.s1 { left: 20%; }
+    .seat.s2 { left: 50%; }
+    .seat.s3 { left: 80%; }
+    .seat-marker {
+      width: min(10vw, 88px);
+      height: min(10vw, 88px);
+      max-width: 88px;
+      max-height: 88px;
+      min-width: 56px;
+      min-height: 56px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+      border: 1px dashed rgba(255,255,255,0.18);
+      display: grid;
+      place-items: center;
+      color: rgba(255,255,255,0.34);
+      font-size: 12px;
+    }
+    .avatar-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      text-align: center;
+      max-width: 100%;
+    }
+    .avatar-name {
+      font-size: 12px;
+      font-weight: 700;
+      text-shadow: 0 4px 10px rgba(0,0,0,0.25);
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+    .avatar-cat {
+      width: min(9vw, 76px);
+      height: min(9vw, 76px);
+      max-width: 76px;
+      max-height: 76px;
+      min-width: 52px;
+      min-height: 52px;
+      border-radius: 24px 24px 18px 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.88), rgba(230,238,246,0.86));
+      position: relative;
+      box-shadow: 0 10px 18px rgba(0,0,0,0.18);
+      border: 1px solid rgba(255,255,255,0.38);
+    }
+    .avatar-cat::before,
+    .avatar-cat::after {
+      content: "";
+      position: absolute;
+      top: -8px;
+      width: 18px;
+      height: 18px;
+      background: inherit;
+      border: inherit;
+      transform: rotate(45deg);
+      border-radius: 4px;
+    }
+    .avatar-cat::before { left: 10px; }
+    .avatar-cat::after { right: 10px; }
+    .avatar-face {
+      position: absolute;
+      inset: 0;
+    }
+    .avatar-face::before,
+    .avatar-face::after {
+      content: "";
+      position: absolute;
+      top: 30px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #32414a;
+    }
+    .avatar-face::before { left: 20px; }
+    .avatar-face::after { right: 20px; }
+    .avatar-mouth {
+      position: absolute;
+      left: 50%;
+      top: 40px;
+      width: 12px;
+      height: 8px;
+      margin-left: -6px;
+      border-bottom: 2px solid #32414a;
+      border-radius: 0 0 10px 10px;
+    }
+    .avatar-status {
+      font-size: 11px;
+      color: var(--muted);
+      min-height: 16px;
+    }
+    .avatar-status.fishing {
+      color: var(--accent-2);
+      font-weight: 700;
+    }
+    .room-footer {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+      max-width: min(52vw, 680px);
+      width: 100%;
+      justify-content: flex-end;
+    }
+    .room-setup {
+      flex: 1 1 auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: calc(10px * var(--uiScale));
+      justify-content: flex-end;
+      align-items: flex-end;
+    }
+    .room-footer .field { flex: 1 1 110px; max-width: 160px; }
+    .room-action-btn {
+      min-height: calc(54px * var(--uiScale));
+      padding: 0 22px;
+      border-radius: 999px;
+      border: 0;
+      font-weight: 800;
+      font-size: calc(16px * var(--uiScale));
+      box-shadow: var(--shadow);
+      white-space: nowrap;
+    }
+    .room-action-btn.primary {
+      background: linear-gradient(135deg, #b8f8f1, #78e9d3);
+      color: #0d2131;
+    }
+    .room-action-btn.exit {
+      background: rgba(8,18,29,0.58);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.14);
+    }
+    .room-meta {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .room-chip {
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
     .shaker { animation: screenShake 0.55s ease; }
 
     @keyframes seaBob { from { transform: translateY(0px) rotate(0deg); } to { transform: translateY(8px) rotate(0.4deg); } }
@@ -913,9 +1186,10 @@
     @keyframes toastInOut { 0% { opacity: 0; transform: translateY(-6px); } 10%, 82% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-8px); } }
     @keyframes screenShake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-6px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(3px); } }
 
-    @media (max-width: 1100px) {
+    @media (max-width: 1200px) {
       .shop-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .fishing-bottom-dock { grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.95fr); }
+      .fishing-controls { max-width: min(56vw, 500px); }
+      .room-footer { max-width: min(70vw, 700px); }
     }
 
     @media (max-width: 760px) {
@@ -931,34 +1205,48 @@
         width: var(--navExpanded);
         padding: 10px 7px;
       }
+      .content-shell,
       .fishing-stage,
-      .content-shell {
+      .room-shell {
         inset: calc(var(--safeTop) + 8px) 8px calc(var(--safeBottom) + 8px) calc(var(--navCurrent) + 14px);
       }
       .top-right { top: calc(var(--safeTop) + 8px); right: 8px; gap: 6px; }
       .money-mini { min-height: 30px; font-size: 11px; padding: 0 8px; }
       .info-icon { width: 34px; height: 34px; font-size: 15px; border-radius: 12px; }
-      .fishing-bottom-dock {
-        grid-template-columns: 1fr;
-        gap: 6px;
+      .timer-box { width: var(--timerSizeIdle); }
+      .timer-box.active { width: min(40vw, 200px); }
+      .timer-subtle { max-width: 180px; font-size: 10px; }
+      .fishing-controls {
+        max-width: calc(100% - 4px);
       }
-      .bottom-right { justify-self: stretch; }
-      .fish-controls,
-      .equip-strip {
-        width: 100%;
-        max-width: 100%;
+      .room-footer {
+        max-width: calc(100% - 4px);
+        left: 0;
+        right: 0;
+        width: auto;
+        flex-direction: column;
+        align-items: stretch;
       }
+      .room-setup { justify-content: stretch; }
+      .room-footer .field { max-width: none; }
+      .room-action-btn { width: 100%; }
       .shop-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .line-item { flex-direction: column; align-items: flex-start; min-height: 0; }
       .line-item .actions { width: 100%; justify-content: flex-start; }
       .result-core { grid-template-columns: 1fr; }
       .user-pill { display: none; }
+      .room-title { font-size: 28px; }
+      .pond-surface { top: 18%; height: 38%; }
+      .seat { top: 50%; width: 30%; }
     }
 
     @media (max-width: 520px) {
       .money-mini { display: none; }
       .section-title { font-size: 22px; }
       .line-item .thumb { width: 46px; height: 46px; font-size: 22px; }
+      .nav-equip-item { min-height: 50px; }
+      .nav-equip-name { font-size: 9px; }
+      .timer-box.active { width: 40vw; }
     }
   </style>
 </head>
@@ -993,7 +1281,12 @@
         <svg viewBox="0 0 24 24"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/><path d="M19 12a7.3 7.3 0 0 0-.1-1.2l2-1.6-2-3.4-2.5 1a7.6 7.6 0 0 0-2-.9L14 3h-4l-.4 2.9a7.6 7.6 0 0 0-2 .9l-2.5-1-2 3.4 2 1.6A7.3 7.3 0 0 0 5 12c0 .4 0 .8.1 1.2l-2 1.6 2 3.4 2.5-1c.6.4 1.3.7 2 .9L10 21h4l.4-2.9c.7-.2 1.4-.5 2-.9l2.5 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2Z"/></svg>
         <span class="tip">設定</span>
       </button>
-      <div class="user-pill" id="userPill">未ログイン</div>
+
+      <div class="nav-equip-wrap">
+        <div class="nav-equip-title">現在の装備</div>
+        <div id="navEquipList" class="nav-equip-list"></div>
+        <div class="user-pill" id="userPill">未ログイン</div>
+      </div>
     </nav>
 
     <section id="screen-fishing" class="screen active">
@@ -1004,7 +1297,7 @@
       </div>
 
       <div class="fishing-stage">
-        <div class="timer-box">
+        <div id="timerBox" class="timer-box">
           <svg class="timer-gauge" viewBox="0 0 220 220" aria-hidden="true">
             <circle class="track" cx="110" cy="110" r="88"></circle>
             <circle id="timerGlow" class="glow" cx="110" cy="110" r="88"></circle>
@@ -1025,9 +1318,9 @@
           <div id="timerSubtle" class="timer-subtle">まだ釣りを始めていません</div>
         </div>
 
-        <div class="fishing-bottom-dock">
-          <div class="bottom-left">
-            <div class="fish-controls floating-ui">
+        <div class="fishing-layout">
+          <div id="fishingControls" class="fishing-controls">
+            <div class="fish-setup">
               <div class="field">
                 <label for="rodSelect">竿</label>
                 <select id="rodSelect"></select>
@@ -1040,13 +1333,8 @@
                 <label for="baitSelectQuick">餌</label>
                 <select id="baitSelectQuick"></select>
               </div>
-              <button id="startFishingBtn" class="primary-btn">釣る</button>
-              <button id="repeatFishingBtn" class="soft-btn">同じ設定で再釣り</button>
             </div>
-          </div>
-
-          <div class="bottom-right">
-            <div class="equip-strip floating-ui" id="equipStrip"></div>
+            <button id="startFishingBtn" class="catch-button">釣る</button>
           </div>
         </div>
       </div>
@@ -1100,7 +1388,7 @@
             <div class="row"><span>現在の表示名</span><strong id="settingsDisplayName">-</strong></div>
             <div class="name-row">
               <input id="displayNameInput" type="text" maxlength="16" placeholder="表示名を入力" />
-              <button id="saveDisplayNameBtn" class="primary-btn">保存</button>
+              <button id="saveDisplayNameBtn" class="room-action-btn primary">保存</button>
             </div>
             <div class="auth-note">記録者名や図鑑の世界記録に使われます。Googleの名前やメールは画面に出しません。</div>
           </div>
@@ -1118,12 +1406,63 @@
             <div class="row"><span>Firebase同期状態</span><strong id="syncStatus">確認中</strong></div>
             <div class="row"><span>最後に保存</span><strong id="lastSavedAt">-</strong></div>
             <div class="name-row">
-              <button id="forceSaveBtn" class="soft-btn">今すぐ保存</button>
-              <button id="exportBtn" class="soft-btn">ローカル書き出し</button>
-              <button id="importBtn" class="soft-btn">読み込み</button>
+              <button id="forceSaveBtn" class="room-action-btn exit">今すぐ保存</button>
+              <button id="exportBtn" class="room-action-btn exit">ローカル書き出し</button>
+              <button id="importBtn" class="room-action-btn exit">読み込み</button>
               <input id="importFile" type="file" accept="application/json" hidden />
             </div>
             <div class="auth-note">Firebaseが使えない環境でも localStorage に自動保存します。あとから同期が通ればFirebaseにも反映します。</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="screen-room" class="screen">
+      <div class="room-shell">
+        <div id="roomListScreen" class="room-list-screen active">
+          <div class="room-list-inner">
+            <div class="room-title">釣り部屋</div>
+            <div class="room-sub">プレイを押すと、空いている部屋に優先的に入ります。<br />最大3人のお部屋が自動で作られ、0人になると消えます。</div>
+            <button id="playRoomBtn" class="play-start-btn">プレイ</button>
+          </div>
+        </div>
+
+        <div id="roomPlayScreen" class="room-play-screen">
+          <div class="room-board">
+            <div class="room-meta">
+              <div id="roomNameChip" class="room-chip">部屋 1</div>
+              <div id="roomCountChip" class="room-chip">0 / 3</div>
+            </div>
+            <div class="pond-surface"></div>
+
+            <div class="seat s1">
+              <div id="seat1" class="seat-marker">空席</div>
+            </div>
+            <div class="seat s2">
+              <div id="seat2" class="seat-marker">空席</div>
+            </div>
+            <div class="seat s3">
+              <div id="seat3" class="seat-marker">空席</div>
+            </div>
+
+            <div class="room-footer">
+              <div class="room-setup">
+                <div class="field">
+                  <label for="roomRodSelect">竿</label>
+                  <select id="roomRodSelect"></select>
+                </div>
+                <div class="field">
+                  <label for="roomCourseSelect">コース</label>
+                  <select id="roomCourseSelect"></select>
+                </div>
+                <div class="field">
+                  <label for="roomBaitSelect">餌</label>
+                  <select id="roomBaitSelect"></select>
+                </div>
+              </div>
+              <button id="roomFishingBtn" class="room-action-btn primary">釣り</button>
+              <button id="leaveRoomBtn" class="room-action-btn exit">退出</button>
+            </div>
           </div>
         </div>
       </div>
@@ -1144,8 +1483,8 @@
           </div>
         </div>
         <div class="modal-actions">
-          <button id="sellResultBtn" class="soft-btn">売る</button>
-          <button id="keepResultBtn" class="primary-btn">所持する</button>
+          <button id="sellResultBtn" class="room-action-btn exit">売る</button>
+          <button id="keepResultBtn" class="room-action-btn primary">所持する</button>
         </div>
       </div>
     </div>
@@ -1158,8 +1497,8 @@
           先にローカルだけで始めることもできます。
         </div>
         <div class="name-row">
-          <button id="googleLoginBtn" class="primary-btn">Googleでログイン</button>
-          <button id="guestStartBtn" class="soft-btn">ローカルだけで始める</button>
+          <button id="googleLoginBtn" class="room-action-btn primary">Googleでログイン</button>
+          <button id="guestStartBtn" class="room-action-btn exit">ローカルだけで始める</button>
         </div>
         <div class="name-row">
           <input id="authDisplayNameInput" type="text" maxlength="16" placeholder="最初の表示名（あとで変更可）" />
@@ -1175,7 +1514,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
     import { getAnalytics, isSupported as analyticsSupported } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, setDoc, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyC8kG1I73YuEuqrg6FEwKykkRxbQTOj3dw",
@@ -1187,11 +1526,13 @@
       measurementId: "G-H7P3WR4DR3"
     };
 
-    const LS_KEY = "zz_fishing_subsite_save_v5";
+    const LS_KEY = "zz_fishing_subsite_save_v6";
     const ENCY_TOP_LIMIT = 50;
     const SELL_RATE_ITEM = 0.5;
     const TIMER_R = 88;
     const TIMER_C = 2 * Math.PI * TIMER_R;
+    const ROOM_CAPACITY = 3;
+    const ROOM_TTL = 1000 * 60 * 5;
 
     const RODS = [
       { id: "rod_small_01", name: "小物竿", icon: "🎏", price: 0, courses: [5, 10], power: 2, luck: 1, sizeBoost: 0, desc: "短めの作業時間向け。小物が中心。" },
@@ -1231,9 +1572,9 @@
     ];
 
     const DEFAULT_STATE = {
-      version: 5,
+      version: 6,
       ui: { navCollapsed: false },
-      user: { uid: null, isGuest: true, displayName: "つりびと", photoURL: null },
+      user: { uid: null, isGuest: true, displayName: "つりびと", photoURL: null, playerToken: null },
       money: 220,
       owned: { rods: ["rod_small_01"], baits: ["bait_basic_01"], supports: [] },
       equipped: { rodId: "rod_small_01", baitId: "bait_basic_01", supportId: null },
@@ -1254,8 +1595,13 @@
         weather: null,
         timeOfDay: null,
       },
+      room: {
+        inRoom: false,
+        roomId: null,
+        view: "lobby",
+        status: "idle"
+      },
       lastCatch: null,
-      lastUsedSetup: { rodId: "rod_small_01", baitId: "bait_basic_01", supportId: null, durationMin: 5 },
       lastSavedAt: null,
       currentConditions: { timeOfDay: "day", weather: "sunny" },
     };
@@ -1265,9 +1611,11 @@
     let state = loadLocalState();
     let globalRecords = {};
     let timerTickHandle = null;
+    let roomTickHandle = null;
     let audioCtx = null;
     let pendingResult = null;
     let authResolved = false;
+    let localRooms = {};
 
     const el = {
       app: document.getElementById("app"),
@@ -1279,9 +1627,12 @@
         bag: document.getElementById("screen-bag"),
         encyclopedia: document.getElementById("screen-encyclopedia"),
         settings: document.getElementById("screen-settings"),
+        room: document.getElementById("screen-room"),
       },
+      navEquipList: document.getElementById("navEquipList"),
       fishMoneyMini: document.getElementById("fishMoneyMini"),
       userPill: document.getElementById("userPill"),
+      timerBox: document.getElementById("timerBox"),
       timerText: document.getElementById("timerText"),
       timerPlanMini: document.getElementById("timerPlanMini"),
       timerSubtle: document.getElementById("timerSubtle"),
@@ -1290,6 +1641,7 @@
       toggleFishingBtn: document.getElementById("toggleFishingBtn"),
       toggleFishingIcon: document.getElementById("toggleFishingIcon"),
       cancelFishingBtn: document.getElementById("cancelFishingBtn"),
+      fishingControls: document.getElementById("fishingControls"),
       weatherIcon: document.getElementById("weatherIcon"),
       weatherBalloon: document.getElementById("weatherBalloon"),
       timeIcon: document.getElementById("timeIcon"),
@@ -1298,8 +1650,6 @@
       courseSelect: document.getElementById("courseSelect"),
       baitSelectQuick: document.getElementById("baitSelectQuick"),
       startFishingBtn: document.getElementById("startFishingBtn"),
-      repeatFishingBtn: document.getElementById("repeatFishingBtn"),
-      equipStrip: document.getElementById("equipStrip"),
       storeMoney: document.getElementById("storeMoney"),
       shopBuyList: document.getElementById("shopBuyList"),
       shopSellList: document.getElementById("shopSellList"),
@@ -1322,6 +1672,19 @@
       exportBtn: document.getElementById("exportBtn"),
       importBtn: document.getElementById("importBtn"),
       importFile: document.getElementById("importFile"),
+      roomListScreen: document.getElementById("roomListScreen"),
+      roomPlayScreen: document.getElementById("roomPlayScreen"),
+      playRoomBtn: document.getElementById("playRoomBtn"),
+      roomNameChip: document.getElementById("roomNameChip"),
+      roomCountChip: document.getElementById("roomCountChip"),
+      seat1: document.getElementById("seat1"),
+      seat2: document.getElementById("seat2"),
+      seat3: document.getElementById("seat3"),
+      roomRodSelect: document.getElementById("roomRodSelect"),
+      roomCourseSelect: document.getElementById("roomCourseSelect"),
+      roomBaitSelect: document.getElementById("roomBaitSelect"),
+      roomFishingBtn: document.getElementById("roomFishingBtn"),
+      leaveRoomBtn: document.getElementById("leaveRoomBtn"),
       resultModal: document.getElementById("resultModal"),
       resultCard: document.getElementById("resultCard"),
       resultArt: document.getElementById("resultArt"),
@@ -1345,17 +1708,20 @@
 
     async function boot() {
       initTimerGauge();
+      ensurePlayerToken();
       updateResponsiveUIScale();
       updateToggleTimerIcon(false, true);
       tryInitFirebase();
       bindEvents();
-      fillQuickSelectors();
+      fillSelectors();
       refreshConditions();
       await loadGlobalRecords();
       applyStateToSelectors();
       applyNavState();
+      cleanupRooms();
       renderAll();
       restoreFishingTimer();
+      startRoomTicker();
       if (!authResolved) el.authOverlay.style.display = "grid";
     }
 
@@ -1364,6 +1730,10 @@
         node.style.strokeDasharray = String(TIMER_C);
         node.style.strokeDashoffset = String(TIMER_C);
       });
+    }
+
+    function ensurePlayerToken() {
+      if (!state.user.playerToken) state.user.playerToken = makeId();
     }
 
     function updateResponsiveUIScale() {
@@ -1380,11 +1750,13 @@
       if (h < 760) scale = Math.min(scale, 0.82);
       if (h < 680) scale = Math.min(scale, 0.7);
       if (h < 610) scale = Math.min(scale, 0.6);
-
-      const timerSize = Math.max(108, Math.min(188, Math.min(w * 0.17, h * 0.28)));
       el.app.style.setProperty('--uiScale', String(scale));
-      el.app.style.setProperty('--timerSize', `${timerSize}px`);
-      el.app.style.setProperty('--stageTopPad', `${timerSize + 18}px`);
+
+      const mobile = w <= 760;
+      const idleSize = mobile ? Math.max(96, Math.min(132, w * 0.24)) : Math.max(110, Math.min(144, w * 0.12));
+      const activeSize = mobile ? Math.max(120, Math.min(w * 0.4, 210)) : Math.max(156, Math.min(w * 0.2, 240));
+      el.app.style.setProperty('--timerSizeIdle', `${idleSize}px`);
+      el.app.style.setProperty('--timerSizeActive', `${activeSize}px`);
     }
 
     function tryInitFirebase() {
@@ -1427,28 +1799,18 @@
         saveAll();
       });
       el.navBtns.forEach(btn => btn.addEventListener("click", () => switchScreen(btn.dataset.screen)));
-      el.rodSelect.addEventListener("change", () => {
-        state.equipped.rodId = el.rodSelect.value;
-        rebuildCourseOptions();
-        state.lastUsedSetup.rodId = state.equipped.rodId;
-        saveAll();
-        renderAll();
-      });
-      el.courseSelect.addEventListener("change", () => {
-        state.lastUsedSetup.durationMin = Number(el.courseSelect.value);
-        renderFishingStatus();
-        saveAll();
-      });
-      el.baitSelectQuick.addEventListener("change", () => {
-        state.equipped.baitId = el.baitSelectQuick.value;
-        state.lastUsedSetup.baitId = state.equipped.baitId;
-        saveAll();
-        renderAll();
-      });
+      el.rodSelect.addEventListener("change", syncFishingSelectorsFromMain);
+      el.courseSelect.addEventListener("change", syncFishingSelectorsFromMain);
+      el.baitSelectQuick.addEventListener("change", syncFishingSelectorsFromMain);
+      el.roomRodSelect.addEventListener("change", syncFishingSelectorsFromRoom);
+      el.roomCourseSelect.addEventListener("change", syncFishingSelectorsFromRoom);
+      el.roomBaitSelect.addEventListener("change", syncFishingSelectorsFromRoom);
       el.startFishingBtn.addEventListener("click", startFishingFromCurrent);
-      el.repeatFishingBtn.addEventListener("click", repeatFishing);
+      el.roomFishingBtn.addEventListener("click", startFishingFromRoom);
       el.toggleFishingBtn.addEventListener("click", toggleFishingPauseResume);
       el.cancelFishingBtn.addEventListener("click", cancelFishingNoReward);
+      el.playRoomBtn.addEventListener("click", joinBestRoom);
+      el.leaveRoomBtn.addEventListener("click", leaveRoom);
       el.closeResultBtn.addEventListener("click", closeResultModal);
       el.keepResultBtn.addEventListener("click", keepPendingResult);
       el.sellResultBtn.addEventListener("click", sellPendingResult);
@@ -1457,6 +1819,7 @@
       el.saveDisplayNameBtn.addEventListener("click", () => {
         const v = safeName(el.displayNameInput.value);
         state.user.displayName = v || "つりびと";
+        updateOwnRoomPresence();
         toast("表示名を保存しました。");
         saveAll();
         renderAll();
@@ -1470,21 +1833,18 @@
         updateSetting("browserNotify", el.toggleNotify.checked && typeof Notification !== "undefined" && Notification.permission === "granted");
       });
       el.toggleShake.addEventListener("change", () => updateSetting("shakeOnFinish", el.toggleShake.checked));
-      el.forceSaveBtn.addEventListener("click", async () => {
-        await saveAll(true);
-        toast("保存しました。");
-      });
+      el.forceSaveBtn.addEventListener("click", async () => { await saveAll(true); toast("保存しました。"); });
       el.exportBtn.addEventListener("click", exportSave);
       el.importBtn.addEventListener("click", () => el.importFile.click());
       el.importFile.addEventListener("change", importSaveFile);
-      window.addEventListener("resize", () => {
-        updateResponsiveUIScale();
-        renderFishingStatus();
-      });
-      window.addEventListener("beforeunload", () => saveLocalState(state));
+      window.addEventListener("resize", () => { updateResponsiveUIScale(); renderFishingStatus(); renderRoom(); });
+      window.addEventListener("beforeunload", () => { leaveRoom(true); saveLocalState(state); });
       document.addEventListener("visibilitychange", () => {
-        if (!document.hidden) {
+        if (document.hidden) {
+          touchOwnRoomPresence();
+        } else {
           refreshConditions();
+          cleanupRooms();
           if (state.fishing.inProgress && !state.fishing.paused && Date.now() >= state.fishing.endAt) finishFishing();
           renderAll();
         }
@@ -1497,23 +1857,24 @@
       updateResponsiveUIScale();
     }
 
-    function fillQuickSelectors() {
-      el.rodSelect.innerHTML = "";
-      RODS.filter(rod => owns("rods", rod.id)).forEach(rod => {
-        const option = document.createElement("option");
-        option.value = rod.id;
-        option.textContent = `${rod.icon} ${rod.name}`;
-        el.rodSelect.appendChild(option);
-      });
-      el.baitSelectQuick.innerHTML = "";
-      BAITS.filter(bait => owns("baits", bait.id)).forEach(bait => {
-        const option = document.createElement("option");
-        option.value = bait.id;
-        option.textContent = `${bait.icon} ${bait.name}`;
-        el.baitSelectQuick.appendChild(option);
-      });
-      applyStateToSelectors();
+    function fillSelectors() {
+      fillSelectWithOwned(el.rodSelect, RODS, state.owned.rods);
+      fillSelectWithOwned(el.roomRodSelect, RODS, state.owned.rods);
+      fillSelectWithOwned(el.baitSelectQuick, BAITS, state.owned.baits);
+      fillSelectWithOwned(el.roomBaitSelect, BAITS, state.owned.baits);
       rebuildCourseOptions();
+      rebuildRoomCourseOptions();
+      applyStateToSelectors();
+    }
+
+    function fillSelectWithOwned(selectEl, source, ownedIds) {
+      selectEl.innerHTML = "";
+      source.filter(item => ownedIds.includes(item.id)).forEach(item => {
+        const option = document.createElement("option");
+        option.value = item.id;
+        option.textContent = `${item.icon} ${item.name}`;
+        selectEl.appendChild(option);
+      });
     }
 
     function applyStateToSelectors() {
@@ -1523,6 +1884,8 @@
       if (state.equipped.supportId && !owns("supports", state.equipped.supportId)) state.equipped.supportId = null;
       el.rodSelect.value = state.equipped.rodId;
       el.baitSelectQuick.value = state.equipped.baitId;
+      el.roomRodSelect.value = state.equipped.rodId;
+      el.roomBaitSelect.value = state.equipped.baitId;
       el.displayNameInput.value = state.user.displayName || "";
       el.settingsDisplayName.textContent = state.user.displayName || "-";
       el.toggleWave.checked = !!state.settings.waveSound;
@@ -1545,10 +1908,58 @@
         option.textContent = `${min}分`;
         el.courseSelect.appendChild(option);
       });
-      const desired = state.lastUsedSetup.durationMin;
-      const selected = rod.courses.includes(desired) ? desired : rod.courses[0];
+      const current = state.fishing.inProgress ? state.fishing.durationMin : getSelectedRoomOrDefaultCourse(rod);
+      const selected = rod.courses.includes(current) ? current : rod.courses[0];
       el.courseSelect.value = String(selected);
-      state.lastUsedSetup.durationMin = selected;
+      if (!state.fishing.inProgress) el.roomCourseSelect.value = String(selected);
+    }
+
+    function rebuildRoomCourseOptions() {
+      const rod = getById(RODS, state.equipped.rodId) || RODS[0];
+      el.roomCourseSelect.innerHTML = "";
+      rod.courses.forEach(min => {
+        const option = document.createElement("option");
+        option.value = String(min);
+        option.textContent = `${min}分`;
+        el.roomCourseSelect.appendChild(option);
+      });
+      const current = state.fishing.inProgress ? state.fishing.durationMin : rod.courses[0];
+      el.roomCourseSelect.value = String(rod.courses.includes(current) ? current : rod.courses[0]);
+    }
+
+    function getSelectedRoomOrDefaultCourse(rod) {
+      const v = Number(el.roomCourseSelect.value);
+      if (rod.courses.includes(v)) return v;
+      const c = Number(el.courseSelect.value);
+      if (rod.courses.includes(c)) return c;
+      return rod.courses[0];
+    }
+
+    function syncFishingSelectorsFromMain() {
+      state.equipped.rodId = el.rodSelect.value;
+      state.equipped.baitId = el.baitSelectQuick.value;
+      el.roomRodSelect.value = state.equipped.rodId;
+      fillSelectWithOwned(el.roomBaitSelect, BAITS, state.owned.baits);
+      el.roomBaitSelect.value = state.equipped.baitId;
+      rebuildCourseOptions();
+      rebuildRoomCourseOptions();
+      if (el.courseSelect.value) el.roomCourseSelect.value = el.courseSelect.value;
+      saveAll();
+      renderAll();
+    }
+
+    function syncFishingSelectorsFromRoom() {
+      state.equipped.rodId = el.roomRodSelect.value;
+      state.equipped.baitId = el.roomBaitSelect.value;
+      el.rodSelect.value = state.equipped.rodId;
+      fillSelectWithOwned(el.baitSelectQuick, BAITS, state.owned.baits);
+      el.baitSelectQuick.value = state.equipped.baitId;
+      rebuildCourseOptions();
+      rebuildRoomCourseOptions();
+      if (el.roomCourseSelect.value) el.courseSelect.value = el.roomCourseSelect.value;
+      updateOwnRoomPresence();
+      saveAll();
+      renderAll();
     }
 
     function switchScreen(name) {
@@ -1583,6 +1994,11 @@
     }
 
     function startFishingFromCurrent() {
+      if (!state.room.inRoom) {
+        switchScreen('room');
+        toast('先にプレイして部屋に入ってください。');
+        return;
+      }
       if (state.fishing.inProgress) {
         toast("いま釣り中です。終わるまで待ってください。");
         return;
@@ -1590,13 +2006,18 @@
       startFishing({ rodId: state.equipped.rodId, baitId: state.equipped.baitId, supportId: state.equipped.supportId, durationMin: Number(el.courseSelect.value) });
     }
 
-    function repeatFishing() {
-      if (state.fishing.inProgress) {
-        toast("いま釣り中です。終わってから再釣りできます。");
+    function startFishingFromRoom() {
+      if (!state.room.inRoom) {
+        toast('先に部屋に入ってください。');
         return;
       }
-      const setup = state.lastUsedSetup || {};
-      startFishing({ rodId: setup.rodId || state.equipped.rodId, baitId: setup.baitId || state.equipped.baitId, supportId: setup.supportId ?? state.equipped.supportId, durationMin: setup.durationMin || 5 });
+      if (state.fishing.inProgress) {
+        toast('いま釣り中です。');
+        return;
+      }
+      syncFishingSelectorsFromRoom();
+      startFishing({ rodId: state.equipped.rodId, baitId: state.equipped.baitId, supportId: state.equipped.supportId, durationMin: Number(el.roomCourseSelect.value) });
+      switchScreen('fishing');
     }
 
     function startFishing({ rodId, baitId, supportId, durationMin }) {
@@ -1604,12 +2025,12 @@
       const now = Date.now();
       const endAt = now + durationMin * 60 * 1000;
       state.fishing = { inProgress: true, paused: false, startAt: now, endAt, pausedAt: null, remainingMs: null, durationMin, rodId, baitId, supportId, weather: state.currentConditions.weather, timeOfDay: state.currentConditions.timeOfDay };
-      state.lastUsedSetup = { rodId, baitId, supportId, durationMin };
       state.equipped.rodId = rodId;
       state.equipped.baitId = baitId;
       state.equipped.supportId = supportId || null;
-      el.bobber.classList.add("visible");
-      el.rodLine.classList.add("visible");
+      state.room.status = 'fishing';
+      updateOwnRoomPresence();
+      showFishingVisuals(true);
       if (state.settings.catchSound) playTimeMp3();
       toast(`${durationMin}分コースを開始しました。作業どうぞ。`);
       saveAll();
@@ -1628,10 +2049,13 @@
       state.fishing.paused = true;
       state.fishing.pausedAt = Date.now();
       state.fishing.remainingMs = Math.max(0, state.fishing.endAt - Date.now());
+      state.room.status = 'paused';
+      updateOwnRoomPresence();
       stopTimerTick();
       toast("タイマーを一時停止しました。");
       saveAll();
       renderFishingStatus();
+      renderRoom();
     }
 
     function resumeFishing() {
@@ -1640,9 +2064,12 @@
       state.fishing.endAt = Date.now() + (state.fishing.remainingMs || 0);
       state.fishing.pausedAt = null;
       state.fishing.remainingMs = null;
+      state.room.status = 'fishing';
+      updateOwnRoomPresence();
       toast("タイマーを再開しました。");
       saveAll();
       renderFishingStatus();
+      renderRoom();
       startTimerTick();
     }
 
@@ -1653,25 +2080,39 @@
       state.fishing.paused = false;
       state.fishing.remainingMs = null;
       state.fishing.pausedAt = null;
-      el.rodLine.classList.remove("visible", "pull");
-      el.bobber.classList.remove("visible", "sinking");
-      el.splash.classList.remove("show");
+      state.room.status = 'idle';
+      updateOwnRoomPresence();
+      showFishingVisuals(false);
       setGaugeProgress(0);
       toast("タイマーを終了しました。報酬はありません。");
       saveAll();
+      switchScreen('room');
       renderAll();
     }
 
     function restoreFishingTimer() {
       if (state.fishing.inProgress) {
+        showFishingVisuals(true);
+        if (state.fishing.paused) {
+          renderFishingStatus();
+        } else if (Date.now() >= state.fishing.endAt) {
+          finishFishing();
+        } else {
+          startTimerTick();
+        }
+      } else {
+        showFishingVisuals(false);
+      }
+    }
+
+    function showFishingVisuals(visible) {
+      const onFishingScreen = el.screens.fishing.classList.contains('active');
+      if (visible && onFishingScreen) {
         el.bobber.classList.add("visible");
         el.rodLine.classList.add("visible");
-        if (state.fishing.paused) renderFishingStatus();
-        else if (Date.now() >= state.fishing.endAt) finishFishing();
-        else startTimerTick();
       } else {
-        el.bobber.classList.remove("visible");
-        el.rodLine.classList.remove("visible");
+        el.bobber.classList.remove("visible", "sinking");
+        el.rodLine.classList.remove("visible", "pull");
       }
     }
 
@@ -1698,6 +2139,7 @@
     async function finishFishing() {
       stopTimerTick();
       if (!state.fishing.inProgress) return;
+      showFishingVisuals(true);
       el.rodLine.classList.add("pull");
       el.bobber.classList.add("sinking");
       el.splash.classList.add("show");
@@ -1713,11 +2155,12 @@
       state.lastCatch = result.entry;
       state.fishing.inProgress = false;
       state.fishing.paused = false;
+      state.room.status = 'idle';
+      updateOwnRoomPresence();
       saveAll();
       renderAll();
       setTimeout(() => {
-        el.rodLine.classList.remove("pull", "visible");
-        el.bobber.classList.remove("visible", "sinking");
+        showFishingVisuals(false);
         el.splash.classList.remove("show");
         openResultModal(result);
       }, 900);
@@ -1756,6 +2199,7 @@
       pendingResult = null;
       closeResultModal();
       saveAll();
+      switchScreen('room');
       renderAll();
     }
 
@@ -1767,6 +2211,7 @@
       pendingResult = null;
       closeResultModal();
       saveAll();
+      switchScreen('room');
       renderAll();
     }
 
@@ -1843,18 +2288,20 @@
 
     function renderAll() {
       updateResponsiveUIScale();
-      fillQuickSelectors();
+      fillSelectors();
       applyStateToSelectors();
       applyNavState();
       renderFishingStatus();
-      renderEquipStrip();
+      renderNavEquip();
       renderStore();
       renderBag();
       renderEncyclopedia();
       renderSettings();
       renderUserPill();
+      renderRoom();
       updateSyncStatus();
       el.fishMoneyMini.textContent = `${state.money} zz`;
+      showFishingVisuals(state.fishing.inProgress);
     }
 
     function renderFishingStatus() {
@@ -1870,20 +2317,23 @@
         el.timerText.textContent = formatRemain(remain);
         el.timerPlanMini.textContent = `${state.fishing.durationMin}min`;
         el.timerSubtle.textContent = state.fishing.paused ? "一時停止中" : `${state.fishing.durationMin}分コース進行中`;
+        el.timerBox.classList.add('active');
+        el.fishingControls.classList.add('hidden');
         el.startFishingBtn.disabled = true;
         el.cancelFishingBtn.disabled = false;
         updateToggleTimerIcon(state.fishing.paused, false);
       } else {
-        const planned = Number(el.courseSelect.value) || state.lastUsedSetup.durationMin || 5;
+        const planned = Number(el.roomCourseSelect.value) || Number(el.courseSelect.value) || 5;
         el.timerText.textContent = "--:--";
         el.timerPlanMini.textContent = `${planned}min`;
         el.timerSubtle.textContent = "まだ釣りを始めていません";
+        el.timerBox.classList.remove('active');
+        el.fishingControls.classList.remove('hidden');
         el.startFishingBtn.disabled = false;
         el.cancelFishingBtn.disabled = true;
         updateToggleTimerIcon(false, true);
       }
       setGaugeProgress(progress);
-      el.repeatFishingBtn.disabled = !!state.fishing.inProgress;
       el.toggleFishingBtn.disabled = !state.fishing.inProgress;
     }
 
@@ -1898,16 +2348,20 @@
       el.timerGlow.style.strokeDashoffset = String(offset);
     }
 
-    function renderEquipStrip() {
+    function renderNavEquip() {
       const rod = getById(RODS, state.equipped.rodId);
       const bait = getById(BAITS, state.equipped.baitId);
       const support = getById(SUPPORTS, state.equipped.supportId);
-      el.equipStrip.innerHTML = "";
-      [{ label: "竿", item: rod }, { label: "餌", item: bait }, { label: "補助", item: support }].forEach(({ label, item }) => {
-        const slot = document.createElement("div");
-        slot.className = "equip-slot";
-        slot.innerHTML = `<div class="equip-icon">${item ? item.icon : "▫️"}</div><div>${label}</div><div>${item ? item.name : "なし"}</div>`;
-        el.equipStrip.appendChild(slot);
+      el.navEquipList.innerHTML = '';
+      [
+        { label: '竿', item: rod },
+        { label: '餌', item: bait },
+        { label: '補助', item: support },
+      ].forEach(({ label, item }) => {
+        const div = document.createElement('div');
+        div.className = 'nav-equip-item';
+        div.innerHTML = `<div class="nav-equip-label">${label}</div><div class="nav-equip-icon">${item ? item.icon : '▫️'}</div><div class="nav-equip-name">${item ? item.name : 'なし'}</div>`;
+        el.navEquipList.appendChild(div);
       });
     }
 
@@ -1927,7 +2381,7 @@
           const sellPrice = entry.kind === "item" ? Math.max(1, Math.floor(entry.sellPrice * SELL_RATE_ITEM)) : entry.sellPrice;
           node.innerHTML = `<div class="thumb">${entry.icon}</div><div class="meta"><div class="name">${entry.name}</div><div class="desc">${entry.kind === "fish" ? `大きさ ${formatSize(entry.sizeCm)} cm` : `漂流物`} / 保管中</div></div><div class="price">${sellPrice} zz</div><div class="actions"></div>`;
           const btn = document.createElement("button");
-          btn.className = "soft-btn";
+          btn.className = "room-action-btn exit";
           btn.textContent = "売る";
           btn.addEventListener("click", () => sellInventoryEntry(entry.uid, sellPrice));
           node.querySelector(".actions").appendChild(btn);
@@ -1943,13 +2397,13 @@
         const actions = node.querySelector(".actions");
         if (owned) {
           const ownedBtn = document.createElement("button");
-          ownedBtn.className = "soft-btn";
+          ownedBtn.className = "room-action-btn exit";
           ownedBtn.textContent = "所持済み";
           ownedBtn.disabled = true;
           actions.appendChild(ownedBtn);
         } else {
           const btn = document.createElement("button");
-          btn.className = "primary-btn";
+          btn.className = "room-action-btn primary";
           btn.textContent = "買う";
           btn.disabled = state.money < item.price;
           btn.addEventListener("click", () => buyItem(item));
@@ -1982,7 +2436,7 @@
           const equipped = block.type === "rod" ? state.equipped.rodId === item.id : block.type === "bait" ? state.equipped.baitId === item.id : state.equipped.supportId === item.id;
           node.innerHTML = `<div class="thumb">${item.icon}</div><div class="meta"><div class="name">${block.title}：${item.name}</div><div class="desc">${item.desc || ""}</div></div><div class="actions"></div>`;
           const btn = document.createElement("button");
-          btn.className = equipped ? "soft-btn" : "primary-btn";
+          btn.className = equipped ? "room-action-btn exit" : "room-action-btn primary";
           btn.textContent = equipped ? "装備中" : "装備";
           btn.disabled = equipped;
           btn.addEventListener("click", () => equipItem(block.type, item.id));
@@ -2003,7 +2457,7 @@
           node.innerHTML = `<div class="thumb">${entry.icon}</div><div class="meta"><div class="name">${entry.name}</div><div class="desc">${entry.kind === "fish" ? `大きさ ${formatSize(entry.sizeCm)} cm` : `漂流物`} / 売値 ${entry.sellPrice} zz</div></div><div class="actions"></div>`;
           const actions = node.querySelector(".actions");
           const sellBtn = document.createElement("button");
-          sellBtn.className = "soft-btn";
+          sellBtn.className = "room-action-btn exit";
           const sellPrice = entry.kind === "item" ? Math.max(1, Math.floor(entry.sellPrice * SELL_RATE_ITEM)) : entry.sellPrice;
           sellBtn.textContent = `売る (${sellPrice} zz)`;
           sellBtn.addEventListener("click", () => sellInventoryEntry(entry.uid, sellPrice));
@@ -2043,6 +2497,47 @@
       el.userPill.innerHTML = `${escapeHtml(state.user.displayName || "つりびと")}<br />${state.user.isGuest ? "ローカル保存" : "Google同期"}`;
     }
 
+    function renderRoom() {
+      cleanupRooms();
+      const inRoom = !!state.room.inRoom && !!state.room.roomId && !!localRooms[state.room.roomId];
+      el.roomListScreen.classList.toggle('active', !inRoom);
+      el.roomPlayScreen.classList.toggle('active', inRoom);
+      if (!inRoom) {
+        state.room.inRoom = false;
+        state.room.roomId = null;
+        state.room.view = 'lobby';
+        return;
+      }
+      const room = localRooms[state.room.roomId];
+      const members = (room.members || []).slice(0, ROOM_CAPACITY);
+      el.roomNameChip.textContent = `部屋 ${room.index}`;
+      el.roomCountChip.textContent = `${members.length} / ${ROOM_CAPACITY}`;
+      [el.seat1, el.seat2, el.seat3].forEach((seatEl, idx) => {
+        const member = members[idx];
+        if (!member) {
+          seatEl.className = 'seat-marker';
+          seatEl.textContent = '空席';
+          return;
+        }
+        const isFishing = member.status === 'fishing';
+        const isPaused = member.status === 'paused';
+        seatEl.className = 'avatar-wrap';
+        seatEl.innerHTML = `
+          <div class="avatar-name">${escapeHtml(member.name)}</div>
+          <div class="avatar-cat">
+            <div class="avatar-face"></div>
+            <div class="avatar-mouth"></div>
+          </div>
+          <div class="avatar-status ${isFishing ? 'fishing' : ''}">${isFishing ? '釣り中' : isPaused ? '停止中' : '待機中'}</div>
+        `;
+      });
+      el.roomRodSelect.value = state.equipped.rodId;
+      el.roomBaitSelect.value = state.equipped.baitId;
+      rebuildRoomCourseOptions();
+      if (state.fishing.inProgress) el.roomCourseSelect.value = String(state.fishing.durationMin);
+      el.roomFishingBtn.disabled = !!state.fishing.inProgress;
+    }
+
     function updateSyncStatus() {
       if (firebaseReady && firebaseSyncOk && !state.user.isGuest) el.syncStatus.textContent = "Firebase同期中";
       else if (firebaseReady) el.syncStatus.textContent = "ローカル保存のみ";
@@ -2050,14 +2545,12 @@
     }
 
     function buyItem(item) {
-      if (state.money < item.price) {
-        toast("所持金が足りません。");
-        return;
-      }
+      if (state.money < item.price) { toast("所持金が足りません。"); return; }
       state.money -= item.price;
       const groupKey = item.shopType === "rod" ? "rods" : item.shopType === "bait" ? "baits" : "supports";
       if (!state.owned[groupKey].includes(item.id)) state.owned[groupKey].push(item.id);
       toast(`${item.name} を購入しました。`);
+      fillSelectors();
       saveAll();
       renderAll();
     }
@@ -2073,11 +2566,12 @@
     }
 
     function equipItem(type, id) {
-      if (type === "rod") { state.equipped.rodId = id; state.lastUsedSetup.rodId = id; }
-      if (type === "bait") { state.equipped.baitId = id; state.lastUsedSetup.baitId = id; }
-      if (type === "support") { state.equipped.supportId = id; state.lastUsedSetup.supportId = id; }
+      if (type === "rod") state.equipped.rodId = id;
+      if (type === "bait") state.equipped.baitId = id;
+      if (type === "support") state.equipped.supportId = id;
+      fillSelectors();
+      updateOwnRoomPresence();
       toast("装備を変更しました。");
-      fillQuickSelectors();
       saveAll();
       renderAll();
     }
@@ -2091,11 +2585,7 @@
     }
 
     async function googleLogin() {
-      if (!firebaseReady || !auth) {
-        toast("Firebaseが使えないため、いまはローカルのみで始めます。");
-        startGuest();
-        return;
-      }
+      if (!firebaseReady || !auth) { toast("Firebaseが使えないため、いまはローカルのみで始めます。"); startGuest(); return; }
       try {
         const provider = new GoogleAuthProvider();
         await signInWithPopup(auth, provider);
@@ -2208,9 +2698,12 @@
       state = deepMerge(structuredClone(DEFAULT_STATE), next || {});
       if (!state.currentConditions) state.currentConditions = { timeOfDay: "day", weather: "sunny" };
       if (!state.ui) state.ui = { navCollapsed: false };
+      if (!state.room) state.room = { inRoom: false, roomId: null, view: 'lobby', status: 'idle' };
+      ensurePlayerToken();
       ensureOwnershipDefaults();
       applyStateToSelectors();
       applyNavState();
+      cleanupRooms();
       restoreFishingTimer();
       renderAll();
     }
@@ -2273,6 +2766,7 @@
 
     function owns(groupKey, id) { return !!state.owned[groupKey]?.includes(id); }
     function getById(arr, id) { return arr.find(v => v.id === id) || null; }
+
     function deepMerge(base, patch) {
       if (patch == null || typeof patch !== "object") return base;
       Object.keys(patch).forEach(key => {
@@ -2285,6 +2779,7 @@
       });
       return base;
     }
+
     function safeName(v) { return String(v || "").trim().slice(0, 16).replace(/[<>]/g, ""); }
     function formatRemain(ms) {
       const total = Math.ceil(ms / 1000);
@@ -2338,12 +2833,135 @@
       return { raw: `${sign}${delta.toFixed(1)} cm`, html: `<span class="${klass}">${sign}${delta.toFixed(1)} cm</span>` };
     }
 
+    function roomStoreLoad() {
+      try { return JSON.parse(localStorage.getItem('zz_fishing_rooms_v1') || '{}'); }
+      catch { return {}; }
+    }
+    function roomStoreSave() {
+      try { localStorage.setItem('zz_fishing_rooms_v1', JSON.stringify(localRooms)); } catch {}
+    }
+
+    function startRoomTicker() {
+      stopRoomTicker();
+      roomTickHandle = setInterval(() => {
+        cleanupRooms();
+        if (state.room.inRoom) touchOwnRoomPresence();
+        renderRoom();
+      }, 5000);
+    }
+    function stopRoomTicker() {
+      if (roomTickHandle) clearInterval(roomTickHandle);
+    }
+
+    function cleanupRooms() {
+      localRooms = roomStoreLoad();
+      resetRoomsIfMidnightPassed();
+      const now = Date.now();
+      Object.keys(localRooms).forEach(roomId => {
+        const room = localRooms[roomId];
+        room.members = (room.members || []).filter(m => now - (m.lastSeenAt || 0) < ROOM_TTL);
+        if (room.members.length === 0) delete localRooms[roomId];
+      });
+      roomStoreSave();
+      if (state.room.inRoom && (!localRooms[state.room.roomId] || !localRooms[state.room.roomId].members.some(m => m.token === state.user.playerToken))) {
+        state.room.inRoom = false;
+        state.room.roomId = null;
+        state.room.view = 'lobby';
+        state.room.status = 'idle';
+      }
+    }
+
+    function resetRoomsIfMidnightPassed() {
+      const now = new Date();
+      const stamp = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;
+      const savedStamp = localStorage.getItem('zz_fishing_rooms_reset_stamp');
+      if (savedStamp !== stamp) {
+        localRooms = {};
+        localStorage.setItem('zz_fishing_rooms_reset_stamp', stamp);
+      }
+    }
+
+    function joinBestRoom() {
+      cleanupRooms();
+      if (state.room.inRoom && state.room.roomId && localRooms[state.room.roomId]) {
+        switchScreen('room');
+        renderRoom();
+        return;
+      }
+      let target = Object.values(localRooms)
+        .filter(room => (room.members || []).length < ROOM_CAPACITY)
+        .sort((a, b) => (b.members.length - a.members.length) || a.index - b.index)[0];
+      if (!target) {
+        const nextIndex = Object.values(localRooms).reduce((max, room) => Math.max(max, room.index || 0), 0) + 1;
+        target = { id: `room_${nextIndex}`, index: nextIndex, members: [] };
+        localRooms[target.id] = target;
+      }
+      const member = makeCurrentMember();
+      target.members = (target.members || []).filter(m => m.token !== state.user.playerToken);
+      target.members.push(member);
+      state.room.inRoom = true;
+      state.room.roomId = target.id;
+      state.room.view = 'play';
+      state.room.status = 'idle';
+      roomStoreSave();
+      switchScreen('room');
+      renderRoom();
+      saveAll();
+    }
+
+    function leaveRoom(silent = false) {
+      cleanupRooms();
+      if (state.room.inRoom && state.room.roomId && localRooms[state.room.roomId]) {
+        localRooms[state.room.roomId].members = (localRooms[state.room.roomId].members || []).filter(m => m.token !== state.user.playerToken);
+        if (localRooms[state.room.roomId].members.length === 0) delete localRooms[state.room.roomId];
+        roomStoreSave();
+      }
+      state.room.inRoom = false;
+      state.room.roomId = null;
+      state.room.view = 'lobby';
+      state.room.status = 'idle';
+      if (!silent) toast('部屋から退出しました。');
+      if (el.screens.room.classList.contains('active')) renderRoom();
+      saveAll();
+    }
+
+    function makeCurrentMember() {
+      return {
+        token: state.user.playerToken,
+        name: state.user.displayName || 'つりびと',
+        status: state.room.status || 'idle',
+        rodId: state.equipped.rodId,
+        baitId: state.equipped.baitId,
+        lastSeenAt: Date.now(),
+      };
+    }
+
+    function touchOwnRoomPresence() {
+      if (!state.room.inRoom || !state.room.roomId) return;
+      const room = localRooms[state.room.roomId];
+      if (!room) return;
+      const idx = (room.members || []).findIndex(m => m.token === state.user.playerToken);
+      if (idx < 0) return;
+      room.members[idx] = makeCurrentMember();
+      roomStoreSave();
+    }
+
+    function updateOwnRoomPresence() {
+      cleanupRooms();
+      if (!state.room.inRoom || !state.room.roomId || !localRooms[state.room.roomId]) return;
+      const room = localRooms[state.room.roomId];
+      room.members = (room.members || []).filter(m => m.token !== state.user.playerToken);
+      room.members.push(makeCurrentMember());
+      roomStoreSave();
+      renderRoom();
+    }
+
     window.zzFishingDebug = {
       state: () => state,
+      rooms: () => roomStoreLoad(),
       quickFinish: () => { if (state.fishing.inProgress) { state.fishing.endAt = Date.now(); finishFishing(); } },
       signOut: async () => auth ? signOut(auth) : null,
     };
   </script>
 </body>
 </html>
-
