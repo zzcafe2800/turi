@@ -29,14 +29,17 @@
       --uiScale: 1;
       --basePad: calc(14px * var(--uiScale));
       --baseGap: calc(12px * var(--uiScale));
-      --baseRadius: calc(18px * var(--uiScale));
       --fieldH: calc(42px * var(--uiScale));
       --btnH: calc(44px * var(--uiScale));
       --font12: calc(12px * var(--uiScale));
       --font13: calc(13px * var(--uiScale));
       --font14: calc(14px * var(--uiScale));
       --font18: calc(18px * var(--uiScale));
-      --timerSize: min(20vw, 210px);
+      --timerSize: clamp(132px, 16vw, 188px);
+      --fishLeftW: clamp(260px, 40vw, 520px);
+      --fishRightW: clamp(210px, 26vw, 320px);
+      --fishBottomGap: 10px;
+      --fishStageTopPad: 180px;
     }
 
     * { box-sizing: border-box; }
@@ -205,11 +208,12 @@
     .fishing-stage {
       position: absolute; inset: calc(var(--safeTop) + 10px) 14px calc(var(--safeBottom) + 14px) calc(var(--navCurrent) + 22px); z-index: 9; transition: inset 0.22s ease;
       overflow: hidden;
+      padding-top: var(--fishStageTopPad);
     }
 
     .timer-box {
-      position: absolute; top: 0; left: 0; z-index: 12; width: var(--timerSize); min-width: 150px; max-width: 210px; aspect-ratio: 1;
-      pointer-events: none;
+      position: absolute; top: 0; left: 0; z-index: 12; width: var(--timerSize); aspect-ratio: 1;
+      min-width: 120px; pointer-events: none;
     }
     .timer-gauge { width: 100%; height: 100%; filter: drop-shadow(0 14px 36px rgba(0,0,0,0.2)); }
     .timer-gauge .track { fill: none; stroke: rgba(255,255,255,0.18); stroke-width: 8; }
@@ -220,8 +224,8 @@
       border: 1px solid rgba(255,255,255,0.14); box-shadow: var(--shadow); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
       display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 12px; pointer-events: auto;
     }
-    .timer-main-time { font-size: clamp(20px, 2.2vw, 34px); font-weight: 800; letter-spacing: 0.05em; line-height: 1; }
-    .timer-mini-plan { font-size: clamp(10px, 0.9vw, 12px); color: var(--muted); letter-spacing: 0.06em; }
+    .timer-main-time { font-size: clamp(18px, 2vw, 30px); font-weight: 800; letter-spacing: 0.05em; line-height: 1; }
+    .timer-mini-plan { font-size: clamp(9px, 0.8vw, 12px); color: var(--muted); letter-spacing: 0.06em; }
     .timer-bottom-actions {
       position: absolute; bottom: 6%; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; pointer-events: auto;
     }
@@ -237,33 +241,33 @@
     }
 
     .bottom-left, .bottom-right {
-      position: absolute; bottom: 0; z-index: 12; max-width: calc(50% - 8px);
+      position: absolute; bottom: var(--fishBottomGap); z-index: 12; min-width: 0;
     }
-    .bottom-left { left: 0; }
-    .bottom-right { right: 0; }
+    .bottom-left { left: 0; width: min(100%, var(--fishLeftW)); }
+    .bottom-right { right: 0; width: min(100%, var(--fishRightW)); }
 
     .equip-strip {
-      width: min(31vw, 320px); max-width: 100%; padding: var(--basePad); display: flex; gap: calc(10px * var(--uiScale)); align-items: center;
+      width: 100%; max-width: 100%; padding: var(--basePad); display: flex; gap: calc(10px * var(--uiScale)); align-items: center;
     }
-    .equip-slot { width: 30%; min-width: 0; text-align: center; font-size: calc(11px * var(--uiScale)); color: var(--muted); }
+    .equip-slot { width: 33.333%; min-width: 0; text-align: center; font-size: calc(11px * var(--uiScale)); color: var(--muted); overflow-wrap: anywhere; }
     .equip-icon {
-      width: calc(48px * var(--uiScale)); height: calc(48px * var(--uiScale)); margin: 0 auto 6px; border-radius: calc(16px * var(--uiScale));
-      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.14); display: grid; place-items: center; font-size: calc(22px * var(--uiScale));
+      width: calc(44px * var(--uiScale)); height: calc(44px * var(--uiScale)); margin: 0 auto 6px; border-radius: calc(14px * var(--uiScale));
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.14); display: grid; place-items: center; font-size: calc(20px * var(--uiScale));
     }
 
     .fish-controls {
-      width: min(42vw, 520px); max-width: 100%; padding: var(--basePad); display: flex; align-items: end; gap: var(--baseGap); flex-wrap: wrap;
+      width: 100%; max-width: 100%; padding: var(--basePad); display: flex; align-items: end; gap: var(--baseGap); flex-wrap: wrap;
     }
-    .field { display: flex; flex-direction: column; gap: 6px; min-width: 92px; flex: 1 1 92px; }
+    .field { display: flex; flex-direction: column; gap: 6px; min-width: 84px; flex: 1 1 84px; min-width: 0; }
     .field label { font-size: var(--font12); color: var(--muted); }
     .field select, .field input {
       border: 1px solid rgba(255,255,255,0.16); background: rgba(9, 19, 31, 0.34); color: var(--text); border-radius: calc(14px * var(--uiScale));
-      height: var(--fieldH); padding: 0 calc(12px * var(--uiScale)); outline: none; min-width: 0; font-size: var(--font13);
+      height: var(--fieldH); padding: 0 calc(12px * var(--uiScale)); outline: none; min-width: 0; font-size: var(--font13); width: 100%;
     }
 
     .primary-btn, .soft-btn, .danger-btn {
-      border: 0; border-radius: 999px; min-height: var(--btnH); padding: 0 calc(18px * var(--uiScale)); color: #0d2131; font-weight: 700;
-      transition: transform 0.18s ease, filter 0.18s ease, opacity 0.18s ease; flex: 0 0 auto; font-size: var(--font13);
+      border: 0; border-radius: 999px; min-height: var(--btnH); padding: 0 calc(14px * var(--uiScale)); color: #0d2131; font-weight: 700;
+      transition: transform 0.18s ease, filter 0.18s ease, opacity 0.18s ease; flex: 0 1 auto; font-size: var(--font13); max-width: 100%;
     }
     .primary-btn:hover, .soft-btn:hover, .danger-btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
     .primary-btn:disabled, .soft-btn:disabled, .danger-btn:disabled { opacity: 0.5; cursor: default; transform: none; }
@@ -379,22 +383,35 @@
     @keyframes screenShake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-6px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(3px); } }
 
     @media (max-width: 1200px) {
-      :root { --uiScale: 0.92; --timerSize: min(22vw, 190px); }
-      .fish-controls { width: min(46vw, 500px); }
-      .equip-strip { width: min(34vw, 300px); }
+      :root {
+        --uiScale: 0.9;
+        --timerSize: clamp(128px, 18vw, 170px);
+        --fishLeftW: clamp(230px, 43vw, 470px);
+        --fishRightW: clamp(190px, 27vw, 280px);
+      }
       .shop-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
 
     @media (max-width: 900px) {
-      :root { --uiScale: 0.82; --timerSize: min(24vw, 170px); }
-      .bottom-left, .bottom-right { max-width: calc(50% - 6px); }
-      .fish-controls { width: min(48vw, 430px); }
-      .equip-strip { width: min(36vw, 250px); }
+      :root {
+        --uiScale: 0.78;
+        --timerSize: clamp(118px, 20vw, 150px);
+        --fishLeftW: clamp(210px, 46vw, 400px);
+        --fishRightW: clamp(170px, 28vw, 240px);
+        --fishStageTopPad: 150px;
+      }
     }
 
     @media (max-width: 760px) {
       :root {
-        --navExpanded: 72px; --navCollapsed: 22px; --uiScale: 0.68; --timerSize: 132px;
+        --navExpanded: 72px;
+        --navCollapsed: 22px;
+        --uiScale: 0.62;
+        --timerSize: 118px;
+        --fishLeftW: calc(100% - 4px);
+        --fishRightW: calc(100% - 4px);
+        --fishStageTopPad: 138px;
+        --fishBottomGap: 6px;
       }
       .nav-toggle { top: calc(var(--safeTop) + 10px); left: 10px; }
       .side-nav {
@@ -406,19 +423,17 @@
       .top-right { top: calc(var(--safeTop) + 8px); right: 8px; gap: 6px; }
       .money-mini { min-height: 30px; font-size: 11px; padding: 0 8px; }
       .info-icon { width: 34px; height: 34px; font-size: 15px; border-radius: 12px; }
-      .fishing-stage { overflow: hidden; }
-      .timer-box { width: var(--timerSize); min-width: 132px; max-width: 132px; }
+      .timer-box { width: var(--timerSize); }
       .timer-subtle { max-width: 132px; font-size: 10px; }
       .bottom-left, .bottom-right {
-        max-width: calc(50% - 4px); bottom: 2px;
+        position: absolute; left: 0; right: 0; width: auto;
       }
-      .fish-controls {
+      .bottom-left { bottom: 60px; }
+      .bottom-right { bottom: 0; }
+      .fish-controls, .equip-strip {
         width: 100%; max-width: 100%; padding: 8px; gap: 6px;
       }
-      .equip-strip {
-        width: 100%; max-width: 100%; padding: 8px; gap: 6px;
-      }
-      .field { min-width: 64px; flex: 1 1 64px; }
+      .field { min-width: 62px; flex: 1 1 62px; }
       .primary-btn, .soft-btn, .danger-btn { padding: 0 10px; }
       .shop-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .line-item { flex-direction: column; align-items: flex-start; min-height: 0; }
@@ -428,13 +443,17 @@
     }
 
     @media (max-width: 520px) {
-      :root { --uiScale: 0.58; --timerSize: 120px; }
-      .bottom-left, .bottom-right { max-width: calc(50% - 3px); }
+      :root {
+        --uiScale: 0.54;
+        --timerSize: 112px;
+        --fishStageTopPad: 132px;
+      }
       .money-mini { display: none; }
       .fish-controls, .equip-strip { padding: 7px; }
       .field label { font-size: 10px; }
       .line-item .thumb { width: 46px; height: 46px; font-size: 22px; }
       .section-title { font-size: 22px; }
+      .bottom-left { bottom: 56px; }
     }
   </style>
 </head>
@@ -661,7 +680,7 @@
       measurementId: "G-H7P3WR4DR3"
     };
 
-    const LS_KEY = "zz_fishing_subsite_save_v3";
+    const LS_KEY = "zz_fishing_subsite_save_v4";
     const ENCY_TOP_LIMIT = 50;
     const SELL_RATE_ITEM = 0.5;
     const TIMER_R = 88;
@@ -705,7 +724,7 @@
     ];
 
     const DEFAULT_STATE = {
-      version: 3,
+      version: 4,
       ui: { navCollapsed: false },
       user: { uid: null, isGuest: true, displayName: "つりびと", photoURL: null },
       money: 220,
@@ -715,8 +734,18 @@
       encyclopedia: {},
       settings: { waveSound: false, catchSound: true, browserNotify: false, shakeOnFinish: true },
       fishing: {
-        inProgress: false, paused: false, startAt: null, endAt: null, pausedAt: null, remainingMs: null,
-        durationMin: 5, rodId: "rod_small_01", baitId: "bait_basic_01", supportId: null, weather: null, timeOfDay: null,
+        inProgress: false,
+        paused: false,
+        startAt: null,
+        endAt: null,
+        pausedAt: null,
+        remainingMs: null,
+        durationMin: 5,
+        rodId: "rod_small_01",
+        baitId: "bait_basic_01",
+        supportId: null,
+        weather: null,
+        timeOfDay: null,
       },
       lastCatch: null,
       lastUsedSetup: { rodId: "rod_small_01", baitId: "bait_basic_01", supportId: null, durationMin: 5 },
@@ -809,7 +838,7 @@
 
     async function boot() {
       initTimerGauge();
-      updateToggleTimerIcon(false);
+      updateToggleTimerIcon(false, true);
       tryInitFirebase();
       bindEvents();
       fillQuickSelectors();
@@ -848,22 +877,45 @@
             el.authOverlay.style.display = "none";
             firebaseSyncOk = true;
             toast("Googleログインしました。保存はFirebaseに同期されます。");
-            saveAll(); renderAll();
+            saveAll();
+            renderAll();
           } else {
-            firebaseSyncOk = false; renderAll();
+            firebaseSyncOk = false;
+            renderAll();
           }
         });
       } catch (err) {
-        console.error(err); firebaseReady = false; firebaseSyncOk = false;
+        console.error(err);
+        firebaseReady = false;
+        firebaseSyncOk = false;
       }
     }
 
     function bindEvents() {
-      el.navToggle.addEventListener("click", () => { state.ui.navCollapsed = !state.ui.navCollapsed; applyNavState(); saveAll(); });
+      el.navToggle.addEventListener("click", () => {
+        state.ui.navCollapsed = !state.ui.navCollapsed;
+        applyNavState();
+        saveAll();
+      });
       el.navBtns.forEach(btn => btn.addEventListener("click", () => switchScreen(btn.dataset.screen)));
-      el.rodSelect.addEventListener("change", () => { state.equipped.rodId = el.rodSelect.value; rebuildCourseOptions(); state.lastUsedSetup.rodId = state.equipped.rodId; saveAll(); renderAll(); });
-      el.courseSelect.addEventListener("change", () => { state.lastUsedSetup.durationMin = Number(el.courseSelect.value); renderFishingStatus(); saveAll(); });
-      el.baitSelectQuick.addEventListener("change", () => { state.equipped.baitId = el.baitSelectQuick.value; state.lastUsedSetup.baitId = state.equipped.baitId; saveAll(); renderAll(); });
+      el.rodSelect.addEventListener("change", () => {
+        state.equipped.rodId = el.rodSelect.value;
+        rebuildCourseOptions();
+        state.lastUsedSetup.rodId = state.equipped.rodId;
+        saveAll();
+        renderAll();
+      });
+      el.courseSelect.addEventListener("change", () => {
+        state.lastUsedSetup.durationMin = Number(el.courseSelect.value);
+        renderFishingStatus();
+        saveAll();
+      });
+      el.baitSelectQuick.addEventListener("change", () => {
+        state.equipped.baitId = el.baitSelectQuick.value;
+        state.lastUsedSetup.baitId = state.equipped.baitId;
+        saveAll();
+        renderAll();
+      });
       el.startFishingBtn.addEventListener("click", startFishingFromCurrent);
       el.repeatFishingBtn.addEventListener("click", repeatFishing);
       el.toggleFishingBtn.addEventListener("click", toggleFishingPauseResume);
@@ -873,15 +925,26 @@
       el.sellResultBtn.addEventListener("click", sellPendingResult);
       el.googleLoginBtn.addEventListener("click", googleLogin);
       el.guestStartBtn.addEventListener("click", startGuest);
-      el.saveDisplayNameBtn.addEventListener("click", () => { const v = safeName(el.displayNameInput.value); state.user.displayName = v || "つりびと"; toast("表示名を保存しました。"); saveAll(); renderAll(); });
+      el.saveDisplayNameBtn.addEventListener("click", () => {
+        const v = safeName(el.displayNameInput.value);
+        state.user.displayName = v || "つりびと";
+        toast("表示名を保存しました。");
+        saveAll();
+        renderAll();
+      });
       el.toggleWave.addEventListener("change", () => updateSetting("waveSound", el.toggleWave.checked));
       el.toggleCatch.addEventListener("change", () => updateSetting("catchSound", el.toggleCatch.checked));
       el.toggleNotify.addEventListener("change", async () => {
-        if (el.toggleNotify.checked && Notification && Notification.permission === "default") { try { await Notification.requestPermission(); } catch {} }
-        updateSetting("browserNotify", el.toggleNotify.checked && Notification && Notification.permission === "granted");
+        if (el.toggleNotify.checked && typeof Notification !== "undefined" && Notification.permission === "default") {
+          try { await Notification.requestPermission(); } catch {}
+        }
+        updateSetting("browserNotify", el.toggleNotify.checked && typeof Notification !== "undefined" && Notification.permission === "granted");
       });
       el.toggleShake.addEventListener("change", () => updateSetting("shakeOnFinish", el.toggleShake.checked));
-      el.forceSaveBtn.addEventListener("click", async () => { await saveAll(true); toast("保存しました。"); });
+      el.forceSaveBtn.addEventListener("click", async () => {
+        await saveAll(true);
+        toast("保存しました。");
+      });
       el.exportBtn.addEventListener("click", exportSave);
       el.importBtn.addEventListener("click", () => el.importFile.click());
       el.importFile.addEventListener("change", importSaveFile);
@@ -902,10 +965,21 @@
 
     function fillQuickSelectors() {
       el.rodSelect.innerHTML = "";
-      RODS.filter(rod => owns("rods", rod.id)).forEach(rod => { const option = document.createElement("option"); option.value = rod.id; option.textContent = `${rod.icon} ${rod.name}`; el.rodSelect.appendChild(option); });
+      RODS.filter(rod => owns("rods", rod.id)).forEach(rod => {
+        const option = document.createElement("option");
+        option.value = rod.id;
+        option.textContent = `${rod.icon} ${rod.name}`;
+        el.rodSelect.appendChild(option);
+      });
       el.baitSelectQuick.innerHTML = "";
-      BAITS.filter(bait => owns("baits", bait.id)).forEach(bait => { const option = document.createElement("option"); option.value = bait.id; option.textContent = `${bait.icon} ${bait.name}`; el.baitSelectQuick.appendChild(option); });
-      applyStateToSelectors(); rebuildCourseOptions();
+      BAITS.filter(bait => owns("baits", bait.id)).forEach(bait => {
+        const option = document.createElement("option");
+        option.value = bait.id;
+        option.textContent = `${bait.icon} ${bait.name}`;
+        el.baitSelectQuick.appendChild(option);
+      });
+      applyStateToSelectors();
+      rebuildCourseOptions();
     }
 
     function applyStateToSelectors() {
@@ -931,7 +1005,12 @@
     function rebuildCourseOptions() {
       const rod = getById(RODS, state.equipped.rodId) || RODS[0];
       el.courseSelect.innerHTML = "";
-      rod.courses.forEach(min => { const option = document.createElement("option"); option.value = String(min); option.textContent = `${min}分`; el.courseSelect.appendChild(option); });
+      rod.courses.forEach(min => {
+        const option = document.createElement("option");
+        option.value = String(min);
+        option.textContent = `${min}分`;
+        el.courseSelect.appendChild(option);
+      });
       const desired = state.lastUsedSetup.durationMin;
       const selected = rod.courses.includes(desired) ? desired : rod.courses[0];
       el.courseSelect.value = String(selected);
@@ -970,12 +1049,18 @@
     }
 
     function startFishingFromCurrent() {
-      if (state.fishing.inProgress) { toast("いま釣り中です。終わるまで待ってください。"); return; }
+      if (state.fishing.inProgress) {
+        toast("いま釣り中です。終わるまで待ってください。");
+        return;
+      }
       startFishing({ rodId: state.equipped.rodId, baitId: state.equipped.baitId, supportId: state.equipped.supportId, durationMin: Number(el.courseSelect.value) });
     }
 
     function repeatFishing() {
-      if (state.fishing.inProgress) { toast("いま釣り中です。終わってから再釣りできます。"); return; }
+      if (state.fishing.inProgress) {
+        toast("いま釣り中です。終わってから再釣りできます。");
+        return;
+      }
       const setup = state.lastUsedSetup || {};
       startFishing({ rodId: setup.rodId || state.equipped.rodId, baitId: setup.baitId || state.equipped.baitId, supportId: setup.supportId ?? state.equipped.supportId, durationMin: setup.durationMin || 5 });
     }
@@ -986,16 +1071,22 @@
       const endAt = now + durationMin * 60 * 1000;
       state.fishing = { inProgress: true, paused: false, startAt: now, endAt, pausedAt: null, remainingMs: null, durationMin, rodId, baitId, supportId, weather: state.currentConditions.weather, timeOfDay: state.currentConditions.timeOfDay };
       state.lastUsedSetup = { rodId, baitId, supportId, durationMin };
-      state.equipped.rodId = rodId; state.equipped.baitId = baitId; state.equipped.supportId = supportId || null;
-      el.bobber.classList.add("visible"); el.rodLine.classList.add("visible");
+      state.equipped.rodId = rodId;
+      state.equipped.baitId = baitId;
+      state.equipped.supportId = supportId || null;
+      el.bobber.classList.add("visible");
+      el.rodLine.classList.add("visible");
       if (state.settings.catchSound) playTimeMp3();
       toast(`${durationMin}分コースを開始しました。作業どうぞ。`);
-      saveAll(); renderAll(); startTimerTick();
+      saveAll();
+      renderAll();
+      startTimerTick();
     }
 
     function toggleFishingPauseResume() {
       if (!state.fishing.inProgress) return;
-      if (state.fishing.paused) resumeFishing(); else pauseFishing();
+      if (state.fishing.paused) resumeFishing();
+      else pauseFishing();
     }
 
     function pauseFishing() {
@@ -1005,7 +1096,8 @@
       state.fishing.remainingMs = Math.max(0, state.fishing.endAt - Date.now());
       stopTimerTick();
       toast("タイマーを一時停止しました。");
-      saveAll(); renderFishingStatus();
+      saveAll();
+      renderFishingStatus();
     }
 
     function resumeFishing() {
@@ -1015,7 +1107,9 @@
       state.fishing.pausedAt = null;
       state.fishing.remainingMs = null;
       toast("タイマーを再開しました。");
-      saveAll(); renderFishingStatus(); startTimerTick();
+      saveAll();
+      renderFishingStatus();
+      startTimerTick();
     }
 
     function cancelFishingNoReward() {
@@ -1030,35 +1124,53 @@
       el.splash.classList.remove("show");
       setGaugeProgress(0);
       toast("タイマーを終了しました。報酬はありません。");
-      saveAll(); renderAll();
+      saveAll();
+      renderAll();
     }
 
     function restoreFishingTimer() {
       if (state.fishing.inProgress) {
-        el.bobber.classList.add("visible"); el.rodLine.classList.add("visible");
+        el.bobber.classList.add("visible");
+        el.rodLine.classList.add("visible");
         if (state.fishing.paused) renderFishingStatus();
         else if (Date.now() >= state.fishing.endAt) finishFishing();
         else startTimerTick();
       } else {
-        el.bobber.classList.remove("visible"); el.rodLine.classList.remove("visible");
+        el.bobber.classList.remove("visible");
+        el.rodLine.classList.remove("visible");
       }
     }
 
     function startTimerTick() {
       stopTimerTick();
       timerTickHandle = setInterval(() => {
-        if (!state.fishing.inProgress || state.fishing.paused) { stopTimerTick(); renderFishingStatus(); return; }
+        if (!state.fishing.inProgress || state.fishing.paused) {
+          stopTimerTick();
+          renderFishingStatus();
+          return;
+        }
         if (Date.now() >= state.fishing.endAt) finishFishing();
         renderFishingStatus();
       }, 300);
     }
-    function stopTimerTick() { if (timerTickHandle) { clearInterval(timerTickHandle); timerTickHandle = null; } }
+    function stopTimerTick() {
+      if (timerTickHandle) {
+        clearInterval(timerTickHandle);
+        timerTickHandle = null;
+      }
+    }
 
     async function finishFishing() {
       stopTimerTick();
       if (!state.fishing.inProgress) return;
-      el.rodLine.classList.add("pull"); el.bobber.classList.add("sinking"); el.splash.classList.add("show");
-      if (state.settings.shakeOnFinish) { el.app.classList.remove("shaker"); void el.app.offsetWidth; el.app.classList.add("shaker"); }
+      el.rodLine.classList.add("pull");
+      el.bobber.classList.add("sinking");
+      el.splash.classList.add("show");
+      if (state.settings.shakeOnFinish) {
+        el.app.classList.remove("shaker");
+        void el.app.offsetWidth;
+        el.app.classList.add("shaker");
+      }
       if (state.settings.catchSound) playTimeMp3();
       maybeNotify();
       const result = rollCatch(state.fishing);
@@ -1066,7 +1178,8 @@
       state.lastCatch = result.entry;
       state.fishing.inProgress = false;
       state.fishing.paused = false;
-      saveAll(); renderAll();
+      saveAll();
+      renderAll();
       setTimeout(() => {
         el.rodLine.classList.remove("pull", "visible");
         el.bobber.classList.remove("visible", "sinking");
@@ -1100,17 +1213,30 @@
     function closeResultModal() { el.resultModal.classList.remove("show"); }
     function keepPendingResult() {
       if (!pendingResult) return;
-      addInventoryEntry(pendingResult.entry); applyCatchRecord(pendingResult);
+      addInventoryEntry(pendingResult.entry);
+      applyCatchRecord(pendingResult);
       toast(`${pendingResult.entry.name} を所持品に入れました。`);
-      pendingResult = null; closeResultModal(); saveAll(); renderAll();
+      pendingResult = null;
+      closeResultModal();
+      saveAll();
+      renderAll();
     }
     function sellPendingResult() {
       if (!pendingResult) return;
-      state.money += pendingResult.entry.sellPrice; applyCatchRecord(pendingResult);
+      state.money += pendingResult.entry.sellPrice;
+      applyCatchRecord(pendingResult);
       toast(`${pendingResult.entry.name} を ${pendingResult.entry.sellPrice} zz で売却しました。`);
-      pendingResult = null; closeResultModal(); saveAll(); renderAll();
+      pendingResult = null;
+      closeResultModal();
+      saveAll();
+      renderAll();
     }
-    function flagEl(text, klass) { const div = document.createElement("div"); div.className = `flag ${klass}`.trim(); div.textContent = text; return div; }
+    function flagEl(text, klass) {
+      const div = document.createElement("div");
+      div.className = `flag ${klass}`.trim();
+      div.textContent = text;
+      return div;
+    }
 
     function rollCatch(source) {
       const rod = getById(RODS, source.rodId) || RODS[0];
@@ -1159,7 +1285,10 @@
       if (!state.encyclopedia[baseId]) state.encyclopedia[baseId] = { count: 0, maxSize: 0, recordHolder: null };
       const rec = state.encyclopedia[baseId];
       rec.count += 1;
-      if (entry.kind === "fish" && entry.sizeCm > (rec.maxSize || 0)) { rec.maxSize = entry.sizeCm; rec.recordHolder = state.user.displayName || "つりびと"; }
+      if (entry.kind === "fish" && entry.sizeCm > (rec.maxSize || 0)) {
+        rec.maxSize = entry.sizeCm;
+        rec.recordHolder = state.user.displayName || "つりびと";
+      }
       if (isRecord && firebaseSyncOk && state.user.uid) saveGlobalRecord(baseId, entry.sizeCm, state.user.displayName || "つりびと").catch(console.error);
     }
     function addInventoryEntry(entry) { state.inventory.unshift(entry); }
@@ -1172,7 +1301,18 @@
     }
 
     function renderAll() {
-      fillQuickSelectors(); applyStateToSelectors(); applyNavState(); renderFishingStatus(); renderEquipStrip(); renderStore(); renderBag(); renderEncyclopedia(); renderSettings(); renderUserPill(); updateSyncStatus(); el.fishMoneyMini.textContent = `${state.money} zz`;
+      fillQuickSelectors();
+      applyStateToSelectors();
+      applyNavState();
+      renderFishingStatus();
+      renderEquipStrip();
+      renderStore();
+      renderBag();
+      renderEncyclopedia();
+      renderSettings();
+      renderUserPill();
+      updateSyncStatus();
+      el.fishMoneyMini.textContent = `${state.money} zz`;
     }
 
     function renderFishingStatus() {
@@ -1190,7 +1330,7 @@
         el.timerSubtle.textContent = state.fishing.paused ? "一時停止中" : `${state.fishing.durationMin}分コース進行中`;
         el.startFishingBtn.disabled = true;
         el.cancelFishingBtn.disabled = false;
-        updateToggleTimerIcon(state.fishing.paused);
+        updateToggleTimerIcon(state.fishing.paused, false);
       } else {
         const planned = Number(el.courseSelect.value) || state.lastUsedSetup.durationMin || 5;
         el.timerText.textContent = "--:--";
@@ -1206,12 +1346,11 @@
     }
 
     function updateToggleTimerIcon(paused, noActive = false) {
-      if (noActive) {
+      if (noActive || paused) {
         el.toggleFishingIcon.innerHTML = '<path d="M8 6v12l10-6z"/>';
-        return;
+      } else {
+        el.toggleFishingIcon.innerHTML = '<path d="M8 6v12"/><path d="M16 6v12"/>';
       }
-      if (paused) el.toggleFishingIcon.innerHTML = '<path d="M8 6v12l10-6z"/>';
-      else el.toggleFishingIcon.innerHTML = '<path d="M8 6v12"/><path d="M16 6v12"/>';
     }
 
     function setGaugeProgress(progress) {
@@ -1235,7 +1374,8 @@
 
     function renderStore() {
       el.storeMoney.textContent = `所持金：${state.money} zz`;
-      el.shopBuyList.innerHTML = ""; el.shopSellList.innerHTML = "";
+      el.shopBuyList.innerHTML = "";
+      el.shopSellList.innerHTML = "";
       if (state.inventory.length === 0) {
         const empty = document.createElement("div"); empty.className = "line-item";
         empty.innerHTML = `<div class="meta"><div class="name">売れるものがまだありません</div><div class="desc">魚を保管すると、ここからまとめて売れます。</div></div>`;
@@ -1246,7 +1386,8 @@
           const sellPrice = entry.kind === "item" ? Math.max(1, Math.floor(entry.sellPrice * SELL_RATE_ITEM)) : entry.sellPrice;
           node.innerHTML = `<div class="thumb">${entry.icon}</div><div class="meta"><div class="name">${entry.name}</div><div class="desc">${entry.kind === "fish" ? `大きさ ${formatSize(entry.sizeCm)} cm` : `漂流物`} / 保管中</div></div><div class="price">${sellPrice} zz</div><div class="actions"></div>`;
           const btn = document.createElement("button"); btn.className = "soft-btn"; btn.textContent = "売る"; btn.addEventListener("click", () => sellInventoryEntry(entry.uid, sellPrice));
-          node.querySelector(".actions").appendChild(btn); el.shopSellList.appendChild(node);
+          node.querySelector(".actions").appendChild(btn);
+          el.shopSellList.appendChild(node);
         });
       }
       SHOP_ITEMS.forEach(item => {
@@ -1255,8 +1396,11 @@
         const node = document.createElement("div"); node.className = "line-item";
         node.innerHTML = `<div class="thumb">${item.icon}</div><div class="meta"><div class="name">${item.name}</div><div class="desc">${item.desc}</div></div><div class="price">${item.price} zz</div><div class="actions"></div>`;
         const actions = node.querySelector(".actions");
-        if (owned) { const ownedBtn = document.createElement("button"); ownedBtn.className = "soft-btn"; ownedBtn.textContent = "所持済み"; ownedBtn.disabled = true; actions.appendChild(ownedBtn); }
-        else { const btn = document.createElement("button"); btn.className = "primary-btn"; btn.textContent = "買う"; btn.disabled = state.money < item.price; btn.addEventListener("click", () => buyItem(item)); actions.appendChild(btn); }
+        if (owned) {
+          const ownedBtn = document.createElement("button"); ownedBtn.className = "soft-btn"; ownedBtn.textContent = "所持済み"; ownedBtn.disabled = true; actions.appendChild(ownedBtn);
+        } else {
+          const btn = document.createElement("button"); btn.className = "primary-btn"; btn.textContent = "買う"; btn.disabled = state.money < item.price; btn.addEventListener("click", () => buyItem(item)); actions.appendChild(btn);
+        }
         el.shopBuyList.appendChild(node);
       });
     }
@@ -1280,7 +1424,8 @@
           const equipped = block.type === "rod" ? state.equipped.rodId === item.id : block.type === "bait" ? state.equipped.baitId === item.id : state.equipped.supportId === item.id;
           node.innerHTML = `<div class="thumb">${item.icon}</div><div class="meta"><div class="name">${block.title}：${item.name}</div><div class="desc">${item.desc || ""}</div></div><div class="actions"></div>`;
           const btn = document.createElement("button"); btn.className = equipped ? "soft-btn" : "primary-btn"; btn.textContent = equipped ? "装備中" : "装備"; btn.disabled = equipped; btn.addEventListener("click", () => equipItem(block.type, item.id));
-          node.querySelector(".actions").appendChild(btn); el.bagEquipList.appendChild(node);
+          node.querySelector(".actions").appendChild(btn);
+          el.bagEquipList.appendChild(node);
         });
       });
       el.bagInventoryList.innerHTML = "";
@@ -1294,7 +1439,8 @@
           node.innerHTML = `<div class="thumb">${entry.icon}</div><div class="meta"><div class="name">${entry.name}</div><div class="desc">${entry.kind === "fish" ? `大きさ ${formatSize(entry.sizeCm)} cm` : `漂流物`} / 売値 ${entry.sellPrice} zz</div></div><div class="actions"></div>`;
           const actions = node.querySelector(".actions");
           const sellBtn = document.createElement("button"); sellBtn.className = "soft-btn"; const sellPrice = entry.kind === "item" ? Math.max(1, Math.floor(entry.sellPrice * SELL_RATE_ITEM)) : entry.sellPrice; sellBtn.textContent = `売る (${sellPrice} zz)`; sellBtn.addEventListener("click", () => sellInventoryEntry(entry.uid, sellPrice));
-          actions.appendChild(sellBtn); el.bagInventoryList.appendChild(node);
+          actions.appendChild(sellBtn);
+          el.bagInventoryList.appendChild(node);
         });
       }
     }
@@ -1302,7 +1448,9 @@
     function renderEncyclopedia() {
       const caughtCount = Object.keys(state.encyclopedia).length;
       el.encyStats.innerHTML = "";
-      [`発見 ${caughtCount} / ${FISHES.length}`, `世界記録読込 ${Object.keys(globalRecords).length}件`].forEach(text => { const chip = document.createElement("div"); chip.className = "stat-chip"; chip.textContent = text; el.encyStats.appendChild(chip); });
+      [`発見 ${caughtCount} / ${FISHES.length}`, `世界記録読込 ${Object.keys(globalRecords).length}件`].forEach(text => {
+        const chip = document.createElement("div"); chip.className = "stat-chip"; chip.textContent = text; el.encyStats.appendChild(chip);
+      });
       el.encyList.innerHTML = "";
       FISHES.forEach(fish => {
         const own = state.encyclopedia[fish.id];
@@ -1326,83 +1474,198 @@
     }
 
     function buyItem(item) {
-      if (state.money < item.price) { toast("所持金が足りません。"); return; }
+      if (state.money < item.price) {
+        toast("所持金が足りません。");
+        return;
+      }
       state.money -= item.price;
       const groupKey = item.shopType === "rod" ? "rods" : item.shopType === "bait" ? "baits" : "supports";
       if (!state.owned[groupKey].includes(item.id)) state.owned[groupKey].push(item.id);
-      toast(`${item.name} を購入しました。`); saveAll(); renderAll();
+      toast(`${item.name} を購入しました。`);
+      saveAll();
+      renderAll();
     }
+
     function sellInventoryEntry(uid, sellPrice) {
-      const idx = state.inventory.findIndex(v => v.uid === uid); if (idx < 0) return;
-      const [entry] = state.inventory.splice(idx, 1); state.money += sellPrice;
-      toast(`${entry.name} を ${sellPrice} zz で売却しました。`); saveAll(); renderAll();
+      const idx = state.inventory.findIndex(v => v.uid === uid);
+      if (idx < 0) return;
+      const [entry] = state.inventory.splice(idx, 1);
+      state.money += sellPrice;
+      toast(`${entry.name} を ${sellPrice} zz で売却しました。`);
+      saveAll();
+      renderAll();
     }
+
     function equipItem(type, id) {
       if (type === "rod") { state.equipped.rodId = id; state.lastUsedSetup.rodId = id; }
       if (type === "bait") { state.equipped.baitId = id; state.lastUsedSetup.baitId = id; }
       if (type === "support") { state.equipped.supportId = id; state.lastUsedSetup.supportId = id; }
-      toast("装備を変更しました。"); fillQuickSelectors(); saveAll(); renderAll();
+      toast("装備を変更しました。");
+      fillQuickSelectors();
+      saveAll();
+      renderAll();
     }
-    function updateSetting(key, value) { state.settings[key] = value; if (key === "waveSound" && value) warmAudio(); toast("設定を更新しました。"); saveAll(); renderAll(); }
+
+    function updateSetting(key, value) {
+      state.settings[key] = value;
+      if (key === "waveSound" && value) warmAudio();
+      toast("設定を更新しました。");
+      saveAll();
+      renderAll();
+    }
 
     async function googleLogin() {
-      if (!firebaseReady || !auth) { toast("Firebaseが使えないため、いまはローカルのみで始めます。"); startGuest(); return; }
-      try { const provider = new GoogleAuthProvider(); await signInWithPopup(auth, provider); } catch (err) { console.error(err); toast("Googleログインに失敗しました。ローカルだけでも始められます。"); }
+      if (!firebaseReady || !auth) {
+        toast("Firebaseが使えないため、いまはローカルのみで始めます。");
+        startGuest();
+        return;
+      }
+      try {
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth, provider);
+      } catch (err) {
+        console.error(err);
+        toast("Googleログインに失敗しました。ローカルだけでも始められます。");
+      }
     }
+
     function startGuest() {
-      state.user.isGuest = true; state.user.displayName = safeName(el.authDisplayNameInput.value || state.user.displayName || "つりびと"); el.authOverlay.style.display = "none"; authResolved = true; toast("ローカル保存で開始しました。"); saveAll(); renderAll();
+      state.user.isGuest = true;
+      state.user.displayName = safeName(el.authDisplayNameInput.value || state.user.displayName || "つりびと");
+      el.authOverlay.style.display = "none";
+      authResolved = true;
+      toast("ローカル保存で開始しました。");
+      saveAll();
+      renderAll();
     }
 
     async function loadRemoteUser(uid) {
       if (!db) return null;
-      try { const ref = doc(db, "users", uid); const snap = await getDoc(ref); if (!snap.exists()) return null; return snap.data()?.state || null; } catch (err) { console.error(err); return null; }
+      try {
+        const ref = doc(db, "users", uid);
+        const snap = await getDoc(ref);
+        if (!snap.exists()) return null;
+        return snap.data()?.state || null;
+      } catch (err) {
+        console.error(err);
+        return null;
+      }
     }
+
     async function saveRemoteUser() {
       if (!db || !firebaseSyncOk || !state.user.uid || state.user.isGuest) return;
-      try { const ref = doc(db, "users", state.user.uid); await setDoc(ref, { uid: state.user.uid, displayName: state.user.displayName || "つりびと", updatedAt: serverTimestamp(), state }, { merge: true }); } catch (err) { console.error(err); }
+      try {
+        const ref = doc(db, "users", state.user.uid);
+        await setDoc(ref, { uid: state.user.uid, displayName: state.user.displayName || "つりびと", updatedAt: serverTimestamp(), state }, { merge: true });
+      } catch (err) {
+        console.error(err);
+      }
     }
+
     async function saveGlobalRecord(baseId, sizeCm, recordHolder) {
-      if (!db) return; const current = globalRecords[baseId]; if (current && current.sizeCm >= sizeCm) return;
-      try { const ref = doc(db, "globalFishRecords", baseId); await setDoc(ref, { fishId: baseId, sizeCm, recordHolder, updatedAt: serverTimestamp() }, { merge: true }); globalRecords[baseId] = { sizeCm, recordHolder }; } catch (err) { console.error(err); }
+      if (!db) return;
+      const current = globalRecords[baseId];
+      if (current && current.sizeCm >= sizeCm) return;
+      try {
+        const ref = doc(db, "globalFishRecords", baseId);
+        await setDoc(ref, { fishId: baseId, sizeCm, recordHolder, updatedAt: serverTimestamp() }, { merge: true });
+        globalRecords[baseId] = { sizeCm, recordHolder };
+      } catch (err) {
+        console.error(err);
+      }
     }
+
     async function loadGlobalRecords() {
       if (!db) { globalRecords = {}; return; }
       try {
         const map = {};
         await Promise.all(FISHES.slice(0, ENCY_TOP_LIMIT).map(async fish => {
           const snap = await getDoc(doc(db, "globalFishRecords", fish.id));
-          if (snap.exists()) { const d = snap.data(); map[d.fishId] = { sizeCm: d.sizeCm, recordHolder: d.recordHolder }; }
+          if (snap.exists()) {
+            const d = snap.data();
+            map[d.fishId] = { sizeCm: d.sizeCm, recordHolder: d.recordHolder };
+          }
         }));
         globalRecords = map;
-      } catch (err) { console.error(err); globalRecords = {}; }
+      } catch (err) {
+        console.error(err);
+        globalRecords = {};
+      }
     }
 
-    async function saveAll(force = false) { state.lastSavedAt = Date.now(); saveLocalState(state); if (force || (!state.user.isGuest && firebaseSyncOk)) await saveRemoteUser(); renderSettings(); }
+    async function saveAll(force = false) {
+      state.lastSavedAt = Date.now();
+      saveLocalState(state);
+      if (force || (!state.user.isGuest && firebaseSyncOk)) await saveRemoteUser();
+      renderSettings();
+    }
+
     function exportSave() {
       const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = `zz_fishing_save_${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(url);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `zz_fishing_save_${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
     }
+
     async function importSaveFile(e) {
-      const file = e.target.files?.[0]; if (!file) return;
-      try { const text = await file.text(); const parsed = JSON.parse(text); mergeLoadedState(parsed); toast("セーブデータを読み込みました。"); saveAll(true); renderAll(); }
-      catch (err) { console.error(err); toast("読み込みに失敗しました。"); }
-      finally { e.target.value = ""; }
+      const file = e.target.files?.[0];
+      if (!file) return;
+      try {
+        const text = await file.text();
+        const parsed = JSON.parse(text);
+        mergeLoadedState(parsed);
+        toast("セーブデータを読み込みました。");
+        saveAll(true);
+        renderAll();
+      } catch (err) {
+        console.error(err);
+        toast("読み込みに失敗しました。");
+      } finally {
+        e.target.value = "";
+      }
     }
 
     function mergeLoadedState(next) {
       state = deepMerge(structuredClone(DEFAULT_STATE), next || {});
       if (!state.currentConditions) state.currentConditions = { timeOfDay: "day", weather: "sunny" };
       if (!state.ui) state.ui = { navCollapsed: false };
-      ensureOwnershipDefaults(); applyStateToSelectors(); applyNavState(); restoreFishingTimer(); renderAll();
+      ensureOwnershipDefaults();
+      applyStateToSelectors();
+      applyNavState();
+      restoreFishingTimer();
+      renderAll();
     }
-    function loadLocalState() {
-      try { const raw = localStorage.getItem(LS_KEY); if (!raw) return structuredClone(DEFAULT_STATE); return deepMerge(structuredClone(DEFAULT_STATE), JSON.parse(raw)); }
-      catch { return structuredClone(DEFAULT_STATE); }
-    }
-    function saveLocalState(payload) { try { localStorage.setItem(LS_KEY, JSON.stringify(payload)); } catch (err) { console.error(err); } }
 
-    function maybeNotify() { if (state.settings.browserNotify && Notification && Notification.permission === "granted") new Notification("釣りが終わりました", { body: "回収して釣果を見てみましょう。" }); }
-    function warmAudio() { if (!audioCtx) { const Ctx = window.AudioContext || window.webkitAudioContext; if (Ctx) audioCtx = new Ctx(); } }
+    function loadLocalState() {
+      try {
+        const raw = localStorage.getItem(LS_KEY);
+        if (!raw) return structuredClone(DEFAULT_STATE);
+        return deepMerge(structuredClone(DEFAULT_STATE), JSON.parse(raw));
+      } catch {
+        return structuredClone(DEFAULT_STATE);
+      }
+    }
+
+    function saveLocalState(payload) {
+      try { localStorage.setItem(LS_KEY, JSON.stringify(payload)); } catch (err) { console.error(err); }
+    }
+
+    function maybeNotify() {
+      if (state.settings.browserNotify && typeof Notification !== "undefined" && Notification.permission === "granted") {
+        new Notification("釣りが終わりました", { body: "回収して釣果を見てみましょう。" });
+      }
+    }
+
+    function warmAudio() {
+      if (!audioCtx) {
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if (Ctx) audioCtx = new Ctx();
+      }
+    }
+
     function playTimeMp3() {
       const audio = new Audio("time.mp3");
       audio.volume = 0.9;
@@ -1419,10 +1682,19 @@
         gain.gain.exponentialRampToValueAtTime(0.08, now + 0.02);
         gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
         osc.connect(gain).connect(audioCtx.destination);
-        osc.start(now); osc.stop(now + 0.24);
+        osc.start(now);
+        osc.stop(now + 0.24);
       });
     }
-    function toast(message) { const node = document.createElement("div"); node.className = "toast"; node.textContent = message; el.toastWrap.appendChild(node); setTimeout(() => node.remove(), 3800); }
+
+    function toast(message) {
+      const node = document.createElement("div");
+      node.className = "toast";
+      node.textContent = message;
+      el.toastWrap.appendChild(node);
+      setTimeout(() => node.remove(), 3800);
+    }
+
     function owns(groupKey, id) { return !!state.owned[groupKey]?.includes(id); }
     function getById(arr, id) { return arr.find(v => v.id === id) || null; }
     function deepMerge(base, patch) {
@@ -1430,8 +1702,10 @@
       Object.keys(patch).forEach(key => {
         const pv = patch[key];
         if (Array.isArray(pv)) base[key] = pv;
-        else if (pv && typeof pv === "object") { if (!base[key] || typeof base[key] !== "object" || Array.isArray(base[key])) base[key] = {}; base[key] = deepMerge(base[key], pv); }
-        else base[key] = pv;
+        else if (pv && typeof pv === "object") {
+          if (!base[key] || typeof base[key] !== "object" || Array.isArray(base[key])) base[key] = {};
+          base[key] = deepMerge(base[key], pv);
+        } else base[key] = pv;
       });
       return base;
     }
