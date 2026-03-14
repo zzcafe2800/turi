@@ -1,0 +1,2544 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>作業連動型 釣りサブサイト</title>
+  <style>
+    :root {
+      --text: rgba(255,255,255,0.96);
+      --muted: rgba(255,255,255,0.72);
+      --soft: rgba(255,255,255,0.14);
+      --line: rgba(255,255,255,0.2);
+      --shadow: 0 12px 38px rgba(0,0,0,0.25);
+      --danger: #ff8181;
+      --ok: #7ef2c5;
+      --gold: #ffd86d;
+      --bgTop: #77b9e8;
+      --bgMid: #5fa7d9;
+      --bgBottom: #2c6e96;
+      --sea1: #2c85b8;
+      --sea2: #1c6892;
+      --sea3: #195a7e;
+      --panelBlur: blur(8px);
+      --navW: 76px;
+      --safeTop: env(safe-area-inset-top, 0px);
+      --safeBottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: #0c3954; color: var(--text); font-family: "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif; }
+    body { overflow: hidden; }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+
+    #app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background:
+        radial-gradient(1200px 420px at 50% 14%, rgba(255,255,255,0.24), transparent 60%),
+        linear-gradient(to bottom, var(--bgTop) 0%, var(--bgMid) 46%, var(--bgBottom) 100%);
+      transition: background 0.8s ease;
+    }
+
+    #app.time-day {
+      --bgTop: #8dd0ff;
+      --bgMid: #68b5ea;
+      --bgBottom: #2e6f96;
+      --sea1: #3696c8;
+      --sea2: #1f739e;
+      --sea3: #175a7a;
+    }
+    #app.time-evening {
+      --bgTop: #f4b783;
+      --bgMid: #cd7e6f;
+      --bgBottom: #513f7a;
+      --sea1: #955d8a;
+      --sea2: #6c4a80;
+      --sea3: #3d3b6d;
+    }
+    #app.time-night {
+      --bgTop: #0b1e42;
+      --bgMid: #102851;
+      --bgBottom: #09162d;
+      --sea1: #113562;
+      --sea2: #0d2749;
+      --sea3: #07162e;
+    }
+
+    .horizon {
+      position: absolute;
+      left: 0; right: 0;
+      top: 36%;
+      height: 2px;
+      background: linear-gradient(to right, transparent, rgba(255,255,255,0.45), transparent);
+      opacity: 0.45;
+      filter: blur(0.4px);
+    }
+
+    .sea {
+      position: absolute;
+      left: -6%; right: -6%; bottom: -14%;
+      height: 56%;
+      background:
+        radial-gradient(circle at 18% 10%, rgba(255,255,255,0.10), transparent 16%),
+        radial-gradient(circle at 77% 13%, rgba(255,255,255,0.09), transparent 18%),
+        linear-gradient(to bottom, var(--sea1), var(--sea2) 50%, var(--sea3));
+      border-top-left-radius: 48% 14%;
+      border-top-right-radius: 48% 16%;
+      animation: seaBob 7s ease-in-out infinite alternate;
+      box-shadow: inset 0 14px 24px rgba(255,255,255,0.08), inset 0 -20px 30px rgba(0,0,0,0.14);
+    }
+    .sea::before,
+    .sea::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-repeat: repeat-x;
+      opacity: 0.34;
+      pointer-events: none;
+    }
+    .sea::before {
+      background-image:
+        radial-gradient(42px 8px at 40px 24px, rgba(255,255,255,0.22), transparent 70%),
+        radial-gradient(58px 10px at 140px 38px, rgba(255,255,255,0.15), transparent 72%),
+        radial-gradient(76px 10px at 300px 34px, rgba(255,255,255,0.14), transparent 72%);
+      background-size: 380px 64px;
+      animation: waveFlow 18s linear infinite;
+    }
+    .sea::after {
+      background-image:
+        radial-gradient(60px 7px at 50px 52px, rgba(255,255,255,0.14), transparent 72%),
+        radial-gradient(70px 7px at 210px 52px, rgba(255,255,255,0.12), transparent 72%);
+      background-size: 320px 78px;
+      animation: waveFlow 24s linear infinite reverse;
+      opacity: 0.22;
+    }
+
+    .bobber {
+      position: absolute;
+      left: 52%;
+      top: 58%;
+      width: 18px;
+      height: 34px;
+      margin-left: -9px;
+      opacity: 0;
+      transform-origin: 50% 90%;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      z-index: 3;
+    }
+    .bobber.visible { opacity: 1; animation: bobberFloat 2.6s ease-in-out infinite; }
+    .bobber::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 0;
+      width: 6px;
+      height: 10px;
+      margin-left: -3px;
+      background: #ff4d57;
+      border-radius: 8px 8px 3px 3px;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.3);
+    }
+    .bobber::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 8px;
+      width: 16px;
+      height: 20px;
+      margin-left: -8px;
+      background: linear-gradient(to bottom, #ffffff, #f0f4ff 56%, #ff7f7f 57%, #ff4b4b 100%);
+      border-radius: 50% 50% 48% 48%;
+      box-shadow: 0 10px 16px rgba(0,0,0,0.14);
+    }
+    .bobber.sinking { animation: bobberSink 0.9s ease forwards; }
+
+    .splash {
+      position: absolute;
+      left: 52%;
+      top: 60%;
+      width: 160px;
+      height: 90px;
+      margin-left: -80px;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 4;
+    }
+    .splash.show { animation: splashFx 1s ease forwards; }
+    .splash::before,
+    .splash::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 22% 66%, rgba(255,255,255,0.9), transparent 10%),
+        radial-gradient(circle at 34% 58%, rgba(255,255,255,0.85), transparent 8%),
+        radial-gradient(circle at 48% 52%, rgba(255,255,255,0.9), transparent 11%),
+        radial-gradient(circle at 66% 58%, rgba(255,255,255,0.84), transparent 8%),
+        radial-gradient(circle at 78% 66%, rgba(255,255,255,0.86), transparent 10%);
+    }
+    .splash::after {
+      background:
+        radial-gradient(80px 20px at 50% 78%, rgba(255,255,255,0.3), transparent 70%);
+      filter: blur(2px);
+    }
+
+    .rod-line {
+      position: absolute;
+      right: 20%;
+      top: 26%;
+      width: 2px;
+      height: 36%;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.35), rgba(255,255,255,0.08));
+      transform: rotate(12deg);
+      transform-origin: top center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 2;
+    }
+    .rod-line.visible { opacity: 1; }
+    .rod-line.pull { animation: rodPull 0.8s ease; }
+
+    .floating-ui {
+      position: absolute;
+      z-index: 10;
+      backdrop-filter: var(--panelBlur);
+      -webkit-backdrop-filter: var(--panelBlur);
+      background: rgba(12, 26, 41, 0.14);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .side-nav {
+      position: absolute;
+      top: calc(var(--safeTop) + 16px);
+      left: 14px;
+      bottom: calc(var(--safeBottom) + 16px);
+      width: var(--navW);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 10px;
+      z-index: 20;
+      background: rgba(8, 18, 29, 0.18);
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .nav-btn {
+      width: 52px;
+      height: 52px;
+      border: 0;
+      border-radius: 18px;
+      color: var(--text);
+      background: rgba(255,255,255,0.08);
+      display: grid;
+      place-items: center;
+      transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+      position: relative;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+      font-size: 24px;
+    }
+    .nav-btn:hover, .nav-btn.active {
+      transform: translateY(-1px) scale(1.02);
+      background: rgba(255,255,255,0.18);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2), inset 0 0 0 1px rgba(255,255,255,0.14);
+    }
+    .nav-btn .tip {
+      position: absolute;
+      left: calc(100% + 10px);
+      top: 50%;
+      transform: translateY(-50%);
+      padding: 7px 10px;
+      border-radius: 12px;
+      background: rgba(10,18,28,0.78);
+      font-size: 12px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.16s ease;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .nav-btn:hover .tip { opacity: 1; }
+
+    .user-pill {
+      margin-top: auto;
+      width: 100%;
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.45;
+      padding: 10px 4px 2px;
+      border-top: 1px solid rgba(255,255,255,0.14);
+      word-break: break-word;
+    }
+
+    .screen {
+      position: absolute;
+      inset: 0 0 0 calc(var(--navW) + 28px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.26s ease;
+    }
+    .screen.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .top-left, .top-right, .bottom-left, .bottom-right {
+      position: absolute;
+      z-index: 12;
+    }
+    .top-left { top: calc(var(--safeTop) + 24px); left: calc(var(--navW) + 34px); }
+    .top-right { top: calc(var(--safeTop) + 24px); right: 22px; display: flex; gap: 10px; }
+    .bottom-left { left: calc(var(--navW) + 34px); bottom: calc(var(--safeBottom) + 22px); }
+    .bottom-right { right: 22px; bottom: calc(var(--safeBottom) + 22px); }
+
+    .timer-box {
+      min-width: 250px;
+      padding: 14px 16px;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+    .timer-main { display: flex; flex-direction: column; gap: 4px; }
+    .timer-time { font-size: 34px; font-weight: 800; letter-spacing: 0.06em; }
+    .timer-sub { font-size: 13px; color: var(--muted); }
+    .bonus-mini {
+      margin-left: auto;
+      text-align: right;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .info-icon {
+      width: 56px;
+      height: 56px;
+      position: relative;
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+      background: rgba(6, 15, 24, 0.22);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+    .info-icon .balloon {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      min-width: 96px;
+      padding: 8px 10px;
+      text-align: center;
+      font-size: 12px;
+      border-radius: 12px;
+      background: rgba(10,18,28,0.84);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.12);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.16s ease;
+      white-space: nowrap;
+    }
+    .info-icon:hover .balloon { opacity: 1; }
+
+    .equip-strip {
+      min-width: 240px;
+      padding: 12px 14px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .equip-slot {
+      width: 62px;
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .equip-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 6px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.14);
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+    }
+
+    .fish-controls {
+      padding: 14px;
+      min-width: 380px;
+      display: flex;
+      align-items: end;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 120px;
+    }
+    .field label { font-size: 12px; color: var(--muted); }
+    .field select, .field input {
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(9, 19, 31, 0.34);
+      color: var(--text);
+      border-radius: 14px;
+      height: 42px;
+      padding: 0 12px;
+      outline: none;
+    }
+
+    .primary-btn, .soft-btn, .danger-btn {
+      border: 0;
+      border-radius: 999px;
+      min-height: 44px;
+      padding: 0 18px;
+      color: #0d2131;
+      font-weight: 700;
+      transition: transform 0.18s ease, filter 0.18s ease, opacity 0.18s ease;
+    }
+    .primary-btn:hover, .soft-btn:hover, .danger-btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
+    .primary-btn:disabled, .soft-btn:disabled, .danger-btn:disabled { opacity: 0.5; cursor: default; transform: none; }
+    .primary-btn { background: linear-gradient(135deg, #b8f8f1, #78e9d3); }
+    .soft-btn { background: linear-gradient(135deg, #f5f0d4, #f5d88e); }
+    .danger-btn { background: linear-gradient(135deg, #ffc8cf, #ff9494); }
+
+    .content-shell {
+      position: absolute;
+      inset: calc(var(--safeTop) + 22px) 18px calc(var(--safeBottom) + 22px) calc(var(--navW) + 26px);
+      padding: 22px 22px 24px;
+      overflow: auto;
+      border-radius: 28px;
+      background: rgba(8, 17, 28, 0.18);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: var(--shadow);
+    }
+
+    .section-title {
+      font-size: 26px;
+      font-weight: 800;
+      margin: 0 0 8px;
+      letter-spacing: 0.02em;
+    }
+    .section-sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin: 0 0 18px;
+      line-height: 1.7;
+    }
+
+    .money-line {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--gold);
+    }
+
+    .grid-list {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+
+    .line-item {
+      padding: 14px 14px 14px 16px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      min-height: 88px;
+    }
+    .line-item .thumb {
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      font-size: 28px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.14);
+      flex: 0 0 auto;
+    }
+    .line-item .meta { flex: 1; min-width: 0; }
+    .line-item .name { font-weight: 700; margin-bottom: 6px; }
+    .line-item .desc { font-size: 12px; color: var(--muted); line-height: 1.55; }
+    .line-item .price { font-weight: 800; color: var(--gold); white-space: nowrap; }
+    .line-item .actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+
+    .stat-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .stat-chip {
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      color: var(--text);
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .ency-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+    .fish-card {
+      padding: 16px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      min-height: 180px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .fish-art {
+      width: 64px;
+      height: 64px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      font-size: 32px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.14);
+    }
+    .fish-card.unknown .fish-art,
+    .fish-card.unknown .fish-name,
+    .fish-card.unknown .fish-meta {
+      filter: grayscale(1);
+      opacity: 0.5;
+    }
+    .fish-name { font-size: 18px; font-weight: 700; }
+    .fish-meta { font-size: 12px; color: var(--muted); line-height: 1.6; }
+    .record { color: var(--gold); }
+
+    .settings-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+    }
+    .settings-box {
+      padding: 18px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .settings-box h3 { margin: 0 0 12px; }
+    .settings-box .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+    .settings-box .row:last-child { margin-bottom: 0; }
+
+    .toggle {
+      appearance: none;
+      width: 52px;
+      height: 30px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.18);
+      position: relative;
+      outline: none;
+      border: 1px solid rgba(255,255,255,0.18);
+    }
+    .toggle::after {
+      content: "";
+      position: absolute;
+      left: 3px;
+      top: 3px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: white;
+      transition: transform 0.18s ease;
+    }
+    .toggle:checked { background: rgba(126,242,197,0.55); }
+    .toggle:checked::after { transform: translateX(22px); }
+
+    .modal {
+      position: absolute;
+      inset: 0;
+      z-index: 50;
+      display: none;
+      place-items: center;
+      background: rgba(2, 8, 14, 0.46);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      padding: 24px;
+    }
+    .modal.show { display: grid; }
+
+    .modal-card {
+      width: min(520px, 100%);
+      border-radius: 30px;
+      padding: 22px;
+      background: linear-gradient(180deg, rgba(17,33,48,0.92), rgba(8,17,28,0.96));
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow: 0 28px 60px rgba(0,0,0,0.38);
+      position: relative;
+      overflow: hidden;
+    }
+    .modal-card.rare::before,
+    .modal-card.record::after {
+      content: "";
+      position: absolute;
+      inset: -20% -20% auto auto;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(255,216,109,0.26), transparent 66%);
+      filter: blur(6px);
+      pointer-events: none;
+    }
+    .modal-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .modal-top h2 { margin: 0; font-size: 28px; }
+    .close-btn {
+      border: 0;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      color: var(--text);
+      font-size: 20px;
+    }
+    .result-core {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .result-art {
+      width: 110px;
+      height: 110px;
+      border-radius: 28px;
+      display: grid;
+      place-items: center;
+      font-size: 54px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+    }
+    .result-title { font-size: 26px; font-weight: 800; margin-bottom: 6px; }
+    .result-lines { font-size: 14px; line-height: 1.8; color: var(--muted); }
+    .result-flags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0 18px;
+    }
+    .flag {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      font-size: 12px;
+    }
+    .flag.rare { color: var(--gold); }
+    .flag.record { color: #ffe79f; }
+    .flag.huge { color: #ffcfb7; }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .toast-wrap {
+      position: absolute;
+      right: 18px;
+      top: calc(var(--safeTop) + 20px);
+      z-index: 60;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+    .toast {
+      min-width: 220px;
+      max-width: 320px;
+      border-radius: 18px;
+      padding: 12px 14px;
+      background: rgba(8,17,28,0.82);
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: var(--shadow);
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.6;
+      transform: translateY(-6px);
+      opacity: 0;
+      animation: toastInOut 3.6s ease forwards;
+    }
+
+    .auth-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 70;
+      display: grid;
+      place-items: center;
+      background: rgba(4, 10, 18, 0.46);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 24px;
+    }
+    .auth-card {
+      width: min(560px, 100%);
+      padding: 26px;
+      border-radius: 34px;
+      background: linear-gradient(180deg, rgba(17,33,48,0.9), rgba(8,17,28,0.96));
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow: 0 28px 60px rgba(0,0,0,0.38);
+    }
+    .auth-title { font-size: 30px; font-weight: 800; margin-bottom: 10px; }
+    .auth-text { color: var(--muted); line-height: 1.8; margin-bottom: 18px; font-size: 14px; }
+    .name-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 16px;
+    }
+    .name-row input {
+      flex: 1;
+      min-width: 160px;
+      height: 46px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.07);
+      color: var(--text);
+      padding: 0 14px;
+    }
+    .auth-note { font-size: 12px; color: var(--muted); margin-top: 10px; line-height: 1.7; }
+
+    .shaker { animation: screenShake 0.55s ease; }
+
+    @keyframes seaBob {
+      from { transform: translateY(0px) rotate(0deg); }
+      to { transform: translateY(8px) rotate(0.4deg); }
+    }
+    @keyframes waveFlow { from { background-position-x: 0; } to { background-position-x: 900px; } }
+    @keyframes bobberFloat {
+      0%, 100% { transform: translateY(0px) rotate(-3deg); }
+      50% { transform: translateY(7px) rotate(4deg); }
+    }
+    @keyframes bobberSink {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      45% { transform: translateY(10px) scale(0.96); opacity: 1; }
+      100% { transform: translateY(42px) scale(0.84); opacity: 0; }
+    }
+    @keyframes rodPull {
+      0% { transform: rotate(12deg); }
+      38% { transform: rotate(4deg); }
+      100% { transform: rotate(12deg); }
+    }
+    @keyframes splashFx {
+      0% { opacity: 0; transform: scale(0.7) translateY(4px); }
+      18% { opacity: 1; }
+      100% { opacity: 0; transform: scale(1.18) translateY(-10px); }
+    }
+    @keyframes toastInOut {
+      0% { opacity: 0; transform: translateY(-6px); }
+      10%, 82% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-8px); }
+    }
+    @keyframes screenShake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(5px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(3px); }
+    }
+
+    @media (max-width: 900px) {
+      :root { --navW: 64px; }
+      .side-nav {
+        top: auto;
+        left: 10px;
+        right: 10px;
+        bottom: calc(var(--safeBottom) + 10px);
+        width: auto;
+        height: 74px;
+        flex-direction: row;
+        justify-content: space-around;
+        border-radius: 24px;
+        padding: 10px;
+      }
+      .user-pill { display: none; }
+      .screen { inset: 0; }
+      .top-left { left: 12px; top: calc(var(--safeTop) + 10px); }
+      .top-right { right: 12px; top: calc(var(--safeTop) + 10px); }
+      .bottom-left { left: 12px; bottom: calc(var(--safeBottom) + 92px); }
+      .bottom-right { right: 12px; bottom: calc(var(--safeBottom) + 92px); }
+      .timer-box { min-width: 0; width: min(100vw - 24px, 340px); }
+      .fish-controls {
+        min-width: 0;
+        width: min(100vw - 24px, 520px);
+        padding: 12px;
+      }
+      .field { min-width: calc(50% - 7px); }
+      .content-shell {
+        inset: calc(var(--safeTop) + 10px) 10px calc(var(--safeBottom) + 94px) 10px;
+        padding: 18px;
+      }
+      .result-core { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app" class="time-day">
+    <div class="horizon"></div>
+    <div class="sea"></div>
+    <div id="rodLine" class="rod-line"></div>
+    <div id="bobber" class="bobber"></div>
+    <div id="splash" class="splash"></div>
+
+    <nav class="side-nav">
+      <button class="nav-btn active" data-screen="fishing" aria-label="釣り">🎣<span class="tip">釣り</span></button>
+      <button class="nav-btn" data-screen="store" aria-label="ストア">🏪<span class="tip">ストア</span></button>
+      <button class="nav-btn" data-screen="bag" aria-label="かばん">👜<span class="tip">かばん</span></button>
+      <button class="nav-btn" data-screen="encyclopedia" aria-label="図鑑">📘<span class="tip">図鑑</span></button>
+      <button class="nav-btn" data-screen="settings" aria-label="設定">⚙️<span class="tip">設定</span></button>
+      <div class="user-pill" id="userPill">未ログイン</div>
+    </nav>
+
+    <section id="screen-fishing" class="screen active">
+      <div class="top-left">
+        <div class="timer-box floating-ui">
+          <div class="timer-main">
+            <div class="timer-time" id="timerText">--:--</div>
+            <div class="timer-sub" id="timerSub">まだ釣りを始めていません</div>
+          </div>
+          <div class="bonus-mini" id="bonusMini">
+            ボーナス<br />
+            なし
+          </div>
+        </div>
+      </div>
+
+      <div class="top-right">
+        <div class="info-icon" id="weatherIcon">☀️<div class="balloon" id="weatherBalloon">晴れ</div></div>
+        <div class="info-icon" id="timeIcon">🌤️<div class="balloon" id="timeBalloon">昼</div></div>
+      </div>
+
+      <div class="bottom-left">
+        <div class="fish-controls floating-ui">
+          <div class="field">
+            <label for="rodSelect">竿</label>
+            <select id="rodSelect"></select>
+          </div>
+          <div class="field">
+            <label for="courseSelect">コース</label>
+            <select id="courseSelect"></select>
+          </div>
+          <div class="field">
+            <label for="baitSelectQuick">餌</label>
+            <select id="baitSelectQuick"></select>
+          </div>
+          <button id="startFishingBtn" class="primary-btn">釣る</button>
+          <button id="repeatFishingBtn" class="soft-btn">同じ設定で再釣り</button>
+        </div>
+      </div>
+
+      <div class="bottom-right">
+        <div class="equip-strip floating-ui" id="equipStrip"></div>
+      </div>
+    </section>
+
+    <section id="screen-store" class="screen">
+      <div class="content-shell">
+        <h1 class="section-title">ストア</h1>
+        <p class="section-sub">竿・餌・補助アイテムを買えます。魚や漂流物はここで売却できます。アイテム売却は半額です。</p>
+        <div class="money-line" id="storeMoney"></div>
+        <div class="stat-row">
+          <div class="stat-chip">釣果をその場で売るより、かばんから整理して売ることもできます</div>
+          <div class="stat-chip">長い作業コースほど少しだけボーナスが乗ります</div>
+        </div>
+        <h2>購入</h2>
+        <div class="grid-list" id="shopBuyList"></div>
+        <h2 style="margin-top:24px;">売却</h2>
+        <div class="grid-list" id="shopSellList"></div>
+      </div>
+    </section>
+
+    <section id="screen-bag" class="screen">
+      <div class="content-shell">
+        <h1 class="section-title">かばん</h1>
+        <p class="section-sub">所持金、所持魚、装備変更、補助アイテムの付け替えをここで行います。釣り画面はできるだけ静かに、細かい調整はここで行う設計です。</p>
+        <div class="money-line" id="bagMoney"></div>
+        <div class="stat-row" id="bagStats"></div>
+        <h2>装備</h2>
+        <div class="grid-list" id="bagEquipList"></div>
+        <h2 style="margin-top:24px;">所持魚・アイテム</h2>
+        <div class="grid-list" id="bagInventoryList"></div>
+      </div>
+    </section>
+
+    <section id="screen-encyclopedia" class="screen">
+      <div class="content-shell">
+        <h1 class="section-title">図鑑</h1>
+        <p class="section-sub">これまでに釣った魚の記録です。最大サイズ、累計獲得数、世界記録を表示します。未取得はシルエット表示です。</p>
+        <div class="stat-row" id="encyStats"></div>
+        <div class="ency-grid" id="encyList"></div>
+      </div>
+    </section>
+
+    <section id="screen-settings" class="screen">
+      <div class="content-shell">
+        <h1 class="section-title">設定</h1>
+        <p class="section-sub">音や通知、表示名、保存周りの設定です。Googleアカウント名はサイト上に出さず、表示名のみ使います。</p>
+        <div class="settings-list">
+          <div class="settings-box">
+            <h3>表示名</h3>
+            <div class="row"><span>現在の表示名</span><strong id="settingsDisplayName">-</strong></div>
+            <div class="name-row">
+              <input id="displayNameInput" type="text" maxlength="16" placeholder="表示名を入力" />
+              <button id="saveDisplayNameBtn" class="primary-btn">保存</button>
+            </div>
+            <div class="auth-note">記録者名や図鑑の世界記録に使われます。Googleの名前やメールは画面に出しません。</div>
+          </div>
+
+          <div class="settings-box">
+            <h3>音と通知</h3>
+            <div class="row"><span>波音</span><input id="toggleWave" class="toggle" type="checkbox" /></div>
+            <div class="row"><span>釣れた音</span><input id="toggleCatch" class="toggle" type="checkbox" /></div>
+            <div class="row"><span>ブラウザ通知</span><input id="toggleNotify" class="toggle" type="checkbox" /></div>
+            <div class="row"><span>終了時に軽く揺らす</span><input id="toggleShake" class="toggle" type="checkbox" /></div>
+          </div>
+
+          <div class="settings-box">
+            <h3>保存</h3>
+            <div class="row"><span>Firebase同期状態</span><strong id="syncStatus">確認中</strong></div>
+            <div class="row"><span>最後に保存</span><strong id="lastSavedAt">-</strong></div>
+            <div class="name-row">
+              <button id="forceSaveBtn" class="soft-btn">今すぐ保存</button>
+              <button id="exportBtn" class="soft-btn">ローカル書き出し</button>
+              <button id="importBtn" class="soft-btn">読み込み</button>
+              <input id="importFile" type="file" accept="application/json" hidden />
+            </div>
+            <div class="auth-note">Firebaseが使えない環境でも localStorage に自動保存します。あとから同期が通ればFirebaseにも反映します。</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div id="resultModal" class="modal">
+      <div id="resultCard" class="modal-card">
+        <div class="modal-top">
+          <h2>釣果</h2>
+          <button id="closeResultBtn" class="close-btn">×</button>
+        </div>
+        <div class="result-core">
+          <div id="resultArt" class="result-art">🐟</div>
+          <div>
+            <div id="resultTitle" class="result-title">-</div>
+            <div id="resultLines" class="result-lines">-</div>
+            <div id="resultFlags" class="result-flags"></div>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button id="sellResultBtn" class="soft-btn">売る</button>
+          <button id="keepResultBtn" class="primary-btn">所持する</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="authOverlay" class="auth-overlay">
+      <div class="auth-card">
+        <div class="auth-title">海辺に置いておく作業用の釣り場</div>
+        <div class="auth-text">
+          Googleでログインすると、所持品や図鑑記録をFirebaseに保存します。<br />
+          先にローカルだけで始めることもできます。
+        </div>
+        <div class="name-row">
+          <button id="googleLoginBtn" class="primary-btn">Googleでログイン</button>
+          <button id="guestStartBtn" class="soft-btn">ローカルだけで始める</button>
+        </div>
+        <div class="name-row">
+          <input id="authDisplayNameInput" type="text" maxlength="16" placeholder="最初の表示名（あとで変更可）" />
+        </div>
+        <div class="auth-note">表示名が空なら「つりびと」になります。Googleアカウントの本名やメールアドレスはサイト上に表示しません。</div>
+      </div>
+    </div>
+
+    <div class="toast-wrap" id="toastWrap"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+    import { getAnalytics, isSupported as analyticsSupported } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
+    import {
+      getAuth,
+      GoogleAuthProvider,
+      signInWithPopup,
+      onAuthStateChanged,
+      signOut,
+    } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      setDoc,
+      collection,
+      query,
+      orderBy,
+      limit,
+      getDocs,
+      where,
+      serverTimestamp,
+    } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC8kG1I73YuEuqrg6FEwKykkRxbQTOj3dw",
+      authDomain: "turi-1a5a9.firebaseapp.com",
+      projectId: "turi-1a5a9",
+      storageBucket: "turi-1a5a9.firebasestorage.app",
+      messagingSenderId: "195334596402",
+      appId: "1:195334596402:web:959ab53130902f395ad92b",
+      measurementId: "G-H7P3WR4DR3"
+    };
+
+    const LS_KEY = "zz_fishing_subsite_save_v1";
+    const ENCY_TOP_LIMIT = 50;
+    const SELL_RATE_ITEM = 0.5;
+
+    const RODS = [
+      {
+        id: "rod_small_01",
+        name: "小物竿",
+        icon: "🎏",
+        price: 0,
+        courses: [5, 10],
+        power: 2,
+        luck: 1,
+        sizeBoost: 0,
+        desc: "短めの作業時間向け。小物が中心。"
+      },
+      {
+        id: "rod_normal_01",
+        name: "万能竿",
+        icon: "🎣",
+        price: 180,
+        courses: [15, 25],
+        power: 5,
+        luck: 2,
+        sizeBoost: 1,
+        desc: "標準的。25分ポモドーロにちょうどいい。"
+      },
+      {
+        id: "rod_big_01",
+        name: "大物竿",
+        icon: "🪝",
+        price: 520,
+        courses: [30, 50],
+        power: 9,
+        luck: 3,
+        sizeBoost: 3,
+        desc: "長時間向け。強い魚や大きい魚を狙いやすい。"
+      }
+    ];
+
+    const BAITS = [
+      {
+        id: "bait_basic_01",
+        name: "基本の餌",
+        icon: "🪱",
+        price: 0,
+        ownedByDefault: true,
+        strengthAdjust: 0,
+        rareBonus: 0,
+        sizeBonus: 0,
+        target: "all",
+        desc: "癖のない基本の餌。"
+      },
+      {
+        id: "bait_rare_01",
+        name: "レア寄りの餌",
+        icon: "🦐",
+        price: 120,
+        strengthAdjust: 2,
+        rareBonus: 5,
+        sizeBonus: 0,
+        target: "rare",
+        desc: "レア魚の候補に少し寄る。"
+      },
+      {
+        id: "bait_big_01",
+        name: "大物寄りの餌",
+        icon: "🦑",
+        price: 160,
+        strengthAdjust: 1,
+        rareBonus: 1,
+        sizeBonus: 6,
+        target: "size",
+        desc: "サイズ補正が高め。"
+      }
+    ];
+
+    const SUPPORTS = [
+      {
+        id: "support_luck_01",
+        name: "幸運のお守り",
+        icon: "🍀",
+        price: 280,
+        rareBonus: 8,
+        sizeBonus: 0,
+        power: 1,
+        desc: "レア率を少し上げる。"
+      },
+      {
+        id: "support_size_01",
+        name: "大型ルアー補助",
+        icon: "📏",
+        price: 280,
+        rareBonus: 0,
+        sizeBonus: 10,
+        power: 1,
+        desc: "サイズ補正を上げる。"
+      },
+      {
+        id: "support_time_01",
+        name: "集中砂時計",
+        icon: "⏳",
+        price: 320,
+        rareBonus: 2,
+        sizeBonus: 4,
+        power: 2,
+        desc: "長いコースのボーナスが少し強くなる。"
+      }
+    ];
+
+    const FISHES = [
+      {
+        id: "fish_001_sardine",
+        kind: "fish",
+        name: "イワシ",
+        icon: "🐟",
+        basePrice: 18,
+        avgSize: 14,
+        spread: 8,
+        strength: 1,
+        rarity: 1,
+        timeBonus: { day: 3, evening: 1, night: -2 },
+        weatherBonus: { sunny: 2, cloudy: 0, rainy: 0 },
+        hugeChance: 0.002,
+        hugeFactor: 2.3,
+        description: "群れで回る小さな魚。"
+      },
+      {
+        id: "fish_002_horse_mackerel",
+        kind: "fish",
+        name: "アジ",
+        icon: "🐠",
+        basePrice: 36,
+        avgSize: 22,
+        spread: 10,
+        strength: 3,
+        rarity: 2,
+        timeBonus: { day: 1, evening: 2, night: 1 },
+        weatherBonus: { sunny: 0, cloudy: 1, rainy: 2 },
+        hugeChance: 0.003,
+        hugeFactor: 2.4,
+        description: "扱いやすく、サイズが伸びると嬉しい。"
+      },
+      {
+        id: "fish_003_sea_bream",
+        kind: "fish",
+        name: "タイ",
+        icon: "🐡",
+        basePrice: 98,
+        avgSize: 38,
+        spread: 15,
+        strength: 7,
+        rarity: 5,
+        timeBonus: { day: 2, evening: 2, night: -1 },
+        weatherBonus: { sunny: 2, cloudy: 1, rainy: -2 },
+        hugeChance: 0.004,
+        hugeFactor: 2.8,
+        description: "釣れるとちゃんと嬉しい代表格。"
+      },
+      {
+        id: "fish_004_squid",
+        kind: "fish",
+        name: "イカ",
+        icon: "🦑",
+        basePrice: 74,
+        avgSize: 28,
+        spread: 12,
+        strength: 6,
+        rarity: 4,
+        timeBonus: { day: -3, evening: 2, night: 4 },
+        weatherBonus: { sunny: -1, cloudy: 2, rainy: 3 },
+        hugeChance: 0.005,
+        hugeFactor: 2.6,
+        description: "夜や雨で出やすい。"
+      },
+      {
+        id: "fish_005_flounder",
+        kind: "fish",
+        name: "ヒラメ",
+        icon: "🐟",
+        basePrice: 124,
+        avgSize: 42,
+        spread: 16,
+        strength: 9,
+        rarity: 6,
+        timeBonus: { day: 0, evening: 1, night: 2 },
+        weatherBonus: { sunny: -1, cloudy: 2, rainy: 2 },
+        hugeChance: 0.006,
+        hugeFactor: 3.1,
+        description: "少し大物寄り。"
+      },
+      {
+        id: "fish_006_tuna_child",
+        kind: "fish",
+        name: "若マグロ",
+        icon: "🐬",
+        basePrice: 260,
+        avgSize: 68,
+        spread: 24,
+        strength: 14,
+        rarity: 10,
+        timeBonus: { day: 2, evening: 1, night: -1 },
+        weatherBonus: { sunny: 1, cloudy: 0, rainy: 0 },
+        hugeChance: 0.008,
+        hugeFactor: 3.2,
+        description: "大物竿で狙いたい。"
+      },
+      {
+        id: "fish_007_angler",
+        kind: "fish",
+        name: "アンコウ",
+        icon: "🎣",
+        basePrice: 290,
+        avgSize: 74,
+        spread: 30,
+        strength: 16,
+        rarity: 12,
+        timeBonus: { day: -5, evening: 1, night: 5 },
+        weatherBonus: { sunny: -3, cloudy: 1, rainy: 4 },
+        hugeChance: 0.012,
+        hugeFactor: 3.5,
+        description: "夜と雨でかなり出やすくなる。"
+      },
+      {
+        id: "fish_008_legend_king",
+        kind: "fish",
+        name: "ぬし級の魚",
+        icon: "✨",
+        basePrice: 860,
+        avgSize: 120,
+        spread: 48,
+        strength: 24,
+        rarity: 18,
+        timeBonus: { day: 0, evening: 2, night: 3 },
+        weatherBonus: { sunny: 0, cloudy: 1, rainy: 3 },
+        hugeChance: 0.02,
+        hugeFactor: 4.2,
+        description: "かなり低確率。記録向け。"
+      }
+    ];
+
+    const JUNK_ITEMS = [
+      {
+        id: "item_001_can",
+        kind: "item",
+        name: "空き缶",
+        icon: "🥫",
+        basePrice: 8,
+        rarity: 1,
+        strength: 0,
+        timeBonus: { day: 0, evening: 0, night: 0 },
+        weatherBonus: { sunny: 0, cloudy: 1, rainy: 2 },
+        description: "海のはずれから流れてきた。"
+      },
+      {
+        id: "item_002_wood_box",
+        kind: "item",
+        name: "木箱",
+        icon: "🪵",
+        basePrice: 24,
+        rarity: 2,
+        strength: 2,
+        timeBonus: { day: 0, evening: 1, night: 1 },
+        weatherBonus: { sunny: 0, cloudy: 1, rainy: 1 },
+        description: "なにか入っていた気配だけある。"
+      },
+      {
+        id: "item_003_old_coin",
+        kind: "item",
+        name: "古いコイン",
+        icon: "🪙",
+        basePrice: 48,
+        rarity: 4,
+        strength: 5,
+        timeBonus: { day: 0, evening: 0, night: 2 },
+        weatherBonus: { sunny: 0, cloudy: 1, rainy: 1 },
+        description: "売ればそこそこ嬉しい。"
+      },
+      {
+        id: "item_004_treasure_piece",
+        kind: "item",
+        name: "宝箱の欠片",
+        icon: "🧩",
+        basePrice: 110,
+        rarity: 8,
+        strength: 10,
+        timeBonus: { day: 0, evening: 1, night: 2 },
+        weatherBonus: { sunny: -1, cloudy: 1, rainy: 2 },
+        description: "珍しい漂流物。"
+      }
+    ];
+
+    const SHOP_ITEMS = [
+      ...RODS.map(v => ({ ...v, shopType: "rod" })),
+      ...BAITS.filter(v => v.price > 0).map(v => ({ ...v, shopType: "bait" })),
+      ...SUPPORTS.map(v => ({ ...v, shopType: "support" }))
+    ];
+
+    const DEFAULT_STATE = {
+      version: 1,
+      user: {
+        uid: null,
+        isGuest: true,
+        displayName: "つりびと",
+        photoURL: null,
+      },
+      money: 220,
+      owned: {
+        rods: ["rod_small_01"],
+        baits: ["bait_basic_01"],
+        supports: []
+      },
+      equipped: {
+        rodId: "rod_small_01",
+        baitId: "bait_basic_01",
+        supportId: null,
+      },
+      inventory: [],
+      encyclopedia: {},
+      settings: {
+        waveSound: false,
+        catchSound: true,
+        browserNotify: false,
+        shakeOnFinish: true,
+      },
+      fishing: {
+        inProgress: false,
+        startAt: null,
+        endAt: null,
+        durationMin: 5,
+        rodId: "rod_small_01",
+        baitId: "bait_basic_01",
+        supportId: null,
+        weather: null,
+        timeOfDay: null,
+      },
+      lastCatch: null,
+      lastUsedSetup: {
+        rodId: "rod_small_01",
+        baitId: "bait_basic_01",
+        supportId: null,
+        durationMin: 5,
+      },
+      lastSavedAt: null,
+    };
+
+    let app = null;
+    let analytics = null;
+    let auth = null;
+    let db = null;
+    let firebaseReady = false;
+    let firebaseSyncOk = false;
+    let state = loadLocalState();
+    let globalRecords = {};
+    let timerTickHandle = null;
+    let audioCtx = null;
+    let pendingResult = null;
+    let authResolved = false;
+
+    const el = {
+      app: document.getElementById("app"),
+      navBtns: [...document.querySelectorAll(".nav-btn")],
+      screens: {
+        fishing: document.getElementById("screen-fishing"),
+        store: document.getElementById("screen-store"),
+        bag: document.getElementById("screen-bag"),
+        encyclopedia: document.getElementById("screen-encyclopedia"),
+        settings: document.getElementById("screen-settings"),
+      },
+      userPill: document.getElementById("userPill"),
+      timerText: document.getElementById("timerText"),
+      timerSub: document.getElementById("timerSub"),
+      bonusMini: document.getElementById("bonusMini"),
+      weatherIcon: document.getElementById("weatherIcon"),
+      weatherBalloon: document.getElementById("weatherBalloon"),
+      timeIcon: document.getElementById("timeIcon"),
+      timeBalloon: document.getElementById("timeBalloon"),
+      rodSelect: document.getElementById("rodSelect"),
+      courseSelect: document.getElementById("courseSelect"),
+      baitSelectQuick: document.getElementById("baitSelectQuick"),
+      startFishingBtn: document.getElementById("startFishingBtn"),
+      repeatFishingBtn: document.getElementById("repeatFishingBtn"),
+      equipStrip: document.getElementById("equipStrip"),
+      storeMoney: document.getElementById("storeMoney"),
+      shopBuyList: document.getElementById("shopBuyList"),
+      shopSellList: document.getElementById("shopSellList"),
+      bagMoney: document.getElementById("bagMoney"),
+      bagStats: document.getElementById("bagStats"),
+      bagEquipList: document.getElementById("bagEquipList"),
+      bagInventoryList: document.getElementById("bagInventoryList"),
+      encyStats: document.getElementById("encyStats"),
+      encyList: document.getElementById("encyList"),
+      settingsDisplayName: document.getElementById("settingsDisplayName"),
+      displayNameInput: document.getElementById("displayNameInput"),
+      saveDisplayNameBtn: document.getElementById("saveDisplayNameBtn"),
+      toggleWave: document.getElementById("toggleWave"),
+      toggleCatch: document.getElementById("toggleCatch"),
+      toggleNotify: document.getElementById("toggleNotify"),
+      toggleShake: document.getElementById("toggleShake"),
+      syncStatus: document.getElementById("syncStatus"),
+      lastSavedAt: document.getElementById("lastSavedAt"),
+      forceSaveBtn: document.getElementById("forceSaveBtn"),
+      exportBtn: document.getElementById("exportBtn"),
+      importBtn: document.getElementById("importBtn"),
+      importFile: document.getElementById("importFile"),
+      resultModal: document.getElementById("resultModal"),
+      resultCard: document.getElementById("resultCard"),
+      resultArt: document.getElementById("resultArt"),
+      resultTitle: document.getElementById("resultTitle"),
+      resultLines: document.getElementById("resultLines"),
+      resultFlags: document.getElementById("resultFlags"),
+      sellResultBtn: document.getElementById("sellResultBtn"),
+      keepResultBtn: document.getElementById("keepResultBtn"),
+      closeResultBtn: document.getElementById("closeResultBtn"),
+      authOverlay: document.getElementById("authOverlay"),
+      googleLoginBtn: document.getElementById("googleLoginBtn"),
+      guestStartBtn: document.getElementById("guestStartBtn"),
+      authDisplayNameInput: document.getElementById("authDisplayNameInput"),
+      toastWrap: document.getElementById("toastWrap"),
+      rodLine: document.getElementById("rodLine"),
+      bobber: document.getElementById("bobber"),
+      splash: document.getElementById("splash"),
+    };
+
+    boot();
+
+    async function boot() {
+      tryInitFirebase();
+      bindEvents();
+      fillQuickSelectors();
+      refreshConditions();
+      await loadGlobalRecords();
+      applyStateToSelectors();
+      renderAll();
+      restoreFishingTimer();
+      if (!authResolved) {
+        el.authOverlay.style.display = "grid";
+      }
+    }
+
+    function tryInitFirebase() {
+      try {
+        app = initializeApp(firebaseConfig);
+        firebaseReady = true;
+        auth = getAuth(app);
+        db = getFirestore(app);
+        analyticsSupported().then((ok) => {
+          if (ok) analytics = getAnalytics(app);
+        }).catch(() => {});
+        onAuthStateChanged(auth, async (user) => {
+          authResolved = true;
+          if (user) {
+            state.user.uid = user.uid;
+            state.user.isGuest = false;
+            state.user.photoURL = user.photoURL || null;
+            const remote = await loadRemoteUser(user.uid);
+            if (remote) mergeLoadedState(remote);
+            if (!state.user.displayName || state.user.displayName === "つりびと") {
+              state.user.displayName = safeName(el.authDisplayNameInput.value || user.displayName || "つりびと");
+            }
+            el.authOverlay.style.display = "none";
+            firebaseSyncOk = true;
+            toast("Googleログインしました。保存はFirebaseに同期されます。");
+            saveAll();
+            renderAll();
+          } else {
+            firebaseSyncOk = false;
+            renderAll();
+          }
+        });
+      } catch (err) {
+        console.error(err);
+        firebaseReady = false;
+        firebaseSyncOk = false;
+      }
+    }
+
+    function bindEvents() {
+      el.navBtns.forEach(btn => {
+        btn.addEventListener("click", () => switchScreen(btn.dataset.screen));
+      });
+
+      el.rodSelect.addEventListener("change", () => {
+        state.equipped.rodId = el.rodSelect.value;
+        rebuildCourseOptions();
+        state.lastUsedSetup.rodId = state.equipped.rodId;
+        saveAll();
+        renderAll();
+      });
+
+      el.courseSelect.addEventListener("change", () => {
+        state.lastUsedSetup.durationMin = Number(el.courseSelect.value);
+        saveAll();
+      });
+
+      el.baitSelectQuick.addEventListener("change", () => {
+        state.equipped.baitId = el.baitSelectQuick.value;
+        state.lastUsedSetup.baitId = state.equipped.baitId;
+        saveAll();
+        renderAll();
+      });
+
+      el.startFishingBtn.addEventListener("click", () => startFishingFromCurrent());
+      el.repeatFishingBtn.addEventListener("click", () => repeatFishing());
+
+      el.closeResultBtn.addEventListener("click", closeResultModal);
+      el.keepResultBtn.addEventListener("click", () => {
+        if (!pendingResult) return;
+        addInventoryEntry(pendingResult.entry);
+        applyCatchRecord(pendingResult);
+        toast(`${pendingResult.entry.name} を所持品に入れました。`);
+        pendingResult = null;
+        closeResultModal();
+        saveAll();
+        renderAll();
+      });
+      el.sellResultBtn.addEventListener("click", () => {
+        if (!pendingResult) return;
+        state.money += pendingResult.entry.sellPrice;
+        applyCatchRecord(pendingResult);
+        toast(`${pendingResult.entry.name} を ${pendingResult.entry.sellPrice} zz で売却しました。`);
+        pendingResult = null;
+        closeResultModal();
+        saveAll();
+        renderAll();
+      });
+
+      el.googleLoginBtn.addEventListener("click", googleLogin);
+      el.guestStartBtn.addEventListener("click", startGuest);
+      el.saveDisplayNameBtn.addEventListener("click", () => {
+        const v = safeName(el.displayNameInput.value);
+        state.user.displayName = v || "つりびと";
+        toast("表示名を保存しました。");
+        saveAll();
+        renderAll();
+      });
+
+      el.toggleWave.addEventListener("change", () => updateSetting("waveSound", el.toggleWave.checked));
+      el.toggleCatch.addEventListener("change", () => updateSetting("catchSound", el.toggleCatch.checked));
+      el.toggleNotify.addEventListener("change", async () => {
+        if (el.toggleNotify.checked && Notification && Notification.permission === "default") {
+          try { await Notification.requestPermission(); } catch {}
+        }
+        updateSetting("browserNotify", el.toggleNotify.checked && Notification && Notification.permission === "granted");
+      });
+      el.toggleShake.addEventListener("change", () => updateSetting("shakeOnFinish", el.toggleShake.checked));
+
+      el.forceSaveBtn.addEventListener("click", async () => {
+        await saveAll(true);
+        toast("保存しました。");
+      });
+
+      el.exportBtn.addEventListener("click", exportSave);
+      el.importBtn.addEventListener("click", () => el.importFile.click());
+      el.importFile.addEventListener("change", importSaveFile);
+
+      window.addEventListener("beforeunload", () => saveLocalState(state));
+      document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) {
+          refreshConditions();
+          if (state.fishing.inProgress && Date.now() >= state.fishing.endAt) {
+            finishFishing();
+          }
+          renderAll();
+        }
+      });
+    }
+
+    function fillQuickSelectors() {
+      el.rodSelect.innerHTML = "";
+      RODS.filter(rod => owns("rods", rod.id)).forEach(rod => {
+        const option = document.createElement("option");
+        option.value = rod.id;
+        option.textContent = `${rod.icon} ${rod.name}`;
+        el.rodSelect.appendChild(option);
+      });
+
+      el.baitSelectQuick.innerHTML = "";
+      BAITS.filter(bait => owns("baits", bait.id)).forEach(bait => {
+        const option = document.createElement("option");
+        option.value = bait.id;
+        option.textContent = `${bait.icon} ${bait.name}`;
+        el.baitSelectQuick.appendChild(option);
+      });
+
+      applyStateToSelectors();
+      rebuildCourseOptions();
+    }
+
+    function applyStateToSelectors() {
+      ensureOwnershipDefaults();
+      if (!owns("rods", state.equipped.rodId)) state.equipped.rodId = state.owned.rods[0] || "rod_small_01";
+      if (!owns("baits", state.equipped.baitId)) state.equipped.baitId = state.owned.baits[0] || "bait_basic_01";
+      if (state.equipped.supportId && !owns("supports", state.equipped.supportId)) state.equipped.supportId = null;
+      el.rodSelect.value = state.equipped.rodId;
+      el.baitSelectQuick.value = state.equipped.baitId;
+      el.displayNameInput.value = state.user.displayName || "";
+      el.settingsDisplayName.textContent = state.user.displayName || "-";
+      el.toggleWave.checked = !!state.settings.waveSound;
+      el.toggleCatch.checked = !!state.settings.catchSound;
+      el.toggleNotify.checked = !!state.settings.browserNotify;
+      el.toggleShake.checked = !!state.settings.shakeOnFinish;
+    }
+
+    function ensureOwnershipDefaults() {
+      if (!state.owned.rods.includes("rod_small_01")) state.owned.rods.unshift("rod_small_01");
+      if (!state.owned.baits.includes("bait_basic_01")) state.owned.baits.unshift("bait_basic_01");
+    }
+
+    function rebuildCourseOptions() {
+      const rod = getById(RODS, state.equipped.rodId) || RODS[0];
+      el.courseSelect.innerHTML = "";
+      rod.courses.forEach(min => {
+        const option = document.createElement("option");
+        option.value = String(min);
+        option.textContent = `${min}分`;
+        el.courseSelect.appendChild(option);
+      });
+      const desired = state.lastUsedSetup.durationMin;
+      const selected = rod.courses.includes(desired) ? desired : rod.courses[0];
+      el.courseSelect.value = String(selected);
+      state.lastUsedSetup.durationMin = selected;
+    }
+
+    function switchScreen(name) {
+      el.navBtns.forEach(btn => btn.classList.toggle("active", btn.dataset.screen === name));
+      Object.entries(el.screens).forEach(([key, node]) => node.classList.toggle("active", key === name));
+      renderAll();
+    }
+
+    function refreshConditions(force = false) {
+      const now = new Date();
+      const hour = now.getHours();
+      let timeOfDay = "day";
+      if (hour >= 17 && hour < 19) timeOfDay = "evening";
+      if (hour >= 19 || hour < 5) timeOfDay = "night";
+
+      const seed = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}-${Math.floor(hour / 3)}`;
+      const weatherIdx = seededNumber(seed) % 3;
+      const weather = ["sunny", "cloudy", "rainy"][weatherIdx];
+
+      if (force || !state.fishing.inProgress) {
+        state.currentConditions = { timeOfDay, weather };
+      } else if (!state.currentConditions) {
+        state.currentConditions = { timeOfDay, weather };
+      }
+
+      applyVisualConditions(state.currentConditions.timeOfDay, state.currentConditions.weather);
+    }
+
+    function applyVisualConditions(timeOfDay, weather) {
+      el.app.classList.remove("time-day", "time-evening", "time-night");
+      el.app.classList.add(`time-${timeOfDay}`);
+      const weatherMap = { sunny: ["☀️", "晴れ"], cloudy: ["☁️", "曇り"], rainy: ["🌧️", "雨"] };
+      const timeMap = { day: ["🌤️", "昼"], evening: ["🌆", "夕方"], night: ["🌙", "夜"] };
+      el.weatherIcon.firstChild.textContent = weatherMap[weather][0];
+      el.weatherBalloon.textContent = weatherMap[weather][1];
+      el.timeIcon.firstChild.textContent = timeMap[timeOfDay][0];
+      el.timeBalloon.textContent = timeMap[timeOfDay][1];
+    }
+
+    function startFishingFromCurrent() {
+      if (state.fishing.inProgress) {
+        toast("いま釣り中です。終わるまで待ってください。");
+        return;
+      }
+      const rodId = state.equipped.rodId;
+      const baitId = state.equipped.baitId;
+      const supportId = state.equipped.supportId;
+      const durationMin = Number(el.courseSelect.value);
+      startFishing({ rodId, baitId, supportId, durationMin });
+    }
+
+    function repeatFishing() {
+      if (state.fishing.inProgress) {
+        toast("いま釣り中です。終わってから再釣りできます。");
+        return;
+      }
+      const setup = state.lastUsedSetup || {};
+      startFishing({
+        rodId: setup.rodId || state.equipped.rodId,
+        baitId: setup.baitId || state.equipped.baitId,
+        supportId: setup.supportId ?? state.equipped.supportId,
+        durationMin: setup.durationMin || 5,
+      });
+    }
+
+    function startFishing({ rodId, baitId, supportId, durationMin }) {
+      refreshConditions(true);
+      const now = Date.now();
+      const endAt = now + durationMin * 60 * 1000;
+      state.fishing = {
+        inProgress: true,
+        startAt: now,
+        endAt,
+        durationMin,
+        rodId,
+        baitId,
+        supportId,
+        weather: state.currentConditions.weather,
+        timeOfDay: state.currentConditions.timeOfDay,
+      };
+      state.lastUsedSetup = { rodId, baitId, supportId, durationMin };
+      state.equipped.rodId = rodId;
+      state.equipped.baitId = baitId;
+      state.equipped.supportId = supportId || null;
+      el.bobber.classList.add("visible");
+      el.rodLine.classList.add("visible");
+      toast(`${durationMin}分コースを開始しました。作業どうぞ。`);
+      saveAll();
+      renderAll();
+      startTimerTick();
+    }
+
+    function restoreFishingTimer() {
+      if (state.fishing.inProgress) {
+        el.bobber.classList.add("visible");
+        el.rodLine.classList.add("visible");
+        if (Date.now() >= state.fishing.endAt) {
+          finishFishing();
+        } else {
+          startTimerTick();
+        }
+      } else {
+        el.bobber.classList.remove("visible");
+        el.rodLine.classList.remove("visible");
+      }
+    }
+
+    function startTimerTick() {
+      stopTimerTick();
+      timerTickHandle = setInterval(() => {
+        if (!state.fishing.inProgress) {
+          stopTimerTick();
+          return;
+        }
+        if (Date.now() >= state.fishing.endAt) {
+          finishFishing();
+        }
+        renderFishingStatus();
+      }, 400);
+    }
+
+    function stopTimerTick() {
+      if (timerTickHandle) {
+        clearInterval(timerTickHandle);
+        timerTickHandle = null;
+      }
+    }
+
+    async function finishFishing() {
+      stopTimerTick();
+      if (!state.fishing.inProgress) return;
+
+      el.rodLine.classList.add("pull");
+      el.bobber.classList.add("sinking");
+      el.splash.classList.add("show");
+      if (state.settings.shakeOnFinish) {
+        el.app.classList.remove("shaker");
+        void el.app.offsetWidth;
+        el.app.classList.add("shaker");
+      }
+      if (state.settings.catchSound) playCatchSound();
+      maybeNotify();
+
+      const result = rollCatch(state.fishing);
+      pendingResult = result;
+      state.lastCatch = result.entry;
+      state.fishing.inProgress = false;
+      saveAll();
+      renderAll();
+
+      setTimeout(() => {
+        el.rodLine.classList.remove("pull", "visible");
+        el.bobber.classList.remove("visible", "sinking");
+        el.splash.classList.remove("show");
+        openResultModal(result);
+      }, 900);
+    }
+
+    function openResultModal(result) {
+      el.resultArt.textContent = result.entry.icon;
+      el.resultTitle.textContent = result.entry.name;
+      const lines = [
+        `種類：${result.entry.kind === "fish" ? "魚" : "漂流物"}`,
+        result.entry.kind === "fish" ? `大きさ：${formatSize(result.entry.sizeCm)} cm` : `価値：${result.entry.sellPrice} zz`,
+        `売値：${result.entry.sellPrice} zz`,
+        `条件：${translateTime(result.source.timeOfDay)} / ${translateWeather(result.source.weather)}`,
+      ];
+      el.resultLines.innerHTML = lines.join("<br />");
+      el.resultFlags.innerHTML = "";
+      const flags = [];
+      if (result.isRare) flags.push(flagEl("レア", "rare"));
+      if (result.isRecord) flags.push(flagEl("最大更新", "record"));
+      if (result.isHuge) flags.push(flagEl("超巨大", "huge"));
+      if (result.bonusText) flags.push(flagEl(result.bonusText, ""));
+      flags.forEach(node => el.resultFlags.appendChild(node));
+      el.resultCard.classList.toggle("rare", !!result.isRare);
+      el.resultCard.classList.toggle("record", !!result.isRecord);
+      el.resultModal.classList.add("show");
+    }
+
+    function closeResultModal() {
+      el.resultModal.classList.remove("show");
+    }
+
+    function flagEl(text, klass) {
+      const div = document.createElement("div");
+      div.className = `flag ${klass}`.trim();
+      div.textContent = text;
+      return div;
+    }
+
+    function rollCatch(source) {
+      const rod = getById(RODS, source.rodId) || RODS[0];
+      const bait = getById(BAITS, source.baitId) || BAITS[0];
+      const support = source.supportId ? getById(SUPPORTS, source.supportId) : null;
+      const bonus = getCourseBonus(source.durationMin, support);
+      const power = rod.power + bait.strengthAdjust + (support?.power || 0) + bonus.power;
+      const rareBonus = rod.luck + bait.rareBonus + (support?.rareBonus || 0) + bonus.rare;
+      const sizeBonus = rod.sizeBoost + bait.sizeBonus + (support?.sizeBonus || 0) + bonus.size;
+
+      const all = [...FISHES, ...JUNK_ITEMS];
+      const weighted = all.map(entity => {
+        const timeScore = entity.timeBonus?.[source.timeOfDay] ?? 0;
+        const weatherScore = entity.weatherBonus?.[source.weather] ?? 0;
+        const strengthGap = power - (entity.strength || 0);
+        const targetBonus = bait.target === "rare" ? (entity.rarity || 0) * 0.3 : 0;
+        const junkPenalty = entity.kind === "item" ? -0.6 + bonus.junkReduction : 0;
+        const score = Math.max(0.1, 7 + strengthGap + timeScore + weatherScore + rareBonus * 0.3 + targetBonus + junkPenalty - (entity.rarity || 0) * 0.25);
+        return { entity, weight: score };
+      });
+
+      const picked = weightedPick(weighted);
+      const isFish = picked.kind === "fish";
+      let sizeCm = null;
+      let isHuge = false;
+      let price = picked.basePrice;
+      let rarityScore = picked.rarity || 0;
+
+      if (isFish) {
+        const gaussian = approxGaussian();
+        sizeCm = Math.max(1, picked.avgSize + gaussian * (picked.spread / 2) + sizeBonus * 0.6 + source.durationMin * 0.08);
+        const hugeRoll = Math.random() < Math.max(0, picked.hugeChance + sizeBonus * 0.0007 + bonus.hugeChance);
+        if (hugeRoll) {
+          sizeCm *= picked.hugeFactor;
+          isHuge = true;
+        }
+        sizeCm = Math.round(sizeCm * 10) / 10;
+        const sizeRatio = sizeCm / picked.avgSize;
+        const sizeFactor = sizeRatio < 1 ? 0.95 + sizeRatio * 0.12 : 1 + Math.pow(sizeRatio - 1, 1.18) * 1.15;
+        const rareFactor = 1 + rarityScore * 0.12 + rareBonus * 0.025;
+        price = Math.max(1, Math.round(picked.basePrice * sizeFactor * rareFactor));
+      } else {
+        price = Math.max(1, Math.round(picked.basePrice * (1 + rareBonus * 0.02 + source.durationMin * 0.008)));
+      }
+
+      const entry = {
+        uid: makeId(),
+        baseId: picked.id,
+        kind: picked.kind,
+        name: picked.name,
+        icon: picked.icon,
+        sellPrice: price,
+        sizeCm,
+        rarity: rarityScore,
+        caughtAt: Date.now(),
+      };
+
+      const ency = state.encyclopedia[picked.id] || { count: 0, maxSize: 0, recordHolder: null };
+      const isRecord = isFish && sizeCm > (ency.maxSize || 0);
+      const isRare = rarityScore >= 8 || isHuge || price >= 220;
+      const bonusText = bonus.label;
+
+      return { entry, isRecord, isRare, isHuge, bonusText, source, picked };
+    }
+
+    function applyCatchRecord(result) {
+      const { picked, entry, isRecord } = result;
+      const baseId = picked.id;
+      if (!state.encyclopedia[baseId]) {
+        state.encyclopedia[baseId] = { count: 0, maxSize: 0, recordHolder: null };
+      }
+      const rec = state.encyclopedia[baseId];
+      rec.count += 1;
+      if (entry.kind === "fish" && entry.sizeCm > (rec.maxSize || 0)) {
+        rec.maxSize = entry.sizeCm;
+        rec.recordHolder = state.user.displayName || "つりびと";
+      }
+      if (isRecord && firebaseSyncOk && state.user.uid) {
+        saveGlobalRecord(baseId, entry.sizeCm, state.user.displayName || "つりびと").catch(console.error);
+      }
+    }
+
+    function addInventoryEntry(entry) {
+      state.inventory.unshift(entry);
+    }
+
+    function getCourseBonus(durationMin, support) {
+      let bonus = { rare: 0, size: 0, power: 0, hugeChance: 0, junkReduction: 0, label: "" };
+      if (durationMin >= 25) {
+        bonus.rare += 3;
+        bonus.label = "集中ボーナス";
+      }
+      if (durationMin >= 50) {
+        bonus.size += 6;
+        bonus.power += 2;
+        bonus.hugeChance += 0.005;
+        bonus.label = "深海ボーナス";
+      }
+      if (support?.id === "support_time_01") {
+        bonus.rare += 1;
+        bonus.size += 2;
+        bonus.junkReduction += 0.35;
+      }
+      return bonus;
+    }
+
+    function renderAll() {
+      fillQuickSelectors();
+      applyStateToSelectors();
+      renderFishingStatus();
+      renderEquipStrip();
+      renderStore();
+      renderBag();
+      renderEncyclopedia();
+      renderSettings();
+      renderUserPill();
+      updateSyncStatus();
+    }
+
+    function renderFishingStatus() {
+      refreshConditions();
+      const currentWeather = state.fishing.inProgress ? state.fishing.weather : state.currentConditions.weather;
+      const currentTime = state.fishing.inProgress ? state.fishing.timeOfDay : state.currentConditions.timeOfDay;
+      applyVisualConditions(currentTime, currentWeather);
+
+      if (state.fishing.inProgress) {
+        const remain = Math.max(0, state.fishing.endAt - Date.now());
+        el.timerText.textContent = formatRemain(remain);
+        el.timerSub.textContent = `${state.fishing.durationMin}分コース 진행中`; // Japanese text replaced next line intentionally? no
+        el.timerSub.textContent = `${state.fishing.durationMin}分コース進行中`; 
+        const bonus = getCourseBonus(state.fishing.durationMin, getById(SUPPORTS, state.fishing.supportId));
+        el.bonusMini.innerHTML = `ボーナス<br />${bonus.label || "なし"}`;
+        el.startFishingBtn.disabled = true;
+      } else {
+        el.timerText.textContent = "--:--";
+        el.timerSub.textContent = "まだ釣りを始めていません";
+        const plannedBonus = getCourseBonus(Number(el.courseSelect.value), getById(SUPPORTS, state.equipped.supportId));
+        el.bonusMini.innerHTML = `ボーナス<br />${plannedBonus.label || "なし"}`;
+        el.startFishingBtn.disabled = false;
+      }
+      el.repeatFishingBtn.disabled = !!state.fishing.inProgress;
+    }
+
+    function renderEquipStrip() {
+      const rod = getById(RODS, state.equipped.rodId);
+      const bait = getById(BAITS, state.equipped.baitId);
+      const support = getById(SUPPORTS, state.equipped.supportId);
+      el.equipStrip.innerHTML = "";
+      [
+        { label: "竿", item: rod, empty: "slot_rod.png" },
+        { label: "餌", item: bait, empty: "slot_bait.png" },
+        { label: "補助", item: support, empty: "slot_support.png" },
+      ].forEach(({ label, item }) => {
+        const slot = document.createElement("div");
+        slot.className = "equip-slot";
+        slot.innerHTML = `
+          <div class="equip-icon">${item ? item.icon : "▫️"}</div>
+          <div>${label}</div>
+          <div>${item ? item.name : "なし"}</div>
+        `;
+        el.equipStrip.appendChild(slot);
+      });
+    }
+
+    function renderStore() {
+      el.storeMoney.textContent = `所持金：${state.money} zz`;
+      el.shopBuyList.innerHTML = "";
+      el.shopSellList.innerHTML = "";
+
+      SHOP_ITEMS.forEach(item => {
+        const groupKey = item.shopType === "rod" ? "rods" : item.shopType === "bait" ? "baits" : "supports";
+        const owned = owns(groupKey, item.id);
+        const node = document.createElement("div");
+        node.className = "line-item";
+        node.innerHTML = `
+          <div class="thumb">${item.icon}</div>
+          <div class="meta">
+            <div class="name">${item.name}</div>
+            <div class="desc">${item.desc}</div>
+          </div>
+          <div class="price">${item.price} zz</div>
+          <div class="actions"></div>
+        `;
+        const actions = node.querySelector(".actions");
+        if (owned) {
+          const ownedBtn = document.createElement("button");
+          ownedBtn.className = "soft-btn";
+          ownedBtn.textContent = "所持済み";
+          ownedBtn.disabled = true;
+          actions.appendChild(ownedBtn);
+        } else {
+          const btn = document.createElement("button");
+          btn.className = "primary-btn";
+          btn.textContent = "買う";
+          btn.disabled = state.money < item.price;
+          btn.addEventListener("click", () => buyItem(item));
+          actions.appendChild(btn);
+        }
+        el.shopBuyList.appendChild(node);
+      });
+
+      if (state.inventory.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "line-item";
+        empty.innerHTML = `<div class="meta"><div class="name">売れるものがまだありません</div><div class="desc">魚を保管すると、ここからまとめて売れます。</div></div>`;
+        el.shopSellList.appendChild(empty);
+      } else {
+        state.inventory.forEach(entry => {
+          const node = document.createElement("div");
+          node.className = "line-item";
+          const sellPrice = entry.kind === "item" ? Math.max(1, Math.floor(entry.sellPrice * SELL_RATE_ITEM)) : entry.sellPrice;
+          node.innerHTML = `
+            <div class="thumb">${entry.icon}</div>
+            <div class="meta">
+              <div class="name">${entry.name}</div>
+              <div class="desc">${entry.kind === "fish" ? `大きさ ${formatSize(entry.sizeCm)} cm` : `漂流物`} / 保管中</div>
+            </div>
+            <div class="price">${sellPrice} zz</div>
+            <div class="actions"></div>
+          `;
+          const btn = document.createElement("button");
+          btn.className = "soft-btn";
+          btn.textContent = "売る";
+          btn.addEventListener("click", () => sellInventoryEntry(entry.uid, sellPrice));
+          node.querySelector(".actions").appendChild(btn);
+          el.shopSellList.appendChild(node);
+        });
+      }
+    }
+
+    function renderBag() {
+      el.bagMoney.textContent = `所持金：${state.money} zz`;
+      el.bagStats.innerHTML = "";
+      const totalFish = state.inventory.filter(v => v.kind === "fish").length;
+      const totalItems = state.inventory.filter(v => v.kind === "item").length;
+      [
+        `所持魚 ${totalFish}`,
+        `所持アイテム ${totalItems}`,
+        `装備竿 ${getById(RODS, state.equipped.rodId)?.name || "-"}`,
+        `装備餌 ${getById(BAITS, state.equipped.baitId)?.name || "-"}`,
+      ].forEach(text => {
+        const chip = document.createElement("div");
+        chip.className = "stat-chip";
+        chip.textContent = text;
+        el.bagStats.appendChild(chip);
+      });
+
+      el.bagEquipList.innerHTML = "";
+      [
+        { title: "竿を切り替える", items: RODS.filter(v => owns("rods", v.id)), type: "rod" },
+        { title: "餌を切り替える", items: BAITS.filter(v => owns("baits", v.id)), type: "bait" },
+        { title: "補助を切り替える", items: [{ id: null, name: "なし", icon: "▫️", desc: "補助なし" }, ...SUPPORTS.filter(v => owns("supports", v.id))], type: "support" },
+      ].forEach(block => {
+        block.items.forEach(item => {
+          const node = document.createElement("div");
+          node.className = "line-item";
+          const equipped = block.type === "rod" ? state.equipped.rodId === item.id : block.type === "bait" ? state.equipped.baitId === item.id : state.equipped.supportId === item.id;
+          node.innerHTML = `
+            <div class="thumb">${item.icon}</div>
+            <div class="meta">
+              <div class="name">${block.title}：${item.name}</div>
+              <div class="desc">${item.desc || ""}</div>
+            </div>
+            <div class="actions"></div>
+          `;
+          const btn = document.createElement("button");
+          btn.className = equipped ? "soft-btn" : "primary-btn";
+          btn.textContent = equipped ? "装備中" : "装備";
+          btn.disabled = equipped;
+          btn.addEventListener("click", () => equipItem(block.type, item.id));
+          node.querySelector(".actions").appendChild(btn);
+          el.bagEquipList.appendChild(node);
+        });
+      });
+
+      el.bagInventoryList.innerHTML = "";
+      if (state.inventory.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "line-item";
+        empty.innerHTML = `<div class="meta"><div class="name">まだ何も入っていません</div><div class="desc">釣果を保管するとここに並びます。</div></div>`;
+        el.bagInventoryList.appendChild(empty);
+      } else {
+        state.inventory.forEach(entry => {
+          const node = document.createElement("div");
+          node.className = "line-item";
+          node.innerHTML = `
+            <div class="thumb">${entry.icon}</div>
+            <div class="meta">
+              <div class="name">${entry.name}</div>
+              <div class="desc">${entry.kind === "fish" ? `大きさ ${formatSize(entry.sizeCm)} cm` : `漂流物`} / 売値 ${entry.sellPrice} zz</div>
+            </div>
+            <div class="actions"></div>
+          `;
+          const actions = node.querySelector(".actions");
+          const sellBtn = document.createElement("button");
+          sellBtn.className = "soft-btn";
+          const sellPrice = entry.kind === "item" ? Math.max(1, Math.floor(entry.sellPrice * SELL_RATE_ITEM)) : entry.sellPrice;
+          sellBtn.textContent = `売る (${sellPrice} zz)`;
+          sellBtn.addEventListener("click", () => sellInventoryEntry(entry.uid, sellPrice));
+          actions.appendChild(sellBtn);
+          el.bagInventoryList.appendChild(node);
+        });
+      }
+    }
+
+    function renderEncyclopedia() {
+      const caughtCount = Object.keys(state.encyclopedia).length;
+      el.encyStats.innerHTML = "";
+      [
+        `発見 ${caughtCount} / ${FISHES.length}`,
+        `世界記録読込 ${Object.keys(globalRecords).length}件`,
+      ].forEach(text => {
+        const chip = document.createElement("div");
+        chip.className = "stat-chip";
+        chip.textContent = text;
+        el.encyStats.appendChild(chip);
+      });
+
+      el.encyList.innerHTML = "";
+      FISHES.forEach(fish => {
+        const own = state.encyclopedia[fish.id];
+        const global = globalRecords[fish.id];
+        const card = document.createElement("div");
+        card.className = `fish-card ${own ? "" : "unknown"}`.trim();
+        card.innerHTML = `
+          <div class="fish-art">${own ? fish.icon : "❔"}</div>
+          <div class="fish-name">${own ? fish.name : "？？？"}</div>
+          <div class="fish-meta">
+            ${own ? `累計 ${own.count}匹<br />自分の最大 ${own.maxSize ? `${formatSize(own.maxSize)} cm` : "-"}` : `まだ見つけていません`}<br />
+            <span class="record">史上最大 ${global ? `${formatSize(global.sizeCm)} cm / ${escapeHtml(global.recordHolder || "-" )}` : "未登録"}</span><br />
+            ${own ? fish.description : ""}
+          </div>
+        `;
+        el.encyList.appendChild(card);
+      });
+    }
+
+    function renderSettings() {
+      el.settingsDisplayName.textContent = state.user.displayName || "-";
+      el.displayNameInput.value = state.user.displayName || "";
+      el.lastSavedAt.textContent = state.lastSavedAt ? formatDateTime(state.lastSavedAt) : "-";
+    }
+
+    function renderUserPill() {
+      el.userPill.innerHTML = `${escapeHtml(state.user.displayName || "つりびと")}<br />${state.user.isGuest ? "ローカル保存" : "Google同期"}`;
+    }
+
+    function updateSyncStatus() {
+      if (firebaseReady && firebaseSyncOk && !state.user.isGuest) {
+        el.syncStatus.textContent = "Firebase同期中";
+      } else if (firebaseReady) {
+        el.syncStatus.textContent = "ローカル保存のみ";
+      } else {
+        el.syncStatus.textContent = "Firebase未接続";
+      }
+    }
+
+    function buyItem(item) {
+      if (state.money < item.price) {
+        toast("所持金が足りません。");
+        return;
+      }
+      state.money -= item.price;
+      const groupKey = item.shopType === "rod" ? "rods" : item.shopType === "bait" ? "baits" : "supports";
+      if (!state.owned[groupKey].includes(item.id)) state.owned[groupKey].push(item.id);
+      toast(`${item.name} を購入しました。`);
+      saveAll();
+      renderAll();
+    }
+
+    function sellInventoryEntry(uid, sellPrice) {
+      const idx = state.inventory.findIndex(v => v.uid === uid);
+      if (idx < 0) return;
+      const [entry] = state.inventory.splice(idx, 1);
+      state.money += sellPrice;
+      toast(`${entry.name} を ${sellPrice} zz で売却しました。`);
+      saveAll();
+      renderAll();
+    }
+
+    function equipItem(type, id) {
+      if (type === "rod") {
+        state.equipped.rodId = id;
+        state.lastUsedSetup.rodId = id;
+      }
+      if (type === "bait") {
+        state.equipped.baitId = id;
+        state.lastUsedSetup.baitId = id;
+      }
+      if (type === "support") {
+        state.equipped.supportId = id;
+        state.lastUsedSetup.supportId = id;
+      }
+      toast("装備を変更しました。");
+      fillQuickSelectors();
+      saveAll();
+      renderAll();
+    }
+
+    function updateSetting(key, value) {
+      state.settings[key] = value;
+      if (key === "waveSound" && value) warmAudio();
+      toast("設定を更新しました。");
+      saveAll();
+      renderAll();
+    }
+
+    async function googleLogin() {
+      if (!firebaseReady || !auth) {
+        toast("Firebaseが使えないため、いまはローカルのみで始めます。");
+        startGuest();
+        return;
+      }
+      try {
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth, provider);
+      } catch (err) {
+        console.error(err);
+        toast("Googleログインに失敗しました。ローカルだけでも始められます。");
+      }
+    }
+
+    function startGuest() {
+      state.user.isGuest = true;
+      state.user.displayName = safeName(el.authDisplayNameInput.value || state.user.displayName || "つりびと");
+      el.authOverlay.style.display = "none";
+      authResolved = true;
+      toast("ローカル保存で開始しました。");
+      saveAll();
+      renderAll();
+    }
+
+    async function loadRemoteUser(uid) {
+      if (!db) return null;
+      try {
+        const ref = doc(db, "users", uid);
+        const snap = await getDoc(ref);
+        if (!snap.exists()) return null;
+        return snap.data()?.state || null;
+      } catch (err) {
+        console.error(err);
+        return null;
+      }
+    }
+
+    async function saveRemoteUser() {
+      if (!db || !firebaseSyncOk || !state.user.uid || state.user.isGuest) return;
+      try {
+        const ref = doc(db, "users", state.user.uid);
+        await setDoc(ref, {
+          uid: state.user.uid,
+          displayName: state.user.displayName || "つりびと",
+          updatedAt: serverTimestamp(),
+          state: state,
+        }, { merge: true });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function saveGlobalRecord(baseId, sizeCm, recordHolder) {
+      if (!db) return;
+      const current = globalRecords[baseId];
+      if (current && current.sizeCm >= sizeCm) return;
+      try {
+        const ref = doc(db, "globalFishRecords", baseId);
+        await setDoc(ref, {
+          fishId: baseId,
+          sizeCm,
+          recordHolder,
+          updatedAt: serverTimestamp(),
+        }, { merge: true });
+        globalRecords[baseId] = { sizeCm, recordHolder };
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function loadGlobalRecords() {
+      if (!db) {
+        globalRecords = {};
+        return;
+      }
+      try {
+        const refs = [];
+        for (const fish of FISHES.slice(0, ENCY_TOP_LIMIT)) {
+          refs.push(doc(db, "globalFishRecords", fish.id));
+        }
+        const snaps = await Promise.all(refs.map(getDoc));
+        const map = {};
+        snaps.forEach(snap => {
+          if (snap.exists()) {
+            const d = snap.data();
+            map[d.fishId] = { sizeCm: d.sizeCm, recordHolder: d.recordHolder };
+          }
+        });
+        globalRecords = map;
+      } catch (err) {
+        console.error(err);
+        globalRecords = {};
+      }
+    }
+
+    async function saveAll(force = false) {
+      state.lastSavedAt = Date.now();
+      saveLocalState(state);
+      if (force || (!state.user.isGuest && firebaseSyncOk)) {
+        await saveRemoteUser();
+      }
+      renderSettings();
+    }
+
+    function exportSave() {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `zz_fishing_save_${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    async function importSaveFile(e) {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      try {
+        const text = await file.text();
+        const parsed = JSON.parse(text);
+        mergeLoadedState(parsed);
+        toast("セーブデータを読み込みました。");
+        saveAll(true);
+        renderAll();
+      } catch (err) {
+        console.error(err);
+        toast("読み込みに失敗しました。");
+      } finally {
+        e.target.value = "";
+      }
+    }
+
+    function mergeLoadedState(next) {
+      state = deepMerge(structuredClone(DEFAULT_STATE), next || {});
+      if (!state.currentConditions) state.currentConditions = { timeOfDay: "day", weather: "sunny" };
+      ensureOwnershipDefaults();
+      applyStateToSelectors();
+      restoreFishingTimer();
+      renderAll();
+    }
+
+    function loadLocalState() {
+      try {
+        const raw = localStorage.getItem(LS_KEY);
+        if (!raw) return structuredClone(DEFAULT_STATE);
+        const parsed = JSON.parse(raw);
+        return deepMerge(structuredClone(DEFAULT_STATE), parsed);
+      } catch {
+        return structuredClone(DEFAULT_STATE);
+      }
+    }
+
+    function saveLocalState(payload) {
+      try {
+        localStorage.setItem(LS_KEY, JSON.stringify(payload));
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function maybeNotify() {
+      if (state.settings.browserNotify && Notification && Notification.permission === "granted") {
+        new Notification("釣りが終わりました", { body: "回収して釣果を見てみましょう。" });
+      }
+    }
+
+    function warmAudio() {
+      if (!audioCtx) {
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if (Ctx) audioCtx = new Ctx();
+      }
+    }
+
+    function playCatchSound() {
+      warmAudio();
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(680, now);
+      osc.frequency.exponentialRampToValueAtTime(920, now + 0.09);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.08, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.23);
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.26);
+    }
+
+    function toast(message) {
+      const node = document.createElement("div");
+      node.className = "toast";
+      node.textContent = message;
+      el.toastWrap.appendChild(node);
+      setTimeout(() => node.remove(), 3800);
+    }
+
+    function owns(groupKey, id) {
+      return !!state.owned[groupKey]?.includes(id);
+    }
+
+    function getById(arr, id) {
+      return arr.find(v => v.id === id) || null;
+    }
+
+    function deepMerge(base, patch) {
+      if (patch == null || typeof patch !== "object") return base;
+      Object.keys(patch).forEach(key => {
+        const pv = patch[key];
+        if (Array.isArray(pv)) {
+          base[key] = pv;
+        } else if (pv && typeof pv === "object") {
+          if (!base[key] || typeof base[key] !== "object" || Array.isArray(base[key])) base[key] = {};
+          base[key] = deepMerge(base[key], pv);
+        } else {
+          base[key] = pv;
+        }
+      });
+      return base;
+    }
+
+    function safeName(v) {
+      return String(v || "").trim().slice(0, 16).replace(/[<>]/g, "");
+    }
+
+    function formatRemain(ms) {
+      const total = Math.ceil(ms / 1000);
+      const m = Math.floor(total / 60);
+      const s = total % 60;
+      return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+    }
+
+    function formatSize(n) {
+      return Number(n || 0).toFixed(1);
+    }
+
+    function formatDateTime(ts) {
+      const d = new Date(ts);
+      return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,"0")}/${String(d.getDate()).padStart(2,"0")} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
+    }
+
+    function translateWeather(w) {
+      return ({ sunny: "晴れ", cloudy: "曇り", rainy: "雨" })[w] || w;
+    }
+
+    function translateTime(t) {
+      return ({ day: "昼", evening: "夕方", night: "夜" })[t] || t;
+    }
+
+    function weightedPick(list) {
+      const total = list.reduce((sum, v) => sum + v.weight, 0);
+      let r = Math.random() * total;
+      for (const item of list) {
+        r -= item.weight;
+        if (r <= 0) return item.entity;
+      }
+      return list[list.length - 1].entity;
+    }
+
+    function approxGaussian() {
+      let u = 0, v = 0;
+      while (u === 0) u = Math.random();
+      while (v === 0) v = Math.random();
+      return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+    }
+
+    function seededNumber(seed) {
+      let h = 2166136261;
+      for (let i = 0; i < seed.length; i++) {
+        h ^= seed.charCodeAt(i);
+        h = Math.imul(h, 16777619);
+      }
+      return Math.abs(h >>> 0);
+    }
+
+    function makeId() {
+      return `${Date.now().toString(36)}_${Math.random().toString(36).slice(2,8)}`;
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    window.zzFishingDebug = {
+      state: () => state,
+      quickFinish: () => {
+        if (state.fishing.inProgress) {
+          state.fishing.endAt = Date.now();
+          finishFishing();
+        }
+      },
+      signOut: async () => auth ? signOut(auth) : null,
+    };
+  </script>
+</body>
+</html>
