@@ -35,15 +35,18 @@
       --font13: calc(13px * var(--uiScale));
       --font14: calc(14px * var(--uiScale));
       --font18: calc(18px * var(--uiScale));
-      --timerSize: clamp(132px, 16vw, 188px);
-      --fishLeftW: clamp(260px, 40vw, 520px);
-      --fishRightW: clamp(210px, 26vw, 320px);
-      --fishBottomGap: 10px;
-      --fishStageTopPad: 180px;
+      --timerSize: 168px;
+      --stageTopPad: calc(var(--timerSize) + 18px);
     }
 
     * { box-sizing: border-box; }
-    html, body { margin: 0; min-height: 100%; background: #0c3954; color: var(--text); font-family: "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif; }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: #0c3954;
+      color: var(--text);
+      font-family: "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+    }
     body { overflow: hidden; }
     button, input, select { font: inherit; }
     button { cursor: pointer; }
@@ -60,72 +63,138 @@
     }
     #app.nav-collapsed { --navCurrent: var(--navCollapsed); }
     #app.time-day {
-      --bgTop: #8dd0ff; --bgMid: #68b5ea; --bgBottom: #2e6f96;
-      --sea1: #3696c8; --sea2: #1f739e; --sea3: #175a7a;
+      --bgTop: #8dd0ff;
+      --bgMid: #68b5ea;
+      --bgBottom: #2e6f96;
+      --sea1: #3696c8;
+      --sea2: #1f739e;
+      --sea3: #175a7a;
     }
     #app.time-evening {
-      --bgTop: #f4b783; --bgMid: #cd7e6f; --bgBottom: #513f7a;
-      --sea1: #955d8a; --sea2: #6c4a80; --sea3: #3d3b6d;
+      --bgTop: #f4b783;
+      --bgMid: #cd7e6f;
+      --bgBottom: #513f7a;
+      --sea1: #955d8a;
+      --sea2: #6c4a80;
+      --sea3: #3d3b6d;
     }
     #app.time-night {
-      --bgTop: #0b1e42; --bgMid: #102851; --bgBottom: #09162d;
-      --sea1: #113562; --sea2: #0d2749; --sea3: #07162e;
+      --bgTop: #0b1e42;
+      --bgMid: #102851;
+      --bgBottom: #09162d;
+      --sea1: #113562;
+      --sea2: #0d2749;
+      --sea3: #07162e;
     }
 
     .horizon {
-      position: absolute; left: 0; right: 0; top: 36%; height: 2px;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 36%;
+      height: 2px;
       background: linear-gradient(to right, transparent, rgba(255,255,255,0.45), transparent);
-      opacity: 0.45; filter: blur(0.4px);
+      opacity: 0.45;
+      filter: blur(0.4px);
     }
     .sea {
-      position: absolute; left: -6%; right: -6%; bottom: -14%; height: 56%;
+      position: absolute;
+      left: -6%;
+      right: -6%;
+      bottom: -14%;
+      height: 56%;
       background:
         radial-gradient(circle at 18% 10%, rgba(255,255,255,0.10), transparent 16%),
         radial-gradient(circle at 77% 13%, rgba(255,255,255,0.09), transparent 18%),
         linear-gradient(to bottom, var(--sea1), var(--sea2) 50%, var(--sea3));
-      border-top-left-radius: 48% 14%; border-top-right-radius: 48% 16%;
+      border-top-left-radius: 48% 14%;
+      border-top-right-radius: 48% 16%;
       animation: seaBob 7s ease-in-out infinite alternate;
       box-shadow: inset 0 14px 24px rgba(255,255,255,0.08), inset 0 -20px 30px rgba(0,0,0,0.14);
     }
-    .sea::before, .sea::after {
-      content: ""; position: absolute; inset: 0; background-repeat: repeat-x; opacity: 0.34; pointer-events: none;
+    .sea::before,
+    .sea::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-repeat: repeat-x;
+      opacity: 0.34;
+      pointer-events: none;
     }
     .sea::before {
       background-image:
         radial-gradient(42px 8px at 40px 24px, rgba(255,255,255,0.22), transparent 70%),
         radial-gradient(58px 10px at 140px 38px, rgba(255,255,255,0.15), transparent 72%),
         radial-gradient(76px 10px at 300px 34px, rgba(255,255,255,0.14), transparent 72%);
-      background-size: 380px 64px; animation: waveFlow 18s linear infinite;
+      background-size: 380px 64px;
+      animation: waveFlow 18s linear infinite;
     }
     .sea::after {
       background-image:
         radial-gradient(60px 7px at 50px 52px, rgba(255,255,255,0.14), transparent 72%),
         radial-gradient(70px 7px at 210px 52px, rgba(255,255,255,0.12), transparent 72%);
-      background-size: 320px 78px; animation: waveFlow 24s linear infinite reverse; opacity: 0.22;
+      background-size: 320px 78px;
+      animation: waveFlow 24s linear infinite reverse;
+      opacity: 0.22;
     }
 
     .bobber {
-      position: absolute; left: 52%; top: 58%; width: 18px; height: 34px; margin-left: -9px; opacity: 0;
-      transform-origin: 50% 90%; transition: opacity 0.3s ease; pointer-events: none; z-index: 3;
+      position: absolute;
+      left: 52%;
+      top: 58%;
+      width: 18px;
+      height: 34px;
+      margin-left: -9px;
+      opacity: 0;
+      transform-origin: 50% 90%;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      z-index: 3;
     }
     .bobber.visible { opacity: 1; animation: bobberFloat 2.6s ease-in-out infinite; }
     .bobber::before {
-      content: ""; position: absolute; left: 50%; top: 0; width: 6px; height: 10px; margin-left: -3px;
-      background: #ff4d57; border-radius: 8px 8px 3px 3px; box-shadow: 0 0 0 1px rgba(255,255,255,0.3);
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 0;
+      width: 6px;
+      height: 10px;
+      margin-left: -3px;
+      background: #ff4d57;
+      border-radius: 8px 8px 3px 3px;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.3);
     }
     .bobber::after {
-      content: ""; position: absolute; left: 50%; top: 8px; width: 16px; height: 20px; margin-left: -8px;
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 8px;
+      width: 16px;
+      height: 20px;
+      margin-left: -8px;
       background: linear-gradient(to bottom, #ffffff, #f0f4ff 56%, #ff7f7f 57%, #ff4b4b 100%);
-      border-radius: 50% 50% 48% 48%; box-shadow: 0 10px 16px rgba(0,0,0,0.14);
+      border-radius: 50% 50% 48% 48%;
+      box-shadow: 0 10px 16px rgba(0,0,0,0.14);
     }
     .bobber.sinking { animation: bobberSink 0.9s ease forwards; }
 
     .splash {
-      position: absolute; left: 52%; top: 60%; width: 160px; height: 90px; margin-left: -80px; opacity: 0; pointer-events: none; z-index: 4;
+      position: absolute;
+      left: 52%;
+      top: 60%;
+      width: 160px;
+      height: 90px;
+      margin-left: -80px;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 4;
     }
     .splash.show { animation: splashFx 1s ease forwards; }
-    .splash::before, .splash::after {
-      content: ""; position: absolute; inset: 0;
+    .splash::before,
+    .splash::after {
+      content: "";
+      position: absolute;
+      inset: 0;
       background:
         radial-gradient(circle at 22% 66%, rgba(255,255,255,0.9), transparent 10%),
         radial-gradient(circle at 34% 58%, rgba(255,255,255,0.85), transparent 8%),
@@ -134,180 +203,530 @@
         radial-gradient(circle at 78% 66%, rgba(255,255,255,0.86), transparent 10%);
     }
     .splash::after {
-      background: radial-gradient(80px 20px at 50% 78%, rgba(255,255,255,0.3), transparent 70%); filter: blur(2px);
+      background: radial-gradient(80px 20px at 50% 78%, rgba(255,255,255,0.3), transparent 70%);
+      filter: blur(2px);
     }
     .rod-line {
-      position: absolute; right: 20%; top: 26%; width: 2px; height: 36%;
+      position: absolute;
+      right: 20%;
+      top: 26%;
+      width: 2px;
+      height: 36%;
       background: linear-gradient(to bottom, rgba(255,255,255,0.35), rgba(255,255,255,0.08));
-      transform: rotate(12deg); transform-origin: top center; opacity: 0; transition: opacity 0.3s ease; z-index: 2;
+      transform: rotate(12deg);
+      transform-origin: top center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 2;
     }
     .rod-line.visible { opacity: 1; }
     .rod-line.pull { animation: rodPull 0.8s ease; }
 
     .floating-ui {
-      position: absolute; z-index: 10; backdrop-filter: var(--panelBlur); -webkit-backdrop-filter: var(--panelBlur);
-      background: rgba(12, 26, 41, 0.14); border: 1px solid var(--line); border-radius: calc(18px * var(--uiScale)); box-shadow: var(--shadow);
+      backdrop-filter: var(--panelBlur);
+      -webkit-backdrop-filter: var(--panelBlur);
+      background: rgba(12, 26, 41, 0.14);
+      border: 1px solid var(--line);
+      border-radius: calc(18px * var(--uiScale));
+      box-shadow: var(--shadow);
     }
 
     .nav-toggle {
-      position: absolute; top: calc(var(--safeTop) + 16px); left: 12px; z-index: 25; width: 36px; height: 36px;
-      border: 0; border-radius: 999px; background: rgba(8,18,29,0.48); color: var(--text); backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.16); box-shadow: var(--shadow); display: grid; place-items: center; font-size: 18px; padding: 0;
+      position: absolute;
+      top: calc(var(--safeTop) + 16px);
+      left: 12px;
+      z-index: 25;
+      width: 36px;
+      height: 36px;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(8,18,29,0.48);
+      color: var(--text);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.16);
+      box-shadow: var(--shadow);
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      padding: 0;
     }
     .side-nav {
-      position: absolute; top: calc(var(--safeTop) + 58px); left: 12px; bottom: calc(var(--safeBottom) + 16px); width: var(--navExpanded);
-      display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 14px 10px; z-index: 20;
-      background: rgba(8, 18, 29, 0.18); border: 1px solid rgba(255,255,255,0.16); border-radius: 28px; box-shadow: var(--shadow);
-      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: transform 0.22s ease, opacity 0.22s ease;
+      position: absolute;
+      top: calc(var(--safeTop) + 58px);
+      left: 12px;
+      bottom: calc(var(--safeBottom) + 16px);
+      width: var(--navExpanded);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 10px;
+      z-index: 20;
+      background: rgba(8, 18, 29, 0.18);
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: transform 0.22s ease, opacity 0.22s ease;
     }
-    #app.nav-collapsed .side-nav { transform: translateX(calc(-100% - 18px)); opacity: 0; pointer-events: none; }
+    #app.nav-collapsed .side-nav {
+      transform: translateX(calc(-100% - 18px));
+      opacity: 0;
+      pointer-events: none;
+    }
 
     .nav-btn {
-      width: 52px; height: 52px; border: 0; border-radius: 18px; color: var(--text); background: rgba(255,255,255,0.08);
-      display: grid; place-items: center; transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
-      position: relative; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08); padding: 0;
+      width: 52px;
+      height: 52px;
+      border: 0;
+      border-radius: 18px;
+      color: var(--text);
+      background: rgba(255,255,255,0.08);
+      display: grid;
+      place-items: center;
+      transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+      position: relative;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+      padding: 0;
     }
-    .nav-btn:hover, .nav-btn.active {
-      transform: translateY(-1px) scale(1.02); background: rgba(255,255,255,0.18);
+    .nav-btn:hover,
+    .nav-btn.active {
+      transform: translateY(-1px) scale(1.02);
+      background: rgba(255,255,255,0.18);
       box-shadow: 0 8px 16px rgba(0,0,0,0.2), inset 0 0 0 1px rgba(255,255,255,0.14);
     }
-    .nav-btn svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; opacity: 0.95; }
+    .nav-btn svg {
+      width: 24px;
+      height: 24px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.9;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.95;
+    }
     .nav-btn .tip {
-      position: absolute; left: calc(100% + 10px); top: 50%; transform: translateY(-50%); padding: 7px 10px; border-radius: 12px;
-      background: rgba(10,18,28,0.78); font-size: 12px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.16s ease;
+      position: absolute;
+      left: calc(100% + 10px);
+      top: 50%;
+      transform: translateY(-50%);
+      padding: 7px 10px;
+      border-radius: 12px;
+      background: rgba(10,18,28,0.78);
+      font-size: 12px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.16s ease;
       border: 1px solid rgba(255,255,255,0.12);
     }
     .nav-btn:hover .tip { opacity: 1; }
     .user-pill {
-      margin-top: auto; width: 100%; font-size: 11px; color: var(--muted); text-align: center; line-height: 1.45;
-      padding: 10px 4px 2px; border-top: 1px solid rgba(255,255,255,0.14); word-break: break-word;
+      margin-top: auto;
+      width: 100%;
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.45;
+      padding: 10px 4px 2px;
+      border-top: 1px solid rgba(255,255,255,0.14);
+      word-break: break-word;
     }
 
-    .screen { position: absolute; inset: 0; opacity: 0; pointer-events: none; transition: opacity 0.26s ease; }
-    .screen.active { opacity: 1; pointer-events: auto; }
+    .screen {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.26s ease;
+    }
+    .screen.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
 
     .top-right {
-      position: absolute; top: calc(var(--safeTop) + 18px); right: 18px; z-index: 12; display: flex; gap: 10px; align-items: center;
+      position: absolute;
+      top: calc(var(--safeTop) + 18px);
+      right: 18px;
+      z-index: 12;
+      display: flex;
+      gap: 10px;
+      align-items: center;
     }
     .money-mini {
-      padding: 0 12px; min-height: 42px; border-radius: 999px; display: flex; align-items: center; font-size: 14px; font-weight: 700;
-      color: var(--gold); background: rgba(10,18,28,0.34); border: 1px solid rgba(255,255,255,0.14); box-shadow: var(--shadow);
-      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      padding: 0 12px;
+      min-height: 42px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--gold);
+      background: rgba(10,18,28,0.34);
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
     .info-icon {
-      width: 56px; height: 56px; position: relative; display: grid; place-items: center; font-size: 24px;
-      background: rgba(6, 15, 24, 0.22); border: 1px solid rgba(255,255,255,0.14); border-radius: 18px; box-shadow: var(--shadow); backdrop-filter: blur(10px);
+      width: 56px;
+      height: 56px;
+      position: relative;
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+      background: rgba(6, 15, 24, 0.22);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
     }
     .info-icon .balloon {
-      position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%); min-width: 96px; padding: 8px 10px; text-align: center;
-      font-size: 12px; border-radius: 12px; background: rgba(10,18,28,0.84); color: var(--text); border: 1px solid rgba(255,255,255,0.12);
-      opacity: 0; pointer-events: none; transition: opacity 0.16s ease; white-space: nowrap;
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      min-width: 96px;
+      padding: 8px 10px;
+      text-align: center;
+      font-size: 12px;
+      border-radius: 12px;
+      background: rgba(10,18,28,0.84);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.12);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.16s ease;
+      white-space: nowrap;
     }
     .info-icon:hover .balloon { opacity: 1; }
 
     .fishing-stage {
-      position: absolute; inset: calc(var(--safeTop) + 10px) 14px calc(var(--safeBottom) + 14px) calc(var(--navCurrent) + 22px); z-index: 9; transition: inset 0.22s ease;
-      overflow: hidden;
-      padding-top: var(--fishStageTopPad);
+      position: absolute;
+      inset: calc(var(--safeTop) + 10px) 14px calc(var(--safeBottom) + 14px) calc(var(--navCurrent) + 22px);
+      z-index: 9;
+      transition: inset 0.22s ease;
+      padding-top: var(--stageTopPad);
     }
 
     .timer-box {
-      position: absolute; top: 0; left: 0; z-index: 12; width: var(--timerSize); aspect-ratio: 1;
-      min-width: 120px; pointer-events: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 12;
+      width: var(--timerSize);
+      aspect-ratio: 1;
+      min-width: 104px;
+      pointer-events: none;
     }
-    .timer-gauge { width: 100%; height: 100%; filter: drop-shadow(0 14px 36px rgba(0,0,0,0.2)); }
-    .timer-gauge .track { fill: none; stroke: rgba(255,255,255,0.18); stroke-width: 8; }
-    .timer-gauge .progress { fill: none; stroke: var(--accent); stroke-width: 10; stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; transition: stroke-dashoffset 0.35s linear; }
-    .timer-gauge .glow { fill: none; stroke: rgba(183,241,255,0.28); stroke-width: 18; stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; filter: blur(6px); transition: stroke-dashoffset 0.35s linear; }
+    .timer-gauge {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 14px 36px rgba(0,0,0,0.2));
+    }
+    .timer-gauge .track {
+      fill: none;
+      stroke: rgba(255,255,255,0.18);
+      stroke-width: 8;
+    }
+    .timer-gauge .progress {
+      fill: none;
+      stroke: var(--accent);
+      stroke-width: 10;
+      stroke-linecap: round;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+      transition: stroke-dashoffset 0.35s linear;
+    }
+    .timer-gauge .glow {
+      fill: none;
+      stroke: rgba(183,241,255,0.28);
+      stroke-width: 18;
+      stroke-linecap: round;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+      filter: blur(6px);
+      transition: stroke-dashoffset 0.35s linear;
+    }
     .timer-core {
-      position: absolute; inset: 20%; border-radius: 50%; background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.15), rgba(11,24,37,0.46));
-      border: 1px solid rgba(255,255,255,0.14); box-shadow: var(--shadow); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 12px; pointer-events: auto;
+      position: absolute;
+      inset: 20%;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.15), rgba(11,24,37,0.46));
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      padding: 12px;
+      pointer-events: auto;
     }
-    .timer-main-time { font-size: clamp(18px, 2vw, 30px); font-weight: 800; letter-spacing: 0.05em; line-height: 1; }
-    .timer-mini-plan { font-size: clamp(9px, 0.8vw, 12px); color: var(--muted); letter-spacing: 0.06em; }
+    .timer-main-time {
+      font-size: clamp(18px, 2vw, 30px);
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      line-height: 1;
+    }
+    .timer-mini-plan {
+      font-size: clamp(9px, 0.8vw, 12px);
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
     .timer-bottom-actions {
-      position: absolute; bottom: 6%; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; pointer-events: auto;
+      position: absolute;
+      bottom: 6%;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      pointer-events: auto;
     }
     .timer-icon-btn {
-      width: clamp(28px, 2.4vw, 36px); height: clamp(28px, 2.4vw, 36px); border-radius: 999px; border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(8,18,29,0.48); color: var(--text); display: grid; place-items: center; box-shadow: var(--shadow); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      width: clamp(28px, 2.4vw, 36px);
+      height: clamp(28px, 2.4vw, 36px);
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(8,18,29,0.48);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       padding: 0;
     }
-    .timer-icon-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .timer-icon-btn.danger {
+      background: rgba(70, 16, 16, 0.52);
+      border-color: rgba(255,180,180,0.2);
+    }
+    .timer-icon-btn svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      fill: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
     .timer-subtle {
-      position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--muted); text-align: center; white-space: nowrap;
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+      white-space: nowrap;
       max-width: 180px;
     }
 
-    .bottom-left, .bottom-right {
-      position: absolute; bottom: var(--fishBottomGap); z-index: 12; min-width: 0;
+    .fishing-bottom-dock {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+      gap: var(--baseGap);
+      align-items: end;
     }
-    .bottom-left { left: 0; width: min(100%, var(--fishLeftW)); }
-    .bottom-right { right: 0; width: min(100%, var(--fishRightW)); }
+    .bottom-left,
+    .bottom-right {
+      min-width: 0;
+      width: 100%;
+    }
+    .bottom-right {
+      justify-self: end;
+    }
 
     .equip-strip {
-      width: 100%; max-width: 100%; padding: var(--basePad); display: flex; gap: calc(10px * var(--uiScale)); align-items: center;
+      width: 100%;
+      max-width: 100%;
+      padding: var(--basePad);
+      display: flex;
+      gap: calc(10px * var(--uiScale));
+      align-items: center;
     }
-    .equip-slot { width: 33.333%; min-width: 0; text-align: center; font-size: calc(11px * var(--uiScale)); color: var(--muted); overflow-wrap: anywhere; }
+    .equip-slot {
+      width: 33.333%;
+      min-width: 0;
+      text-align: center;
+      font-size: calc(11px * var(--uiScale));
+      color: var(--muted);
+      overflow-wrap: anywhere;
+    }
     .equip-icon {
-      width: calc(44px * var(--uiScale)); height: calc(44px * var(--uiScale)); margin: 0 auto 6px; border-radius: calc(14px * var(--uiScale));
-      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.14); display: grid; place-items: center; font-size: calc(20px * var(--uiScale));
+      width: calc(44px * var(--uiScale));
+      height: calc(44px * var(--uiScale));
+      margin: 0 auto 6px;
+      border-radius: calc(14px * var(--uiScale));
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.14);
+      display: grid;
+      place-items: center;
+      font-size: calc(20px * var(--uiScale));
     }
 
     .fish-controls {
-      width: 100%; max-width: 100%; padding: var(--basePad); display: flex; align-items: end; gap: var(--baseGap); flex-wrap: wrap;
+      width: 100%;
+      max-width: 100%;
+      padding: var(--basePad);
+      display: flex;
+      align-items: end;
+      gap: var(--baseGap);
+      flex-wrap: wrap;
     }
-    .field { display: flex; flex-direction: column; gap: 6px; min-width: 84px; flex: 1 1 84px; min-width: 0; }
-    .field label { font-size: var(--font12); color: var(--muted); }
-    .field select, .field input {
-      border: 1px solid rgba(255,255,255,0.16); background: rgba(9, 19, 31, 0.34); color: var(--text); border-radius: calc(14px * var(--uiScale));
-      height: var(--fieldH); padding: 0 calc(12px * var(--uiScale)); outline: none; min-width: 0; font-size: var(--font13); width: 100%;
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 84px;
+      flex: 1 1 84px;
+      min-width: 0;
+    }
+    .field label {
+      font-size: var(--font12);
+      color: var(--muted);
+    }
+    .field select,
+    .field input {
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(9, 19, 31, 0.34);
+      color: var(--text);
+      border-radius: calc(14px * var(--uiScale));
+      height: var(--fieldH);
+      padding: 0 calc(12px * var(--uiScale));
+      outline: none;
+      min-width: 0;
+      font-size: var(--font13);
+      width: 100%;
     }
 
-    .primary-btn, .soft-btn, .danger-btn {
-      border: 0; border-radius: 999px; min-height: var(--btnH); padding: 0 calc(14px * var(--uiScale)); color: #0d2131; font-weight: 700;
-      transition: transform 0.18s ease, filter 0.18s ease, opacity 0.18s ease; flex: 0 1 auto; font-size: var(--font13); max-width: 100%;
+    .primary-btn,
+    .soft-btn {
+      border: 0;
+      border-radius: 999px;
+      min-height: var(--btnH);
+      padding: 0 calc(14px * var(--uiScale));
+      color: #0d2131;
+      font-weight: 700;
+      transition: transform 0.18s ease, filter 0.18s ease, opacity 0.18s ease;
+      flex: 0 1 auto;
+      font-size: var(--font13);
+      max-width: 100%;
     }
-    .primary-btn:hover, .soft-btn:hover, .danger-btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
-    .primary-btn:disabled, .soft-btn:disabled, .danger-btn:disabled { opacity: 0.5; cursor: default; transform: none; }
+    .primary-btn:hover,
+    .soft-btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
+    .primary-btn:disabled,
+    .soft-btn:disabled { opacity: 0.5; cursor: default; transform: none; }
     .primary-btn { background: linear-gradient(135deg, #b8f8f1, #78e9d3); }
     .soft-btn { background: linear-gradient(135deg, #f5f0d4, #f5d88e); }
-    .danger-btn { background: linear-gradient(135deg, #ffd2d2, #ff9f9f); }
 
     .content-shell {
-      position: absolute; inset: calc(var(--safeTop) + 12px) 14px calc(var(--safeBottom) + 14px) calc(var(--navCurrent) + 22px); padding: 22px 22px 24px;
-      overflow: auto; border-radius: 28px; background: rgba(8, 17, 28, 0.18); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,255,255,0.12); box-shadow: var(--shadow); transition: inset 0.22s ease;
+      position: absolute;
+      inset: calc(var(--safeTop) + 12px) 14px calc(var(--safeBottom) + 14px) calc(var(--navCurrent) + 22px);
+      padding: 22px 22px 24px;
+      overflow: auto;
+      border-radius: 28px;
+      background: rgba(8, 17, 28, 0.18);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: var(--shadow);
+      transition: inset 0.22s ease;
     }
     .section-title { font-size: 26px; font-weight: 800; margin: 0 0 8px; letter-spacing: 0.02em; }
     .section-sub { font-size: 13px; color: var(--muted); margin: 0 0 18px; line-height: 1.7; }
     .money-line { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--gold); }
     .stat-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
-    .stat-chip { padding: 10px 14px; border-radius: 999px; font-size: 13px; color: var(--text); background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); }
-    .shop-grid { display: grid; gap: 14px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .stat-chip {
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      color: var(--text);
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .shop-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
     .line-item {
-      padding: 14px 14px 14px 16px; border-radius: 22px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.06);
-      display: flex; gap: 12px; align-items: center; min-height: 98px; min-width: 0; overflow: hidden;
+      padding: 14px 14px 14px 16px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      min-height: 98px;
+      min-width: 0;
+      overflow: hidden;
     }
     .line-item .thumb {
-      width: 58px; height: 58px; border-radius: 18px; display: grid; place-items: center; font-size: 28px; background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.14); flex: 0 0 auto;
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      font-size: 28px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.14);
+      flex: 0 0 auto;
     }
     .line-item .meta { flex: 1; min-width: 0; }
-    .line-item .name { font-weight: 700; margin-bottom: 6px; word-break: break-word; overflow-wrap: anywhere; }
-    .line-item .desc { font-size: 12px; color: var(--muted); line-height: 1.55; word-break: break-word; overflow-wrap: anywhere; }
+    .line-item .name {
+      font-weight: 700;
+      margin-bottom: 6px;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+    .line-item .desc {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.55;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
     .line-item .price { font-weight: 800; color: var(--gold); white-space: nowrap; flex: 0 0 auto; }
     .line-item .actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; flex: 0 0 auto; }
 
     .grid-list { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
     .ency-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
     .fish-card {
-      padding: 16px; border-radius: 24px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); min-height: 200px;
-      display: flex; flex-direction: column; gap: 10px;
+      padding: 16px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      min-height: 200px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
-    .fish-art { width: 64px; height: 64px; border-radius: 18px; display: grid; place-items: center; font-size: 32px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.14); }
-    .fish-card.unknown .fish-art, .fish-card.unknown .fish-name, .fish-card.unknown .fish-meta { filter: grayscale(1); opacity: 0.5; }
+    .fish-art {
+      width: 64px;
+      height: 64px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      font-size: 32px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.14);
+    }
+    .fish-card.unknown .fish-art,
+    .fish-card.unknown .fish-name,
+    .fish-card.unknown .fish-meta {
+      filter: grayscale(1);
+      opacity: 0.5;
+    }
     .fish-name { font-size: 18px; font-weight: 700; }
     .fish-meta { font-size: 12px; color: var(--muted); line-height: 1.6; }
     .record { color: var(--gold); }
@@ -315,60 +734,172 @@
     .minus-size { color: #ffd1c7; }
 
     .settings-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
-    .settings-box { padding: 18px; border-radius: 24px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); }
+    .settings-box {
+      padding: 18px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
     .settings-box h3 { margin: 0 0 12px; }
     .settings-box .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
     .settings-box .row:last-child { margin-bottom: 0; }
     .toggle {
-      appearance: none; width: 52px; height: 30px; border-radius: 999px; background: rgba(255,255,255,0.18); position: relative; outline: none; border: 1px solid rgba(255,255,255,0.18);
+      appearance: none;
+      width: 52px;
+      height: 30px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.18);
+      position: relative;
+      outline: none;
+      border: 1px solid rgba(255,255,255,0.18);
     }
-    .toggle::after { content: ""; position: absolute; left: 3px; top: 3px; width: 22px; height: 22px; border-radius: 50%; background: white; transition: transform 0.18s ease; }
+    .toggle::after {
+      content: "";
+      position: absolute;
+      left: 3px;
+      top: 3px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: white;
+      transition: transform 0.18s ease;
+    }
     .toggle:checked { background: rgba(126,242,197,0.55); }
     .toggle:checked::after { transform: translateX(22px); }
 
     .modal {
-      position: absolute; inset: 0; z-index: 50; display: none; place-items: center; background: rgba(2, 8, 14, 0.46); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); padding: 24px;
+      position: absolute;
+      inset: 0;
+      z-index: 50;
+      display: none;
+      place-items: center;
+      background: rgba(2, 8, 14, 0.46);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      padding: 24px;
     }
     .modal.show { display: grid; }
     .modal-card {
-      width: min(540px, 100%); border-radius: 30px; padding: 22px; background: linear-gradient(180deg, rgba(17,33,48,0.92), rgba(8,17,28,0.96));
-      border: 1px solid rgba(255,255,255,0.14); box-shadow: 0 28px 60px rgba(0,0,0,0.38); position: relative; overflow: hidden;
+      width: min(540px, 100%);
+      border-radius: 30px;
+      padding: 22px;
+      background: linear-gradient(180deg, rgba(17,33,48,0.92), rgba(8,17,28,0.96));
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow: 0 28px 60px rgba(0,0,0,0.38);
+      position: relative;
+      overflow: hidden;
     }
-    .modal-card.rare::before, .modal-card.record::after {
-      content: ""; position: absolute; inset: -20% -20% auto auto; width: 220px; height: 220px; background: radial-gradient(circle, rgba(255,216,109,0.26), transparent 66%); filter: blur(6px); pointer-events: none;
+    .modal-card.rare::before,
+    .modal-card.record::after {
+      content: "";
+      position: absolute;
+      inset: -20% -20% auto auto;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(255,216,109,0.26), transparent 66%);
+      filter: blur(6px);
+      pointer-events: none;
     }
-    .modal-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+    .modal-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
     .modal-top h2 { margin: 0; font-size: 28px; }
-    .close-btn { border: 0; width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,0.1); color: var(--text); font-size: 20px; }
+    .close-btn {
+      border: 0;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      color: var(--text);
+      font-size: 20px;
+    }
     .result-core { display: grid; grid-template-columns: 110px 1fr; gap: 16px; align-items: center; margin-bottom: 16px; }
-    .result-art { width: 110px; height: 110px; border-radius: 28px; display: grid; place-items: center; font-size: 54px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14); }
+    .result-art {
+      width: 110px;
+      height: 110px;
+      border-radius: 28px;
+      display: grid;
+      place-items: center;
+      font-size: 54px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+    }
     .result-title { font-size: 26px; font-weight: 800; margin-bottom: 6px; }
     .result-lines { font-size: 14px; line-height: 1.8; color: var(--muted); }
     .result-flags { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 18px; }
-    .flag { padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); font-size: 12px; }
+    .flag {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      font-size: 12px;
+    }
     .flag.rare { color: var(--gold); }
     .flag.record { color: #ffe79f; }
     .flag.huge { color: #ffcfb7; }
     .modal-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
 
-    .toast-wrap { position: absolute; right: 18px; top: calc(var(--safeTop) + 20px); z-index: 60; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+    .toast-wrap {
+      position: absolute;
+      right: 18px;
+      top: calc(var(--safeTop) + 20px);
+      z-index: 60;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
     .toast {
-      min-width: 220px; max-width: 320px; border-radius: 18px; padding: 12px 14px; background: rgba(8,17,28,0.82); border: 1px solid rgba(255,255,255,0.12);
-      box-shadow: var(--shadow); color: var(--text); font-size: 13px; line-height: 1.6; transform: translateY(-6px); opacity: 0; animation: toastInOut 3.6s ease forwards;
+      min-width: 220px;
+      max-width: 320px;
+      border-radius: 18px;
+      padding: 12px 14px;
+      background: rgba(8,17,28,0.82);
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: var(--shadow);
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.6;
+      transform: translateY(-6px);
+      opacity: 0;
+      animation: toastInOut 3.6s ease forwards;
     }
 
     .auth-overlay {
-      position: absolute; inset: 0; z-index: 70; display: grid; place-items: center; background: rgba(4, 10, 18, 0.46); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 24px;
+      position: absolute;
+      inset: 0;
+      z-index: 70;
+      display: grid;
+      place-items: center;
+      background: rgba(4, 10, 18, 0.46);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 24px;
     }
     .auth-card {
-      width: min(560px, 100%); padding: 26px; border-radius: 34px; background: linear-gradient(180deg, rgba(17,33,48,0.9), rgba(8,17,28,0.96));
-      border: 1px solid rgba(255,255,255,0.14); box-shadow: 0 28px 60px rgba(0,0,0,0.38);
+      width: min(560px, 100%);
+      padding: 26px;
+      border-radius: 34px;
+      background: linear-gradient(180deg, rgba(17,33,48,0.9), rgba(8,17,28,0.96));
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow: 0 28px 60px rgba(0,0,0,0.38);
     }
     .auth-title { font-size: 30px; font-weight: 800; margin-bottom: 10px; }
     .auth-text { color: var(--muted); line-height: 1.8; margin-bottom: 18px; font-size: 14px; }
     .name-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 16px; }
     .name-row input {
-      flex: 1; min-width: 160px; height: 46px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.07); color: var(--text); padding: 0 14px;
+      flex: 1;
+      min-width: 160px;
+      height: 46px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.07);
+      color: var(--text);
+      padding: 0 14px;
     }
     .auth-note { font-size: 12px; color: var(--muted); margin-top: 10px; line-height: 1.7; }
     .shaker { animation: screenShake 0.55s ease; }
@@ -382,59 +913,41 @@
     @keyframes toastInOut { 0% { opacity: 0; transform: translateY(-6px); } 10%, 82% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-8px); } }
     @keyframes screenShake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-6px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(3px); } }
 
-    @media (max-width: 1200px) {
-      :root {
-        --uiScale: 0.9;
-        --timerSize: clamp(128px, 18vw, 170px);
-        --fishLeftW: clamp(230px, 43vw, 470px);
-        --fishRightW: clamp(190px, 27vw, 280px);
-      }
+    @media (max-width: 1100px) {
       .shop-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
-
-    @media (max-width: 900px) {
-      :root {
-        --uiScale: 0.78;
-        --timerSize: clamp(118px, 20vw, 150px);
-        --fishLeftW: clamp(210px, 46vw, 400px);
-        --fishRightW: clamp(170px, 28vw, 240px);
-        --fishStageTopPad: 150px;
-      }
+      .fishing-bottom-dock { grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.95fr); }
     }
 
     @media (max-width: 760px) {
       :root {
         --navExpanded: 72px;
         --navCollapsed: 22px;
-        --uiScale: 0.62;
-        --timerSize: 118px;
-        --fishLeftW: calc(100% - 4px);
-        --fishRightW: calc(100% - 4px);
-        --fishStageTopPad: 138px;
-        --fishBottomGap: 6px;
       }
       .nav-toggle { top: calc(var(--safeTop) + 10px); left: 10px; }
       .side-nav {
-        top: calc(var(--safeTop) + 48px); left: 10px; bottom: calc(var(--safeBottom) + 10px); width: var(--navExpanded); padding: 10px 7px;
+        top: calc(var(--safeTop) + 48px);
+        left: 10px;
+        bottom: calc(var(--safeBottom) + 10px);
+        width: var(--navExpanded);
+        padding: 10px 7px;
       }
-      .fishing-stage, .content-shell {
+      .fishing-stage,
+      .content-shell {
         inset: calc(var(--safeTop) + 8px) 8px calc(var(--safeBottom) + 8px) calc(var(--navCurrent) + 14px);
       }
       .top-right { top: calc(var(--safeTop) + 8px); right: 8px; gap: 6px; }
       .money-mini { min-height: 30px; font-size: 11px; padding: 0 8px; }
       .info-icon { width: 34px; height: 34px; font-size: 15px; border-radius: 12px; }
-      .timer-box { width: var(--timerSize); }
-      .timer-subtle { max-width: 132px; font-size: 10px; }
-      .bottom-left, .bottom-right {
-        position: absolute; left: 0; right: 0; width: auto;
+      .fishing-bottom-dock {
+        grid-template-columns: 1fr;
+        gap: 6px;
       }
-      .bottom-left { bottom: 60px; }
-      .bottom-right { bottom: 0; }
-      .fish-controls, .equip-strip {
-        width: 100%; max-width: 100%; padding: 8px; gap: 6px;
+      .bottom-right { justify-self: stretch; }
+      .fish-controls,
+      .equip-strip {
+        width: 100%;
+        max-width: 100%;
       }
-      .field { min-width: 62px; flex: 1 1 62px; }
-      .primary-btn, .soft-btn, .danger-btn { padding: 0 10px; }
       .shop-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .line-item { flex-direction: column; align-items: flex-start; min-height: 0; }
       .line-item .actions { width: 100%; justify-content: flex-start; }
@@ -443,17 +956,9 @@
     }
 
     @media (max-width: 520px) {
-      :root {
-        --uiScale: 0.54;
-        --timerSize: 112px;
-        --fishStageTopPad: 132px;
-      }
       .money-mini { display: none; }
-      .fish-controls, .equip-strip { padding: 7px; }
-      .field label { font-size: 10px; }
-      .line-item .thumb { width: 46px; height: 46px; font-size: 22px; }
       .section-title { font-size: 22px; }
-      .bottom-left { bottom: 56px; }
+      .line-item .thumb { width: 46px; height: 46px; font-size: 22px; }
     }
   </style>
 </head>
@@ -513,34 +1018,36 @@
             <button id="toggleFishingBtn" class="timer-icon-btn" aria-label="停止または再開">
               <svg id="toggleFishingIcon" viewBox="0 0 24 24"></svg>
             </button>
-            <button id="cancelFishingBtn" class="timer-icon-btn" aria-label="報酬なし終了">
+            <button id="cancelFishingBtn" class="timer-icon-btn danger" aria-label="報酬なし終了">
               <svg viewBox="0 0 24 24"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg>
             </button>
           </div>
           <div id="timerSubtle" class="timer-subtle">まだ釣りを始めていません</div>
         </div>
 
-        <div class="bottom-left">
-          <div class="fish-controls floating-ui">
-            <div class="field">
-              <label for="rodSelect">竿</label>
-              <select id="rodSelect"></select>
+        <div class="fishing-bottom-dock">
+          <div class="bottom-left">
+            <div class="fish-controls floating-ui">
+              <div class="field">
+                <label for="rodSelect">竿</label>
+                <select id="rodSelect"></select>
+              </div>
+              <div class="field">
+                <label for="courseSelect">コース</label>
+                <select id="courseSelect"></select>
+              </div>
+              <div class="field">
+                <label for="baitSelectQuick">餌</label>
+                <select id="baitSelectQuick"></select>
+              </div>
+              <button id="startFishingBtn" class="primary-btn">釣る</button>
+              <button id="repeatFishingBtn" class="soft-btn">同じ設定で再釣り</button>
             </div>
-            <div class="field">
-              <label for="courseSelect">コース</label>
-              <select id="courseSelect"></select>
-            </div>
-            <div class="field">
-              <label for="baitSelectQuick">餌</label>
-              <select id="baitSelectQuick"></select>
-            </div>
-            <button id="startFishingBtn" class="primary-btn">釣る</button>
-            <button id="repeatFishingBtn" class="soft-btn">同じ設定で再釣り</button>
           </div>
-        </div>
 
-        <div class="bottom-right">
-          <div class="equip-strip floating-ui" id="equipStrip"></div>
+          <div class="bottom-right">
+            <div class="equip-strip floating-ui" id="equipStrip"></div>
+          </div>
         </div>
       </div>
     </section>
@@ -680,7 +1187,7 @@
       measurementId: "G-H7P3WR4DR3"
     };
 
-    const LS_KEY = "zz_fishing_subsite_save_v4";
+    const LS_KEY = "zz_fishing_subsite_save_v5";
     const ENCY_TOP_LIMIT = 50;
     const SELL_RATE_ITEM = 0.5;
     const TIMER_R = 88;
@@ -724,7 +1231,7 @@
     ];
 
     const DEFAULT_STATE = {
-      version: 4,
+      version: 5,
       ui: { navCollapsed: false },
       user: { uid: null, isGuest: true, displayName: "つりびと", photoURL: null },
       money: 220,
@@ -838,6 +1345,7 @@
 
     async function boot() {
       initTimerGauge();
+      updateResponsiveUIScale();
       updateToggleTimerIcon(false, true);
       tryInitFirebase();
       bindEvents();
@@ -856,6 +1364,27 @@
         node.style.strokeDasharray = String(TIMER_C);
         node.style.strokeDashoffset = String(TIMER_C);
       });
+    }
+
+    function updateResponsiveUIScale() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      let scale = 1;
+      if (w < 1400) scale = Math.min(scale, 0.96);
+      if (w < 1200) scale = Math.min(scale, 0.9);
+      if (w < 1000) scale = Math.min(scale, 0.82);
+      if (w < 860) scale = Math.min(scale, 0.74);
+      if (w < 700) scale = Math.min(scale, 0.64);
+      if (w < 560) scale = Math.min(scale, 0.56);
+      if (h < 860) scale = Math.min(scale, 0.92);
+      if (h < 760) scale = Math.min(scale, 0.82);
+      if (h < 680) scale = Math.min(scale, 0.7);
+      if (h < 610) scale = Math.min(scale, 0.6);
+
+      const timerSize = Math.max(108, Math.min(188, Math.min(w * 0.17, h * 0.28)));
+      el.app.style.setProperty('--uiScale', String(scale));
+      el.app.style.setProperty('--timerSize', `${timerSize}px`);
+      el.app.style.setProperty('--stageTopPad', `${timerSize + 18}px`);
     }
 
     function tryInitFirebase() {
@@ -948,6 +1477,10 @@
       el.exportBtn.addEventListener("click", exportSave);
       el.importBtn.addEventListener("click", () => el.importFile.click());
       el.importFile.addEventListener("change", importSaveFile);
+      window.addEventListener("resize", () => {
+        updateResponsiveUIScale();
+        renderFishingStatus();
+      });
       window.addEventListener("beforeunload", () => saveLocalState(state));
       document.addEventListener("visibilitychange", () => {
         if (!document.hidden) {
@@ -961,6 +1494,7 @@
     function applyNavState() {
       el.app.classList.toggle("nav-collapsed", !!state.ui.navCollapsed);
       el.navToggle.textContent = state.ui.navCollapsed ? "❯" : "❮";
+      updateResponsiveUIScale();
     }
 
     function fillQuickSelectors() {
@@ -1153,6 +1687,7 @@
         renderFishingStatus();
       }, 300);
     }
+
     function stopTimerTick() {
       if (timerTickHandle) {
         clearInterval(timerTickHandle);
@@ -1210,7 +1745,9 @@
       el.resultCard.classList.toggle("record", !!result.isRecord);
       el.resultModal.classList.add("show");
     }
+
     function closeResultModal() { el.resultModal.classList.remove("show"); }
+
     function keepPendingResult() {
       if (!pendingResult) return;
       addInventoryEntry(pendingResult.entry);
@@ -1221,6 +1758,7 @@
       saveAll();
       renderAll();
     }
+
     function sellPendingResult() {
       if (!pendingResult) return;
       state.money += pendingResult.entry.sellPrice;
@@ -1231,6 +1769,7 @@
       saveAll();
       renderAll();
     }
+
     function flagEl(text, klass) {
       const div = document.createElement("div");
       div.className = `flag ${klass}`.trim();
@@ -1291,7 +1830,9 @@
       }
       if (isRecord && firebaseSyncOk && state.user.uid) saveGlobalRecord(baseId, entry.sizeCm, state.user.displayName || "つりびと").catch(console.error);
     }
+
     function addInventoryEntry(entry) { state.inventory.unshift(entry); }
+
     function getCourseBonus(durationMin, support) {
       let bonus = { rare: 0, size: 0, power: 0, hugeChance: 0, junkReduction: 0, label: "" };
       if (durationMin >= 25) { bonus.rare += 3; bonus.label = "集中ボーナス"; }
@@ -1301,6 +1842,7 @@
     }
 
     function renderAll() {
+      updateResponsiveUIScale();
       fillQuickSelectors();
       applyStateToSelectors();
       applyNavState();
@@ -1346,11 +1888,8 @@
     }
 
     function updateToggleTimerIcon(paused, noActive = false) {
-      if (noActive || paused) {
-        el.toggleFishingIcon.innerHTML = '<path d="M8 6v12l10-6z"/>';
-      } else {
-        el.toggleFishingIcon.innerHTML = '<path d="M8 6v12"/><path d="M16 6v12"/>';
-      }
+      if (noActive || paused) el.toggleFishingIcon.innerHTML = '<path d="M8 6v12l10-6z"/>';
+      else el.toggleFishingIcon.innerHTML = '<path d="M8 6v12"/><path d="M16 6v12"/>';
     }
 
     function setGaugeProgress(progress) {
@@ -1377,15 +1916,20 @@
       el.shopBuyList.innerHTML = "";
       el.shopSellList.innerHTML = "";
       if (state.inventory.length === 0) {
-        const empty = document.createElement("div"); empty.className = "line-item";
+        const empty = document.createElement("div");
+        empty.className = "line-item";
         empty.innerHTML = `<div class="meta"><div class="name">売れるものがまだありません</div><div class="desc">魚を保管すると、ここからまとめて売れます。</div></div>`;
         el.shopSellList.appendChild(empty);
       } else {
         state.inventory.forEach(entry => {
-          const node = document.createElement("div"); node.className = "line-item";
+          const node = document.createElement("div");
+          node.className = "line-item";
           const sellPrice = entry.kind === "item" ? Math.max(1, Math.floor(entry.sellPrice * SELL_RATE_ITEM)) : entry.sellPrice;
           node.innerHTML = `<div class="thumb">${entry.icon}</div><div class="meta"><div class="name">${entry.name}</div><div class="desc">${entry.kind === "fish" ? `大きさ ${formatSize(entry.sizeCm)} cm` : `漂流物`} / 保管中</div></div><div class="price">${sellPrice} zz</div><div class="actions"></div>`;
-          const btn = document.createElement("button"); btn.className = "soft-btn"; btn.textContent = "売る"; btn.addEventListener("click", () => sellInventoryEntry(entry.uid, sellPrice));
+          const btn = document.createElement("button");
+          btn.className = "soft-btn";
+          btn.textContent = "売る";
+          btn.addEventListener("click", () => sellInventoryEntry(entry.uid, sellPrice));
           node.querySelector(".actions").appendChild(btn);
           el.shopSellList.appendChild(node);
         });
@@ -1393,13 +1937,23 @@
       SHOP_ITEMS.forEach(item => {
         const groupKey = item.shopType === "rod" ? "rods" : item.shopType === "bait" ? "baits" : "supports";
         const owned = owns(groupKey, item.id);
-        const node = document.createElement("div"); node.className = "line-item";
+        const node = document.createElement("div");
+        node.className = "line-item";
         node.innerHTML = `<div class="thumb">${item.icon}</div><div class="meta"><div class="name">${item.name}</div><div class="desc">${item.desc}</div></div><div class="price">${item.price} zz</div><div class="actions"></div>`;
         const actions = node.querySelector(".actions");
         if (owned) {
-          const ownedBtn = document.createElement("button"); ownedBtn.className = "soft-btn"; ownedBtn.textContent = "所持済み"; ownedBtn.disabled = true; actions.appendChild(ownedBtn);
+          const ownedBtn = document.createElement("button");
+          ownedBtn.className = "soft-btn";
+          ownedBtn.textContent = "所持済み";
+          ownedBtn.disabled = true;
+          actions.appendChild(ownedBtn);
         } else {
-          const btn = document.createElement("button"); btn.className = "primary-btn"; btn.textContent = "買う"; btn.disabled = state.money < item.price; btn.addEventListener("click", () => buyItem(item)); actions.appendChild(btn);
+          const btn = document.createElement("button");
+          btn.className = "primary-btn";
+          btn.textContent = "買う";
+          btn.disabled = state.money < item.price;
+          btn.addEventListener("click", () => buyItem(item));
+          actions.appendChild(btn);
         }
         el.shopBuyList.appendChild(node);
       });
@@ -1411,7 +1965,10 @@
       const totalFish = state.inventory.filter(v => v.kind === "fish").length;
       const totalItems = state.inventory.filter(v => v.kind === "item").length;
       [`所持魚 ${totalFish}`, `所持アイテム ${totalItems}`, `装備竿 ${getById(RODS, state.equipped.rodId)?.name || "-"}`, `装備餌 ${getById(BAITS, state.equipped.baitId)?.name || "-"}`].forEach(text => {
-        const chip = document.createElement("div"); chip.className = "stat-chip"; chip.textContent = text; el.bagStats.appendChild(chip);
+        const chip = document.createElement("div");
+        chip.className = "stat-chip";
+        chip.textContent = text;
+        el.bagStats.appendChild(chip);
       });
       el.bagEquipList.innerHTML = "";
       [
@@ -1420,25 +1977,36 @@
         { title: "補助を切り替える", items: [{ id: null, name: "なし", icon: "▫️", desc: "補助なし" }, ...SUPPORTS.filter(v => owns("supports", v.id))], type: "support" },
       ].forEach(block => {
         block.items.forEach(item => {
-          const node = document.createElement("div"); node.className = "line-item";
+          const node = document.createElement("div");
+          node.className = "line-item";
           const equipped = block.type === "rod" ? state.equipped.rodId === item.id : block.type === "bait" ? state.equipped.baitId === item.id : state.equipped.supportId === item.id;
           node.innerHTML = `<div class="thumb">${item.icon}</div><div class="meta"><div class="name">${block.title}：${item.name}</div><div class="desc">${item.desc || ""}</div></div><div class="actions"></div>`;
-          const btn = document.createElement("button"); btn.className = equipped ? "soft-btn" : "primary-btn"; btn.textContent = equipped ? "装備中" : "装備"; btn.disabled = equipped; btn.addEventListener("click", () => equipItem(block.type, item.id));
+          const btn = document.createElement("button");
+          btn.className = equipped ? "soft-btn" : "primary-btn";
+          btn.textContent = equipped ? "装備中" : "装備";
+          btn.disabled = equipped;
+          btn.addEventListener("click", () => equipItem(block.type, item.id));
           node.querySelector(".actions").appendChild(btn);
           el.bagEquipList.appendChild(node);
         });
       });
       el.bagInventoryList.innerHTML = "";
       if (state.inventory.length === 0) {
-        const empty = document.createElement("div"); empty.className = "line-item";
+        const empty = document.createElement("div");
+        empty.className = "line-item";
         empty.innerHTML = `<div class="meta"><div class="name">まだ何も入っていません</div><div class="desc">釣果を保管するとここに並びます。</div></div>`;
         el.bagInventoryList.appendChild(empty);
       } else {
         state.inventory.forEach(entry => {
-          const node = document.createElement("div"); node.className = "line-item";
+          const node = document.createElement("div");
+          node.className = "line-item";
           node.innerHTML = `<div class="thumb">${entry.icon}</div><div class="meta"><div class="name">${entry.name}</div><div class="desc">${entry.kind === "fish" ? `大きさ ${formatSize(entry.sizeCm)} cm` : `漂流物`} / 売値 ${entry.sellPrice} zz</div></div><div class="actions"></div>`;
           const actions = node.querySelector(".actions");
-          const sellBtn = document.createElement("button"); sellBtn.className = "soft-btn"; const sellPrice = entry.kind === "item" ? Math.max(1, Math.floor(entry.sellPrice * SELL_RATE_ITEM)) : entry.sellPrice; sellBtn.textContent = `売る (${sellPrice} zz)`; sellBtn.addEventListener("click", () => sellInventoryEntry(entry.uid, sellPrice));
+          const sellBtn = document.createElement("button");
+          sellBtn.className = "soft-btn";
+          const sellPrice = entry.kind === "item" ? Math.max(1, Math.floor(entry.sellPrice * SELL_RATE_ITEM)) : entry.sellPrice;
+          sellBtn.textContent = `売る (${sellPrice} zz)`;
+          sellBtn.addEventListener("click", () => sellInventoryEntry(entry.uid, sellPrice));
           actions.appendChild(sellBtn);
           el.bagInventoryList.appendChild(node);
         });
@@ -1449,13 +2017,17 @@
       const caughtCount = Object.keys(state.encyclopedia).length;
       el.encyStats.innerHTML = "";
       [`発見 ${caughtCount} / ${FISHES.length}`, `世界記録読込 ${Object.keys(globalRecords).length}件`].forEach(text => {
-        const chip = document.createElement("div"); chip.className = "stat-chip"; chip.textContent = text; el.encyStats.appendChild(chip);
+        const chip = document.createElement("div");
+        chip.className = "stat-chip";
+        chip.textContent = text;
+        el.encyStats.appendChild(chip);
       });
       el.encyList.innerHTML = "";
       FISHES.forEach(fish => {
         const own = state.encyclopedia[fish.id];
         const global = globalRecords[fish.id];
-        const card = document.createElement("div"); card.className = `fish-card ${own ? "" : "unknown"}`.trim();
+        const card = document.createElement("div");
+        card.className = `fish-card ${own ? "" : "unknown"}`.trim();
         card.innerHTML = `<div class="fish-art">${own ? fish.icon : "❔"}</div><div class="fish-name">${own ? fish.name : "？？？"}</div><div class="fish-meta">${own ? `平均 ${formatSize(fish.avgSize)} cm<br />累計 ${own.count}匹<br />自分の最大 ${own.maxSize ? `${formatSize(own.maxSize)} cm` : "-"}` : `まだ見つけていません`}<br /><span class="record">史上最大 ${global ? `${formatSize(global.sizeCm)} cm / ${escapeHtml(global.recordHolder || "-")}` : "未登録"}</span><br />${own ? fish.description : ""}</div>`;
         el.encyList.appendChild(card);
       });
@@ -1466,7 +2038,11 @@
       el.displayNameInput.value = state.user.displayName || "";
       el.lastSavedAt.textContent = state.lastSavedAt ? formatDateTime(state.lastSavedAt) : "-";
     }
-    function renderUserPill() { el.userPill.innerHTML = `${escapeHtml(state.user.displayName || "つりびと")}<br />${state.user.isGuest ? "ローカル保存" : "Google同期"}`; }
+
+    function renderUserPill() {
+      el.userPill.innerHTML = `${escapeHtml(state.user.displayName || "つりびと")}<br />${state.user.isGuest ? "ローカル保存" : "Google同期"}`;
+    }
+
     function updateSyncStatus() {
       if (firebaseReady && firebaseSyncOk && !state.user.isGuest) el.syncStatus.textContent = "Firebase同期中";
       else if (firebaseReady) el.syncStatus.textContent = "ローカル保存のみ";
@@ -1710,16 +2286,51 @@
       return base;
     }
     function safeName(v) { return String(v || "").trim().slice(0, 16).replace(/[<>]/g, ""); }
-    function formatRemain(ms) { const total = Math.ceil(ms / 1000); const m = Math.floor(total / 60); const s = total % 60; return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`; }
+    function formatRemain(ms) {
+      const total = Math.ceil(ms / 1000);
+      const m = Math.floor(total / 60);
+      const s = total % 60;
+      return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+    }
     function formatSize(n) { return Number(n || 0).toFixed(1); }
-    function formatDateTime(ts) { const d = new Date(ts); return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,"0")}/${String(d.getDate()).padStart(2,"0")} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`; }
+    function formatDateTime(ts) {
+      const d = new Date(ts);
+      return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,"0")}/${String(d.getDate()).padStart(2,"0")} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
+    }
     function translateWeather(w) { return ({ sunny: "晴れ", cloudy: "曇り", rainy: "雨" })[w] || w; }
     function translateTime(t) { return ({ day: "昼", evening: "夕方", night: "夜" })[t] || t; }
-    function weightedPick(list) { const total = list.reduce((sum, v) => sum + v.weight, 0); let r = Math.random() * total; for (const item of list) { r -= item.weight; if (r <= 0) return item.entity; } return list[list.length - 1].entity; }
-    function approxGaussian() { let u = 0, v = 0; while (u === 0) u = Math.random(); while (v === 0) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
-    function seededNumber(seed) { let h = 2166136261; for (let i = 0; i < seed.length; i++) { h ^= seed.charCodeAt(i); h = Math.imul(h, 16777619); } return Math.abs(h >>> 0); }
+    function weightedPick(list) {
+      const total = list.reduce((sum, v) => sum + v.weight, 0);
+      let r = Math.random() * total;
+      for (const item of list) {
+        r -= item.weight;
+        if (r <= 0) return item.entity;
+      }
+      return list[list.length - 1].entity;
+    }
+    function approxGaussian() {
+      let u = 0, v = 0;
+      while (u === 0) u = Math.random();
+      while (v === 0) v = Math.random();
+      return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+    }
+    function seededNumber(seed) {
+      let h = 2166136261;
+      for (let i = 0; i < seed.length; i++) {
+        h ^= seed.charCodeAt(i);
+        h = Math.imul(h, 16777619);
+      }
+      return Math.abs(h >>> 0);
+    }
     function makeId() { return `${Date.now().toString(36)}_${Math.random().toString(36).slice(2,8)}`; }
-    function escapeHtml(str) { return String(str ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#39;"); }
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
     function sizeDeltaText(size, avg) {
       const delta = Math.round((size - avg) * 10) / 10;
       const sign = delta > 0 ? "+" : "";
@@ -1735,3 +2346,4 @@
   </script>
 </body>
 </html>
+
