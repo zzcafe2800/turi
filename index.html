@@ -11,9 +11,9 @@
       --soft: rgba(255,255,255,0.14);
       --line: rgba(255,255,255,0.2);
       --shadow: 0 12px 38px rgba(0,0,0,0.25);
-      --danger: #ff8181;
-      --ok: #7ef2c5;
       --gold: #ffd86d;
+      --accent: #7bdff5;
+      --accent-2: #b7f1ff;
       --bgTop: #77b9e8;
       --bgMid: #5fa7d9;
       --bgBottom: #2c6e96;
@@ -21,7 +21,9 @@
       --sea2: #1c6892;
       --sea3: #195a7e;
       --panelBlur: blur(8px);
-      --navW: 76px;
+      --navExpanded: 88px;
+      --navCollapsed: 24px;
+      --navCurrent: var(--navExpanded);
       --safeTop: env(safe-area-inset-top, 0px);
       --safeBottom: env(safe-area-inset-bottom, 0px);
     }
@@ -42,7 +44,7 @@
         linear-gradient(to bottom, var(--bgTop) 0%, var(--bgMid) 46%, var(--bgBottom) 100%);
       transition: background 0.8s ease;
     }
-
+    #app.nav-collapsed { --navCurrent: var(--navCollapsed); }
     #app.time-day {
       --bgTop: #8dd0ff;
       --bgMid: #68b5ea;
@@ -77,7 +79,6 @@
       opacity: 0.45;
       filter: blur(0.4px);
     }
-
     .sea {
       position: absolute;
       left: -6%; right: -6%; bottom: -14%;
@@ -182,11 +183,9 @@
         radial-gradient(circle at 78% 66%, rgba(255,255,255,0.86), transparent 10%);
     }
     .splash::after {
-      background:
-        radial-gradient(80px 20px at 50% 78%, rgba(255,255,255,0.3), transparent 70%);
+      background: radial-gradient(80px 20px at 50% 78%, rgba(255,255,255,0.3), transparent 70%);
       filter: blur(2px);
     }
-
     .rod-line {
       position: absolute;
       right: 20%;
@@ -214,12 +213,32 @@
       box-shadow: var(--shadow);
     }
 
-    .side-nav {
+    .nav-toggle {
       position: absolute;
       top: calc(var(--safeTop) + 16px);
-      left: 14px;
+      left: 12px;
+      z-index: 25;
+      width: 36px;
+      height: 36px;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(8,18,29,0.48);
+      color: var(--text);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.16);
+      box-shadow: var(--shadow);
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      padding: 0;
+    }
+
+    .side-nav {
+      position: absolute;
+      top: calc(var(--safeTop) + 58px);
+      left: 12px;
       bottom: calc(var(--safeBottom) + 16px);
-      width: var(--navW);
+      width: var(--navExpanded);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -232,6 +251,12 @@
       box-shadow: var(--shadow);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
+      transition: transform 0.22s ease, opacity 0.22s ease;
+    }
+    #app.nav-collapsed .side-nav {
+      transform: translateX(calc(-100% - 18px));
+      opacity: 0;
+      pointer-events: none;
     }
 
     .nav-btn {
@@ -246,12 +271,22 @@
       transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
       position: relative;
       box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
-      font-size: 24px;
+      padding: 0;
     }
     .nav-btn:hover, .nav-btn.active {
       transform: translateY(-1px) scale(1.02);
       background: rgba(255,255,255,0.18);
       box-shadow: 0 8px 16px rgba(0,0,0,0.2), inset 0 0 0 1px rgba(255,255,255,0.14);
+    }
+    .nav-btn svg {
+      width: 24px;
+      height: 24px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.9;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.95;
     }
     .nav-btn .tip {
       position: absolute;
@@ -269,7 +304,6 @@
       border: 1px solid rgba(255,255,255,0.12);
     }
     .nav-btn:hover .tip { opacity: 1; }
-
     .user-pill {
       margin-top: auto;
       width: 100%;
@@ -284,7 +318,7 @@
 
     .screen {
       position: absolute;
-      inset: 0 0 0 calc(var(--navW) + 28px);
+      inset: 0;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.26s ease;
@@ -294,33 +328,30 @@
       pointer-events: auto;
     }
 
-    .top-left, .top-right, .bottom-left, .bottom-right {
+    .top-right {
       position: absolute;
+      top: calc(var(--safeTop) + 18px);
+      right: 18px;
       z-index: 12;
-    }
-    .top-left { top: calc(var(--safeTop) + 24px); left: calc(var(--navW) + 34px); }
-    .top-right { top: calc(var(--safeTop) + 24px); right: 22px; display: flex; gap: 10px; }
-    .bottom-left { left: calc(var(--navW) + 34px); bottom: calc(var(--safeBottom) + 22px); }
-    .bottom-right { right: 22px; bottom: calc(var(--safeBottom) + 22px); }
-
-    .timer-box {
-      min-width: 250px;
-      padding: 14px 16px;
       display: flex;
-      gap: 14px;
+      gap: 10px;
       align-items: center;
     }
-    .timer-main { display: flex; flex-direction: column; gap: 4px; }
-    .timer-time { font-size: 34px; font-weight: 800; letter-spacing: 0.06em; }
-    .timer-sub { font-size: 13px; color: var(--muted); }
-    .bonus-mini {
-      margin-left: auto;
-      text-align: right;
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.55;
+    .money-mini {
+      padding: 0 12px;
+      min-height: 42px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--gold);
+      background: rgba(10,18,28,0.34);
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
-
     .info-icon {
       width: 56px;
       height: 56px;
@@ -354,8 +385,137 @@
     }
     .info-icon:hover .balloon { opacity: 1; }
 
+    .fishing-stage {
+      position: absolute;
+      inset: calc(var(--safeTop) + 10px) 14px calc(var(--safeBottom) + 14px) calc(var(--navCurrent) + 22px);
+      z-index: 9;
+      transition: inset 0.22s ease;
+    }
+
+    .timer-center {
+      position: absolute;
+      left: 50%;
+      top: 48%;
+      transform: translate(-50%, -50%);
+      width: min(34vw, 340px);
+      aspect-ratio: 1;
+      min-width: 220px;
+      max-width: 340px;
+      z-index: 12;
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+    }
+    .timer-gauge {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 14px 36px rgba(0,0,0,0.2));
+    }
+    .timer-gauge .track {
+      fill: none;
+      stroke: rgba(255,255,255,0.18);
+      stroke-width: 8;
+    }
+    .timer-gauge .progress {
+      fill: none;
+      stroke: var(--accent);
+      stroke-width: 10;
+      stroke-linecap: round;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+      transition: stroke-dashoffset 0.35s linear;
+    }
+    .timer-gauge .glow {
+      fill: none;
+      stroke: rgba(183,241,255,0.28);
+      stroke-width: 18;
+      stroke-linecap: round;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+      filter: blur(6px);
+      transition: stroke-dashoffset 0.35s linear;
+    }
+    .timer-core {
+      position: absolute;
+      inset: 18%;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.15), rgba(11,24,37,0.46));
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 20px;
+      pointer-events: auto;
+    }
+    .timer-main-time {
+      font-size: clamp(28px, 4vw, 54px);
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      line-height: 1;
+    }
+    .timer-mini-plan {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+    .timer-bottom-actions {
+      position: absolute;
+      bottom: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 12px;
+      pointer-events: auto;
+    }
+    .timer-icon-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(8,18,29,0.48);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .timer-icon-btn svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      fill: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .timer-subtle {
+      position: absolute;
+      top: calc(100% + 10px);
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .bottom-left, .bottom-right {
+      position: absolute;
+      bottom: calc(var(--safeBottom) + 12px);
+      z-index: 12;
+    }
+    .bottom-left { left: 0; }
+    .bottom-right { right: 0; }
+
     .equip-strip {
       min-width: 240px;
+      max-width: min(36vw, 360px);
       padding: 12px 14px;
       display: flex;
       gap: 12px;
@@ -381,10 +541,11 @@
 
     .fish-controls {
       padding: 14px;
-      min-width: 380px;
+      min-width: min(44vw, 520px);
+      max-width: min(48vw, 620px);
       display: flex;
       align-items: end;
-      gap: 14px;
+      gap: 12px;
       flex-wrap: wrap;
     }
     .field {
@@ -392,6 +553,7 @@
       flex-direction: column;
       gap: 6px;
       min-width: 120px;
+      flex: 1 1 120px;
     }
     .field label { font-size: 12px; color: var(--muted); }
     .field select, .field input {
@@ -402,9 +564,10 @@
       height: 42px;
       padding: 0 12px;
       outline: none;
+      min-width: 0;
     }
 
-    .primary-btn, .soft-btn, .danger-btn {
+    .primary-btn, .soft-btn {
       border: 0;
       border-radius: 999px;
       min-height: 44px;
@@ -412,16 +575,16 @@
       color: #0d2131;
       font-weight: 700;
       transition: transform 0.18s ease, filter 0.18s ease, opacity 0.18s ease;
+      flex: 0 0 auto;
     }
-    .primary-btn:hover, .soft-btn:hover, .danger-btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
-    .primary-btn:disabled, .soft-btn:disabled, .danger-btn:disabled { opacity: 0.5; cursor: default; transform: none; }
+    .primary-btn:hover, .soft-btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
+    .primary-btn:disabled, .soft-btn:disabled { opacity: 0.5; cursor: default; transform: none; }
     .primary-btn { background: linear-gradient(135deg, #b8f8f1, #78e9d3); }
     .soft-btn { background: linear-gradient(135deg, #f5f0d4, #f5d88e); }
-    .danger-btn { background: linear-gradient(135deg, #ffc8cf, #ff9494); }
 
     .content-shell {
       position: absolute;
-      inset: calc(var(--safeTop) + 22px) 18px calc(var(--safeBottom) + 22px) calc(var(--navW) + 26px);
+      inset: calc(var(--safeTop) + 12px) 14px calc(var(--safeBottom) + 14px) calc(var(--navCurrent) + 22px);
       padding: 22px 22px 24px;
       overflow: auto;
       border-radius: 28px;
@@ -430,8 +593,8 @@
       -webkit-backdrop-filter: blur(8px);
       border: 1px solid rgba(255,255,255,0.12);
       box-shadow: var(--shadow);
+      transition: inset 0.22s ease;
     }
-
     .section-title {
       font-size: 26px;
       font-weight: 800;
@@ -444,47 +607,12 @@
       margin: 0 0 18px;
       line-height: 1.7;
     }
-
     .money-line {
       font-size: 18px;
       font-weight: 700;
       margin-bottom: 16px;
       color: var(--gold);
     }
-
-    .grid-list {
-      display: grid;
-      gap: 14px;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    }
-
-    .line-item {
-      padding: 14px 14px 14px 16px;
-      border-radius: 22px;
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.06);
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      min-height: 88px;
-    }
-    .line-item .thumb {
-      width: 58px;
-      height: 58px;
-      border-radius: 18px;
-      display: grid;
-      place-items: center;
-      font-size: 28px;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.14);
-      flex: 0 0 auto;
-    }
-    .line-item .meta { flex: 1; min-width: 0; }
-    .line-item .name { font-weight: 700; margin-bottom: 6px; }
-    .line-item .desc { font-size: 12px; color: var(--muted); line-height: 1.55; }
-    .line-item .price { font-weight: 800; color: var(--gold); white-space: nowrap; }
-    .line-item .actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
-
     .stat-row {
       display: flex;
       flex-wrap: wrap;
@@ -500,6 +628,67 @@
       border: 1px solid rgba(255,255,255,0.12);
     }
 
+    .shop-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .line-item {
+      padding: 14px 14px 14px 16px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      min-height: 98px;
+      min-width: 0;
+      overflow: hidden;
+    }
+    .line-item .thumb {
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      font-size: 28px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.14);
+      flex: 0 0 auto;
+    }
+    .line-item .meta { flex: 1; min-width: 0; }
+    .line-item .name {
+      font-weight: 700;
+      margin-bottom: 6px;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+    .line-item .desc {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.55;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+    .line-item .price {
+      font-weight: 800;
+      color: var(--gold);
+      white-space: nowrap;
+      flex: 0 0 auto;
+    }
+    .line-item .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      flex: 0 0 auto;
+    }
+
+    .grid-list {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
     .ency-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -510,7 +699,7 @@
       border-radius: 24px;
       background: rgba(255,255,255,0.06);
       border: 1px solid rgba(255,255,255,0.12);
-      min-height: 180px;
+      min-height: 200px;
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -534,6 +723,8 @@
     .fish-name { font-size: 18px; font-weight: 700; }
     .fish-meta { font-size: 12px; color: var(--muted); line-height: 1.6; }
     .record { color: var(--gold); }
+    .plus-size { color: #b7f1ff; }
+    .minus-size { color: #ffd1c7; }
 
     .settings-list {
       display: grid;
@@ -549,7 +740,6 @@
     .settings-box h3 { margin: 0 0 12px; }
     .settings-box .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
     .settings-box .row:last-child { margin-bottom: 0; }
-
     .toggle {
       appearance: none;
       width: 52px;
@@ -586,9 +776,8 @@
       padding: 24px;
     }
     .modal.show { display: grid; }
-
     .modal-card {
-      width: min(520px, 100%);
+      width: min(540px, 100%);
       border-radius: 30px;
       padding: 22px;
       background: linear-gradient(180deg, rgba(17,33,48,0.92), rgba(8,17,28,0.96));
@@ -732,7 +921,6 @@
       padding: 0 14px;
     }
     .auth-note { font-size: 12px; color: var(--muted); margin-top: 10px; line-height: 1.7; }
-
     .shaker { animation: screenShake 0.55s ease; }
 
     @keyframes seaBob {
@@ -772,38 +960,81 @@
       80% { transform: translateX(3px); }
     }
 
-    @media (max-width: 900px) {
-      :root { --navW: 64px; }
-      .side-nav {
-        top: auto;
-        left: 10px;
-        right: 10px;
-        bottom: calc(var(--safeBottom) + 10px);
-        width: auto;
-        height: 74px;
-        flex-direction: row;
-        justify-content: space-around;
-        border-radius: 24px;
-        padding: 10px;
+    @media (max-width: 1100px) {
+      .shop-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .fish-controls { min-width: min(58vw, 560px); max-width: min(62vw, 620px); }
+      .equip-strip { max-width: min(42vw, 360px); }
+      .timer-center { width: min(40vw, 320px); }
+    }
+
+    @media (max-width: 760px) {
+      :root {
+        --navExpanded: 72px;
+        --navCollapsed: 22px;
       }
-      .user-pill { display: none; }
-      .screen { inset: 0; }
-      .top-left { left: 12px; top: calc(var(--safeTop) + 10px); }
-      .top-right { right: 12px; top: calc(var(--safeTop) + 10px); }
-      .bottom-left { left: 12px; bottom: calc(var(--safeBottom) + 92px); }
-      .bottom-right { right: 12px; bottom: calc(var(--safeBottom) + 92px); }
-      .timer-box { min-width: 0; width: min(100vw - 24px, 340px); }
+      .nav-toggle {
+        top: calc(var(--safeTop) + 10px);
+        left: 10px;
+      }
+      .side-nav {
+        top: calc(var(--safeTop) + 48px);
+        left: 10px;
+        bottom: calc(var(--safeBottom) + 10px);
+        width: var(--navExpanded);
+        padding: 12px 8px;
+      }
+      .fishing-stage,
+      .content-shell {
+        inset: calc(var(--safeTop) + 8px) 10px calc(var(--safeBottom) + 10px) calc(var(--navCurrent) + 16px);
+      }
+      .top-right {
+        top: calc(var(--safeTop) + 8px);
+        right: 10px;
+        gap: 8px;
+      }
+      .money-mini { min-height: 38px; font-size: 13px; padding: 0 10px; }
+      .info-icon { width: 44px; height: 44px; font-size: 18px; border-radius: 14px; }
+      .fishing-stage {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr auto auto;
+      }
+      .timer-center {
+        position: relative;
+        left: auto;
+        top: auto;
+        transform: none;
+        margin: 60px auto 0;
+        width: min(62vw, 300px);
+        min-width: 210px;
+      }
+      .bottom-left, .bottom-right {
+        position: relative;
+        bottom: auto;
+      }
+      .bottom-left { margin-top: 18px; }
+      .bottom-right { margin-top: 12px; justify-self: end; }
       .fish-controls {
         min-width: 0;
-        width: min(100vw - 24px, 520px);
+        max-width: none;
+        width: 100%;
         padding: 12px;
       }
-      .field { min-width: calc(50% - 7px); }
-      .content-shell {
-        inset: calc(var(--safeTop) + 10px) 10px calc(var(--safeBottom) + 94px) 10px;
-        padding: 18px;
+      .equip-strip {
+        min-width: 0;
+        max-width: none;
+        width: auto;
       }
+      .field { min-width: calc(50% - 6px); }
+      .shop-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .line-item {
+        flex-direction: column;
+        align-items: flex-start;
+        min-height: 0;
+      }
+      .line-item .actions { width: 100%; justify-content: flex-start; }
       .result-core { grid-template-columns: 1fr; }
+      .user-pill { display: none; }
     }
   </style>
 </head>
@@ -815,71 +1046,99 @@
     <div id="bobber" class="bobber"></div>
     <div id="splash" class="splash"></div>
 
+    <button id="navToggle" class="nav-toggle" aria-label="メニュー切り替え">❯</button>
+
     <nav class="side-nav">
-      <button class="nav-btn active" data-screen="fishing" aria-label="釣り">🎣<span class="tip">釣り</span></button>
-      <button class="nav-btn" data-screen="store" aria-label="ストア">🏪<span class="tip">ストア</span></button>
-      <button class="nav-btn" data-screen="bag" aria-label="かばん">👜<span class="tip">かばん</span></button>
-      <button class="nav-btn" data-screen="encyclopedia" aria-label="図鑑">📘<span class="tip">図鑑</span></button>
-      <button class="nav-btn" data-screen="settings" aria-label="設定">⚙️<span class="tip">設定</span></button>
+      <button class="nav-btn active" data-screen="fishing" aria-label="釣り">
+        <svg viewBox="0 0 24 24"><path d="M5 18c2-1 3-2.5 4-5.5"/><path d="M9 12.5V4"/><path d="M9 4c2.5 1 4.5 2 7 2.2"/><path d="M16 6.2c-.2 3.3-1.2 5-3.2 6.7"/><path d="M12.8 12.9c1.4.2 2.7.9 3.4 2"/><path d="M16.2 14.9c1.1.2 1.8 1.1 1.8 2.2 0 1.7-1.7 2.9-3.9 2.9-1.8 0-3.2-.8-3.7-2"/></svg>
+        <span class="tip">釣り</span>
+      </button>
+      <button class="nav-btn" data-screen="store" aria-label="ストア">
+        <svg viewBox="0 0 24 24"><path d="M4 10h16"/><path d="M6 10v8h12v-8"/><path d="M7 10l1-4h8l1 4"/><path d="M9 18v-4h6v4"/></svg>
+        <span class="tip">ストア</span>
+      </button>
+      <button class="nav-btn" data-screen="bag" aria-label="かばん">
+        <svg viewBox="0 0 24 24"><path d="M7 8V7a5 5 0 0 1 10 0v1"/><path d="M5 8h14l-1 10H6L5 8Z"/><path d="M9 11v1"/><path d="M15 11v1"/></svg>
+        <span class="tip">かばん</span>
+      </button>
+      <button class="nav-btn" data-screen="encyclopedia" aria-label="図鑑">
+        <svg viewBox="0 0 24 24"><path d="M6 5.5A2.5 2.5 0 0 1 8.5 3H18v16H8.5A2.5 2.5 0 0 0 6 21V5.5Z"/><path d="M6 5h10"/><path d="M9 7.5h6"/><path d="M9 11h6"/></svg>
+        <span class="tip">図鑑</span>
+      </button>
+      <button class="nav-btn" data-screen="settings" aria-label="設定">
+        <svg viewBox="0 0 24 24"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/><path d="M19 12a7.3 7.3 0 0 0-.1-1.2l2-1.6-2-3.4-2.5 1a7.6 7.6 0 0 0-2-.9L14 3h-4l-.4 2.9a7.6 7.6 0 0 0-2 .9l-2.5-1-2 3.4 2 1.6A7.3 7.3 0 0 0 5 12c0 .4 0 .8.1 1.2l-2 1.6 2 3.4 2.5-1c.6.4 1.3.7 2 .9L10 21h4l.4-2.9c.7-.2 1.4-.5 2-.9l2.5 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2Z"/></svg>
+        <span class="tip">設定</span>
+      </button>
       <div class="user-pill" id="userPill">未ログイン</div>
     </nav>
 
     <section id="screen-fishing" class="screen active">
-      <div class="top-left">
-        <div class="timer-box floating-ui">
-          <div class="timer-main">
-            <div class="timer-time" id="timerText">--:--</div>
-            <div class="timer-sub" id="timerSub">まだ釣りを始めていません</div>
-          </div>
-          <div class="bonus-mini" id="bonusMini">
-            ボーナス<br />
-            なし
-          </div>
-        </div>
-      </div>
-
       <div class="top-right">
+        <div class="money-mini" id="fishMoneyMini">0 zz</div>
         <div class="info-icon" id="weatherIcon">☀️<div class="balloon" id="weatherBalloon">晴れ</div></div>
         <div class="info-icon" id="timeIcon">🌤️<div class="balloon" id="timeBalloon">昼</div></div>
       </div>
 
-      <div class="bottom-left">
-        <div class="fish-controls floating-ui">
-          <div class="field">
-            <label for="rodSelect">竿</label>
-            <select id="rodSelect"></select>
+      <div class="fishing-stage">
+        <div class="timer-center">
+          <svg class="timer-gauge" viewBox="0 0 220 220" aria-hidden="true">
+            <circle class="track" cx="110" cy="110" r="88"></circle>
+            <circle id="timerGlow" class="glow" cx="110" cy="110" r="88"></circle>
+            <circle id="timerProgress" class="progress" cx="110" cy="110" r="88"></circle>
+          </svg>
+          <div class="timer-core">
+            <div id="timerText" class="timer-main-time">--:--</div>
+            <div id="timerPlanMini" class="timer-mini-plan">5min</div>
           </div>
-          <div class="field">
-            <label for="courseSelect">コース</label>
-            <select id="courseSelect"></select>
+          <div class="timer-bottom-actions">
+            <button id="resumeFishingBtn" class="timer-icon-btn" aria-label="再開">
+              <svg viewBox="0 0 24 24"><path d="M8 6v12l10-6z"/></svg>
+            </button>
+            <button id="pauseFishingBtn" class="timer-icon-btn" aria-label="一時停止">
+              <svg viewBox="0 0 24 24"><path d="M8 6v12"/><path d="M16 6v12"/></svg>
+            </button>
           </div>
-          <div class="field">
-            <label for="baitSelectQuick">餌</label>
-            <select id="baitSelectQuick"></select>
-          </div>
-          <button id="startFishingBtn" class="primary-btn">釣る</button>
-          <button id="repeatFishingBtn" class="soft-btn">同じ設定で再釣り</button>
+          <div id="timerSubtle" class="timer-subtle">まだ釣りを始めていません</div>
         </div>
-      </div>
 
-      <div class="bottom-right">
-        <div class="equip-strip floating-ui" id="equipStrip"></div>
+        <div class="bottom-left">
+          <div class="fish-controls floating-ui">
+            <div class="field">
+              <label for="rodSelect">竿</label>
+              <select id="rodSelect"></select>
+            </div>
+            <div class="field">
+              <label for="courseSelect">コース</label>
+              <select id="courseSelect"></select>
+            </div>
+            <div class="field">
+              <label for="baitSelectQuick">餌</label>
+              <select id="baitSelectQuick"></select>
+            </div>
+            <button id="startFishingBtn" class="primary-btn">釣る</button>
+            <button id="repeatFishingBtn" class="soft-btn">同じ設定で再釣り</button>
+          </div>
+        </div>
+
+        <div class="bottom-right">
+          <div class="equip-strip floating-ui" id="equipStrip"></div>
+        </div>
       </div>
     </section>
 
     <section id="screen-store" class="screen">
       <div class="content-shell">
         <h1 class="section-title">ストア</h1>
-        <p class="section-sub">竿・餌・補助アイテムを買えます。魚や漂流物はここで売却できます。アイテム売却は半額です。</p>
+        <p class="section-sub">売る・買うをここで行います。売却を上、購入を下にしています。アイテム売却は半額です。</p>
         <div class="money-line" id="storeMoney"></div>
         <div class="stat-row">
           <div class="stat-chip">釣果をその場で売るより、かばんから整理して売ることもできます</div>
           <div class="stat-chip">長い作業コースほど少しだけボーナスが乗ります</div>
         </div>
-        <h2>購入</h2>
-        <div class="grid-list" id="shopBuyList"></div>
-        <h2 style="margin-top:24px;">売却</h2>
-        <div class="grid-list" id="shopSellList"></div>
+        <h2>売却</h2>
+        <div class="shop-grid" id="shopSellList"></div>
+        <h2 style="margin-top:24px;">購入</h2>
+        <div class="shop-grid" id="shopBuyList"></div>
       </div>
     </section>
 
@@ -899,7 +1158,7 @@
     <section id="screen-encyclopedia" class="screen">
       <div class="content-shell">
         <h1 class="section-title">図鑑</h1>
-        <p class="section-sub">これまでに釣った魚の記録です。最大サイズ、累計獲得数、世界記録を表示します。未取得はシルエット表示です。</p>
+        <p class="section-sub">これまでに釣った魚の記録です。最大サイズ、平均サイズ、累計獲得数、世界記録を表示します。未取得はシルエット表示です。</p>
         <div class="stat-row" id="encyStats"></div>
         <div class="ency-grid" id="encyList"></div>
       </div>
@@ -923,7 +1182,7 @@
           <div class="settings-box">
             <h3>音と通知</h3>
             <div class="row"><span>波音</span><input id="toggleWave" class="toggle" type="checkbox" /></div>
-            <div class="row"><span>釣れた音</span><input id="toggleCatch" class="toggle" type="checkbox" /></div>
+            <div class="row"><span>釣り開始・終了音</span><input id="toggleCatch" class="toggle" type="checkbox" /></div>
             <div class="row"><span>ブラウザ通知</span><input id="toggleNotify" class="toggle" type="checkbox" /></div>
             <div class="row"><span>終了時に軽く揺らす</span><input id="toggleShake" class="toggle" type="checkbox" /></div>
           </div>
@@ -1001,12 +1260,6 @@
       doc,
       getDoc,
       setDoc,
-      collection,
-      query,
-      orderBy,
-      limit,
-      getDocs,
-      where,
       serverTimestamp,
     } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
@@ -1020,298 +1273,43 @@
       measurementId: "G-H7P3WR4DR3"
     };
 
-    const LS_KEY = "zz_fishing_subsite_save_v1";
+    const LS_KEY = "zz_fishing_subsite_save_v2";
     const ENCY_TOP_LIMIT = 50;
     const SELL_RATE_ITEM = 0.5;
+    const TIMER_R = 88;
+    const TIMER_C = 2 * Math.PI * TIMER_R;
 
     const RODS = [
-      {
-        id: "rod_small_01",
-        name: "小物竿",
-        icon: "🎏",
-        price: 0,
-        courses: [5, 10],
-        power: 2,
-        luck: 1,
-        sizeBoost: 0,
-        desc: "短めの作業時間向け。小物が中心。"
-      },
-      {
-        id: "rod_normal_01",
-        name: "万能竿",
-        icon: "🎣",
-        price: 180,
-        courses: [15, 25],
-        power: 5,
-        luck: 2,
-        sizeBoost: 1,
-        desc: "標準的。25分ポモドーロにちょうどいい。"
-      },
-      {
-        id: "rod_big_01",
-        name: "大物竿",
-        icon: "🪝",
-        price: 520,
-        courses: [30, 50],
-        power: 9,
-        luck: 3,
-        sizeBoost: 3,
-        desc: "長時間向け。強い魚や大きい魚を狙いやすい。"
-      }
+      { id: "rod_small_01", name: "小物竿", icon: "🎏", price: 0, courses: [5, 10], power: 2, luck: 1, sizeBoost: 0, desc: "短めの作業時間向け。小物が中心。" },
+      { id: "rod_normal_01", name: "万能竿", icon: "🎣", price: 180, courses: [15, 25], power: 5, luck: 2, sizeBoost: 1, desc: "標準的。25分ポモドーロにちょうどいい。" },
+      { id: "rod_big_01", name: "大物竿", icon: "🪝", price: 520, courses: [30, 50], power: 9, luck: 3, sizeBoost: 3, desc: "長時間向け。強い魚や大きい魚を狙いやすい。" }
     ];
-
     const BAITS = [
-      {
-        id: "bait_basic_01",
-        name: "基本の餌",
-        icon: "🪱",
-        price: 0,
-        ownedByDefault: true,
-        strengthAdjust: 0,
-        rareBonus: 0,
-        sizeBonus: 0,
-        target: "all",
-        desc: "癖のない基本の餌。"
-      },
-      {
-        id: "bait_rare_01",
-        name: "レア寄りの餌",
-        icon: "🦐",
-        price: 120,
-        strengthAdjust: 2,
-        rareBonus: 5,
-        sizeBonus: 0,
-        target: "rare",
-        desc: "レア魚の候補に少し寄る。"
-      },
-      {
-        id: "bait_big_01",
-        name: "大物寄りの餌",
-        icon: "🦑",
-        price: 160,
-        strengthAdjust: 1,
-        rareBonus: 1,
-        sizeBonus: 6,
-        target: "size",
-        desc: "サイズ補正が高め。"
-      }
+      { id: "bait_basic_01", name: "基本の餌", icon: "🪱", price: 0, ownedByDefault: true, strengthAdjust: 0, rareBonus: 0, sizeBonus: 0, target: "all", desc: "癖のない基本の餌。" },
+      { id: "bait_rare_01", name: "レア寄りの餌", icon: "🦐", price: 120, strengthAdjust: 2, rareBonus: 5, sizeBonus: 0, target: "rare", desc: "レア魚の候補に少し寄る。" },
+      { id: "bait_big_01", name: "大物寄りの餌", icon: "🦑", price: 160, strengthAdjust: 1, rareBonus: 1, sizeBonus: 6, target: "size", desc: "サイズ補正が高め。" }
     ];
-
     const SUPPORTS = [
-      {
-        id: "support_luck_01",
-        name: "幸運のお守り",
-        icon: "🍀",
-        price: 280,
-        rareBonus: 8,
-        sizeBonus: 0,
-        power: 1,
-        desc: "レア率を少し上げる。"
-      },
-      {
-        id: "support_size_01",
-        name: "大型ルアー補助",
-        icon: "📏",
-        price: 280,
-        rareBonus: 0,
-        sizeBonus: 10,
-        power: 1,
-        desc: "サイズ補正を上げる。"
-      },
-      {
-        id: "support_time_01",
-        name: "集中砂時計",
-        icon: "⏳",
-        price: 320,
-        rareBonus: 2,
-        sizeBonus: 4,
-        power: 2,
-        desc: "長いコースのボーナスが少し強くなる。"
-      }
+      { id: "support_luck_01", name: "幸運のお守り", icon: "🍀", price: 280, rareBonus: 8, sizeBonus: 0, power: 1, desc: "レア率を少し上げる。" },
+      { id: "support_size_01", name: "大型ルアー補助", icon: "📏", price: 280, rareBonus: 0, sizeBonus: 10, power: 1, desc: "サイズ補正を上げる。" },
+      { id: "support_time_01", name: "集中砂時計", icon: "⏳", price: 320, rareBonus: 2, sizeBonus: 4, power: 2, desc: "長いコースのボーナスが少し強くなる。" }
     ];
-
     const FISHES = [
-      {
-        id: "fish_001_sardine",
-        kind: "fish",
-        name: "イワシ",
-        icon: "🐟",
-        basePrice: 18,
-        avgSize: 14,
-        spread: 8,
-        strength: 1,
-        rarity: 1,
-        timeBonus: { day: 3, evening: 1, night: -2 },
-        weatherBonus: { sunny: 2, cloudy: 0, rainy: 0 },
-        hugeChance: 0.002,
-        hugeFactor: 2.3,
-        description: "群れで回る小さな魚。"
-      },
-      {
-        id: "fish_002_horse_mackerel",
-        kind: "fish",
-        name: "アジ",
-        icon: "🐠",
-        basePrice: 36,
-        avgSize: 22,
-        spread: 10,
-        strength: 3,
-        rarity: 2,
-        timeBonus: { day: 1, evening: 2, night: 1 },
-        weatherBonus: { sunny: 0, cloudy: 1, rainy: 2 },
-        hugeChance: 0.003,
-        hugeFactor: 2.4,
-        description: "扱いやすく、サイズが伸びると嬉しい。"
-      },
-      {
-        id: "fish_003_sea_bream",
-        kind: "fish",
-        name: "タイ",
-        icon: "🐡",
-        basePrice: 98,
-        avgSize: 38,
-        spread: 15,
-        strength: 7,
-        rarity: 5,
-        timeBonus: { day: 2, evening: 2, night: -1 },
-        weatherBonus: { sunny: 2, cloudy: 1, rainy: -2 },
-        hugeChance: 0.004,
-        hugeFactor: 2.8,
-        description: "釣れるとちゃんと嬉しい代表格。"
-      },
-      {
-        id: "fish_004_squid",
-        kind: "fish",
-        name: "イカ",
-        icon: "🦑",
-        basePrice: 74,
-        avgSize: 28,
-        spread: 12,
-        strength: 6,
-        rarity: 4,
-        timeBonus: { day: -3, evening: 2, night: 4 },
-        weatherBonus: { sunny: -1, cloudy: 2, rainy: 3 },
-        hugeChance: 0.005,
-        hugeFactor: 2.6,
-        description: "夜や雨で出やすい。"
-      },
-      {
-        id: "fish_005_flounder",
-        kind: "fish",
-        name: "ヒラメ",
-        icon: "🐟",
-        basePrice: 124,
-        avgSize: 42,
-        spread: 16,
-        strength: 9,
-        rarity: 6,
-        timeBonus: { day: 0, evening: 1, night: 2 },
-        weatherBonus: { sunny: -1, cloudy: 2, rainy: 2 },
-        hugeChance: 0.006,
-        hugeFactor: 3.1,
-        description: "少し大物寄り。"
-      },
-      {
-        id: "fish_006_tuna_child",
-        kind: "fish",
-        name: "若マグロ",
-        icon: "🐬",
-        basePrice: 260,
-        avgSize: 68,
-        spread: 24,
-        strength: 14,
-        rarity: 10,
-        timeBonus: { day: 2, evening: 1, night: -1 },
-        weatherBonus: { sunny: 1, cloudy: 0, rainy: 0 },
-        hugeChance: 0.008,
-        hugeFactor: 3.2,
-        description: "大物竿で狙いたい。"
-      },
-      {
-        id: "fish_007_angler",
-        kind: "fish",
-        name: "アンコウ",
-        icon: "🎣",
-        basePrice: 290,
-        avgSize: 74,
-        spread: 30,
-        strength: 16,
-        rarity: 12,
-        timeBonus: { day: -5, evening: 1, night: 5 },
-        weatherBonus: { sunny: -3, cloudy: 1, rainy: 4 },
-        hugeChance: 0.012,
-        hugeFactor: 3.5,
-        description: "夜と雨でかなり出やすくなる。"
-      },
-      {
-        id: "fish_008_legend_king",
-        kind: "fish",
-        name: "ぬし級の魚",
-        icon: "✨",
-        basePrice: 860,
-        avgSize: 120,
-        spread: 48,
-        strength: 24,
-        rarity: 18,
-        timeBonus: { day: 0, evening: 2, night: 3 },
-        weatherBonus: { sunny: 0, cloudy: 1, rainy: 3 },
-        hugeChance: 0.02,
-        hugeFactor: 4.2,
-        description: "かなり低確率。記録向け。"
-      }
+      { id: "fish_001_sardine", kind: "fish", name: "イワシ", icon: "🐟", basePrice: 18, avgSize: 14, spread: 8, strength: 1, rarity: 1, timeBonus: { day: 3, evening: 1, night: -2 }, weatherBonus: { sunny: 2, cloudy: 0, rainy: 0 }, hugeChance: 0.002, hugeFactor: 2.3, description: "群れで回る小さな魚。" },
+      { id: "fish_002_horse_mackerel", kind: "fish", name: "アジ", icon: "🐠", basePrice: 36, avgSize: 22, spread: 10, strength: 3, rarity: 2, timeBonus: { day: 1, evening: 2, night: 1 }, weatherBonus: { sunny: 0, cloudy: 1, rainy: 2 }, hugeChance: 0.003, hugeFactor: 2.4, description: "扱いやすく、サイズが伸びると嬉しい。" },
+      { id: "fish_003_sea_bream", kind: "fish", name: "タイ", icon: "🐡", basePrice: 98, avgSize: 38, spread: 15, strength: 7, rarity: 5, timeBonus: { day: 2, evening: 2, night: -1 }, weatherBonus: { sunny: 2, cloudy: 1, rainy: -2 }, hugeChance: 0.004, hugeFactor: 2.8, description: "釣れるとちゃんと嬉しい代表格。" },
+      { id: "fish_004_squid", kind: "fish", name: "イカ", icon: "🦑", basePrice: 74, avgSize: 28, spread: 12, strength: 6, rarity: 4, timeBonus: { day: -3, evening: 2, night: 4 }, weatherBonus: { sunny: -1, cloudy: 2, rainy: 3 }, hugeChance: 0.005, hugeFactor: 2.6, description: "夜や雨で出やすい。" },
+      { id: "fish_005_flounder", kind: "fish", name: "ヒラメ", icon: "🐟", basePrice: 124, avgSize: 42, spread: 16, strength: 9, rarity: 6, timeBonus: { day: 0, evening: 1, night: 2 }, weatherBonus: { sunny: -1, cloudy: 2, rainy: 2 }, hugeChance: 0.006, hugeFactor: 3.1, description: "少し大物寄り。" },
+      { id: "fish_006_tuna_child", kind: "fish", name: "若マグロ", icon: "🐬", basePrice: 260, avgSize: 68, spread: 24, strength: 14, rarity: 10, timeBonus: { day: 2, evening: 1, night: -1 }, weatherBonus: { sunny: 1, cloudy: 0, rainy: 0 }, hugeChance: 0.008, hugeFactor: 3.2, description: "大物竿で狙いたい。" },
+      { id: "fish_007_angler", kind: "fish", name: "アンコウ", icon: "🎣", basePrice: 290, avgSize: 74, spread: 30, strength: 16, rarity: 12, timeBonus: { day: -5, evening: 1, night: 5 }, weatherBonus: { sunny: -3, cloudy: 1, rainy: 4 }, hugeChance: 0.012, hugeFactor: 3.5, description: "夜と雨でかなり出やすくなる。" },
+      { id: "fish_008_legend_king", kind: "fish", name: "ぬし級の魚", icon: "✨", basePrice: 860, avgSize: 120, spread: 48, strength: 24, rarity: 18, timeBonus: { day: 0, evening: 2, night: 3 }, weatherBonus: { sunny: 0, cloudy: 1, rainy: 3 }, hugeChance: 0.02, hugeFactor: 4.2, description: "かなり低確率。記録向け。" }
     ];
-
     const JUNK_ITEMS = [
-      {
-        id: "item_001_can",
-        kind: "item",
-        name: "空き缶",
-        icon: "🥫",
-        basePrice: 8,
-        rarity: 1,
-        strength: 0,
-        timeBonus: { day: 0, evening: 0, night: 0 },
-        weatherBonus: { sunny: 0, cloudy: 1, rainy: 2 },
-        description: "海のはずれから流れてきた。"
-      },
-      {
-        id: "item_002_wood_box",
-        kind: "item",
-        name: "木箱",
-        icon: "🪵",
-        basePrice: 24,
-        rarity: 2,
-        strength: 2,
-        timeBonus: { day: 0, evening: 1, night: 1 },
-        weatherBonus: { sunny: 0, cloudy: 1, rainy: 1 },
-        description: "なにか入っていた気配だけある。"
-      },
-      {
-        id: "item_003_old_coin",
-        kind: "item",
-        name: "古いコイン",
-        icon: "🪙",
-        basePrice: 48,
-        rarity: 4,
-        strength: 5,
-        timeBonus: { day: 0, evening: 0, night: 2 },
-        weatherBonus: { sunny: 0, cloudy: 1, rainy: 1 },
-        description: "売ればそこそこ嬉しい。"
-      },
-      {
-        id: "item_004_treasure_piece",
-        kind: "item",
-        name: "宝箱の欠片",
-        icon: "🧩",
-        basePrice: 110,
-        rarity: 8,
-        strength: 10,
-        timeBonus: { day: 0, evening: 1, night: 2 },
-        weatherBonus: { sunny: -1, cloudy: 1, rainy: 2 },
-        description: "珍しい漂流物。"
-      }
+      { id: "item_001_can", kind: "item", name: "空き缶", icon: "🥫", basePrice: 8, rarity: 1, strength: 0, timeBonus: { day: 0, evening: 0, night: 0 }, weatherBonus: { sunny: 0, cloudy: 1, rainy: 2 }, description: "海のはずれから流れてきた。" },
+      { id: "item_002_wood_box", kind: "item", name: "木箱", icon: "🪵", basePrice: 24, rarity: 2, strength: 2, timeBonus: { day: 0, evening: 1, night: 1 }, weatherBonus: { sunny: 0, cloudy: 1, rainy: 1 }, description: "なにか入っていた気配だけある。" },
+      { id: "item_003_old_coin", kind: "item", name: "古いコイン", icon: "🪙", basePrice: 48, rarity: 4, strength: 5, timeBonus: { day: 0, evening: 0, night: 2 }, weatherBonus: { sunny: 0, cloudy: 1, rainy: 1 }, description: "売ればそこそこ嬉しい。" },
+      { id: "item_004_treasure_piece", kind: "item", name: "宝箱の欠片", icon: "🧩", basePrice: 110, rarity: 8, strength: 10, timeBonus: { day: 0, evening: 1, night: 2 }, weatherBonus: { sunny: -1, cloudy: 1, rainy: 2 }, description: "珍しい漂流物。" }
     ];
-
     const SHOP_ITEMS = [
       ...RODS.map(v => ({ ...v, shopType: "rod" })),
       ...BAITS.filter(v => v.price > 0).map(v => ({ ...v, shopType: "bait" })),
@@ -1319,36 +1317,22 @@
     ];
 
     const DEFAULT_STATE = {
-      version: 1,
-      user: {
-        uid: null,
-        isGuest: true,
-        displayName: "つりびと",
-        photoURL: null,
-      },
+      version: 2,
+      ui: { navCollapsed: false },
+      user: { uid: null, isGuest: true, displayName: "つりびと", photoURL: null },
       money: 220,
-      owned: {
-        rods: ["rod_small_01"],
-        baits: ["bait_basic_01"],
-        supports: []
-      },
-      equipped: {
-        rodId: "rod_small_01",
-        baitId: "bait_basic_01",
-        supportId: null,
-      },
+      owned: { rods: ["rod_small_01"], baits: ["bait_basic_01"], supports: [] },
+      equipped: { rodId: "rod_small_01", baitId: "bait_basic_01", supportId: null },
       inventory: [],
       encyclopedia: {},
-      settings: {
-        waveSound: false,
-        catchSound: true,
-        browserNotify: false,
-        shakeOnFinish: true,
-      },
+      settings: { waveSound: false, catchSound: true, browserNotify: false, shakeOnFinish: true },
       fishing: {
         inProgress: false,
+        paused: false,
         startAt: null,
         endAt: null,
+        pausedAt: null,
+        remainingMs: null,
         durationMin: 5,
         rodId: "rod_small_01",
         baitId: "bait_basic_01",
@@ -1357,21 +1341,13 @@
         timeOfDay: null,
       },
       lastCatch: null,
-      lastUsedSetup: {
-        rodId: "rod_small_01",
-        baitId: "bait_basic_01",
-        supportId: null,
-        durationMin: 5,
-      },
+      lastUsedSetup: { rodId: "rod_small_01", baitId: "bait_basic_01", supportId: null, durationMin: 5 },
       lastSavedAt: null,
+      currentConditions: { timeOfDay: "day", weather: "sunny" },
     };
 
-    let app = null;
-    let analytics = null;
-    let auth = null;
-    let db = null;
-    let firebaseReady = false;
-    let firebaseSyncOk = false;
+    let app = null, analytics = null, auth = null, db = null;
+    let firebaseReady = false, firebaseSyncOk = false;
     let state = loadLocalState();
     let globalRecords = {};
     let timerTickHandle = null;
@@ -1381,6 +1357,7 @@
 
     const el = {
       app: document.getElementById("app"),
+      navToggle: document.getElementById("navToggle"),
       navBtns: [...document.querySelectorAll(".nav-btn")],
       screens: {
         fishing: document.getElementById("screen-fishing"),
@@ -1389,10 +1366,15 @@
         encyclopedia: document.getElementById("screen-encyclopedia"),
         settings: document.getElementById("screen-settings"),
       },
+      fishMoneyMini: document.getElementById("fishMoneyMini"),
       userPill: document.getElementById("userPill"),
       timerText: document.getElementById("timerText"),
-      timerSub: document.getElementById("timerSub"),
-      bonusMini: document.getElementById("bonusMini"),
+      timerPlanMini: document.getElementById("timerPlanMini"),
+      timerSubtle: document.getElementById("timerSubtle"),
+      timerProgress: document.getElementById("timerProgress"),
+      timerGlow: document.getElementById("timerGlow"),
+      pauseFishingBtn: document.getElementById("pauseFishingBtn"),
+      resumeFishingBtn: document.getElementById("resumeFishingBtn"),
       weatherIcon: document.getElementById("weatherIcon"),
       weatherBalloon: document.getElementById("weatherBalloon"),
       timeIcon: document.getElementById("timeIcon"),
@@ -1447,17 +1429,24 @@
     boot();
 
     async function boot() {
+      initTimerGauge();
       tryInitFirebase();
       bindEvents();
       fillQuickSelectors();
       refreshConditions();
       await loadGlobalRecords();
       applyStateToSelectors();
+      applyNavState();
       renderAll();
       restoreFishingTimer();
-      if (!authResolved) {
-        el.authOverlay.style.display = "grid";
-      }
+      if (!authResolved) el.authOverlay.style.display = "grid";
+    }
+
+    function initTimerGauge() {
+      [el.timerProgress, el.timerGlow].forEach(node => {
+        node.style.strokeDasharray = String(TIMER_C);
+        node.style.strokeDashoffset = String(TIMER_C);
+      });
     }
 
     function tryInitFirebase() {
@@ -1466,9 +1455,7 @@
         firebaseReady = true;
         auth = getAuth(app);
         db = getFirestore(app);
-        analyticsSupported().then((ok) => {
-          if (ok) analytics = getAnalytics(app);
-        }).catch(() => {});
+        analyticsSupported().then((ok) => { if (ok) analytics = getAnalytics(app); }).catch(() => {});
         onAuthStateChanged(auth, async (user) => {
           authResolved = true;
           if (user) {
@@ -1498,65 +1485,43 @@
     }
 
     function bindEvents() {
-      el.navBtns.forEach(btn => {
-        btn.addEventListener("click", () => switchScreen(btn.dataset.screen));
+      el.navToggle.addEventListener("click", () => {
+        state.ui.navCollapsed = !state.ui.navCollapsed;
+        applyNavState();
+        saveAll();
       });
-
+      el.navBtns.forEach(btn => btn.addEventListener("click", () => switchScreen(btn.dataset.screen)));
       el.rodSelect.addEventListener("change", () => {
         state.equipped.rodId = el.rodSelect.value;
         rebuildCourseOptions();
         state.lastUsedSetup.rodId = state.equipped.rodId;
-        saveAll();
-        renderAll();
+        saveAll(); renderAll();
       });
-
       el.courseSelect.addEventListener("change", () => {
         state.lastUsedSetup.durationMin = Number(el.courseSelect.value);
+        renderFishingStatus();
         saveAll();
       });
-
       el.baitSelectQuick.addEventListener("change", () => {
         state.equipped.baitId = el.baitSelectQuick.value;
         state.lastUsedSetup.baitId = state.equipped.baitId;
-        saveAll();
-        renderAll();
+        saveAll(); renderAll();
       });
-
-      el.startFishingBtn.addEventListener("click", () => startFishingFromCurrent());
-      el.repeatFishingBtn.addEventListener("click", () => repeatFishing());
-
+      el.startFishingBtn.addEventListener("click", startFishingFromCurrent);
+      el.repeatFishingBtn.addEventListener("click", repeatFishing);
+      el.pauseFishingBtn.addEventListener("click", pauseFishing);
+      el.resumeFishingBtn.addEventListener("click", resumeFishing);
       el.closeResultBtn.addEventListener("click", closeResultModal);
-      el.keepResultBtn.addEventListener("click", () => {
-        if (!pendingResult) return;
-        addInventoryEntry(pendingResult.entry);
-        applyCatchRecord(pendingResult);
-        toast(`${pendingResult.entry.name} を所持品に入れました。`);
-        pendingResult = null;
-        closeResultModal();
-        saveAll();
-        renderAll();
-      });
-      el.sellResultBtn.addEventListener("click", () => {
-        if (!pendingResult) return;
-        state.money += pendingResult.entry.sellPrice;
-        applyCatchRecord(pendingResult);
-        toast(`${pendingResult.entry.name} を ${pendingResult.entry.sellPrice} zz で売却しました。`);
-        pendingResult = null;
-        closeResultModal();
-        saveAll();
-        renderAll();
-      });
-
+      el.keepResultBtn.addEventListener("click", keepPendingResult);
+      el.sellResultBtn.addEventListener("click", sellPendingResult);
       el.googleLoginBtn.addEventListener("click", googleLogin);
       el.guestStartBtn.addEventListener("click", startGuest);
       el.saveDisplayNameBtn.addEventListener("click", () => {
         const v = safeName(el.displayNameInput.value);
         state.user.displayName = v || "つりびと";
         toast("表示名を保存しました。");
-        saveAll();
-        renderAll();
+        saveAll(); renderAll();
       });
-
       el.toggleWave.addEventListener("change", () => updateSetting("waveSound", el.toggleWave.checked));
       el.toggleCatch.addEventListener("change", () => updateSetting("catchSound", el.toggleCatch.checked));
       el.toggleNotify.addEventListener("change", async () => {
@@ -1566,47 +1531,37 @@
         updateSetting("browserNotify", el.toggleNotify.checked && Notification && Notification.permission === "granted");
       });
       el.toggleShake.addEventListener("change", () => updateSetting("shakeOnFinish", el.toggleShake.checked));
-
-      el.forceSaveBtn.addEventListener("click", async () => {
-        await saveAll(true);
-        toast("保存しました。");
-      });
-
+      el.forceSaveBtn.addEventListener("click", async () => { await saveAll(true); toast("保存しました。"); });
       el.exportBtn.addEventListener("click", exportSave);
       el.importBtn.addEventListener("click", () => el.importFile.click());
       el.importFile.addEventListener("change", importSaveFile);
-
       window.addEventListener("beforeunload", () => saveLocalState(state));
       document.addEventListener("visibilitychange", () => {
         if (!document.hidden) {
           refreshConditions();
-          if (state.fishing.inProgress && Date.now() >= state.fishing.endAt) {
-            finishFishing();
-          }
+          if (state.fishing.inProgress && !state.fishing.paused && Date.now() >= state.fishing.endAt) finishFishing();
           renderAll();
         }
       });
+    }
+
+    function applyNavState() {
+      el.app.classList.toggle("nav-collapsed", !!state.ui.navCollapsed);
+      el.navToggle.textContent = state.ui.navCollapsed ? "❯" : "❮";
     }
 
     function fillQuickSelectors() {
       el.rodSelect.innerHTML = "";
       RODS.filter(rod => owns("rods", rod.id)).forEach(rod => {
         const option = document.createElement("option");
-        option.value = rod.id;
-        option.textContent = `${rod.icon} ${rod.name}`;
-        el.rodSelect.appendChild(option);
+        option.value = rod.id; option.textContent = `${rod.icon} ${rod.name}`; el.rodSelect.appendChild(option);
       });
-
       el.baitSelectQuick.innerHTML = "";
       BAITS.filter(bait => owns("baits", bait.id)).forEach(bait => {
         const option = document.createElement("option");
-        option.value = bait.id;
-        option.textContent = `${bait.icon} ${bait.name}`;
-        el.baitSelectQuick.appendChild(option);
+        option.value = bait.id; option.textContent = `${bait.icon} ${bait.name}`; el.baitSelectQuick.appendChild(option);
       });
-
-      applyStateToSelectors();
-      rebuildCourseOptions();
+      applyStateToSelectors(); rebuildCourseOptions();
     }
 
     function applyStateToSelectors() {
@@ -1634,9 +1589,7 @@
       el.courseSelect.innerHTML = "";
       rod.courses.forEach(min => {
         const option = document.createElement("option");
-        option.value = String(min);
-        option.textContent = `${min}分`;
-        el.courseSelect.appendChild(option);
+        option.value = String(min); option.textContent = `${min}分`; el.courseSelect.appendChild(option);
       });
       const desired = state.lastUsedSetup.durationMin;
       const selected = rod.courses.includes(desired) ? desired : rod.courses[0];
@@ -1656,18 +1609,12 @@
       let timeOfDay = "day";
       if (hour >= 17 && hour < 19) timeOfDay = "evening";
       if (hour >= 19 || hour < 5) timeOfDay = "night";
-
       const seed = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}-${Math.floor(hour / 3)}`;
       const weatherIdx = seededNumber(seed) % 3;
       const weather = ["sunny", "cloudy", "rainy"][weatherIdx];
-
-      if (force || !state.fishing.inProgress) {
-        state.currentConditions = { timeOfDay, weather };
-      } else if (!state.currentConditions) {
-        state.currentConditions = { timeOfDay, weather };
-      }
-
-      applyVisualConditions(state.currentConditions.timeOfDay, state.currentConditions.weather);
+      if (force || !state.fishing.inProgress) state.currentConditions = { timeOfDay, weather };
+      if (!state.currentConditions) state.currentConditions = { timeOfDay, weather };
+      applyVisualConditions((state.fishing.inProgress ? state.fishing.timeOfDay : state.currentConditions.timeOfDay), (state.fishing.inProgress ? state.fishing.weather : state.currentConditions.weather));
     }
 
     function applyVisualConditions(timeOfDay, weather) {
@@ -1675,17 +1622,18 @@
       el.app.classList.add(`time-${timeOfDay}`);
       const weatherMap = { sunny: ["☀️", "晴れ"], cloudy: ["☁️", "曇り"], rainy: ["🌧️", "雨"] };
       const timeMap = { day: ["🌤️", "昼"], evening: ["🌆", "夕方"], night: ["🌙", "夜"] };
-      el.weatherIcon.firstChild.textContent = weatherMap[weather][0];
+      setIconEmoji(el.weatherIcon, weatherMap[weather][0]);
       el.weatherBalloon.textContent = weatherMap[weather][1];
-      el.timeIcon.firstChild.textContent = timeMap[timeOfDay][0];
+      setIconEmoji(el.timeIcon, timeMap[timeOfDay][0]);
       el.timeBalloon.textContent = timeMap[timeOfDay][1];
     }
 
+    function setIconEmoji(node, text) {
+      node.childNodes[0].nodeValue = text;
+    }
+
     function startFishingFromCurrent() {
-      if (state.fishing.inProgress) {
-        toast("いま釣り中です。終わるまで待ってください。");
-        return;
-      }
+      if (state.fishing.inProgress) { toast("いま釣り中です。終わるまで待ってください。"); return; }
       const rodId = state.equipped.rodId;
       const baitId = state.equipped.baitId;
       const supportId = state.equipped.supportId;
@@ -1694,104 +1642,84 @@
     }
 
     function repeatFishing() {
-      if (state.fishing.inProgress) {
-        toast("いま釣り中です。終わってから再釣りできます。");
-        return;
-      }
+      if (state.fishing.inProgress) { toast("いま釣り中です。終わってから再釣りできます。"); return; }
       const setup = state.lastUsedSetup || {};
-      startFishing({
-        rodId: setup.rodId || state.equipped.rodId,
-        baitId: setup.baitId || state.equipped.baitId,
-        supportId: setup.supportId ?? state.equipped.supportId,
-        durationMin: setup.durationMin || 5,
-      });
+      startFishing({ rodId: setup.rodId || state.equipped.rodId, baitId: setup.baitId || state.equipped.baitId, supportId: setup.supportId ?? state.equipped.supportId, durationMin: setup.durationMin || 5 });
     }
 
     function startFishing({ rodId, baitId, supportId, durationMin }) {
       refreshConditions(true);
       const now = Date.now();
       const endAt = now + durationMin * 60 * 1000;
-      state.fishing = {
-        inProgress: true,
-        startAt: now,
-        endAt,
-        durationMin,
-        rodId,
-        baitId,
-        supportId,
-        weather: state.currentConditions.weather,
-        timeOfDay: state.currentConditions.timeOfDay,
-      };
+      state.fishing = { inProgress: true, paused: false, startAt: now, endAt, pausedAt: null, remainingMs: null, durationMin, rodId, baitId, supportId, weather: state.currentConditions.weather, timeOfDay: state.currentConditions.timeOfDay };
       state.lastUsedSetup = { rodId, baitId, supportId, durationMin };
-      state.equipped.rodId = rodId;
-      state.equipped.baitId = baitId;
-      state.equipped.supportId = supportId || null;
-      el.bobber.classList.add("visible");
-      el.rodLine.classList.add("visible");
+      state.equipped.rodId = rodId; state.equipped.baitId = baitId; state.equipped.supportId = supportId || null;
+      el.bobber.classList.add("visible"); el.rodLine.classList.add("visible");
+      if (state.settings.catchSound) playTimeMp3();
       toast(`${durationMin}分コースを開始しました。作業どうぞ。`);
-      saveAll();
-      renderAll();
-      startTimerTick();
+      saveAll(); renderAll(); startTimerTick();
+    }
+
+    function pauseFishing() {
+      if (!state.fishing.inProgress || state.fishing.paused) return;
+      state.fishing.paused = true;
+      state.fishing.pausedAt = Date.now();
+      state.fishing.remainingMs = Math.max(0, state.fishing.endAt - Date.now());
+      stopTimerTick();
+      toast("タイマーを一時停止しました。");
+      saveAll(); renderFishingStatus();
+    }
+
+    function resumeFishing() {
+      if (!state.fishing.inProgress || !state.fishing.paused) return;
+      state.fishing.paused = false;
+      state.fishing.endAt = Date.now() + (state.fishing.remainingMs || 0);
+      state.fishing.pausedAt = null;
+      state.fishing.remainingMs = null;
+      toast("タイマーを再開しました。");
+      saveAll(); renderFishingStatus(); startTimerTick();
     }
 
     function restoreFishingTimer() {
       if (state.fishing.inProgress) {
         el.bobber.classList.add("visible");
         el.rodLine.classList.add("visible");
-        if (Date.now() >= state.fishing.endAt) {
+        if (state.fishing.paused) {
+          renderFishingStatus();
+        } else if (Date.now() >= state.fishing.endAt) {
           finishFishing();
         } else {
           startTimerTick();
         }
       } else {
-        el.bobber.classList.remove("visible");
-        el.rodLine.classList.remove("visible");
+        el.bobber.classList.remove("visible"); el.rodLine.classList.remove("visible");
       }
     }
 
     function startTimerTick() {
       stopTimerTick();
       timerTickHandle = setInterval(() => {
-        if (!state.fishing.inProgress) {
-          stopTimerTick();
-          return;
-        }
-        if (Date.now() >= state.fishing.endAt) {
-          finishFishing();
-        }
+        if (!state.fishing.inProgress || state.fishing.paused) { stopTimerTick(); renderFishingStatus(); return; }
+        if (Date.now() >= state.fishing.endAt) finishFishing();
         renderFishingStatus();
-      }, 400);
+      }, 300);
     }
 
-    function stopTimerTick() {
-      if (timerTickHandle) {
-        clearInterval(timerTickHandle);
-        timerTickHandle = null;
-      }
-    }
+    function stopTimerTick() { if (timerTickHandle) { clearInterval(timerTickHandle); timerTickHandle = null; } }
 
     async function finishFishing() {
       stopTimerTick();
       if (!state.fishing.inProgress) return;
-
-      el.rodLine.classList.add("pull");
-      el.bobber.classList.add("sinking");
-      el.splash.classList.add("show");
-      if (state.settings.shakeOnFinish) {
-        el.app.classList.remove("shaker");
-        void el.app.offsetWidth;
-        el.app.classList.add("shaker");
-      }
-      if (state.settings.catchSound) playCatchSound();
+      el.rodLine.classList.add("pull"); el.bobber.classList.add("sinking"); el.splash.classList.add("show");
+      if (state.settings.shakeOnFinish) { el.app.classList.remove("shaker"); void el.app.offsetWidth; el.app.classList.add("shaker"); }
+      if (state.settings.catchSound) playTimeMp3();
       maybeNotify();
-
       const result = rollCatch(state.fishing);
       pendingResult = result;
       state.lastCatch = result.entry;
       state.fishing.inProgress = false;
-      saveAll();
-      renderAll();
-
+      state.fishing.paused = false;
+      saveAll(); renderAll();
       setTimeout(() => {
         el.rodLine.classList.remove("pull", "visible");
         el.bobber.classList.remove("visible", "sinking");
@@ -1803,9 +1731,10 @@
     function openResultModal(result) {
       el.resultArt.textContent = result.entry.icon;
       el.resultTitle.textContent = result.entry.name;
+      const delta = result.entry.kind === "fish" ? sizeDeltaText(result.entry.sizeCm, result.picked.avgSize) : null;
       const lines = [
         `種類：${result.entry.kind === "fish" ? "魚" : "漂流物"}`,
-        result.entry.kind === "fish" ? `大きさ：${formatSize(result.entry.sizeCm)} cm` : `価値：${result.entry.sellPrice} zz`,
+        result.entry.kind === "fish" ? `大きさ：${formatSize(result.entry.sizeCm)} cm（平均 ${formatSize(result.picked.avgSize)} cm / ${delta.html}）` : `価値：${result.entry.sellPrice} zz`,
         `売値：${result.entry.sellPrice} zz`,
         `条件：${translateTime(result.source.timeOfDay)} / ${translateWeather(result.source.weather)}`,
       ];
@@ -1821,17 +1750,20 @@
       el.resultCard.classList.toggle("record", !!result.isRecord);
       el.resultModal.classList.add("show");
     }
-
-    function closeResultModal() {
-      el.resultModal.classList.remove("show");
+    function closeResultModal() { el.resultModal.classList.remove("show"); }
+    function keepPendingResult() {
+      if (!pendingResult) return;
+      addInventoryEntry(pendingResult.entry); applyCatchRecord(pendingResult);
+      toast(`${pendingResult.entry.name} を所持品に入れました。`);
+      pendingResult = null; closeResultModal(); saveAll(); renderAll();
     }
-
-    function flagEl(text, klass) {
-      const div = document.createElement("div");
-      div.className = `flag ${klass}`.trim();
-      div.textContent = text;
-      return div;
+    function sellPendingResult() {
+      if (!pendingResult) return;
+      state.money += pendingResult.entry.sellPrice; applyCatchRecord(pendingResult);
+      toast(`${pendingResult.entry.name} を ${pendingResult.entry.sellPrice} zz で売却しました。`);
+      pendingResult = null; closeResultModal(); saveAll(); renderAll();
     }
+    function flagEl(text, klass) { const div = document.createElement("div"); div.className = `flag ${klass}`.trim(); div.textContent = text; return div; }
 
     function rollCatch(source) {
       const rod = getById(RODS, source.rodId) || RODS[0];
@@ -1841,7 +1773,6 @@
       const power = rod.power + bait.strengthAdjust + (support?.power || 0) + bonus.power;
       const rareBonus = rod.luck + bait.rareBonus + (support?.rareBonus || 0) + bonus.rare;
       const sizeBonus = rod.sizeBoost + bait.sizeBonus + (support?.sizeBonus || 0) + bonus.size;
-
       const all = [...FISHES, ...JUNK_ITEMS];
       const weighted = all.map(entity => {
         const timeScore = entity.timeBonus?.[source.timeOfDay] ?? 0;
@@ -1852,22 +1783,14 @@
         const score = Math.max(0.1, 7 + strengthGap + timeScore + weatherScore + rareBonus * 0.3 + targetBonus + junkPenalty - (entity.rarity || 0) * 0.25);
         return { entity, weight: score };
       });
-
       const picked = weightedPick(weighted);
       const isFish = picked.kind === "fish";
-      let sizeCm = null;
-      let isHuge = false;
-      let price = picked.basePrice;
-      let rarityScore = picked.rarity || 0;
-
+      let sizeCm = null, isHuge = false, price = picked.basePrice, rarityScore = picked.rarity || 0;
       if (isFish) {
         const gaussian = approxGaussian();
         sizeCm = Math.max(1, picked.avgSize + gaussian * (picked.spread / 2) + sizeBonus * 0.6 + source.durationMin * 0.08);
         const hugeRoll = Math.random() < Math.max(0, picked.hugeChance + sizeBonus * 0.0007 + bonus.hugeChance);
-        if (hugeRoll) {
-          sizeCm *= picked.hugeFactor;
-          isHuge = true;
-        }
+        if (hugeRoll) { sizeCm *= picked.hugeFactor; isHuge = true; }
         sizeCm = Math.round(sizeCm * 10) / 10;
         const sizeRatio = sizeCm / picked.avgSize;
         const sizeFactor = sizeRatio < 1 ? 0.95 + sizeRatio * 0.12 : 1 + Math.pow(sizeRatio - 1, 1.18) * 1.15;
@@ -1876,79 +1799,35 @@
       } else {
         price = Math.max(1, Math.round(picked.basePrice * (1 + rareBonus * 0.02 + source.durationMin * 0.008)));
       }
-
-      const entry = {
-        uid: makeId(),
-        baseId: picked.id,
-        kind: picked.kind,
-        name: picked.name,
-        icon: picked.icon,
-        sellPrice: price,
-        sizeCm,
-        rarity: rarityScore,
-        caughtAt: Date.now(),
-      };
-
+      const entry = { uid: makeId(), baseId: picked.id, kind: picked.kind, name: picked.name, icon: picked.icon, sellPrice: price, sizeCm, rarity: rarityScore, caughtAt: Date.now() };
       const ency = state.encyclopedia[picked.id] || { count: 0, maxSize: 0, recordHolder: null };
       const isRecord = isFish && sizeCm > (ency.maxSize || 0);
       const isRare = rarityScore >= 8 || isHuge || price >= 220;
-      const bonusText = bonus.label;
-
-      return { entry, isRecord, isRare, isHuge, bonusText, source, picked };
+      return { entry, isRecord, isRare, isHuge, bonusText: bonus.label, source, picked };
     }
 
     function applyCatchRecord(result) {
       const { picked, entry, isRecord } = result;
       const baseId = picked.id;
-      if (!state.encyclopedia[baseId]) {
-        state.encyclopedia[baseId] = { count: 0, maxSize: 0, recordHolder: null };
-      }
+      if (!state.encyclopedia[baseId]) state.encyclopedia[baseId] = { count: 0, maxSize: 0, recordHolder: null };
       const rec = state.encyclopedia[baseId];
       rec.count += 1;
-      if (entry.kind === "fish" && entry.sizeCm > (rec.maxSize || 0)) {
-        rec.maxSize = entry.sizeCm;
-        rec.recordHolder = state.user.displayName || "つりびと";
-      }
-      if (isRecord && firebaseSyncOk && state.user.uid) {
-        saveGlobalRecord(baseId, entry.sizeCm, state.user.displayName || "つりびと").catch(console.error);
-      }
+      if (entry.kind === "fish" && entry.sizeCm > (rec.maxSize || 0)) { rec.maxSize = entry.sizeCm; rec.recordHolder = state.user.displayName || "つりびと"; }
+      if (isRecord && firebaseSyncOk && state.user.uid) saveGlobalRecord(baseId, entry.sizeCm, state.user.displayName || "つりびと").catch(console.error);
     }
-
-    function addInventoryEntry(entry) {
-      state.inventory.unshift(entry);
-    }
-
+    function addInventoryEntry(entry) { state.inventory.unshift(entry); }
     function getCourseBonus(durationMin, support) {
       let bonus = { rare: 0, size: 0, power: 0, hugeChance: 0, junkReduction: 0, label: "" };
-      if (durationMin >= 25) {
-        bonus.rare += 3;
-        bonus.label = "集中ボーナス";
-      }
-      if (durationMin >= 50) {
-        bonus.size += 6;
-        bonus.power += 2;
-        bonus.hugeChance += 0.005;
-        bonus.label = "深海ボーナス";
-      }
-      if (support?.id === "support_time_01") {
-        bonus.rare += 1;
-        bonus.size += 2;
-        bonus.junkReduction += 0.35;
-      }
+      if (durationMin >= 25) { bonus.rare += 3; bonus.label = "集中ボーナス"; }
+      if (durationMin >= 50) { bonus.size += 6; bonus.power += 2; bonus.hugeChance += 0.005; bonus.label = "深海ボーナス"; }
+      if (support?.id === "support_time_01") { bonus.rare += 1; bonus.size += 2; bonus.junkReduction += 0.35; }
       return bonus;
     }
 
     function renderAll() {
-      fillQuickSelectors();
-      applyStateToSelectors();
-      renderFishingStatus();
-      renderEquipStrip();
-      renderStore();
-      renderBag();
-      renderEncyclopedia();
-      renderSettings();
-      renderUserPill();
-      updateSyncStatus();
+      fillQuickSelectors(); applyStateToSelectors(); applyNavState();
+      renderFishingStatus(); renderEquipStrip(); renderStore(); renderBag(); renderEncyclopedia(); renderSettings(); renderUserPill(); updateSyncStatus();
+      el.fishMoneyMini.textContent = `${state.money} zz`;
     }
 
     function renderFishingStatus() {
@@ -1956,23 +1835,34 @@
       const currentWeather = state.fishing.inProgress ? state.fishing.weather : state.currentConditions.weather;
       const currentTime = state.fishing.inProgress ? state.fishing.timeOfDay : state.currentConditions.timeOfDay;
       applyVisualConditions(currentTime, currentWeather);
-
+      let progress = 0;
       if (state.fishing.inProgress) {
-        const remain = Math.max(0, state.fishing.endAt - Date.now());
+        const totalMs = state.fishing.durationMin * 60 * 1000;
+        const remain = state.fishing.paused ? (state.fishing.remainingMs || 0) : Math.max(0, state.fishing.endAt - Date.now());
+        progress = Math.min(1, Math.max(0, 1 - (remain / totalMs)));
         el.timerText.textContent = formatRemain(remain);
-        el.timerSub.textContent = `${state.fishing.durationMin}分コース 진행中`; // Japanese text replaced next line intentionally? no
-        el.timerSub.textContent = `${state.fishing.durationMin}分コース進行中`; 
-        const bonus = getCourseBonus(state.fishing.durationMin, getById(SUPPORTS, state.fishing.supportId));
-        el.bonusMini.innerHTML = `ボーナス<br />${bonus.label || "なし"}`;
+        el.timerPlanMini.textContent = `${state.fishing.durationMin}min`;
+        el.timerSubtle.textContent = state.fishing.paused ? "一時停止中" : `${state.fishing.durationMin}分コース進行中`;
         el.startFishingBtn.disabled = true;
+        el.pauseFishingBtn.disabled = !!state.fishing.paused;
+        el.resumeFishingBtn.disabled = !state.fishing.paused;
       } else {
+        const planned = Number(el.courseSelect.value) || state.lastUsedSetup.durationMin || 5;
         el.timerText.textContent = "--:--";
-        el.timerSub.textContent = "まだ釣りを始めていません";
-        const plannedBonus = getCourseBonus(Number(el.courseSelect.value), getById(SUPPORTS, state.equipped.supportId));
-        el.bonusMini.innerHTML = `ボーナス<br />${plannedBonus.label || "なし"}`;
+        el.timerPlanMini.textContent = `${planned}min`;
+        el.timerSubtle.textContent = "まだ釣りを始めていません";
         el.startFishingBtn.disabled = false;
+        el.pauseFishingBtn.disabled = true;
+        el.resumeFishingBtn.disabled = true;
       }
+      setGaugeProgress(progress);
       el.repeatFishingBtn.disabled = !!state.fishing.inProgress;
+    }
+
+    function setGaugeProgress(progress) {
+      const offset = TIMER_C * (1 - progress);
+      el.timerProgress.style.strokeDashoffset = String(offset);
+      el.timerGlow.style.strokeDashoffset = String(offset);
     }
 
     function renderEquipStrip() {
@@ -1980,86 +1870,40 @@
       const bait = getById(BAITS, state.equipped.baitId);
       const support = getById(SUPPORTS, state.equipped.supportId);
       el.equipStrip.innerHTML = "";
-      [
-        { label: "竿", item: rod, empty: "slot_rod.png" },
-        { label: "餌", item: bait, empty: "slot_bait.png" },
-        { label: "補助", item: support, empty: "slot_support.png" },
-      ].forEach(({ label, item }) => {
+      [{ label: "竿", item: rod }, { label: "餌", item: bait }, { label: "補助", item: support }].forEach(({ label, item }) => {
         const slot = document.createElement("div");
         slot.className = "equip-slot";
-        slot.innerHTML = `
-          <div class="equip-icon">${item ? item.icon : "▫️"}</div>
-          <div>${label}</div>
-          <div>${item ? item.name : "なし"}</div>
-        `;
+        slot.innerHTML = `<div class="equip-icon">${item ? item.icon : "▫️"}</div><div>${label}</div><div>${item ? item.name : "なし"}</div>`;
         el.equipStrip.appendChild(slot);
       });
     }
 
     function renderStore() {
       el.storeMoney.textContent = `所持金：${state.money} zz`;
-      el.shopBuyList.innerHTML = "";
-      el.shopSellList.innerHTML = "";
-
-      SHOP_ITEMS.forEach(item => {
-        const groupKey = item.shopType === "rod" ? "rods" : item.shopType === "bait" ? "baits" : "supports";
-        const owned = owns(groupKey, item.id);
-        const node = document.createElement("div");
-        node.className = "line-item";
-        node.innerHTML = `
-          <div class="thumb">${item.icon}</div>
-          <div class="meta">
-            <div class="name">${item.name}</div>
-            <div class="desc">${item.desc}</div>
-          </div>
-          <div class="price">${item.price} zz</div>
-          <div class="actions"></div>
-        `;
-        const actions = node.querySelector(".actions");
-        if (owned) {
-          const ownedBtn = document.createElement("button");
-          ownedBtn.className = "soft-btn";
-          ownedBtn.textContent = "所持済み";
-          ownedBtn.disabled = true;
-          actions.appendChild(ownedBtn);
-        } else {
-          const btn = document.createElement("button");
-          btn.className = "primary-btn";
-          btn.textContent = "買う";
-          btn.disabled = state.money < item.price;
-          btn.addEventListener("click", () => buyItem(item));
-          actions.appendChild(btn);
-        }
-        el.shopBuyList.appendChild(node);
-      });
-
+      el.shopBuyList.innerHTML = ""; el.shopSellList.innerHTML = "";
       if (state.inventory.length === 0) {
-        const empty = document.createElement("div");
-        empty.className = "line-item";
+        const empty = document.createElement("div"); empty.className = "line-item";
         empty.innerHTML = `<div class="meta"><div class="name">売れるものがまだありません</div><div class="desc">魚を保管すると、ここからまとめて売れます。</div></div>`;
         el.shopSellList.appendChild(empty);
       } else {
         state.inventory.forEach(entry => {
-          const node = document.createElement("div");
-          node.className = "line-item";
+          const node = document.createElement("div"); node.className = "line-item";
           const sellPrice = entry.kind === "item" ? Math.max(1, Math.floor(entry.sellPrice * SELL_RATE_ITEM)) : entry.sellPrice;
-          node.innerHTML = `
-            <div class="thumb">${entry.icon}</div>
-            <div class="meta">
-              <div class="name">${entry.name}</div>
-              <div class="desc">${entry.kind === "fish" ? `大きさ ${formatSize(entry.sizeCm)} cm` : `漂流物`} / 保管中</div>
-            </div>
-            <div class="price">${sellPrice} zz</div>
-            <div class="actions"></div>
-          `;
-          const btn = document.createElement("button");
-          btn.className = "soft-btn";
-          btn.textContent = "売る";
-          btn.addEventListener("click", () => sellInventoryEntry(entry.uid, sellPrice));
-          node.querySelector(".actions").appendChild(btn);
-          el.shopSellList.appendChild(node);
+          node.innerHTML = `<div class="thumb">${entry.icon}</div><div class="meta"><div class="name">${entry.name}</div><div class="desc">${entry.kind === "fish" ? `大きさ ${formatSize(entry.sizeCm)} cm` : `漂流物`} / 保管中</div></div><div class="price">${sellPrice} zz</div><div class="actions"></div>`;
+          const btn = document.createElement("button"); btn.className = "soft-btn"; btn.textContent = "売る"; btn.addEventListener("click", () => sellInventoryEntry(entry.uid, sellPrice));
+          node.querySelector(".actions").appendChild(btn); el.shopSellList.appendChild(node);
         });
       }
+      SHOP_ITEMS.forEach(item => {
+        const groupKey = item.shopType === "rod" ? "rods" : item.shopType === "bait" ? "baits" : "supports";
+        const owned = owns(groupKey, item.id);
+        const node = document.createElement("div"); node.className = "line-item";
+        node.innerHTML = `<div class="thumb">${item.icon}</div><div class="meta"><div class="name">${item.name}</div><div class="desc">${item.desc}</div></div><div class="price">${item.price} zz</div><div class="actions"></div>`;
+        const actions = node.querySelector(".actions");
+        if (owned) { const ownedBtn = document.createElement("button"); ownedBtn.className = "soft-btn"; ownedBtn.textContent = "所持済み"; ownedBtn.disabled = true; actions.appendChild(ownedBtn); }
+        else { const btn = document.createElement("button"); btn.className = "primary-btn"; btn.textContent = "買う"; btn.disabled = state.money < item.price; btn.addEventListener("click", () => buyItem(item)); actions.appendChild(btn); }
+        el.shopBuyList.appendChild(node);
+      });
     }
 
     function renderBag() {
@@ -2067,18 +1911,9 @@
       el.bagStats.innerHTML = "";
       const totalFish = state.inventory.filter(v => v.kind === "fish").length;
       const totalItems = state.inventory.filter(v => v.kind === "item").length;
-      [
-        `所持魚 ${totalFish}`,
-        `所持アイテム ${totalItems}`,
-        `装備竿 ${getById(RODS, state.equipped.rodId)?.name || "-"}`,
-        `装備餌 ${getById(BAITS, state.equipped.baitId)?.name || "-"}`,
-      ].forEach(text => {
-        const chip = document.createElement("div");
-        chip.className = "stat-chip";
-        chip.textContent = text;
-        el.bagStats.appendChild(chip);
+      [`所持魚 ${totalFish}`, `所持アイテム ${totalItems}`, `装備竿 ${getById(RODS, state.equipped.rodId)?.name || "-"}`, `装備餌 ${getById(BAITS, state.equipped.baitId)?.name || "-"}`].forEach(text => {
+        const chip = document.createElement("div"); chip.className = "stat-chip"; chip.textContent = text; el.bagStats.appendChild(chip);
       });
-
       el.bagEquipList.innerHTML = "";
       [
         { title: "竿を切り替える", items: RODS.filter(v => owns("rods", v.id)), type: "rod" },
@@ -2086,53 +1921,25 @@
         { title: "補助を切り替える", items: [{ id: null, name: "なし", icon: "▫️", desc: "補助なし" }, ...SUPPORTS.filter(v => owns("supports", v.id))], type: "support" },
       ].forEach(block => {
         block.items.forEach(item => {
-          const node = document.createElement("div");
-          node.className = "line-item";
+          const node = document.createElement("div"); node.className = "line-item";
           const equipped = block.type === "rod" ? state.equipped.rodId === item.id : block.type === "bait" ? state.equipped.baitId === item.id : state.equipped.supportId === item.id;
-          node.innerHTML = `
-            <div class="thumb">${item.icon}</div>
-            <div class="meta">
-              <div class="name">${block.title}：${item.name}</div>
-              <div class="desc">${item.desc || ""}</div>
-            </div>
-            <div class="actions"></div>
-          `;
-          const btn = document.createElement("button");
-          btn.className = equipped ? "soft-btn" : "primary-btn";
-          btn.textContent = equipped ? "装備中" : "装備";
-          btn.disabled = equipped;
-          btn.addEventListener("click", () => equipItem(block.type, item.id));
-          node.querySelector(".actions").appendChild(btn);
-          el.bagEquipList.appendChild(node);
+          node.innerHTML = `<div class="thumb">${item.icon}</div><div class="meta"><div class="name">${block.title}：${item.name}</div><div class="desc">${item.desc || ""}</div></div><div class="actions"></div>`;
+          const btn = document.createElement("button"); btn.className = equipped ? "soft-btn" : "primary-btn"; btn.textContent = equipped ? "装備中" : "装備"; btn.disabled = equipped; btn.addEventListener("click", () => equipItem(block.type, item.id));
+          node.querySelector(".actions").appendChild(btn); el.bagEquipList.appendChild(node);
         });
       });
-
       el.bagInventoryList.innerHTML = "";
       if (state.inventory.length === 0) {
-        const empty = document.createElement("div");
-        empty.className = "line-item";
+        const empty = document.createElement("div"); empty.className = "line-item";
         empty.innerHTML = `<div class="meta"><div class="name">まだ何も入っていません</div><div class="desc">釣果を保管するとここに並びます。</div></div>`;
         el.bagInventoryList.appendChild(empty);
       } else {
         state.inventory.forEach(entry => {
-          const node = document.createElement("div");
-          node.className = "line-item";
-          node.innerHTML = `
-            <div class="thumb">${entry.icon}</div>
-            <div class="meta">
-              <div class="name">${entry.name}</div>
-              <div class="desc">${entry.kind === "fish" ? `大きさ ${formatSize(entry.sizeCm)} cm` : `漂流物`} / 売値 ${entry.sellPrice} zz</div>
-            </div>
-            <div class="actions"></div>
-          `;
+          const node = document.createElement("div"); node.className = "line-item";
+          node.innerHTML = `<div class="thumb">${entry.icon}</div><div class="meta"><div class="name">${entry.name}</div><div class="desc">${entry.kind === "fish" ? `大きさ ${formatSize(entry.sizeCm)} cm` : `漂流物`} / 売値 ${entry.sellPrice} zz</div></div><div class="actions"></div>`;
           const actions = node.querySelector(".actions");
-          const sellBtn = document.createElement("button");
-          sellBtn.className = "soft-btn";
-          const sellPrice = entry.kind === "item" ? Math.max(1, Math.floor(entry.sellPrice * SELL_RATE_ITEM)) : entry.sellPrice;
-          sellBtn.textContent = `売る (${sellPrice} zz)`;
-          sellBtn.addEventListener("click", () => sellInventoryEntry(entry.uid, sellPrice));
-          actions.appendChild(sellBtn);
-          el.bagInventoryList.appendChild(node);
+          const sellBtn = document.createElement("button"); sellBtn.className = "soft-btn"; const sellPrice = entry.kind === "item" ? Math.max(1, Math.floor(entry.sellPrice * SELL_RATE_ITEM)) : entry.sellPrice; sellBtn.textContent = `売る (${sellPrice} zz)`; sellBtn.addEventListener("click", () => sellInventoryEntry(entry.uid, sellPrice));
+          actions.appendChild(sellBtn); el.bagInventoryList.appendChild(node);
         });
       }
     }
@@ -2140,31 +1947,15 @@
     function renderEncyclopedia() {
       const caughtCount = Object.keys(state.encyclopedia).length;
       el.encyStats.innerHTML = "";
-      [
-        `発見 ${caughtCount} / ${FISHES.length}`,
-        `世界記録読込 ${Object.keys(globalRecords).length}件`,
-      ].forEach(text => {
-        const chip = document.createElement("div");
-        chip.className = "stat-chip";
-        chip.textContent = text;
-        el.encyStats.appendChild(chip);
+      [`発見 ${caughtCount} / ${FISHES.length}`, `世界記録読込 ${Object.keys(globalRecords).length}件`].forEach(text => {
+        const chip = document.createElement("div"); chip.className = "stat-chip"; chip.textContent = text; el.encyStats.appendChild(chip);
       });
-
       el.encyList.innerHTML = "";
       FISHES.forEach(fish => {
         const own = state.encyclopedia[fish.id];
         const global = globalRecords[fish.id];
-        const card = document.createElement("div");
-        card.className = `fish-card ${own ? "" : "unknown"}`.trim();
-        card.innerHTML = `
-          <div class="fish-art">${own ? fish.icon : "❔"}</div>
-          <div class="fish-name">${own ? fish.name : "？？？"}</div>
-          <div class="fish-meta">
-            ${own ? `累計 ${own.count}匹<br />自分の最大 ${own.maxSize ? `${formatSize(own.maxSize)} cm` : "-"}` : `まだ見つけていません`}<br />
-            <span class="record">史上最大 ${global ? `${formatSize(global.sizeCm)} cm / ${escapeHtml(global.recordHolder || "-" )}` : "未登録"}</span><br />
-            ${own ? fish.description : ""}
-          </div>
-        `;
+        const card = document.createElement("div"); card.className = `fish-card ${own ? "" : "unknown"}`.trim();
+        card.innerHTML = `<div class="fish-art">${own ? fish.icon : "❔"}</div><div class="fish-name">${own ? fish.name : "？？？"}</div><div class="fish-meta">${own ? `平均 ${formatSize(fish.avgSize)} cm<br />累計 ${own.count}匹<br />自分の最大 ${own.maxSize ? `${formatSize(own.maxSize)} cm` : "-"}` : `まだ見つけていません`}<br /><span class="record">史上最大 ${global ? `${formatSize(global.sizeCm)} cm / ${escapeHtml(global.recordHolder || "-")}` : "未登録"}</span><br />${own ? fish.description : ""}</div>`;
         el.encyList.appendChild(card);
       });
     }
@@ -2174,369 +1965,151 @@
       el.displayNameInput.value = state.user.displayName || "";
       el.lastSavedAt.textContent = state.lastSavedAt ? formatDateTime(state.lastSavedAt) : "-";
     }
-
-    function renderUserPill() {
-      el.userPill.innerHTML = `${escapeHtml(state.user.displayName || "つりびと")}<br />${state.user.isGuest ? "ローカル保存" : "Google同期"}`;
-    }
-
+    function renderUserPill() { el.userPill.innerHTML = `${escapeHtml(state.user.displayName || "つりびと")}<br />${state.user.isGuest ? "ローカル保存" : "Google同期"}`; }
     function updateSyncStatus() {
-      if (firebaseReady && firebaseSyncOk && !state.user.isGuest) {
-        el.syncStatus.textContent = "Firebase同期中";
-      } else if (firebaseReady) {
-        el.syncStatus.textContent = "ローカル保存のみ";
-      } else {
-        el.syncStatus.textContent = "Firebase未接続";
-      }
+      if (firebaseReady && firebaseSyncOk && !state.user.isGuest) el.syncStatus.textContent = "Firebase同期中";
+      else if (firebaseReady) el.syncStatus.textContent = "ローカル保存のみ";
+      else el.syncStatus.textContent = "Firebase未接続";
     }
 
     function buyItem(item) {
-      if (state.money < item.price) {
-        toast("所持金が足りません。");
-        return;
-      }
+      if (state.money < item.price) { toast("所持金が足りません。"); return; }
       state.money -= item.price;
       const groupKey = item.shopType === "rod" ? "rods" : item.shopType === "bait" ? "baits" : "supports";
       if (!state.owned[groupKey].includes(item.id)) state.owned[groupKey].push(item.id);
-      toast(`${item.name} を購入しました。`);
-      saveAll();
-      renderAll();
+      toast(`${item.name} を購入しました。`); saveAll(); renderAll();
     }
-
     function sellInventoryEntry(uid, sellPrice) {
-      const idx = state.inventory.findIndex(v => v.uid === uid);
-      if (idx < 0) return;
-      const [entry] = state.inventory.splice(idx, 1);
-      state.money += sellPrice;
-      toast(`${entry.name} を ${sellPrice} zz で売却しました。`);
-      saveAll();
-      renderAll();
+      const idx = state.inventory.findIndex(v => v.uid === uid); if (idx < 0) return;
+      const [entry] = state.inventory.splice(idx, 1); state.money += sellPrice;
+      toast(`${entry.name} を ${sellPrice} zz で売却しました。`); saveAll(); renderAll();
     }
-
     function equipItem(type, id) {
-      if (type === "rod") {
-        state.equipped.rodId = id;
-        state.lastUsedSetup.rodId = id;
-      }
-      if (type === "bait") {
-        state.equipped.baitId = id;
-        state.lastUsedSetup.baitId = id;
-      }
-      if (type === "support") {
-        state.equipped.supportId = id;
-        state.lastUsedSetup.supportId = id;
-      }
-      toast("装備を変更しました。");
-      fillQuickSelectors();
-      saveAll();
-      renderAll();
+      if (type === "rod") { state.equipped.rodId = id; state.lastUsedSetup.rodId = id; }
+      if (type === "bait") { state.equipped.baitId = id; state.lastUsedSetup.baitId = id; }
+      if (type === "support") { state.equipped.supportId = id; state.lastUsedSetup.supportId = id; }
+      toast("装備を変更しました。"); fillQuickSelectors(); saveAll(); renderAll();
     }
-
     function updateSetting(key, value) {
-      state.settings[key] = value;
-      if (key === "waveSound" && value) warmAudio();
-      toast("設定を更新しました。");
-      saveAll();
-      renderAll();
+      state.settings[key] = value; if (key === "waveSound" && value) warmAudio(); toast("設定を更新しました。"); saveAll(); renderAll();
     }
 
     async function googleLogin() {
-      if (!firebaseReady || !auth) {
-        toast("Firebaseが使えないため、いまはローカルのみで始めます。");
-        startGuest();
-        return;
-      }
-      try {
-        const provider = new GoogleAuthProvider();
-        await signInWithPopup(auth, provider);
-      } catch (err) {
-        console.error(err);
-        toast("Googleログインに失敗しました。ローカルだけでも始められます。");
-      }
+      if (!firebaseReady || !auth) { toast("Firebaseが使えないため、いまはローカルのみで始めます。"); startGuest(); return; }
+      try { const provider = new GoogleAuthProvider(); await signInWithPopup(auth, provider); } catch (err) { console.error(err); toast("Googleログインに失敗しました。ローカルだけでも始められます。"); }
     }
-
     function startGuest() {
-      state.user.isGuest = true;
-      state.user.displayName = safeName(el.authDisplayNameInput.value || state.user.displayName || "つりびと");
-      el.authOverlay.style.display = "none";
-      authResolved = true;
-      toast("ローカル保存で開始しました。");
-      saveAll();
-      renderAll();
+      state.user.isGuest = true; state.user.displayName = safeName(el.authDisplayNameInput.value || state.user.displayName || "つりびと"); el.authOverlay.style.display = "none"; authResolved = true; toast("ローカル保存で開始しました。"); saveAll(); renderAll();
     }
 
     async function loadRemoteUser(uid) {
       if (!db) return null;
-      try {
-        const ref = doc(db, "users", uid);
-        const snap = await getDoc(ref);
-        if (!snap.exists()) return null;
-        return snap.data()?.state || null;
-      } catch (err) {
-        console.error(err);
-        return null;
-      }
+      try { const ref = doc(db, "users", uid); const snap = await getDoc(ref); if (!snap.exists()) return null; return snap.data()?.state || null; } catch (err) { console.error(err); return null; }
     }
-
     async function saveRemoteUser() {
       if (!db || !firebaseSyncOk || !state.user.uid || state.user.isGuest) return;
-      try {
-        const ref = doc(db, "users", state.user.uid);
-        await setDoc(ref, {
-          uid: state.user.uid,
-          displayName: state.user.displayName || "つりびと",
-          updatedAt: serverTimestamp(),
-          state: state,
-        }, { merge: true });
-      } catch (err) {
-        console.error(err);
-      }
+      try { const ref = doc(db, "users", state.user.uid); await setDoc(ref, { uid: state.user.uid, displayName: state.user.displayName || "つりびと", updatedAt: serverTimestamp(), state }, { merge: true }); } catch (err) { console.error(err); }
     }
-
     async function saveGlobalRecord(baseId, sizeCm, recordHolder) {
-      if (!db) return;
-      const current = globalRecords[baseId];
-      if (current && current.sizeCm >= sizeCm) return;
-      try {
-        const ref = doc(db, "globalFishRecords", baseId);
-        await setDoc(ref, {
-          fishId: baseId,
-          sizeCm,
-          recordHolder,
-          updatedAt: serverTimestamp(),
-        }, { merge: true });
-        globalRecords[baseId] = { sizeCm, recordHolder };
-      } catch (err) {
-        console.error(err);
-      }
+      if (!db) return; const current = globalRecords[baseId]; if (current && current.sizeCm >= sizeCm) return;
+      try { const ref = doc(db, "globalFishRecords", baseId); await setDoc(ref, { fishId: baseId, sizeCm, recordHolder, updatedAt: serverTimestamp() }, { merge: true }); globalRecords[baseId] = { sizeCm, recordHolder }; } catch (err) { console.error(err); }
     }
-
     async function loadGlobalRecords() {
-      if (!db) {
-        globalRecords = {};
-        return;
-      }
+      if (!db) { globalRecords = {}; return; }
       try {
-        const refs = [];
-        for (const fish of FISHES.slice(0, ENCY_TOP_LIMIT)) {
-          refs.push(doc(db, "globalFishRecords", fish.id));
-        }
-        const snaps = await Promise.all(refs.map(getDoc));
         const map = {};
-        snaps.forEach(snap => {
-          if (snap.exists()) {
-            const d = snap.data();
-            map[d.fishId] = { sizeCm: d.sizeCm, recordHolder: d.recordHolder };
-          }
-        });
+        await Promise.all(FISHES.slice(0, ENCY_TOP_LIMIT).map(async fish => {
+          const snap = await getDoc(doc(db, "globalFishRecords", fish.id));
+          if (snap.exists()) { const d = snap.data(); map[d.fishId] = { sizeCm: d.sizeCm, recordHolder: d.recordHolder }; }
+        }));
         globalRecords = map;
-      } catch (err) {
-        console.error(err);
-        globalRecords = {};
-      }
+      } catch (err) { console.error(err); globalRecords = {}; }
     }
 
     async function saveAll(force = false) {
-      state.lastSavedAt = Date.now();
-      saveLocalState(state);
-      if (force || (!state.user.isGuest && firebaseSyncOk)) {
-        await saveRemoteUser();
-      }
+      state.lastSavedAt = Date.now(); saveLocalState(state);
+      if (force || (!state.user.isGuest && firebaseSyncOk)) await saveRemoteUser();
       renderSettings();
     }
 
     function exportSave() {
       const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `zz_fishing_save_${new Date().toISOString().slice(0,10)}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
+      const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = `zz_fishing_save_${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(url);
     }
-
     async function importSaveFile(e) {
-      const file = e.target.files?.[0];
-      if (!file) return;
-      try {
-        const text = await file.text();
-        const parsed = JSON.parse(text);
-        mergeLoadedState(parsed);
-        toast("セーブデータを読み込みました。");
-        saveAll(true);
-        renderAll();
-      } catch (err) {
-        console.error(err);
-        toast("読み込みに失敗しました。");
-      } finally {
-        e.target.value = "";
-      }
+      const file = e.target.files?.[0]; if (!file) return;
+      try { const text = await file.text(); const parsed = JSON.parse(text); mergeLoadedState(parsed); toast("セーブデータを読み込みました。"); saveAll(true); renderAll(); }
+      catch (err) { console.error(err); toast("読み込みに失敗しました。"); }
+      finally { e.target.value = ""; }
     }
 
     function mergeLoadedState(next) {
       state = deepMerge(structuredClone(DEFAULT_STATE), next || {});
       if (!state.currentConditions) state.currentConditions = { timeOfDay: "day", weather: "sunny" };
-      ensureOwnershipDefaults();
-      applyStateToSelectors();
-      restoreFishingTimer();
-      renderAll();
+      if (!state.ui) state.ui = { navCollapsed: false };
+      ensureOwnershipDefaults(); applyStateToSelectors(); applyNavState(); restoreFishingTimer(); renderAll();
     }
-
     function loadLocalState() {
-      try {
-        const raw = localStorage.getItem(LS_KEY);
-        if (!raw) return structuredClone(DEFAULT_STATE);
-        const parsed = JSON.parse(raw);
-        return deepMerge(structuredClone(DEFAULT_STATE), parsed);
-      } catch {
-        return structuredClone(DEFAULT_STATE);
-      }
+      try { const raw = localStorage.getItem(LS_KEY); if (!raw) return structuredClone(DEFAULT_STATE); return deepMerge(structuredClone(DEFAULT_STATE), JSON.parse(raw)); }
+      catch { return structuredClone(DEFAULT_STATE); }
     }
+    function saveLocalState(payload) { try { localStorage.setItem(LS_KEY, JSON.stringify(payload)); } catch (err) { console.error(err); } }
 
-    function saveLocalState(payload) {
-      try {
-        localStorage.setItem(LS_KEY, JSON.stringify(payload));
-      } catch (err) {
-        console.error(err);
-      }
+    function maybeNotify() { if (state.settings.browserNotify && Notification && Notification.permission === "granted") new Notification("釣りが終わりました", { body: "回収して釣果を見てみましょう。" }); }
+    function warmAudio() { if (!audioCtx) { const Ctx = window.AudioContext || window.webkitAudioContext; if (Ctx) audioCtx = new Ctx(); } }
+    function playTimeMp3() {
+      const audio = new Audio("time.mp3");
+      audio.volume = 0.9;
+      audio.play().catch(() => {
+        warmAudio();
+        if (!audioCtx) return;
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(720, now);
+        osc.frequency.exponentialRampToValueAtTime(980, now + 0.08);
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(0.08, now + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
+        osc.connect(gain).connect(audioCtx.destination);
+        osc.start(now); osc.stop(now + 0.24);
+      });
     }
-
-    function maybeNotify() {
-      if (state.settings.browserNotify && Notification && Notification.permission === "granted") {
-        new Notification("釣りが終わりました", { body: "回収して釣果を見てみましょう。" });
-      }
-    }
-
-    function warmAudio() {
-      if (!audioCtx) {
-        const Ctx = window.AudioContext || window.webkitAudioContext;
-        if (Ctx) audioCtx = new Ctx();
-      }
-    }
-
-    function playCatchSound() {
-      warmAudio();
-      if (!audioCtx) return;
-      const now = audioCtx.currentTime;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(680, now);
-      osc.frequency.exponentialRampToValueAtTime(920, now + 0.09);
-      gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.exponentialRampToValueAtTime(0.08, now + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.23);
-      osc.connect(gain).connect(audioCtx.destination);
-      osc.start(now);
-      osc.stop(now + 0.26);
-    }
-
-    function toast(message) {
-      const node = document.createElement("div");
-      node.className = "toast";
-      node.textContent = message;
-      el.toastWrap.appendChild(node);
-      setTimeout(() => node.remove(), 3800);
-    }
-
-    function owns(groupKey, id) {
-      return !!state.owned[groupKey]?.includes(id);
-    }
-
-    function getById(arr, id) {
-      return arr.find(v => v.id === id) || null;
-    }
-
+    function toast(message) { const node = document.createElement("div"); node.className = "toast"; node.textContent = message; el.toastWrap.appendChild(node); setTimeout(() => node.remove(), 3800); }
+    function owns(groupKey, id) { return !!state.owned[groupKey]?.includes(id); }
+    function getById(arr, id) { return arr.find(v => v.id === id) || null; }
     function deepMerge(base, patch) {
       if (patch == null || typeof patch !== "object") return base;
       Object.keys(patch).forEach(key => {
         const pv = patch[key];
-        if (Array.isArray(pv)) {
-          base[key] = pv;
-        } else if (pv && typeof pv === "object") {
-          if (!base[key] || typeof base[key] !== "object" || Array.isArray(base[key])) base[key] = {};
-          base[key] = deepMerge(base[key], pv);
-        } else {
-          base[key] = pv;
-        }
+        if (Array.isArray(pv)) base[key] = pv;
+        else if (pv && typeof pv === "object") { if (!base[key] || typeof base[key] !== "object" || Array.isArray(base[key])) base[key] = {}; base[key] = deepMerge(base[key], pv); }
+        else base[key] = pv;
       });
       return base;
     }
-
-    function safeName(v) {
-      return String(v || "").trim().slice(0, 16).replace(/[<>]/g, "");
-    }
-
-    function formatRemain(ms) {
-      const total = Math.ceil(ms / 1000);
-      const m = Math.floor(total / 60);
-      const s = total % 60;
-      return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
-    }
-
-    function formatSize(n) {
-      return Number(n || 0).toFixed(1);
-    }
-
-    function formatDateTime(ts) {
-      const d = new Date(ts);
-      return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,"0")}/${String(d.getDate()).padStart(2,"0")} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
-    }
-
-    function translateWeather(w) {
-      return ({ sunny: "晴れ", cloudy: "曇り", rainy: "雨" })[w] || w;
-    }
-
-    function translateTime(t) {
-      return ({ day: "昼", evening: "夕方", night: "夜" })[t] || t;
-    }
-
-    function weightedPick(list) {
-      const total = list.reduce((sum, v) => sum + v.weight, 0);
-      let r = Math.random() * total;
-      for (const item of list) {
-        r -= item.weight;
-        if (r <= 0) return item.entity;
-      }
-      return list[list.length - 1].entity;
-    }
-
-    function approxGaussian() {
-      let u = 0, v = 0;
-      while (u === 0) u = Math.random();
-      while (v === 0) v = Math.random();
-      return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
-    }
-
-    function seededNumber(seed) {
-      let h = 2166136261;
-      for (let i = 0; i < seed.length; i++) {
-        h ^= seed.charCodeAt(i);
-        h = Math.imul(h, 16777619);
-      }
-      return Math.abs(h >>> 0);
-    }
-
-    function makeId() {
-      return `${Date.now().toString(36)}_${Math.random().toString(36).slice(2,8)}`;
-    }
-
-    function escapeHtml(str) {
-      return String(str ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/\"/g, "&quot;")
-        .replace(/'/g, "&#39;");
+    function safeName(v) { return String(v || "").trim().slice(0, 16).replace(/[<>]/g, ""); }
+    function formatRemain(ms) { const total = Math.ceil(ms / 1000); const m = Math.floor(total / 60); const s = total % 60; return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`; }
+    function formatSize(n) { return Number(n || 0).toFixed(1); }
+    function formatDateTime(ts) { const d = new Date(ts); return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,"0")}/${String(d.getDate()).padStart(2,"0")} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`; }
+    function translateWeather(w) { return ({ sunny: "晴れ", cloudy: "曇り", rainy: "雨" })[w] || w; }
+    function translateTime(t) { return ({ day: "昼", evening: "夕方", night: "夜" })[t] || t; }
+    function weightedPick(list) { const total = list.reduce((sum, v) => sum + v.weight, 0); let r = Math.random() * total; for (const item of list) { r -= item.weight; if (r <= 0) return item.entity; } return list[list.length - 1].entity; }
+    function approxGaussian() { let u = 0, v = 0; while (u === 0) u = Math.random(); while (v === 0) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+    function seededNumber(seed) { let h = 2166136261; for (let i = 0; i < seed.length; i++) { h ^= seed.charCodeAt(i); h = Math.imul(h, 16777619); } return Math.abs(h >>> 0); }
+    function makeId() { return `${Date.now().toString(36)}_${Math.random().toString(36).slice(2,8)}`; }
+    function escapeHtml(str) { return String(str ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#39;"); }
+    function sizeDeltaText(size, avg) {
+      const delta = Math.round((size - avg) * 10) / 10;
+      const sign = delta > 0 ? "+" : "";
+      const klass = delta >= 0 ? "plus-size" : "minus-size";
+      return { raw: `${sign}${delta.toFixed(1)} cm`, html: `<span class="${klass}">${sign}${delta.toFixed(1)} cm</span>` };
     }
 
     window.zzFishingDebug = {
       state: () => state,
-      quickFinish: () => {
-        if (state.fishing.inProgress) {
-          state.fishing.endAt = Date.now();
-          finishFishing();
-        }
-      },
+      quickFinish: () => { if (state.fishing.inProgress) { state.fishing.endAt = Date.now(); finishFishing(); } },
       signOut: async () => auth ? signOut(auth) : null,
     };
   </script>
