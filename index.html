@@ -129,15 +129,7 @@
     }
 
     .nav-notch {
-      position: absolute;
-      left: calc(100% - 8px);
-      width: 34px;
-      height: 68px;
-      border-radius: 24px 0 0 24px;
-      background: rgba(6,14,22,0.88);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.24);
-      transition: top 0.26s ease, opacity 0.2s ease;
-      z-index: 0;
+      display: none;
     }
     .nav-active-bubble {
       position: absolute;
@@ -647,7 +639,7 @@
       stroke: var(--accent);
       stroke-width: 10;
       stroke-linecap: round;
-      transform: rotate(-90deg);
+      transform: rotate(90deg);
       transform-origin: 50% 50%;
       transition: stroke-dashoffset 0.35s linear;
     }
@@ -656,7 +648,7 @@
       stroke: rgba(183,241,255,0.28);
       stroke-width: 18;
       stroke-linecap: round;
-      transform: rotate(-90deg);
+      transform: rotate(90deg);
       transform-origin: 50% 50%;
       filter: blur(6px);
       transition: stroke-dashoffset 0.35s linear;
@@ -842,7 +834,7 @@
       transition: transform 0.2s ease;
     }
     .section-toggle.closed .arrow {
-      transform: rotate(-90deg);
+      transform: rotate(90deg);
     }
     .section-body.closed { display: none; }
 
@@ -1152,15 +1144,13 @@
       position: relative;
       height: 100%;
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 8px;
+      align-items: flex-end;
+      justify-content: center;
     }
     .day-bar-wrap {
       position: relative;
       width: 100%;
-      height: calc(100% - 40px);
+      height: 100%;
       display: flex;
       align-items: flex-end;
       justify-content: center;
@@ -1184,12 +1174,48 @@
       color: #0c2b17;
       text-shadow: none;
     }
-    .day-labels {
+    .day-bar-note {
+      position: absolute;
+      left: calc(50% + 28px);
+      bottom: 0;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(8,18,29,0.62);
+      border: 1px solid rgba(255,255,255,0.12);
+      font-size: 11px;
+      color: #fff;
+      white-space: nowrap;
+      transform: translateY(50%);
+    }
+    .week-label-row {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 12px;
+      margin-top: 10px;
+      align-items: start;
+    }
+    .week-label-spacer {
+      min-height: 1px;
+    }
+    .week-labels-inner {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .day-label-item {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 4px;
       font-size: 12px;
+      text-align: center;
+    }
+    .day-label-main {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
     }
     .today-dot {
       width: 10px;
@@ -1537,13 +1563,15 @@
     @media (hover: hover) and (pointer: fine) {
       .bait-card .bait-desc,
       .upgrade-card .upgrade-desc {
-        opacity: 0;
-        transform: translateY(6px);
+        opacity: 0.26;
+        filter: blur(2.2px);
+        transform: translateY(0);
         transition: opacity 0.16s ease, transform 0.16s ease;
       }
       .bait-card:hover .bait-desc,
       .upgrade-card:hover .upgrade-desc {
         opacity: 1;
+        filter: blur(0);
         transform: translateY(0);
       }
     }
@@ -1611,7 +1639,7 @@
       .modal-card { width: min(96vw, 620px); }
       .week-chart { height: 280px; }
       .bait-card .bait-desc,
-      .upgrade-card .upgrade-desc { opacity: 1 !important; transform: none !important; }
+      .upgrade-card .upgrade-desc { opacity: 1 !important; filter: blur(0) !important; transform: none !important; }
     }
     @media (max-width: 520px) {
       .room-controls { width: min(206px, 60vw); }
@@ -1842,6 +1870,7 @@
                 <div id="weekBars" class="chart-bars"></div>
               </div>
             </div>
+            <div id="weekLabels" class="week-label-row"></div>
           </div>
 
           <div class="results-summary">
@@ -2228,6 +2257,7 @@
 
       weekTotalWork: document.getElementById("weekTotalWork"),
       weekBars: document.getElementById("weekBars"),
+      weekLabels: document.getElementById("weekLabels"),
       todayBestFish: document.getElementById("todayBestFish"),
       todayBestFishSub: document.getElementById("todayBestFishSub"),
       todayEarnedValue: document.getElementById("todayEarnedValue"),
@@ -2578,10 +2608,10 @@
     function updateNavIndicator() {
       const active = el.navBtns.find((btn) => btn.classList.contains("active")) || el.navBtns[0];
       if (!active) return;
-      const notchTop = active.offsetTop + active.offsetHeight / 2 - 34;
-      el.navNotch.style.top = `${notchTop}px`;
+      const shift = window.innerWidth <= 760 ? 6 : 8;
       const bubbleSize = active.offsetHeight;
       el.navActiveBubble.style.top = `${active.offsetTop}px`;
+      el.navActiveBubble.style.left = `${active.offsetLeft + shift}px`;
       el.navActiveBubble.style.width = `${bubbleSize}px`;
       el.navActiveBubble.style.height = `${bubbleSize}px`;
     }
@@ -2632,7 +2662,25 @@
     }
 
     function renderNavPartsVisibility() {
-      el.navLevelList.classList.toggle("open", !!state.ui.partsPanelOpen);
+      const open = !!state.ui.partsPanelOpen;
+      el.navLevelList.classList.toggle("open", open);
+      if (open) {
+        el.partsPanelToggle.innerHTML = "⌄";
+        el.partsPanelToggle.style.background = "transparent";
+        el.partsPanelToggle.style.border = "0";
+        el.partsPanelToggle.style.minHeight = "20px";
+        el.partsPanelToggle.style.padding = "0";
+        el.partsPanelToggle.style.color = "rgba(255,255,255,0.72)";
+        el.partsPanelToggle.style.fontSize = "18px";
+      } else {
+        el.partsPanelToggle.innerHTML = `<div>パーツ詳細</div><div class="rod-mini">🎣</div>`;
+        el.partsPanelToggle.style.background = "rgba(255,255,255,0.06)";
+        el.partsPanelToggle.style.border = "1px solid rgba(255,255,255,0.1)";
+        el.partsPanelToggle.style.minHeight = "54px";
+        el.partsPanelToggle.style.padding = "8px 10px";
+        el.partsPanelToggle.style.color = "rgba(255,255,255,0.72)";
+        el.partsPanelToggle.style.fontSize = "11px";
+      }
     }
 
     function renderStoreSectionState() {
@@ -3147,6 +3195,7 @@
       toast(`${pendingResult.entry.name} を所持品に入れました。`);
       pendingResult = null;
       closeResultModal();
+      if (state.room.inRoom && state.room.roomId && !currentRoomData) startRoomListener(state.room.roomId);
       saveAll();
       switchScreen("room");
       renderAll();
@@ -3160,6 +3209,7 @@
       toast(`${pendingResult.entry.name} を ${pendingResult.entry.sellPrice} zz で売却しました。`);
       pendingResult = null;
       closeResultModal();
+      if (state.room.inRoom && state.room.roomId && !currentRoomData) startRoomListener(state.room.roomId);
       saveAll();
       switchScreen("room");
       renderAll();
@@ -3232,17 +3282,20 @@
     }
 
     function renderRoom() {
-      const inRoom = !!state.room.inRoom && !!state.room.roomId && !!currentRoomData;
+      const inRoom = !!state.room.inRoom && !!state.room.roomId;
       el.roomLobby.style.display = inRoom ? "none" : "flex";
       el.roomActiveUI.style.display = inRoom ? "block" : "none";
       if (!inRoom) return;
-      const members = currentRoomData.members || [];
-      const countText = `${members.length} / ${ROOM_CAPACITY}`;
+      const members = currentRoomData?.members || [];
+      const countText = `${members.length || 1} / ${ROOM_CAPACITY}`;
       el.roomCountChip.textContent = countText;
       el.fishingRoomCountChip.textContent = countText;
       renderParticipants(el.roomParticipants, members);
       renderParticipants(el.fishingParticipants, members);
       el.roomFishingBtn.disabled = !!state.fishing.inProgress;
+      if (!currentRoomData && state.room.roomId) {
+        startRoomListener(state.room.roomId);
+      }
     }
 
     function renderParticipants(container, members) {
@@ -3313,7 +3366,7 @@
     }
 
     function setGaugeProgress(progress) {
-      const offset = TIMER_C * (1 - progress);
+      const offset = TIMER_C * progress;
       el.timerProgress.style.strokeDashoffset = String(offset);
       el.timerGlow.style.strokeDashoffset = String(offset);
     }
@@ -3360,7 +3413,8 @@
             <div class="upgrade-name">${part.name}</div>
             <div class="upgrade-price">${cost}</div>
           </div>
-          <div class="upgrade-desc">${part.desc}<br />Lv.${level} → Lv.${level + 1}</div>
+          <div class="upgrade-desc">${part.desc}</div>
+          <div style="position:absolute; right:116px; bottom:21px; font-size:18px; font-weight:800; color:rgba(255,255,255,0.9);">Lv.${level}</div>
           <button class="upgrade-btn">強化</button>
         `;
         const btn = card.querySelector(".upgrade-btn");
@@ -3406,22 +3460,23 @@
       const totalWeekMin = week.days.reduce((sum, d) => sum + d.stat.workMin, 0);
       el.weekTotalWork.textContent = `今週の合計作業時間 ${totalWeekMin}分`;
       el.weekBars.innerHTML = "";
+      el.weekLabels.innerHTML = `<div class="week-label-spacer"></div><div class="week-labels-inner"></div>`;
+      const labelsInner = el.weekLabels.querySelector('.week-labels-inner');
       week.days.forEach((day) => {
         const minutes = day.stat.workMin;
         const percent = Math.max(0, Math.min(100, (minutes / 1440) * 100));
         const isToday = day.key === todayKey();
         const col = document.createElement("div");
         col.className = "day-col";
-        const barHtml = minutes > 0 ? `<div class="day-bar ${isToday ? "today" : ""}" style="height:${percent}%;">${minutes}分</div>` : "";
-        col.innerHTML = `
-          <div class="day-bar-wrap">${barHtml}</div>
-          <div class="day-labels">
-            <div>${day.label}</div>
-            <div>${day.dateLabel}</div>
-            <div class="today-dot ${isToday ? "active" : ""}"></div>
-          </div>
-        `;
+        const showInside = minutes > 0 && percent >= 14;
+        const barHtml = minutes > 0 ? `<div class="day-bar ${isToday ? "today" : ""}" style="height:${percent}%;">${showInside ? `${minutes}分` : ``}</div>${!showInside ? `<div class="day-bar-note">${minutes}分</div>` : ``}` : "";
+        col.innerHTML = `<div class="day-bar-wrap">${barHtml}</div>`;
         el.weekBars.appendChild(col);
+
+        const label = document.createElement('div');
+        label.className = 'day-label-item';
+        label.innerHTML = `<div class="day-label-main"><span class="today-dot ${isToday ? "active" : ""}"></span><span>${day.dateLabel}</span></div><div>${day.label}</div>`;
+        labelsInner.appendChild(label);
       });
       const today = ensureDailyStat(todayKey());
       const bestFish = [...(today.catches || [])].sort((a, b) => (b.sizeCm - b.avgSize) - (a.sizeCm - a.avgSize))[0];
@@ -3675,11 +3730,11 @@
     }
 
     function updateRoomVideo() {
-      const inRoom = !!state.room.inRoom && !!state.room.roomId && !!currentRoomData;
+      const inRoom = !!state.room.inRoom && !!state.room.roomId;
       el.lobbyVideo.style.display = inRoom ? "none" : "block";
       el.roomVideo.style.display = inRoom ? "block" : "none";
       if (!inRoom) return;
-      const count = Math.max(1, Math.min(3, currentRoomData.members.length || 1));
+      const count = Math.max(1, Math.min(3, currentRoomData?.members?.length || 1));
       setVideoSource(el.roomVideo, `boat${count}.mp4`);
     }
 
