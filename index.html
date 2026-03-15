@@ -53,6 +53,9 @@
       pointer-events: none;
       transform: translateX(calc(-100% - 22px));
     }
+    #app.nav-hidden .screen-shell {
+      left: 8px;
+    }
 
     .bg-screen {
       position: absolute;
@@ -101,15 +104,14 @@
 
     .side-nav {
       position: absolute;
-      top: calc(var(--safeTop) + 58px);
-      left: 12px;
-      bottom: calc(var(--safeBottom) + 12px);
+      top: calc(var(--safeTop) + 10px);
+      left: 0;
+      bottom: calc(var(--safeBottom) + 10px);
       width: var(--navExpanded);
       z-index: 40;
-      padding: 14px 10px;
-      background: rgba(6,14,22,0.52);
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 28px;
+      padding: 56px 10px 14px;
+      background: rgba(6,14,22,0.46);
+      border-right: 1px solid rgba(255,255,255,0.08);
       box-shadow: var(--shadow);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
@@ -137,16 +139,16 @@
       transition: top 0.26s ease, opacity 0.2s ease;
       z-index: 0;
     }
-    .nav-dot {
+    .nav-active-bubble {
       position: absolute;
-      left: calc(100% + 10px);
-      width: 10px;
-      height: 10px;
+      width: 52px;
+      height: 52px;
       border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 18px rgba(123,223,245,0.7);
+      background: rgba(123,223,245,0.96);
+      box-shadow: 0 0 20px rgba(123,223,245,0.6);
       transition: top 0.26s ease, opacity 0.2s ease;
       z-index: 1;
+      left: 18px;
     }
 
     .nav-btn {
@@ -161,7 +163,7 @@
       display: grid;
       place-items: center;
       padding: 0;
-      transition: transform 0.22s ease, opacity 0.18s ease;
+      transition: transform 0.22s ease, opacity 0.18s ease, color 0.18s ease;
     }
     .nav-btn svg {
       width: 28px;
@@ -171,10 +173,11 @@
       stroke-width: 1.9;
       stroke-linecap: round;
       stroke-linejoin: round;
-      opacity: 0.9;
+      opacity: 0.95;
     }
     .nav-btn.active {
-      transform: translateX(12px);
+      transform: translateX(8px);
+      color: #103148;
     }
     .nav-btn .tip {
       position: absolute;
@@ -201,23 +204,40 @@
       gap: 8px;
       align-items: stretch;
     }
-    .nav-level-title {
-      font-size: 10px;
-      color: var(--muted);
-      text-align: center;
-      letter-spacing: 0.06em;
-    }
-    .nav-level-list {
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-    }
-    .part-level-card {
-      position: relative;
+    .nav-level-toggle {
+      width: 100%;
       min-height: 54px;
       padding: 8px 10px;
       border-radius: 16px;
-      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.06);
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .nav-level-toggle .rod-mini {
+      font-size: 16px;
+      line-height: 1;
+    }
+    .nav-level-list {
+      display: none;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .nav-level-list.open {
+      display: flex;
+    }
+    .part-level-card {
+      position: relative;
+      min-height: 44px;
+      padding: 8px 10px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.07);
       border: 1px solid rgba(255,255,255,0.1);
       overflow: hidden;
     }
@@ -225,21 +245,22 @@
       position: absolute;
       left: 10px;
       top: 8px;
-      font-size: 10px;
+      font-size: 9px;
       color: var(--muted);
       letter-spacing: 0.04em;
     }
     .part-level-value {
-      font-size: 22px;
+      font-size: 18px;
       font-weight: 800;
       line-height: 1;
-      margin-top: 14px;
+      margin-top: 12px;
       text-align: center;
+      color: rgba(255,255,255,0.86);
     }
     .user-pill {
       width: 100%;
       padding: 10px 4px 2px;
-      border-top: 1px solid rgba(255,255,255,0.14);
+      border-top: 1px solid rgba(255,255,255,0.12);
       font-size: 11px;
       color: var(--muted);
       text-align: center;
@@ -260,7 +281,7 @@
     }
     .screen-shell {
       position: absolute;
-      inset: calc(var(--safeTop) + 10px) 12px calc(var(--safeBottom) + 12px) calc(var(--navCurrent) + 22px);
+      inset: calc(var(--safeTop) + 8px) 8px calc(var(--safeBottom) + 8px) calc(var(--navCurrent) + 8px);
       transition: inset 0.22s ease;
       z-index: 4;
     }
@@ -272,15 +293,6 @@
       opacity: 0;
       pointer-events: none;
       transform: translateY(8px);
-    }
-
-    .overlay-panel {
-      background: rgba(8,18,29,0.28);
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 18px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
     }
 
     .top-left-meta {
@@ -303,9 +315,20 @@
       gap: 10px;
       max-width: min(72vw, 760px);
     }
+    .bottom-right-stack {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      z-index: 8;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+      max-width: min(72vw, 760px);
+    }
+
     .count-chip,
-    .stat-pill,
-    .dual-info {
+    .stat-pill {
       min-height: 42px;
       padding: 0 12px;
       border-radius: 999px;
@@ -331,9 +354,70 @@
       align-items: center;
     }
 
+    .weather-time-circle {
+      position: relative;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: rgba(8,18,29,0.52);
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    .weather-time-circle::after {
+      content: "";
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      top: 50%;
+      height: 1px;
+      background: rgba(255,255,255,0.34);
+      transform: rotate(-27deg);
+      transform-origin: center;
+    }
+    .weather-half,
+    .time-half {
+      position: absolute;
+      width: 100%;
+      height: 60%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      pointer-events: none;
+    }
+    .weather-half {
+      top: -3px;
+      clip-path: ellipse(66% 60% at 50% 58%);
+    }
+    .time-half {
+      bottom: -5px;
+      clip-path: ellipse(70% 60% at 50% 42%);
+    }
+    .weather-time-balloon {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      min-width: 86px;
+      padding: 7px 10px;
+      text-align: center;
+      border-radius: 12px;
+      background: rgba(10,18,28,0.86);
+      border: 1px solid rgba(255,255,255,0.12);
+      font-size: 12px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.16s ease;
+      white-space: nowrap;
+    }
+    .weather-time-circle:hover .weather-time-balloon { opacity: 1; }
+
     .participants-strip {
       display: flex;
-      gap: 18px;
+      gap: 16px;
       flex-wrap: wrap;
       justify-content: flex-end;
       align-items: flex-start;
@@ -342,10 +426,10 @@
     }
     .participant-item {
       position: relative;
-      min-width: 64px;
-      max-width: 100px;
+      min-width: 56px;
+      max-width: 94px;
       text-align: center;
-      line-height: 1.25;
+      line-height: 1.2;
       text-shadow: 0 4px 14px rgba(0,0,0,0.35);
     }
     .participant-name {
@@ -375,19 +459,20 @@
     }
     .participant-bubble {
       position: absolute;
-      top: -8px;
-      right: -8px;
-      min-width: 28px;
-      min-height: 24px;
+      top: 16px;
+      left: 50%;
+      transform: translateX(8px);
+      min-width: 26px;
+      min-height: 22px;
       padding: 2px 6px;
       border-radius: 12px;
       background: rgba(0,0,0,0.48);
       border: 1px solid rgba(255,255,255,0.14);
-      font-size: 16px;
+      font-size: 15px;
       display: flex;
       align-items: center;
       justify-content: center;
-      animation: bubbleInOut 3s ease forwards;
+      animation: bubbleSimple 3s linear forwards;
     }
 
     .stamp-rail {
@@ -479,7 +564,7 @@
       flex-direction: column;
       gap: 12px;
       align-items: stretch;
-      width: min(260px, 38vw);
+      width: min(220px, 34vw);
     }
     .control-fields {
       display: flex;
@@ -587,7 +672,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 2px;
+      gap: 3px;
       padding: 12px 10px;
       text-align: center;
       backdrop-filter: blur(8px);
@@ -609,8 +694,7 @@
       font-size: clamp(8px, 0.72vw, 11px);
       color: rgba(255,255,255,0.82);
       line-height: 1.25;
-      max-width: 86%;
-      min-height: 24px;
+      min-height: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -643,7 +727,7 @@
       stroke-linejoin: round;
     }
     .timer-btn.danger {
-      background: rgba(70, 16, 16, 0.54);
+      background: rgba(70,16,16,0.54);
       border-color: rgba(255,180,180,0.18);
     }
 
@@ -760,9 +844,7 @@
     .section-toggle.closed .arrow {
       transform: rotate(-90deg);
     }
-    .section-body.closed {
-      display: none;
-    }
+    .section-body.closed { display: none; }
 
     .product-grid {
       display: grid;
@@ -778,6 +860,8 @@
       background: rgba(255,255,255,0.06);
       border: 1px solid rgba(255,255,255,0.12);
       box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
     }
     .bait-art-frame {
       width: 100%;
@@ -825,10 +909,7 @@
       color: #0c2b17;
       font-weight: 800;
     }
-    .buy-btn:disabled {
-      opacity: 0.45;
-      cursor: default;
-    }
+    .buy-btn:disabled { opacity: 0.45; cursor: default; }
 
     .upgrade-top {
       display: grid;
@@ -873,40 +954,49 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
+      position: relative;
+      overflow: hidden;
     }
-    .upgrade-head {
+    .upgrade-title-line {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
       gap: 8px;
+      align-items: center;
     }
     .upgrade-name {
-      font-size: 14px;
+      font-size: clamp(12px, 1vw, 14px);
       font-weight: 800;
       line-height: 1.2;
+      min-width: 0;
+      flex: 1;
+    }
+    .upgrade-price {
+      font-size: clamp(16px, 1.25vw, 22px);
+      font-weight: 900;
+      color: var(--gold);
+      line-height: 1;
+      white-space: nowrap;
+      flex: 0 0 auto;
     }
     .upgrade-desc {
       font-size: 11px;
       color: var(--muted);
       line-height: 1.5;
-      min-height: 46px;
-    }
-    .upgrade-price {
-      font-size: 20px;
-      font-weight: 900;
-      color: var(--gold);
-      line-height: 1;
+      min-height: 48px;
     }
     .upgrade-btn {
-      align-self: flex-end;
-      min-height: 34px;
-      padding: 0 12px;
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      min-height: 40px;
+      min-width: 92px;
+      padding: 0 14px;
       border-radius: 999px;
       border: 0;
       background: linear-gradient(135deg, #7fe89c, #54d87d);
       color: #0c2b17;
       font-weight: 800;
-      font-size: 13px;
+      font-size: clamp(12px, 0.95vw, 14px);
     }
     .upgrade-btn:disabled { opacity: 0.45; cursor: default; }
 
@@ -1031,7 +1121,8 @@
       font-size: 12px;
       color: var(--muted);
       padding-top: 4px;
-      padding-bottom: 30px;
+      padding-bottom: 24px;
+      height: 100%;
     }
     .chart-area {
       position: relative;
@@ -1040,11 +1131,11 @@
       background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
       border: 1px solid rgba(255,255,255,0.08);
       overflow: hidden;
-      padding: 14px 14px 34px;
+      padding: 14px 14px 24px;
     }
     .chart-grid-lines {
       position: absolute;
-      inset: 14px 14px 34px 14px;
+      inset: 14px 14px 24px 14px;
       background-image: linear-gradient(to top, rgba(255,255,255,0.08) 1px, transparent 1px);
       background-size: 100% calc(100% / 24);
       pointer-events: none;
@@ -1064,19 +1155,18 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-end;
-      gap: 10px;
+      gap: 8px;
     }
     .day-bar-wrap {
       position: relative;
       width: 100%;
-      height: calc(100% - 44px);
+      height: calc(100% - 40px);
       display: flex;
       align-items: flex-end;
       justify-content: center;
     }
     .day-bar {
       width: min(48px, 100%);
-      min-height: 22px;
       border-radius: 16px 16px 10px 10px;
       background: linear-gradient(180deg, rgba(255,255,255,0.28), rgba(255,255,255,0.18));
       display: flex;
@@ -1087,6 +1177,7 @@
       font-size: 11px;
       font-weight: 700;
       text-shadow: 0 4px 10px rgba(0,0,0,0.25);
+      min-height: 0;
     }
     .day-bar.today {
       background: linear-gradient(180deg, #88f6a4, #48d36d);
@@ -1147,6 +1238,7 @@
       gap: 14px;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     }
+
     .settings-list {
       display: grid;
       gap: 14px;
@@ -1258,7 +1350,7 @@
       inset: -20% -20% auto auto;
       width: 220px;
       height: 220px;
-      background: radial-gradient(circle, rgba(255,216,109,0.26), transparent 66%);
+      background: radial-gradient(circle, rgba(255,216,109,0.18), transparent 66%);
       filter: blur(6px);
       pointer-events: none;
     }
@@ -1269,7 +1361,7 @@
       gap: 12px;
       margin-bottom: 16px;
     }
-    .modal-top h2 { margin: 0; font-size: 28px; }
+    .modal-top h2 { margin: 0; font-size: 28px; color: rgba(255,255,255,0.92); }
     .close-btn {
       width: 42px;
       height: 42px;
@@ -1303,9 +1395,9 @@
       border: 1px solid rgba(255,255,255,0.14);
     }
     .result-price {
-      font-size: 28px;
+      font-size: 26px;
       font-weight: 900;
-      color: var(--gold);
+      color: rgba(255,255,255,0.92);
       line-height: 1;
     }
     .result-title-row {
@@ -1319,6 +1411,7 @@
       font-size: 28px;
       font-weight: 900;
       line-height: 1.1;
+      color: rgba(255,255,255,0.95);
     }
     .rarity-stars {
       font-size: 18px;
@@ -1331,15 +1424,8 @@
       line-height: 1.8;
       color: var(--muted);
     }
-    .size-meter-wrap {
-      margin-top: 12px;
-      margin-bottom: 12px;
-    }
-    .size-meter-label {
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 8px;
-    }
+    .size-meter-wrap { margin-top: 12px; margin-bottom: 12px; }
+    .size-meter-label { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
     .size-meter {
       position: relative;
       height: 18px;
@@ -1371,8 +1457,8 @@
       position: absolute;
       top: -26px;
       font-size: 18px;
-      color: var(--gold);
-      text-shadow: 0 0 18px rgba(255,216,109,0.4);
+      color: var(--accent-2);
+      text-shadow: 0 0 18px rgba(183,241,255,0.34);
       white-space: nowrap;
     }
     .result-flags {
@@ -1419,6 +1505,8 @@
     }
     .auth-title { font-size: 30px; font-weight: 800; margin-bottom: 10px; }
     .auth-text { color: var(--muted); line-height: 1.8; margin-bottom: 18px; font-size: 14px; }
+    .auth-step { display: none; }
+    .auth-step.active { display: block; }
 
     .toast-wrap {
       position: absolute;
@@ -1446,6 +1534,20 @@
       animation: toastInOut 3.6s ease forwards;
     }
 
+    @media (hover: hover) and (pointer: fine) {
+      .bait-card .bait-desc,
+      .upgrade-card .upgrade-desc {
+        opacity: 0;
+        transform: translateY(6px);
+        transition: opacity 0.16s ease, transform 0.16s ease;
+      }
+      .bait-card:hover .bait-desc,
+      .upgrade-card:hover .upgrade-desc {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
     @keyframes toastInOut {
       0% { opacity: 0; transform: translateY(-6px); }
       10%, 82% { opacity: 1; transform: translateY(0); }
@@ -1456,10 +1558,9 @@
       10%, 80% { opacity: 1; transform: translateX(0); }
       100% { opacity: 0; transform: translateX(12px); }
     }
-    @keyframes bubbleInOut {
-      0% { opacity: 0; transform: translateY(6px) scale(0.8); }
-      12%, 74% { opacity: 1; transform: translateY(0) scale(1); }
-      100% { opacity: 0; transform: translateY(-6px) scale(0.9); }
+    @keyframes bubbleSimple {
+      0% { opacity: 1; }
+      100% { opacity: 0; }
     }
 
     @media (max-width: 1500px) {
@@ -1476,33 +1577,30 @@
     }
     @media (max-width: 760px) {
       :root { --navExpanded: 72px; --navCollapsed: 22px; }
-      .nav-toggle {
-        top: calc(var(--safeTop) + 8px);
-        left: 10px;
-      }
+      .nav-toggle { top: calc(var(--safeTop) + 8px); left: 10px; }
       .side-nav {
-        top: calc(var(--safeTop) + 44px);
-        left: 10px;
-        bottom: calc(var(--safeBottom) + 10px);
+        top: calc(var(--safeTop) + 8px);
+        bottom: calc(var(--safeBottom) + 8px);
         width: var(--navExpanded);
-        padding: 10px 7px;
-      }
-      .screen-shell {
-        inset: calc(var(--safeTop) + 8px) 8px calc(var(--safeBottom) + 8px) calc(var(--navCurrent) + 14px);
+        padding: 44px 7px 10px;
       }
       .nav-btn { width: 46px; height: 46px; }
       .nav-btn svg { width: 24px; height: 24px; }
-      .nav-btn.active { transform: translateX(8px); }
+      .nav-btn.active { transform: translateX(6px); }
       .nav-notch { width: 28px; height: 58px; }
-      .nav-dot { left: calc(100% + 7px); }
-      .top-right-stack { max-width: calc(100% - 4px); }
+      .nav-active-bubble { width: 44px; height: 44px; left: 14px; }
+      .screen-shell { inset: calc(var(--safeTop) + 8px) 8px calc(var(--safeBottom) + 8px) calc(var(--navCurrent) + 6px); }
+      #app.nav-hidden .screen-shell { left: 8px; }
+      .top-right-stack, .bottom-right-stack { max-width: calc(100% - 4px); }
       .participants-strip { gap: 12px; }
-      .participant-item { min-width: 56px; max-width: 84px; }
+      .participant-item { min-width: 54px; max-width: 82px; }
       .participant-avatar { width: 32px; height: 32px; font-size: 16px; }
       .participant-name { font-size: 11px; }
       .participant-status { font-size: 10px; }
-      .count-chip, .stat-pill, .dual-info { min-height: 34px; font-size: 12px; padding: 0 10px; }
-      .room-controls { width: min(230px, 56vw); }
+      .count-chip, .stat-pill { min-height: 34px; font-size: 12px; padding: 0 10px; }
+      .weather-time-circle { width: 42px; height: 42px; }
+      .weather-half, .time-half { font-size: 16px; }
+      .room-controls { width: min(210px, 56vw); }
       .fishing-timer.active { width: min(40vw, 210px); }
       .fishing-timer:not(.active) { width: min(24vw, 126px); }
       .timer-btn { width: 24px; height: 24px; }
@@ -1512,9 +1610,11 @@
       .result-core { grid-template-columns: 1fr; }
       .modal-card { width: min(96vw, 620px); }
       .week-chart { height: 280px; }
+      .bait-card .bait-desc,
+      .upgrade-card .upgrade-desc { opacity: 1 !important; transform: none !important; }
     }
     @media (max-width: 520px) {
-      .room-controls { width: min(220px, 60vw); }
+      .room-controls { width: min(206px, 60vw); }
       .header-stats { justify-content: flex-start; }
       .product-grid, .sell-grid, .upgrade-cards { grid-template-columns: 1fr 1fr; }
       .day-bar { width: min(38px, 100%); font-size: 10px; }
@@ -1531,7 +1631,7 @@
 
     <nav class="side-nav">
       <div id="navNotch" class="nav-notch"></div>
-      <div id="navDot" class="nav-dot"></div>
+      <div id="navActiveBubble" class="nav-active-bubble"></div>
 
       <button class="nav-btn active" data-screen="room" aria-label="プレイ">
         <svg viewBox="0 0 24 24"><path d="M8 6v12l10-6z"/></svg>
@@ -1555,7 +1655,10 @@
       </button>
 
       <div class="nav-level-wrap">
-        <div class="nav-level-title">パーツレベル</div>
+        <button id="partsPanelToggle" class="nav-level-toggle">
+          <div>パーツ詳細</div>
+          <div class="rod-mini">🎣</div>
+        </button>
         <div id="navLevelList" class="nav-level-list"></div>
         <div id="userPill" class="user-pill">未ログイン</div>
       </div>
@@ -1571,7 +1674,7 @@
 
         <div id="roomLobby" class="lobby-center">
           <div class="lobby-title">釣り部屋</div>
-          <div class="lobby-sub">プレイを押すと、空いている部屋に優先的に入ります。最大3人のお部屋が自動で作られ、0人になると消えます。</div>
+          <div class="lobby-sub">プレイを押すと、空いている部屋に優先的に入ります。最大3人のお部屋が自動で作られ、日本時間の0時にリセットされます。</div>
           <button id="playRoomBtn" class="play-btn">プレイ</button>
         </div>
 
@@ -1628,7 +1731,7 @@
           <div class="timer-core">
             <div id="timerText" class="timer-main-time">--:--</div>
             <div id="timerPlanMini" class="timer-mini-plan">25min</div>
-            <div id="timerStatus" class="timer-status">まだ釣りを始めていません</div>
+            <div id="timerStatus" class="timer-status"></div>
             <div class="timer-actions">
               <button id="toggleFishingBtn" class="timer-btn" aria-label="停止または再開"><svg id="toggleFishingIcon" viewBox="0 0 24 24"></svg></button>
               <button id="cancelFishingBtn" class="timer-btn danger" aria-label="報酬なし終了"><svg viewBox="0 0 24 24"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg></button>
@@ -1642,12 +1745,19 @@
         </div>
 
         <div class="top-right-stack fade-ui">
-          <div id="fishingParticipants" class="participants-strip"></div>
           <div class="stats-row">
             <div id="baitTotalMini" class="stat-pill cyan">餌 0</div>
             <div id="fishMoneyMini" class="stat-pill gold">0 zz</div>
-            <div id="weatherTimeIcon" class="dual-info">☀️／🌙<div id="weatherTimeBalloon" class="balloon">夜／晴れ</div></div>
+            <div id="weatherTimeCircle" class="weather-time-circle">
+              <div id="weatherHalf" class="weather-half">☀️</div>
+              <div id="timeHalf" class="time-half">🌙</div>
+              <div id="weatherTimeBalloon" class="weather-time-balloon">夜／晴れ</div>
+            </div>
           </div>
+        </div>
+
+        <div class="bottom-right-stack fade-ui">
+          <div id="fishingParticipants" class="participants-strip"></div>
         </div>
 
         <div class="stamp-rail fade-ui">
@@ -1725,7 +1835,7 @@
                 <span>18h</span>
                 <span>12h</span>
                 <span>6h</span>
-                <span>1h</span>
+                <span>0h</span>
               </div>
               <div class="chart-area">
                 <div class="chart-grid-lines"></div>
@@ -1802,6 +1912,7 @@
                 <button id="forceSaveBtn" class="btn soft">今すぐ保存</button>
                 <button id="exportBtn" class="btn soft">ローカル書き出し</button>
                 <button id="importBtn" class="btn soft">読み込み</button>
+                <button id="logoutBtn" class="btn soft">ログアウト</button>
                 <input id="importFile" type="file" accept="application/json" hidden />
               </div>
               <div class="auth-note">Firebaseが使えない環境でも localStorage に自動保存します。</div>
@@ -1850,14 +1961,24 @@
       <div class="auth-card">
         <div class="auth-title">海辺に置いておく作業用の釣り場</div>
         <div class="auth-text">Googleでログインすると、所持品や図鑑記録に加えて、部屋とスタンプもFirebaseで同期されます。ローカルだけで始めることもできます。</div>
-        <div class="name-row">
-          <button id="googleLoginBtn" class="btn primary">Googleでログイン</button>
-          <button id="guestStartBtn" class="btn soft">ローカルだけで始める</button>
+
+        <div id="authChoiceStep" class="auth-step active">
+          <div class="name-row">
+            <button id="googleLoginBtn" class="btn primary">Googleでログイン</button>
+            <button id="guestStartBtn" class="btn soft">ローカルだけで始める</button>
+          </div>
         </div>
-        <div class="name-row">
-          <input id="authDisplayNameInput" type="text" maxlength="16" placeholder="最初の表示名（あとで変更可）" />
+
+        <div id="authNameStep" class="auth-step">
+          <div class="auth-note">表示名を決めてください。空なら「釣り人」です。</div>
+          <div class="name-row">
+            <input id="authDisplayNameInput" type="text" maxlength="16" value="釣り人" />
+          </div>
+          <div class="name-row">
+            <button id="authConfirmBtn" class="btn primary">この名前で開始</button>
+            <button id="authBackBtn" class="btn soft">戻る</button>
+          </div>
         </div>
-        <div class="auth-note">表示名が空なら「つりびと」になります。</div>
       </div>
     </div>
 
@@ -1875,6 +1996,7 @@
       getRedirectResult,
       onAuthStateChanged,
       signOut,
+      signInAnonymously,
     } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
     import {
       getFirestore,
@@ -1901,15 +2023,14 @@
       measurementId: "G-H7P3WR4DR3"
     };
 
-    const LS_KEY = "zz_fishing_subsite_save_v10";
+    const LS_KEY = "zz_fishing_subsite_save_v11";
     const ENCY_TOP_LIMIT = 50;
     const SELL_RATE_ITEM = 0.5;
     const ROOM_CAPACITY = 3;
-    const ROOM_TTL = 25000;
     const STAMP_TTL = 3000;
     const TIMER_R = 88;
     const TIMER_C = 2 * Math.PI * TIMER_R;
-    const FISHING_UI_IDLE_MS = 2600;
+    const FISHING_UI_IDLE_MS = 10000;
 
     const COURSE_OPTIONS = [60, 40, 25, 10, 5];
 
@@ -1948,17 +2069,18 @@
     ];
 
     const DEFAULT_STATE = {
-      version: 10,
+      version: 11,
       ui: {
         navCollapsed: false,
         focusMode: false,
         fishingUiVisible: true,
+        partsPanelOpen: false,
         storeSections: { bait: true, upgrade: true, sell: true },
       },
       user: {
         uid: null,
         isGuest: true,
-        displayName: "つりびと",
+        displayName: "釣り人",
         photoURL: null,
         playerToken: null,
       },
@@ -1989,9 +2111,7 @@
       },
       inventory: [],
       encyclopedia: {},
-      history: {
-        daily: {},
-      },
+      history: { daily: {} },
       settings: {
         waveSound: false,
         catchSound: true,
@@ -2029,18 +2149,20 @@
     let roomUnsub = null;
     let currentRoomData = null;
     let timerTickHandle = null;
-    let roomTickHandle = null;
+    let midnightTickHandle = null;
     let fishingUiTimeout = null;
     let authResolved = false;
     let processedStampIds = new Set();
     let pendingResult = null;
+    let pendingAuthMode = null;
+    let pendingDisplayName = null;
 
     const el = {
       app: document.getElementById("app"),
       navToggle: document.getElementById("navToggle"),
       navBtns: [...document.querySelectorAll(".nav-btn")],
       navNotch: document.getElementById("navNotch"),
-      navDot: document.getElementById("navDot"),
+      navActiveBubble: document.getElementById("navActiveBubble"),
       screens: {
         room: document.getElementById("screen-room"),
         fishing: document.getElementById("screen-fishing"),
@@ -2049,6 +2171,7 @@
         encyclopedia: document.getElementById("screen-encyclopedia"),
         settings: document.getElementById("screen-settings"),
       },
+      partsPanelToggle: document.getElementById("partsPanelToggle"),
       navLevelList: document.getElementById("navLevelList"),
       userPill: document.getElementById("userPill"),
 
@@ -2071,7 +2194,8 @@
       fishingRoomCountChip: document.getElementById("fishingRoomCountChip"),
       baitTotalMini: document.getElementById("baitTotalMini"),
       fishMoneyMini: document.getElementById("fishMoneyMini"),
-      weatherTimeIcon: document.getElementById("weatherTimeIcon"),
+      weatherHalf: document.getElementById("weatherHalf"),
+      timeHalf: document.getElementById("timeHalf"),
       weatherTimeBalloon: document.getElementById("weatherTimeBalloon"),
       fishingStampFeed: document.getElementById("fishingStampFeed"),
 
@@ -2124,6 +2248,7 @@
       forceSaveBtn: document.getElementById("forceSaveBtn"),
       exportBtn: document.getElementById("exportBtn"),
       importBtn: document.getElementById("importBtn"),
+      logoutBtn: document.getElementById("logoutBtn"),
       importFile: document.getElementById("importFile"),
 
       resultModal: document.getElementById("resultModal"),
@@ -2134,7 +2259,6 @@
       resultRarity: document.getElementById("resultRarity"),
       resultLines: document.getElementById("resultLines"),
       sizeMeterLabel: document.getElementById("sizeMeterLabel"),
-      sizeMeter: document.getElementById("sizeMeter"),
       sizeFill: document.getElementById("sizeFill"),
       sizeOverflowBadge: document.getElementById("sizeOverflowBadge"),
       resultFlags: document.getElementById("resultFlags"),
@@ -2143,9 +2267,13 @@
       closeResultBtn: document.getElementById("closeResultBtn"),
 
       authOverlay: document.getElementById("authOverlay"),
+      authChoiceStep: document.getElementById("authChoiceStep"),
+      authNameStep: document.getElementById("authNameStep"),
       googleLoginBtn: document.getElementById("googleLoginBtn"),
       guestStartBtn: document.getElementById("guestStartBtn"),
       authDisplayNameInput: document.getElementById("authDisplayNameInput"),
+      authConfirmBtn: document.getElementById("authConfirmBtn"),
+      authBackBtn: document.getElementById("authBackBtn"),
 
       stampButtons: [...document.querySelectorAll(".stamp-btn")],
       toastWrap: document.getElementById("toastWrap"),
@@ -2168,8 +2296,9 @@
       switchScreen("room");
       renderAll();
       restoreFishingTimer();
-      startRoomTicker();
+      startMidnightWatcher();
       if (!authResolved) el.authOverlay.style.display = "grid";
+      if (state.room.inRoom && state.room.roomId) startRoomListener(state.room.roomId);
     }
 
     function cloneDefault() {
@@ -2202,7 +2331,6 @@
       if (h < 680) scale = Math.min(scale, 0.7);
       if (h < 610) scale = Math.min(scale, 0.6);
       el.app.style.setProperty("--uiScale", String(scale));
-
       const mobile = w <= 760;
       const idleSize = mobile ? Math.max(94, Math.min(130, w * 0.24)) : Math.max(112, Math.min(146, w * 0.12));
       const activeSize = mobile ? Math.max(120, Math.min(w * 0.4, 210)) : Math.max(156, Math.min(w * 0.25, 280));
@@ -2227,17 +2355,20 @@
         onAuthStateChanged(auth, async (user) => {
           authResolved = true;
           if (user) {
+            const isAnon = !!user.isAnonymous;
             state.user.uid = user.uid;
-            state.user.isGuest = false;
-            state.user.photoURL = user.photoURL || null;
-            const remote = await loadRemoteUser(user.uid);
-            if (remote) mergeLoadedState(remote);
-            if (!state.user.displayName || state.user.displayName === "つりびと") {
-              state.user.displayName = safeName(el.authDisplayNameInput.value || user.displayName || "つりびと");
+            state.user.isGuest = isAnon;
+            state.user.photoURL = isAnon ? null : (user.photoURL || null);
+            if (!isAnon) {
+              const remote = await loadRemoteUser(user.uid);
+              if (remote) mergeLoadedState(remote);
             }
+            state.user.displayName = safeName(pendingDisplayName || state.user.displayName || "釣り人") || "釣り人";
             el.authOverlay.style.display = "none";
             firebaseSyncOk = true;
-            toast("Googleログインしました。");
+            pendingDisplayName = null;
+            pendingAuthMode = null;
+            toast(isAnon ? "ローカル開始しました。" : "Googleログインしました。");
             saveAll();
             switchScreen("room");
             renderAll();
@@ -2260,23 +2391,23 @@
         saveAll();
       });
 
-      el.navBtns.forEach((btn) => {
-        btn.addEventListener("click", () => switchScreen(btn.dataset.screen));
+      el.navBtns.forEach((btn) => btn.addEventListener("click", () => switchScreen(btn.dataset.screen)));
+      el.partsPanelToggle.addEventListener("click", () => {
+        state.ui.partsPanelOpen = !state.ui.partsPanelOpen;
+        renderNavPartsVisibility();
+        saveAll();
       });
 
       el.playRoomBtn.addEventListener("click", joinBestRoom);
       el.leaveRoomBtn.addEventListener("click", () => leaveRoom(false));
       el.roomFishingBtn.addEventListener("click", startFishingFromRoom);
-
       el.roomCourseSelect.addEventListener("change", () => {
         state.selectedCourseMin = Number(el.roomCourseSelect.value);
-        saveAll();
-        renderAll();
+        saveAll(); renderAll();
       });
       el.roomBaitSelect.addEventListener("change", () => {
         state.selectedBaitId = el.roomBaitSelect.value;
-        saveAll();
-        renderAll();
+        saveAll(); renderAll();
       });
 
       el.toggleFishingBtn.addEventListener("click", toggleFishingPauseResume);
@@ -2284,15 +2415,17 @@
       el.focusModeBtn.addEventListener("click", () => setFocusMode(true));
       el.focusBackBtn.addEventListener("click", () => setFocusMode(false));
 
-      el.googleLoginBtn.addEventListener("click", googleLogin);
-      el.guestStartBtn.addEventListener("click", startGuest);
+      el.googleLoginBtn.addEventListener("click", () => openNameStep("google"));
+      el.guestStartBtn.addEventListener("click", () => openNameStep("guest"));
+      el.authBackBtn.addEventListener("click", showAuthChoiceStep);
+      el.authConfirmBtn.addEventListener("click", confirmAuthStart);
 
-      el.saveDisplayNameBtn.addEventListener("click", () => {
-        const v = safeName(el.displayNameInput.value);
-        state.user.displayName = v || "つりびと";
-        syncPresenceToRoom().catch(console.error);
+      el.saveDisplayNameBtn.addEventListener("click", async () => {
+        const v = safeName(el.displayNameInput.value) || "釣り人";
+        state.user.displayName = v;
+        await saveAll(true);
+        await syncPresenceToRoom().catch(() => {});
         toast("表示名を保存しました。");
-        saveAll();
         renderAll();
       });
 
@@ -2306,68 +2439,58 @@
       });
       el.toggleShake.addEventListener("change", () => updateSetting("shakeOnFinish", el.toggleShake.checked));
 
-      el.forceSaveBtn.addEventListener("click", async () => {
-        await saveAll(true);
-        toast("保存しました。");
-      });
+      el.forceSaveBtn.addEventListener("click", async () => { await saveAll(true); toast("保存しました。"); });
       el.exportBtn.addEventListener("click", exportSave);
       el.importBtn.addEventListener("click", () => el.importFile.click());
       el.importFile.addEventListener("change", importSaveFile);
+      el.logoutBtn.addEventListener("click", performLogout);
 
       el.baitSectionToggle.addEventListener("click", () => toggleStoreSection("bait"));
       el.upgradeSectionToggle.addEventListener("click", () => toggleStoreSection("upgrade"));
       el.sellSectionToggle.addEventListener("click", () => toggleStoreSection("sell"));
 
-      el.stampButtons.forEach((btn) => {
-        btn.addEventListener("click", () => sendStamp(btn.dataset.stamp));
-      });
-
+      el.stampButtons.forEach((btn) => btn.addEventListener("click", () => sendStamp(btn.dataset.stamp)));
       el.sellResultBtn.addEventListener("click", sellPendingResult);
       el.keepResultBtn.addEventListener("click", keepPendingResult);
-      el.closeResultBtn.addEventListener("click", () => {
-        if (pendingResult) keepPendingResult();
-        else closeResultModal();
-      });
+      el.closeResultBtn.addEventListener("click", () => { if (pendingResult) keepPendingResult(); else closeResultModal(); });
 
-      window.addEventListener("resize", () => {
-        updateResponsiveScale();
-        renderAll();
-      });
-
+      window.addEventListener("resize", () => { updateResponsiveScale(); renderAll(); });
       ["mousemove", "mousedown", "touchstart", "keydown"].forEach((eventName) => {
         document.addEventListener(eventName, handleFishingActivity, { passive: true });
       });
-
-      window.addEventListener("beforeunload", () => {
-        leaveRoom(true);
-        saveLocalState(state);
-      });
-
+      window.addEventListener("beforeunload", () => { leaveRoom(true); saveLocalState(state); });
       document.addEventListener("visibilitychange", () => {
-        if (document.hidden) {
-          syncPresenceToRoom().catch(() => {});
-        } else {
+        if (!document.hidden) {
           refreshConditions();
-          if (state.fishing.inProgress && !state.fishing.paused && Date.now() >= state.fishing.endAt) {
-            finishFishing();
-          }
+          if (state.fishing.inProgress && !state.fishing.paused && Date.now() >= state.fishing.endAt) finishFishing();
           renderAll();
         }
       });
     }
 
-    function humanAuthError(err) {
-      const code = err?.code || "unknown";
-      if (code.includes("popup-blocked")) return "ポップアップがブロックされました";
-      if (code.includes("unauthorized-domain")) return "承認済みドメイン設定が必要です";
-      if (code.includes("operation-not-supported")) return "この環境ではポップアップログインが使えません";
-      return code;
+    function openNameStep(mode) {
+      pendingAuthMode = mode;
+      el.authDisplayNameInput.value = state.user.displayName || "釣り人";
+      el.authChoiceStep.classList.remove("active");
+      el.authNameStep.classList.add("active");
+    }
+
+    function showAuthChoiceStep() {
+      pendingAuthMode = null;
+      el.authNameStep.classList.remove("active");
+      el.authChoiceStep.classList.add("active");
+    }
+
+    async function confirmAuthStart() {
+      pendingDisplayName = safeName(el.authDisplayNameInput.value) || "釣り人";
+      if (pendingAuthMode === "google") await googleLogin();
+      else if (pendingAuthMode === "guest") await startGuest();
     }
 
     async function googleLogin() {
       if (!firebaseReady || !auth) {
         toast("Firebaseが使えないため、いまはローカルのみで始めます。");
-        startGuest();
+        await startGuestLocalOnly();
         return;
       }
       const provider = new GoogleAuthProvider();
@@ -2394,15 +2517,55 @@
       }
     }
 
-    function startGuest() {
+    async function startGuest() {
+      if (!firebaseReady || !auth) {
+        await startGuestLocalOnly();
+        return;
+      }
+      try {
+        await signInAnonymously(auth);
+      } catch (err) {
+        console.error(err);
+        toast("ローカル開始に失敗しました。");
+        await startGuestLocalOnly();
+      }
+    }
+
+    async function startGuestLocalOnly() {
       state.user.isGuest = true;
-      state.user.displayName = safeName(el.authDisplayNameInput.value || state.user.displayName || "つりびと");
+      state.user.displayName = pendingDisplayName || "釣り人";
       el.authOverlay.style.display = "none";
       authResolved = true;
-      toast("ローカル保存で開始しました。");
-      saveAll();
+      pendingAuthMode = null;
+      pendingDisplayName = null;
+      toast("ローカル開始しました。");
+      await saveAll();
       switchScreen("room");
       renderAll();
+    }
+
+    async function performLogout() {
+      await leaveRoom(true);
+      try {
+        if (auth && auth.currentUser) await signOut(auth);
+      } catch (err) {
+        console.error(err);
+      }
+      state = deepMerge(cloneDefault(), { user: { playerToken: makeId() } });
+      currentRoomData = null;
+      if (roomUnsub) { roomUnsub(); roomUnsub = null; }
+      showAuthChoiceStep();
+      el.authOverlay.style.display = "grid";
+      saveLocalState(state);
+      renderAll();
+    }
+
+    function humanAuthError(err) {
+      const code = err?.code || "unknown";
+      if (code.includes("popup-blocked")) return "ポップアップがブロックされました";
+      if (code.includes("unauthorized-domain")) return "承認済みドメイン設定が必要です";
+      if (code.includes("operation-not-supported")) return "この環境ではポップアップログインが使えません";
+      return code;
     }
 
     function applyNavState() {
@@ -2415,9 +2578,12 @@
     function updateNavIndicator() {
       const active = el.navBtns.find((btn) => btn.classList.contains("active")) || el.navBtns[0];
       if (!active) return;
-      const top = active.offsetTop + active.offsetHeight / 2 - 34;
-      el.navNotch.style.top = `${top}px`;
-      el.navDot.style.top = `${top + 29}px`;
+      const notchTop = active.offsetTop + active.offsetHeight / 2 - 34;
+      el.navNotch.style.top = `${notchTop}px`;
+      const bubbleSize = active.offsetHeight;
+      el.navActiveBubble.style.top = `${active.offsetTop}px`;
+      el.navActiveBubble.style.width = `${bubbleSize}px`;
+      el.navActiveBubble.style.height = `${bubbleSize}px`;
     }
 
     function switchScreen(name) {
@@ -2455,13 +2621,18 @@
       if (!BAIT_TYPES.some((bait) => bait.id === state.selectedBaitId)) state.selectedBaitId = BAIT_TYPES[0].id;
       el.roomCourseSelect.value = String(state.selectedCourseMin || 25);
       el.roomBaitSelect.value = state.selectedBaitId;
-      el.displayNameInput.value = state.user.displayName || "";
-      el.settingsDisplayName.textContent = state.user.displayName || "-";
+      el.displayNameInput.value = state.user.displayName || "釣り人";
+      el.settingsDisplayName.textContent = state.user.displayName || "釣り人";
       el.toggleWave.checked = !!state.settings.waveSound;
       el.toggleCatch.checked = !!state.settings.catchSound;
       el.toggleNotify.checked = !!state.settings.browserNotify;
       el.toggleShake.checked = !!state.settings.shakeOnFinish;
       renderStoreSectionState();
+      renderNavPartsVisibility();
+    }
+
+    function renderNavPartsVisibility() {
+      el.navLevelList.classList.toggle("open", !!state.ui.partsPanelOpen);
     }
 
     function renderStoreSectionState() {
@@ -2489,19 +2660,14 @@
       if (hour >= 19 || hour < 5) timeOfDay = "night";
       const seed = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}-${Math.floor(hour / 3)}`;
       const weather = ["sunny", "cloudy", "rainy"][seededNumber(seed) % 3];
-      if (force || !state.fishing.inProgress) {
-        state.currentConditions = { timeOfDay, weather };
-      }
+      if (force || !state.fishing.inProgress) state.currentConditions = { timeOfDay, weather };
       applyWeatherTimeVisual(state.fishing.inProgress ? state.fishing.timeOfDay : state.currentConditions.timeOfDay, state.fishing.inProgress ? state.fishing.weather : state.currentConditions.weather);
     }
 
     function applyWeatherTimeVisual(timeOfDay, weather) {
-      const timeEmoji = { day: "🌤️", evening: "🌆", night: "🌙" }[timeOfDay] || "🌤️";
-      const weatherEmoji = { sunny: "☀️", cloudy: "☁️", rainy: "🌧️" }[weather] || "☀️";
-      const timeText = { day: "昼", evening: "夕方", night: "夜" }[timeOfDay] || "昼";
-      const weatherText = { sunny: "晴れ", cloudy: "曇り", rainy: "雨" }[weather] || "晴れ";
-      el.weatherTimeIcon.childNodes[0].nodeValue = `${timeEmoji}／${weatherEmoji}`;
-      el.weatherTimeBalloon.textContent = `${timeText}／${weatherText}`;
+      el.weatherHalf.textContent = ({ sunny: "☀️", cloudy: "☁️", rainy: "🌧️" })[weather] || "☀️";
+      el.timeHalf.textContent = ({ day: "🌤️", evening: "🌆", night: "🌙" })[timeOfDay] || "🌙";
+      el.weatherTimeBalloon.textContent = `${translateTime(timeOfDay)}／${translateWeather(weather)}`;
     }
 
     function getTotalBaitCount() {
@@ -2526,17 +2692,17 @@
     }
 
     async function joinBestRoom() {
-      if (!db) {
-        toast("Firebase接続が必要です。ローカル開始中は部屋同期できません。");
-        return;
+      if (!db) { toast("Firebase接続が必要です。"); return; }
+      if (!auth?.currentUser && firebaseReady) {
+        try { await signInAnonymously(auth); } catch {}
       }
       try {
+        await resetRoomsIfNeeded();
         const today = todayKey();
         const roomsRef = collection(db, "rooms");
         const snapshot = await getDocs(query(roomsRef, where("resetDate", "==", today)));
         const rooms = snapshot.docs.map((snap) => ({ id: snap.id, ...normalizeRoomDoc(snap.data()) }));
         rooms.sort((a, b) => (b.members.length - a.members.length) || (a.index - b.index));
-
         let joined = false;
         for (const room of rooms) {
           if (room.members.length < ROOM_CAPACITY) {
@@ -2544,17 +2710,12 @@
             if (joined) break;
           }
         }
-
         if (!joined) {
           const nextIndex = rooms.reduce((max, room) => Math.max(max, room.index || 0), 0) + 1;
           const roomId = `room_${today.replace(/-/g, "_")}_${nextIndex}`;
           joined = await tryJoinRoom(roomId, nextIndex, true);
         }
-
-        if (joined) {
-          switchScreen("room");
-          renderAll();
-        }
+        if (joined) { switchScreen("room"); renderAll(); }
       } catch (err) {
         console.error(err);
         toast("部屋参加に失敗しました。");
@@ -2564,24 +2725,22 @@
     async function tryJoinRoom(roomId, index, allowCreate) {
       const roomRef = doc(db, "rooms", roomId);
       const token = state.user.playerToken;
-      const now = Date.now();
       const member = makeCurrentMember();
       try {
         await runTransaction(db, async (tx) => {
           const snap = await tx.get(roomRef);
           let data = snap.exists() ? normalizeRoomDoc(snap.data()) : null;
           if (!snap.exists() && !allowCreate) throw new Error("missing-room");
-          let members = pruneMembers(data?.members || []);
-          members = members.filter((m) => m.token !== token);
+          let members = [...(data?.members || [])].filter((m) => m.token !== token);
           if (members.length >= ROOM_CAPACITY) throw new Error("room-full");
           members.push(member);
           const payload = {
             index,
             resetDate: todayKey(),
             members,
-            recentStamps: pruneStamps(data?.recentStamps || []),
-            updatedAt: now,
-            createdAt: data?.createdAt || now,
+            recentStamps: data?.recentStamps || [],
+            updatedAt: Date.now(),
+            createdAt: data?.createdAt || Date.now(),
           };
           tx.set(roomRef, payload, { merge: true });
         });
@@ -2602,26 +2761,29 @@
       if (!db) return;
       if (roomUnsub) roomUnsub();
       const roomRef = doc(db, "rooms", roomId);
-      roomUnsub = onSnapshot(roomRef, async (snap) => {
+      roomUnsub = onSnapshot(roomRef, (snap) => {
         if (!snap.exists()) {
           currentRoomData = null;
-          if (state.room.roomId === roomId) {
-            state.room.inRoom = false;
-            state.room.roomId = null;
-            if (!state.fishing.inProgress) state.room.status = "idle";
-          }
+          state.room.inRoom = false;
+          state.room.roomId = null;
+          if (!state.fishing.inProgress) state.room.status = "idle";
           renderAll();
           return;
         }
-        currentRoomData = normalizeRoomDoc(snap.data());
+        const data = normalizeRoomDoc(snap.data());
+        if (data.resetDate !== todayKey()) {
+          leaveRoom(true);
+          currentRoomData = null;
+          toast("日付変更で部屋をリセットしました。");
+          renderAll();
+          return;
+        }
+        currentRoomData = data;
         state.room.inRoom = true;
         state.room.roomId = roomId;
-        processStampPlayback(currentRoomData.recentStamps || []);
+        processStampPlayback(data.recentStamps || []);
         renderAll();
-        sweepCurrentRoom().catch(() => {});
-      }, (err) => {
-        console.error(err);
-      });
+      }, (err) => console.error(err));
     }
 
     async function leaveRoom(silent = false) {
@@ -2633,10 +2795,10 @@
           const snap = await tx.get(roomRef);
           if (!snap.exists()) return;
           const data = normalizeRoomDoc(snap.data());
-          const members = pruneMembers(data.members || []).filter((m) => m.token !== state.user.playerToken);
-          const stamps = pruneStamps(data.recentStamps || []);
+          const members = data.members.filter((m) => m.token !== state.user.playerToken);
+          const recentStamps = data.recentStamps || [];
           if (members.length === 0) tx.delete(roomRef);
-          else tx.set(roomRef, { members, recentStamps: stamps, updatedAt: Date.now() }, { merge: true });
+          else tx.set(roomRef, { members, recentStamps, updatedAt: Date.now() }, { merge: true });
         });
       } catch (err) {
         console.error(err);
@@ -2651,15 +2813,6 @@
       renderAll();
     }
 
-    function makeCurrentMember() {
-      return {
-        token: state.user.playerToken,
-        name: state.user.displayName || "つりびと",
-        status: state.room.status || "idle",
-        lastSeenAt: Date.now(),
-      };
-    }
-
     async function syncPresenceToRoom() {
       if (!db || !state.room.inRoom || !state.room.roomId) return;
       const roomRef = doc(db, "rooms", state.room.roomId);
@@ -2668,36 +2821,29 @@
         const snap = await tx.get(roomRef);
         if (!snap.exists()) return;
         const data = normalizeRoomDoc(snap.data());
-        let members = pruneMembers(data.members || []);
-        members = members.filter((m) => m.token !== state.user.playerToken);
-        if (members.length < ROOM_CAPACITY || data.members.some((m) => m.token === state.user.playerToken)) {
-          members.push(member);
-          tx.set(roomRef, { members, recentStamps: pruneStamps(data.recentStamps || []), updatedAt: Date.now() }, { merge: true });
-        }
+        const members = data.members.filter((m) => m.token !== state.user.playerToken);
+        members.push(member);
+        tx.set(roomRef, { members, recentStamps: data.recentStamps || [], updatedAt: Date.now() }, { merge: true });
       });
     }
 
-    async function sweepCurrentRoom() {
-      if (!db || !state.room.roomId || !currentRoomData) return;
-      const members = pruneMembers(currentRoomData.members || []);
-      const recentStamps = pruneStamps(currentRoomData.recentStamps || []);
-      const changedMembers = members.length !== (currentRoomData.members || []).length;
-      const changedStamps = recentStamps.length !== (currentRoomData.recentStamps || []).length;
-      if (!changedMembers && !changedStamps) return;
-      const roomRef = doc(db, "rooms", state.room.roomId);
-      if (members.length === 0) {
-        await deleteDoc(roomRef).catch(() => {});
-        return;
-      }
-      await setDoc(roomRef, { members, recentStamps, updatedAt: Date.now() }, { merge: true }).catch(() => {});
+    function makeCurrentMember() {
+      return {
+        token: state.user.playerToken,
+        name: state.user.displayName || "釣り人",
+        status: state.room.status || "idle",
+      };
     }
 
-    function pruneMembers(list) {
-      const now = Date.now();
-      return [...list]
-        .filter((m) => now - Number(m.lastSeenAt || 0) < ROOM_TTL)
-        .sort((a, b) => Number(a.lastSeenAt || 0) - Number(b.lastSeenAt || 0))
-        .slice(0, ROOM_CAPACITY);
+    function normalizeRoomDoc(data) {
+      return {
+        index: data?.index || 1,
+        resetDate: data?.resetDate || todayKey(),
+        members: Array.isArray(data?.members) ? data.members : [],
+        recentStamps: pruneStamps(data?.recentStamps || []),
+        createdAt: data?.createdAt || Date.now(),
+        updatedAt: data?.updatedAt || Date.now(),
+      };
     }
 
     function pruneStamps(list) {
@@ -2705,27 +2851,10 @@
       return [...list].filter((s) => now - Number(s.at || 0) < STAMP_TTL).slice(-18);
     }
 
-    function normalizeRoomDoc(data) {
-      return {
-        index: data?.index || 1,
-        resetDate: data?.resetDate || todayKey(),
-        members: pruneMembers(data?.members || []),
-        recentStamps: pruneStamps(data?.recentStamps || []),
-        createdAt: data?.createdAt || Date.now(),
-        updatedAt: data?.updatedAt || Date.now(),
-      };
-    }
-
     async function sendStamp(stamp) {
       if (!db || !state.room.inRoom || !state.room.roomId) return;
       const roomRef = doc(db, "rooms", state.room.roomId);
-      const stampObj = {
-        id: makeId(),
-        token: state.user.playerToken,
-        name: state.user.displayName || "つりびと",
-        stamp,
-        at: Date.now(),
-      };
+      const stampObj = { id: makeId(), token: state.user.playerToken, name: state.user.displayName || "釣り人", stamp, at: Date.now() };
       try {
         await runTransaction(db, async (tx) => {
           const snap = await tx.get(roomRef);
@@ -2733,8 +2862,7 @@
           const data = normalizeRoomDoc(snap.data());
           const recentStamps = pruneStamps(data.recentStamps || []);
           recentStamps.push(stampObj);
-          let members = pruneMembers(data.members || []);
-          members = members.map((m) => m.token === state.user.playerToken ? { ...m, lastSeenAt: Date.now() } : m);
+          const members = data.members;
           tx.set(roomRef, { members, recentStamps: pruneStamps(recentStamps), updatedAt: Date.now() }, { merge: true });
         });
       } catch (err) {
@@ -2746,55 +2874,57 @@
       stamps.forEach((stamp) => {
         if (processedStampIds.has(stamp.id)) return;
         processedStampIds.add(stamp.id);
-        if (stamp.token !== state.user.playerToken || true) {
-          playAudioFile("stamp.mp3", "stamp");
-        }
+        playAudioFile("stamp.mp3", "stamp");
       });
     }
 
     function getLatestMemberStamp(token) {
-      const stamps = currentRoomData?.recentStamps || [];
-      return [...stamps].reverse().find((stamp) => stamp.token === token) || null;
+      const now = Date.now();
+      return [...(currentRoomData?.recentStamps || [])].reverse().find((stamp) => stamp.token === token && now - stamp.at < STAMP_TTL) || null;
     }
 
-    function startRoomTicker() {
-      stopRoomTicker();
-      roomTickHandle = setInterval(() => {
-        syncPresenceToRoom().catch(() => {});
-        sweepCurrentRoom().catch(() => {});
-        if (state.fishing.inProgress && !state.fishing.paused && Date.now() >= state.fishing.endAt) finishFishing();
-        renderAll();
-      }, 7000);
+    async function resetRoomsIfNeeded() {
+      if (!db) return;
+      const today = todayKey();
+      const markerRef = doc(db, "system", "roomResetMarker");
+      try {
+        await runTransaction(db, async (tx) => {
+          const markerSnap = await tx.get(markerRef);
+          const currentKey = markerSnap.exists() ? markerSnap.data().dateKey : null;
+          if (currentKey === today) return;
+          tx.set(markerRef, { dateKey: today, updatedAt: Date.now() }, { merge: true });
+        });
+      } catch (err) {
+        console.error(err);
+      }
     }
 
-    function stopRoomTicker() {
-      if (roomTickHandle) clearInterval(roomTickHandle);
-      roomTickHandle = null;
+    function startMidnightWatcher() {
+      stopMidnightWatcher();
+      midnightTickHandle = setInterval(async () => {
+        if (currentRoomData && currentRoomData.resetDate !== todayKey()) {
+          await leaveRoom(true);
+          toast("日付変更で部屋をリセットしました。");
+        }
+      }, 10000);
+    }
+
+    function stopMidnightWatcher() {
+      if (midnightTickHandle) clearInterval(midnightTickHandle);
+      midnightTickHandle = null;
     }
 
     function startFishingFromRoom() {
-      if (!state.room.inRoom || !state.room.roomId) {
-        toast("先に部屋に入ってください。");
-        return;
-      }
-      if (state.fishing.inProgress) {
-        toast("いま釣り中です。");
-        return;
-      }
+      if (!state.room.inRoom || !state.room.roomId) { toast("先に部屋に入ってください。"); return; }
+      if (state.fishing.inProgress) { toast("いま釣り中です。"); return; }
       const baitId = el.roomBaitSelect.value;
-      if ((state.baitCounts[baitId] || 0) <= 0) {
-        toast("その餌が足りません。ストアで購入してください。");
-        return;
-      }
-      if (getTotalBaitCount() <= 0) {
-        toast("餌がありません。ストアで購入してください。");
-        return;
+      if ((state.baitCounts[baitId] || 0) <= 0 || getTotalBaitCount() <= 0) {
+        toast("餌が足りません。ストアで購入してください。"); return;
       }
       state.selectedCourseMin = Number(el.roomCourseSelect.value);
       state.selectedBaitId = baitId;
       state.baitCounts[baitId] = Math.max(0, (state.baitCounts[baitId] || 0) - 1);
       refreshConditions(true);
-
       const now = Date.now();
       state.fishing = {
         inProgress: true,
@@ -2821,8 +2951,7 @@
 
     function toggleFishingPauseResume() {
       if (!state.fishing.inProgress) return;
-      if (state.fishing.paused) resumeFishing();
-      else pauseFishing();
+      if (state.fishing.paused) resumeFishing(); else pauseFishing();
     }
 
     function pauseFishing() {
@@ -2834,8 +2963,7 @@
       syncPresenceToRoom().catch(console.error);
       stopTimerTick();
       toast("タイマーを一時停止しました。");
-      saveAll();
-      renderAll();
+      saveAll(); renderAll();
     }
 
     function resumeFishing() {
@@ -2847,9 +2975,7 @@
       state.room.status = "fishing";
       syncPresenceToRoom().catch(console.error);
       toast("タイマーを再開しました。");
-      saveAll();
-      renderAll();
-      startTimerTick();
+      saveAll(); renderAll(); startTimerTick();
     }
 
     function cancelFishingNoReward() {
@@ -2863,34 +2989,23 @@
       syncPresenceToRoom().catch(console.error);
       setFocusMode(false);
       toast("報酬なしで終了しました。");
-      saveAll();
-      switchScreen("room");
-      renderAll();
+      saveAll(); switchScreen("room"); renderAll();
     }
 
     function restoreFishingTimer() {
       if (!state.fishing.inProgress) return;
-      if (state.fishing.paused) {
-        renderFishingStatus();
-      } else if (Date.now() >= state.fishing.endAt) {
-        finishFishing();
-      } else {
-        startTimerTick();
-      }
+      if (state.fishing.paused) renderFishingStatus();
+      else if (Date.now() >= state.fishing.endAt) finishFishing();
+      else startTimerTick();
     }
 
     function startTimerTick() {
       stopTimerTick();
       timerTickHandle = setInterval(() => {
         if (!state.fishing.inProgress || state.fishing.paused) {
-          stopTimerTick();
-          renderFishingStatus();
-          return;
+          stopTimerTick(); renderFishingStatus(); return;
         }
-        if (Date.now() >= state.fishing.endAt) {
-          finishFishing();
-          return;
-        }
+        if (Date.now() >= state.fishing.endAt) { finishFishing(); return; }
         renderFishingStatus();
       }, 300);
     }
@@ -2903,19 +3018,13 @@
     function setFocusMode(on) {
       state.ui.focusMode = !!on;
       el.focusOverlay.classList.toggle("show", !!on);
-      if (on) clearFishingUiTimeout();
-      else handleFishingActivity();
+      if (on) clearFishingUiTimeout(); else handleFishingActivity();
       renderFishingStatus();
     }
 
     function finishFishing() {
       stopTimerTick();
       if (!state.fishing.inProgress) return;
-      if (state.settings.shakeOnFinish) {
-        el.app.classList.remove("shaker");
-        void el.app.offsetWidth;
-        el.app.classList.add("shaker");
-      }
       if (state.settings.catchSound) playAudioFile("time.mp3", "time");
       maybeNotify();
       const result = rollCatch(state.fishing);
@@ -2927,23 +3036,19 @@
       state.room.status = "idle";
       syncPresenceToRoom().catch(console.error);
       setFocusMode(false);
-      saveAll();
-      renderAll();
-      openResultModal(result);
+      saveAll(); renderAll(); openResultModal(result);
     }
 
     function rollCatch(source) {
       const bait = BAIT_TYPES.find((b) => b.id === source.baitId) || BAIT_TYPES[0];
       const upgrade = getUpgradeBuffs();
       const courseBonus = getCourseBonus(source.durationMin);
-
       const power = bait.power + upgrade.power + courseBonus.power;
       const rareBonus = bait.rareBonus + upgrade.rare + courseBonus.rare;
       const sizeBonus = bait.sizeBonus + upgrade.size + courseBonus.size;
       const junkReduction = upgrade.junkReduction + courseBonus.junkReduction;
       const hugeBonus = upgrade.hugeChance + courseBonus.hugeChance;
       const valueBonus = bait.valueBonus + upgrade.valueBonus;
-
       const all = [...FISHES, ...JUNK_ITEMS];
       const weighted = all.map((entity) => {
         const timeScore = entity.timeBonus?.[source.timeOfDay] ?? 0;
@@ -2953,22 +3058,17 @@
         const score = Math.max(0.1, 7 + strengthGap + timeScore + weatherScore + rareBonus * 0.28 + junkPenalty - (entity.rarity || 0) * 0.24);
         return { entity, weight: score };
       });
-
       const picked = weightedPick(weighted);
       const isFish = picked.kind === "fish";
       let sizeCm = null;
       let isHuge = false;
       let price = picked.basePrice;
       const rarityScore = picked.rarity || 0;
-
       if (isFish) {
         const gaussian = approxGaussian();
         sizeCm = Math.max(1, picked.avgSize + gaussian * (picked.spread / 2) + sizeBonus * 0.55 + source.durationMin * 0.09);
         const hugeRoll = Math.random() < Math.max(0, picked.hugeChance + hugeBonus);
-        if (hugeRoll) {
-          sizeCm *= picked.hugeFactor;
-          isHuge = true;
-        }
+        if (hugeRoll) { sizeCm *= picked.hugeFactor; isHuge = true; }
         sizeCm = Math.round(sizeCm * 10) / 10;
         const sizeRatio = sizeCm / picked.avgSize;
         const sizeFactor = sizeRatio < 1 ? 0.95 + sizeRatio * 0.12 : 1 + Math.pow(sizeRatio - 1, 1.18) * 1.15;
@@ -2977,51 +3077,21 @@
       } else {
         price = Math.max(1, Math.round(picked.basePrice * (1 + rareBonus * 0.02 + source.durationMin * 0.01 + valueBonus)));
       }
-
       const entry = {
-        uid: makeId(),
-        baseId: picked.id,
-        kind: picked.kind,
-        name: picked.name,
-        icon: picked.icon,
-        sellPrice: price,
-        sizeCm,
-        rarity: rarityScore,
-        rarityStars: picked.rarityStars || 1,
-        caughtAt: Date.now(),
+        uid: makeId(), baseId: picked.id, kind: picked.kind, name: picked.name, icon: picked.icon,
+        sellPrice: price, sizeCm, rarity: rarityScore, rarityStars: picked.rarityStars || 1, caughtAt: Date.now()
       };
-
       const ency = state.encyclopedia[picked.id] || { count: 0, maxSize: 0, recordHolder: null };
       const isRecord = isFish && sizeCm > (ency.maxSize || 0);
       const isRare = rarityScore >= 8 || isHuge || price >= 220;
-
-      return {
-        entry,
-        isRecord,
-        isRare,
-        isHuge,
-        bonusText: courseBonus.label,
-        source,
-        picked,
-      };
+      return { entry, isRecord, isRare, isHuge, bonusText: courseBonus.label, source, picked };
     }
 
     function getCourseBonus(durationMin) {
       const bonus = { rare: 0, size: 0, power: 0, hugeChance: 0, junkReduction: 0, label: "" };
-      if (durationMin >= 25) {
-        bonus.rare += 3;
-        bonus.label = "集中ボーナス";
-      }
-      if (durationMin >= 40) {
-        bonus.size += 4;
-        bonus.power += 1;
-      }
-      if (durationMin >= 60) {
-        bonus.size += 6;
-        bonus.power += 2;
-        bonus.hugeChance += 0.005;
-        bonus.label = "深海ボーナス";
-      }
+      if (durationMin >= 25) { bonus.rare += 3; bonus.label = "集中ボーナス"; }
+      if (durationMin >= 40) { bonus.size += 4; bonus.power += 1; }
+      if (durationMin >= 60) { bonus.size += 6; bonus.power += 2; bonus.hugeChance += 0.005; bonus.label = "深海ボーナス"; }
       return bonus;
     }
 
@@ -3034,9 +3104,7 @@
       el.resultLines.innerHTML = result.entry.kind === "fish"
         ? `大きさ：${formatSize(result.entry.sizeCm)} cm（平均 ${formatSize(result.picked.avgSize)} cm / ${delta.html}）<br />条件：${translateTime(result.source.timeOfDay)} / ${translateWeather(result.source.weather)}`
         : `価値：${result.entry.sellPrice} zz<br />条件：${translateTime(result.source.timeOfDay)} / ${translateWeather(result.source.weather)}`;
-      el.sizeMeterLabel.textContent = result.entry.kind === "fish"
-        ? `平均 ${formatSize(result.picked.avgSize)} cm を基準に表示`
-        : `サイズのない釣果です`;
+      el.sizeMeterLabel.textContent = result.entry.kind === "fish" ? `平均 ${formatSize(result.picked.avgSize)} cm を基準に表示` : `サイズのない釣果です`;
       renderResultSizeMeter(result);
       el.resultFlags.innerHTML = "";
       if (result.isRare) el.resultFlags.appendChild(flagEl("レア", "rare"));
@@ -3050,17 +3118,12 @@
 
     function renderResultSizeMeter(result) {
       el.sizeOverflowBadge.textContent = "";
-      if (result.entry.kind !== "fish") {
-        el.sizeFill.style.left = "0%";
-        el.sizeFill.style.width = "0%";
-        return;
-      }
+      if (result.entry.kind !== "fish") { el.sizeFill.style.width = "0%"; return; }
       const avg = result.picked.avgSize;
       const size = result.entry.sizeCm;
       const ratio = size / avg;
       const normalized = ratio <= 1 ? Math.max(0, ratio * 0.5) : 0.5 + (ratio - 1) * 0.5;
       const capped = Math.min(normalized, 1);
-      el.sizeFill.style.left = "0%";
       el.sizeFill.style.width = `${capped * 100}%`;
       if (normalized > 1) {
         el.sizeOverflowBadge.style.left = "calc(100% + 8px)";
@@ -3075,9 +3138,7 @@
       return div;
     }
 
-    function closeResultModal() {
-      el.resultModal.classList.remove("show");
-    }
+    function closeResultModal() { el.resultModal.classList.remove("show"); }
 
     function keepPendingResult() {
       if (!pendingResult) return;
@@ -3112,29 +3173,19 @@
       rec.count += 1;
       if (entry.kind === "fish" && entry.sizeCm > (rec.maxSize || 0)) {
         rec.maxSize = entry.sizeCm;
-        rec.recordHolder = state.user.displayName || "つりびと";
+        rec.recordHolder = state.user.displayName || "釣り人";
       }
-      if (isRecord && firebaseSyncOk && state.user.uid) {
-        saveGlobalRecord(baseId, entry.sizeCm, state.user.displayName || "つりびと").catch(console.error);
-      }
+      if (isRecord && firebaseSyncOk && !state.user.isGuest && state.user.uid) saveGlobalRecord(baseId, entry.sizeCm, state.user.displayName || "釣り人").catch(console.error);
     }
 
-    function addInventoryEntry(entry) {
-      state.inventory.unshift(entry);
-    }
+    function addInventoryEntry(entry) { state.inventory.unshift(entry); }
 
     function addWorkSession(durationMin, result) {
       const day = ensureDailyStat(todayKey());
       day.workMin += durationMin;
       day.sessions += 1;
       if (result?.entry?.kind === "fish") {
-        day.catches.push({
-          baseId: result.entry.baseId,
-          name: result.entry.name,
-          icon: result.entry.icon,
-          sizeCm: result.entry.sizeCm,
-          avgSize: result.picked.avgSize,
-        });
+        day.catches.push({ baseId: result.entry.baseId, name: result.entry.name, icon: result.entry.icon, sizeCm: result.entry.sizeCm, avgSize: result.picked.avgSize });
         day.catches = day.catches.slice(-50);
       }
     }
@@ -3145,9 +3196,7 @@
     }
 
     function ensureDailyStat(key) {
-      if (!state.history.daily[key]) {
-        state.history.daily[key] = { workMin: 0, earnings: 0, sessions: 0, catches: [] };
-      }
+      if (!state.history.daily[key]) state.history.daily[key] = { workMin: 0, earnings: 0, sessions: 0, catches: [] };
       return state.history.daily[key];
     }
 
@@ -3166,8 +3215,6 @@
       updateSyncStatus();
       updateRoomVideo();
       updateFishingVideo();
-      updateWeatherBalloon();
-      updateTimerDisplayToFocus();
       el.fishMoneyMini.textContent = `${state.money} zz`;
       el.baitTotalMini.textContent = `餌 ${getTotalBaitCount()}`;
       el.storeMoneyChip.textContent = `${state.money} zz`;
@@ -3190,8 +3237,11 @@
       el.roomActiveUI.style.display = inRoom ? "block" : "none";
       if (!inRoom) return;
       const members = currentRoomData.members || [];
-      el.roomCountChip.textContent = `${members.length} / ${ROOM_CAPACITY}`;
+      const countText = `${members.length} / ${ROOM_CAPACITY}`;
+      el.roomCountChip.textContent = countText;
+      el.fishingRoomCountChip.textContent = countText;
       renderParticipants(el.roomParticipants, members);
+      renderParticipants(el.fishingParticipants, members);
       el.roomFishingBtn.disabled = !!state.fishing.inProgress;
     }
 
@@ -3210,8 +3260,6 @@
         `;
         container.appendChild(item);
       });
-      el.fishingParticipants.innerHTML = container === el.roomParticipants ? container.innerHTML : el.fishingParticipants.innerHTML;
-      if (container === el.roomParticipants) el.fishingParticipants.innerHTML = container.innerHTML;
     }
 
     function renderStampFeeds() {
@@ -3232,19 +3280,13 @@
 
     function renderFishingStatus() {
       refreshConditions();
-      if (currentRoomData) {
-        const countText = `${currentRoomData.members.length} / ${ROOM_CAPACITY}`;
-        el.fishingRoomCountChip.textContent = countText;
-        renderParticipants(el.fishingParticipants, currentRoomData.members || []);
-      }
-
       if (state.fishing.inProgress) {
         const totalMs = state.fishing.durationMin * 60 * 1000;
         const remain = state.fishing.paused ? (state.fishing.remainingMs || 0) : Math.max(0, state.fishing.endAt - Date.now());
-        const progress = Math.min(1, Math.max(0, 1 - (remain / totalMs)));
+        const progress = Math.min(1, Math.max(0, 1 - remain / totalMs));
         el.timerText.textContent = formatRemain(remain);
         el.timerPlanMini.textContent = `${state.fishing.durationMin}min`;
-        el.timerStatus.textContent = state.fishing.paused ? "一時停止中" : `${state.fishing.durationMin}分コース進行中`;
+        el.timerStatus.textContent = state.fishing.paused ? "停止中" : "";
         el.fishingTimer.classList.add("active");
         updateTimerControlIcon(state.fishing.paused, false);
         setGaugeProgress(progress);
@@ -3253,17 +3295,13 @@
       } else {
         el.timerText.textContent = "--:--";
         el.timerPlanMini.textContent = `${state.selectedCourseMin}min`;
-        el.timerStatus.textContent = "まだ釣りを始めていません";
+        el.timerStatus.textContent = "";
         el.fishingTimer.classList.remove("active");
         updateTimerControlIcon(false, true);
         setGaugeProgress(0);
         el.toggleFishingBtn.disabled = true;
         el.cancelFishingBtn.disabled = true;
       }
-      updateTimerDisplayToFocus();
-    }
-
-    function updateTimerDisplayToFocus() {
       el.focusTime.textContent = el.timerText.textContent;
       el.focusPlan.textContent = el.timerPlanMini.textContent;
     }
@@ -3278,12 +3316,6 @@
       const offset = TIMER_C * (1 - progress);
       el.timerProgress.style.strokeDashoffset = String(offset);
       el.timerGlow.style.strokeDashoffset = String(offset);
-    }
-
-    function updateWeatherBalloon() {
-      const currentTime = state.fishing.inProgress ? state.fishing.timeOfDay : state.currentConditions.timeOfDay;
-      const currentWeather = state.fishing.inProgress ? state.fishing.weather : state.currentConditions.weather;
-      el.weatherTimeBalloon.textContent = `${translateTime(currentTime)}／${translateWeather(currentWeather)}`;
     }
 
     function renderStore() {
@@ -3324,17 +3356,12 @@
         const card = document.createElement("div");
         card.className = "upgrade-card";
         card.innerHTML = `
-          <div class="upgrade-head">
-            <div>
-              <div class="upgrade-name">${part.name}</div>
-              <div class="upgrade-desc">${part.desc}</div>
-            </div>
-            <div style="text-align:right;">
-              <div class="upgrade-price">${cost}</div>
-              <button class="upgrade-btn">強化</button>
-            </div>
+          <div class="upgrade-title-line">
+            <div class="upgrade-name">${part.name}</div>
+            <div class="upgrade-price">${cost}</div>
           </div>
-          <div class="upgrade-desc">Lv.${level} → Lv.${level + 1}</div>
+          <div class="upgrade-desc">${part.desc}<br />Lv.${level} → Lv.${level + 1}</div>
+          <button class="upgrade-btn">強化</button>
         `;
         const btn = card.querySelector(".upgrade-btn");
         btn.disabled = state.money < cost;
@@ -3381,29 +3408,25 @@
       el.weekBars.innerHTML = "";
       week.days.forEach((day) => {
         const minutes = day.stat.workMin;
-        const pct = Math.min(100, (minutes / 1440) * 100);
-        const dayCol = document.createElement("div");
-        dayCol.className = "day-col";
+        const percent = Math.max(0, Math.min(100, (minutes / 1440) * 100));
         const isToday = day.key === todayKey();
-        dayCol.innerHTML = `
-          <div class="day-bar-wrap">
-            <div class="day-bar ${isToday ? "today" : ""}" style="height:${Math.max(22, pct)}%;">${minutes}分</div>
-          </div>
+        const col = document.createElement("div");
+        col.className = "day-col";
+        const barHtml = minutes > 0 ? `<div class="day-bar ${isToday ? "today" : ""}" style="height:${percent}%;">${minutes}分</div>` : "";
+        col.innerHTML = `
+          <div class="day-bar-wrap">${barHtml}</div>
           <div class="day-labels">
             <div>${day.label}</div>
             <div>${day.dateLabel}</div>
             <div class="today-dot ${isToday ? "active" : ""}"></div>
           </div>
         `;
-        el.weekBars.appendChild(dayCol);
+        el.weekBars.appendChild(col);
       });
-
       const today = ensureDailyStat(todayKey());
       const bestFish = [...(today.catches || [])].sort((a, b) => (b.sizeCm - b.avgSize) - (a.sizeCm - a.avgSize))[0];
       el.todayBestFish.textContent = bestFish ? `${bestFish.icon} ${bestFish.name}` : "まだなし";
-      el.todayBestFishSub.textContent = bestFish
-        ? `平均 ${formatSize(bestFish.avgSize)} cm に対して ${formatSize(bestFish.sizeCm)} cm でした。`
-        : "今日釣った魚の中から、平均サイズとの差が最も大きい魚を表示します。";
+      el.todayBestFishSub.textContent = bestFish ? `平均 ${formatSize(bestFish.avgSize)} cm に対して ${formatSize(bestFish.sizeCm)} cm でした。` : "今日釣った魚の中から、平均サイズとの差が最も大きい魚を表示します。";
       el.todayEarnedValue.textContent = `${today.earnings} zz`;
       el.todaySessionCount.textContent = `${today.sessions}回`;
     }
@@ -3436,7 +3459,6 @@
         chip.textContent = text;
         el.encyStats.appendChild(chip);
       });
-
       el.encyList.innerHTML = "";
       FISHES.forEach((fish) => {
         const own = state.encyclopedia[fish.id];
@@ -3457,17 +3479,18 @@
     }
 
     function renderSettings() {
-      el.settingsDisplayName.textContent = state.user.displayName || "-";
-      el.displayNameInput.value = state.user.displayName || "";
+      el.settingsDisplayName.textContent = state.user.displayName || "釣り人";
+      el.displayNameInput.value = state.user.displayName || "釣り人";
       el.lastSavedAt.textContent = state.lastSavedAt ? formatDateTime(state.lastSavedAt) : "-";
     }
 
     function renderUserPill() {
-      el.userPill.innerHTML = `${escapeHtml(state.user.displayName || "つりびと")}<br />${state.user.isGuest ? "ローカル保存" : "Google同期"}`;
+      el.userPill.innerHTML = `${escapeHtml(state.user.displayName || "釣り人")}<br />${state.user.isGuest ? "ローカル" : "Google"}`;
     }
 
     function updateSyncStatus() {
       if (firebaseReady && firebaseSyncOk && !state.user.isGuest) el.syncStatus.textContent = "Firebase同期中";
+      else if (firebaseReady && auth?.currentUser?.isAnonymous) el.syncStatus.textContent = "匿名Firebase接続中";
       else if (firebaseReady) el.syncStatus.textContent = "ローカル保存のみ";
       else el.syncStatus.textContent = "Firebase未接続";
     }
@@ -3477,31 +3500,23 @@
         if (state.shop.freeBaitClaimDate === todayKey()) return;
         state.shop.freeBaitClaimDate = todayKey();
       } else {
-        if (state.money < bait.price) {
-          toast("所持金が足りません。");
-          return;
-        }
+        if (state.money < bait.price) { toast("所持金が足りません。"); return; }
         state.money -= bait.price;
       }
       state.baitCounts[bait.id] = (state.baitCounts[bait.id] || 0) + bait.packQty;
       toast(`${bait.name} を ${bait.packQty}個受け取りました。`);
-      saveAll();
-      renderAll();
+      saveAll(); renderAll();
     }
 
     function buyUpgrade(partId) {
       const level = state.upgrades[partId] || 0;
       const cost = getUpgradeCost(partId, level);
-      if (state.money < cost) {
-        toast("所持金が足りません。");
-        return;
-      }
+      if (state.money < cost) { toast("所持金が足りません。"); return; }
       state.money -= cost;
       state.upgrades[partId] = level + 1;
       const part = UPGRADE_PARTS.find((p) => p.id === partId);
       toast(`${part.name} を Lv.${state.upgrades[partId]} に強化しました。`);
-      saveAll();
-      renderAll();
+      saveAll(); renderAll();
     }
 
     function sellInventoryEntry(uid, sellPrice) {
@@ -3511,15 +3526,13 @@
       state.money += sellPrice;
       addEarnings(sellPrice);
       toast(`${entry.name} を ${sellPrice} zz で売却しました。`);
-      saveAll();
-      renderAll();
+      saveAll(); renderAll();
     }
 
     function updateSetting(key, value) {
       state.settings[key] = value;
       toast("設定を更新しました。");
-      saveAll();
-      renderAll();
+      saveAll(); renderAll();
     }
 
     async function loadRemoteUser(uid) {
@@ -3537,15 +3550,8 @@
     async function saveRemoteUser() {
       if (!db || !firebaseSyncOk || !state.user.uid || state.user.isGuest) return;
       try {
-        await setDoc(doc(db, "users", state.user.uid), {
-          uid: state.user.uid,
-          displayName: state.user.displayName || "つりびと",
-          updatedAt: serverTimestamp(),
-          state,
-        }, { merge: true });
-      } catch (err) {
-        console.error(err);
-      }
+        await setDoc(doc(db, "users", state.user.uid), { uid: state.user.uid, displayName: state.user.displayName || "釣り人", updatedAt: serverTimestamp(), state }, { merge: true });
+      } catch (err) { console.error(err); }
     }
 
     async function saveGlobalRecord(baseId, sizeCm, recordHolder) {
@@ -3553,23 +3559,13 @@
       const current = globalRecords[baseId];
       if (current && current.sizeCm >= sizeCm) return;
       try {
-        await setDoc(doc(db, "globalFishRecords", baseId), {
-          fishId: baseId,
-          sizeCm,
-          recordHolder,
-          updatedAt: serverTimestamp(),
-        }, { merge: true });
+        await setDoc(doc(db, "globalFishRecords", baseId), { fishId: baseId, sizeCm, recordHolder, updatedAt: serverTimestamp() }, { merge: true });
         globalRecords[baseId] = { sizeCm, recordHolder };
-      } catch (err) {
-        console.error(err);
-      }
+      } catch (err) { console.error(err); }
     }
 
     async function loadGlobalRecords() {
-      if (!db) {
-        globalRecords = {};
-        return;
-      }
+      if (!db) { globalRecords = {}; return; }
       try {
         const map = {};
         await Promise.all(FISHES.slice(0, ENCY_TOP_LIMIT).map(async (fish) => {
@@ -3580,18 +3576,13 @@
           }
         }));
         globalRecords = map;
-      } catch (err) {
-        console.error(err);
-        globalRecords = {};
-      }
+      } catch (err) { console.error(err); globalRecords = {}; }
     }
 
     async function saveAll(force = false) {
       state.lastSavedAt = Date.now();
       saveLocalState(state);
-      if (force || (!state.user.isGuest && firebaseSyncOk)) {
-        await saveRemoteUser();
-      }
+      if (force || (!state.user.isGuest && firebaseSyncOk)) await saveRemoteUser();
       renderSettings();
     }
 
@@ -3612,14 +3603,10 @@
         const text = await file.text();
         mergeLoadedState(JSON.parse(text));
         toast("セーブデータを読み込みました。");
-        saveAll(true);
-        renderAll();
+        saveAll(true); renderAll();
       } catch (err) {
-        console.error(err);
-        toast("読み込みに失敗しました。");
-      } finally {
-        e.target.value = "";
-      }
+        console.error(err); toast("読み込みに失敗しました。");
+      } finally { e.target.value = ""; }
     }
 
     function mergeLoadedState(next) {
@@ -3641,17 +3628,11 @@
     }
 
     function saveLocalState(payload) {
-      try {
-        localStorage.setItem(LS_KEY, JSON.stringify(payload));
-      } catch (err) {
-        console.error(err);
-      }
+      try { localStorage.setItem(LS_KEY, JSON.stringify(payload)); } catch (err) { console.error(err); }
     }
 
     function maybeNotify() {
-      if (state.settings.browserNotify && typeof Notification !== "undefined" && Notification.permission === "granted") {
-        new Notification("釣りが終わりました", { body: "回収して釣果を見てみましょう。" });
-      }
+      if (state.settings.browserNotify && typeof Notification !== "undefined" && Notification.permission === "granted") new Notification("釣りが終わりました", { body: "回収して釣果を見てみましょう。" });
     }
 
     function playAudioFile(file, fallbackType) {
@@ -3733,108 +3714,31 @@
         else if (pv && typeof pv === "object") {
           if (!base[key] || typeof base[key] !== "object" || Array.isArray(base[key])) base[key] = {};
           base[key] = deepMerge(base[key], pv);
-        } else {
-          base[key] = pv;
-        }
+        } else base[key] = pv;
       });
       return base;
     }
 
-    function safeName(v) {
-      return String(v || "").trim().slice(0, 16).replace(/[<>]/g, "");
-    }
-
-    function todayKey() {
-      const d = new Date();
-      return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
-    }
-
-    function formatRemain(ms) {
-      const total = Math.ceil(ms / 1000);
-      const m = Math.floor(total / 60);
-      const s = total % 60;
-      return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
-    }
-
-    function formatSize(n) {
-      return Number(n || 0).toFixed(1);
-    }
-
-    function formatDateTime(ts) {
-      const d = new Date(ts);
-      return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, "0")}/${String(d.getDate()).padStart(2, "0")} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
-    }
-
-    function translateWeather(w) {
-      return ({ sunny: "晴れ", cloudy: "曇り", rainy: "雨" })[w] || w;
-    }
-
-    function translateTime(t) {
-      return ({ day: "昼", evening: "夕方", night: "夜" })[t] || t;
-    }
-
-    function weightedPick(list) {
-      const total = list.reduce((sum, v) => sum + v.weight, 0);
-      let r = Math.random() * total;
-      for (const item of list) {
-        r -= item.weight;
-        if (r <= 0) return item.entity;
-      }
-      return list[list.length - 1].entity;
-    }
-
-    function approxGaussian() {
-      let u = 0;
-      let v = 0;
-      while (u === 0) u = Math.random();
-      while (v === 0) v = Math.random();
-      return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
-    }
-
-    function seededNumber(seed) {
-      let h = 2166136261;
-      for (let i = 0; i < seed.length; i++) {
-        h ^= seed.charCodeAt(i);
-        h = Math.imul(h, 16777619);
-      }
-      return Math.abs(h >>> 0);
-    }
-
-    function makeId() {
-      return `${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
-    }
-
-    function escapeHtml(str) {
-      return String(str ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/\"/g, "&quot;")
-        .replace(/'/g, "&#39;");
-    }
-
-    function sizeDeltaText(size, avg) {
-      const delta = Math.round((size - avg) * 10) / 10;
-      const sign = delta > 0 ? "+" : "";
-      const klass = delta >= 0 ? "plus-size" : "minus-size";
-      return {
-        raw: `${sign}${delta.toFixed(1)} cm`,
-        html: `<span class="${klass}">${sign}${delta.toFixed(1)} cm</span>`,
-      };
-    }
+    function safeName(v) { return String(v || "").trim().slice(0, 16).replace(/[<>]/g, ""); }
+    function todayKey() { const d = new Date(); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; }
+    function formatRemain(ms) { const total = Math.ceil(ms / 1000); const m = Math.floor(total / 60); const s = total % 60; return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`; }
+    function formatSize(n) { return Number(n || 0).toFixed(1); }
+    function formatDateTime(ts) { const d = new Date(ts); return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, "0")}/${String(d.getDate()).padStart(2, "0")} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`; }
+    function translateWeather(w) { return ({ sunny: "晴れ", cloudy: "曇り", rainy: "雨" })[w] || w; }
+    function translateTime(t) { return ({ day: "昼", evening: "夕方", night: "夜" })[t] || t; }
+    function weightedPick(list) { const total = list.reduce((sum, v) => sum + v.weight, 0); let r = Math.random() * total; for (const item of list) { r -= item.weight; if (r <= 0) return item.entity; } return list[list.length - 1].entity; }
+    function approxGaussian() { let u = 0, v = 0; while (u === 0) u = Math.random(); while (v === 0) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+    function seededNumber(seed) { let h = 2166136261; for (let i = 0; i < seed.length; i++) { h ^= seed.charCodeAt(i); h = Math.imul(h, 16777619); } return Math.abs(h >>> 0); }
+    function makeId() { return `${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`; }
+    function escapeHtml(str) { return String(str ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#39;"); }
+    function sizeDeltaText(size, avg) { const delta = Math.round((size - avg) * 10) / 10; const sign = delta > 0 ? "+" : ""; const klass = delta >= 0 ? "plus-size" : "minus-size"; return { raw: `${sign}${delta.toFixed(1)} cm`, html: `<span class="${klass}">${sign}${delta.toFixed(1)} cm</span>` }; }
 
     window.zzFishingDebug = {
       state: () => state,
       room: () => currentRoomData,
-      quickFinish: () => {
-        if (state.fishing.inProgress) {
-          state.fishing.endAt = Date.now();
-          finishFishing();
-        }
-      },
+      quickFinish: () => { if (state.fishing.inProgress) { state.fishing.endAt = Date.now(); finishFishing(); } },
       signOut: async () => auth ? signOut(auth) : null,
     };
   </script>
 </body>
 </html>
-
