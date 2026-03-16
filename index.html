@@ -350,7 +350,7 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: clamp(88px, 10vw, 180px);
+      font-size: clamp(60px, 6vw, 120px);
       line-height: 0.95;
       font-weight: 900;
       letter-spacing: 0.04em;
@@ -596,7 +596,7 @@
     .participant-name {
       font-size: 12px;
       font-weight: 700;
-      margin-bottom: 4px;
+      margin-bottom: 0;
       word-break: break-word;
       overflow-wrap: anywhere;
     }
@@ -670,6 +670,14 @@
       box-shadow: var(--shadow);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
+      position: relative;
+      flex: 0 0 auto;
+    }
+    .stamp-btn {
+      display: grid;
+      place-items: center;
+    }
+    .mail-mini-trigger {
       display: none;
       place-items: center;
       position: relative;
@@ -1949,9 +1957,9 @@
     }
     .size-delta-label {
       position: absolute;
-      right: -6px;
+      left: calc(100% + 6px);
       top: 50%;
-      transform: translate(100%, -50%);
+      transform: translateY(-50%);
       font-size: 14px;
       font-weight: 800;
       white-space: nowrap;
@@ -2423,7 +2431,7 @@
         </div>
 
         <div class="stamp-rail fade-ui">
-            <button id="roomMessageBtn" class="message-trigger">💬<span id="roomMessageDot" class="message-dot"></span></button>
+            <button id="roomMessageBtn" class="message-trigger" aria-label="メッセージ">📨<span id="roomMessageDot" class="message-dot"></span></button>
             <div class="stamp-buttons">
               <button class="stamp-btn" data-stamp="❤">❤</button>
               <button class="stamp-btn" data-stamp="✨">✨</button>
@@ -2526,7 +2534,7 @@
         </div>
 
         <div class="stamp-rail fade-ui">
-          <button id="fishingMessageBtn" class="message-trigger">💬<span id="fishingMessageDot" class="message-dot"></span></button>
+          <button id="fishingMessageBtn" class="message-trigger" aria-label="メッセージ">📨<span id="fishingMessageDot" class="message-dot"></span></button>
           <div class="stamp-buttons">
             <button class="stamp-btn" data-stamp="❤">❤</button>
             <button class="stamp-btn" data-stamp="✨">✨</button>
@@ -4160,10 +4168,15 @@
       state.currentTimeText = text;
       el.roomCurrentTime.textContent = text;
       el.fishingCurrentTime.textContent = text;
-      const pending = getUtilityPendingCount();
-      const helpText = pending > 0 ? String(pending) : "タップで便利機能";
-      el.roomClockHelp.textContent = helpText;
-      el.fishingClockHelp.textContent = helpText;
+      el.fishingTimeMini.textContent = text;
+      const todo = getTodayTodoCount();
+      const reminder = getTodayReminderCount();
+      const hint = reminder > 0 || todo > 0 ? `通知${reminder} / やること${todo}` : "知らせなし";
+      el.fishingUtilityHint.textContent = hint;
+      el.roomClockHelp.textContent = "";
+      el.fishingClockHelp.textContent = "";
+      el.roomClockHelp.style.display = "none";
+      el.fishingClockHelp.style.display = "none";
     }
 
     function cancelFishingOnReload() {
@@ -4585,9 +4598,11 @@
     }
 
     function renderGoalTexts() {
-      const text = state.miniGoal?.trim() ? `今日のミニ目標 ${state.miniGoal}` : "今日のミニ目標＿＿＿＿＿＿＿＿＿";
-      el.roomGoalChip.textContent = text;
-      el.fishingGoalChip.textContent = text;
+      const hasGoal = !!state.miniGoal?.trim();
+      const valueText = hasGoal ? escapeHtml(state.miniGoal) : "＿＿＿＿＿＿＿＿＿";
+      const html = `<span class="goal-title-text">今日のミニ目標 </span><span class="goal-value-text">${valueText}</span>`;
+      el.roomGoalChip.innerHTML = html;
+      el.fishingGoalChip.innerHTML = html;
     }
 
     function editMiniGoal() {
@@ -4878,18 +4893,8 @@
       }
     }
 
-    function openNextGiftMessage() {
-      const gifts = getGiftMessages();
-      if (!gifts.length) return;
-      const unread = gifts.find((item) => !item.opened) || gifts[gifts.length - 1];
-      if (unread && !unread.opened) markMailOpened(unread.id);
-      openMailboxModal(unread?.id || null);
-    }
-
-    function getGiftMessages() {
-      return [...(state.mailbox.items || [])].filter((item) => item.type === "gift").sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
-    }
-
+    
+    
     function renderAll() {
       applyStateToSelectors();
       applyNavState();
@@ -5009,6 +5014,205 @@
       el.focusTime.textContent = el.timerText.textContent;
       el.focusPlan.textContent = el.timerPlanMini.textContent;
       el.fishingTimer.classList.toggle("mega", !!state.ui.timerMega);
+      el.fishingCurrentTime.style.display = "none";
+      el.fishingTimeMini.style.display = state.fishing.inProgress ? "inline-flex" : "none";
+    }
+
+    function toggleFishingPauseResume() {
+      if (!state.fishing.inProgress) return;
+      if (state.fishing.paused) resumeFishing();
+      else pauseFishing();
+    }
+
+    function updateTimerControlIcon(paused, noActive) {
+      el.toggleFishingIcon.innerHTML = (noActive || paused)
+        ? '<path d="M8 6v12l10-6z"/>'
+        : '<path d="M8 6v12"/><path d="M16 6v12"/>';
+    }
+
+    function setGaugeRemaining(remainingRatio) {
+      const clamped = Math.min(1, Math.max(0, remainingRatio));
+      const offset = -TIMER_C * (1 - clamped);
+      el.timerProgress.style.strokeDashoffset = String(offset);
+      el.timerGlow.style.strokeDashoffset = String(offset);
+    }
+
+    function getCourseBonus(durationMin) {
+      const bonus = { rare: 0, size: 0, power: 0, hugeChance: 0, junkReduction: 0, label: "" };
+      if (durationMin >= 25) {
+        bonus.rare += 3;
+        bonus.label = "集中ボーナス";
+      }
+      if (durationMin >= 40) {
+        bonus.size += 4;
+        bonus.power += 1;
+      }
+      if (durationMin >= 60) {
+        bonus.size += 6;
+        bonus.power += 2;
+        bonus.hugeChance += 0.005;
+        bonus.label = "深海ボーナス";
+      }
+      return bonus;
+    }
+
+    function rollCatch(source) {
+      const bait = BAIT_TYPES.find((b) => b.id === source.baitId) || BAIT_TYPES[0];
+      const upgrade = getUpgradeBuffs();
+      const courseBonus = getCourseBonus(source.durationMin);
+      const power = bait.power + upgrade.power + courseBonus.power;
+      const rareBonus = bait.rareBonus + upgrade.rare + courseBonus.rare;
+      const sizeBonus = bait.sizeBonus + upgrade.size + courseBonus.size;
+      const junkReduction = upgrade.junkReduction + courseBonus.junkReduction;
+      const hugeBonus = upgrade.hugeChance + courseBonus.hugeChance;
+      const valueBonus = bait.valueBonus + upgrade.valueBonus;
+
+      const all = [...FISHES, ...JUNK_ITEMS];
+      const weighted = all.map((entity) => {
+        const timeScore = entity.timeBonus?.[source.timeOfDay] ?? 0;
+        const weatherScore = entity.weatherBonus?.[source.weather] ?? 0;
+        const strengthGap = power - (entity.strength || 0);
+        const junkPenalty = entity.kind === "item" ? (-0.9 + junkReduction) : 0;
+        const score = Math.max(0.1, 7 + strengthGap + timeScore + weatherScore + rareBonus * 0.28 + junkPenalty - (entity.rarity || 0) * 0.24);
+        return { entity, weight: score };
+      });
+
+      const picked = weightedPick(weighted);
+      const isFish = picked.kind === "fish";
+      let sizeCm = null;
+      let isHuge = false;
+      let price = picked.basePrice;
+      const rarityScore = picked.rarity || 0;
+
+      if (isFish) {
+        const gaussian = approxGaussian();
+        sizeCm = Math.max(1, picked.avgSize + gaussian * (picked.spread / 2) + sizeBonus * 0.55 + source.durationMin * 0.09);
+        const hugeRoll = Math.random() < Math.max(0, picked.hugeChance + hugeBonus);
+        if (hugeRoll) {
+          sizeCm *= picked.hugeFactor;
+          isHuge = true;
+        }
+        sizeCm = Math.round(sizeCm * 10) / 10;
+        const sizeRatio = sizeCm / picked.avgSize;
+        const sizeFactor = sizeRatio < 1 ? 0.95 + sizeRatio * 0.12 : 1 + Math.pow(sizeRatio - 1, 1.18) * 1.15;
+        const rareFactor = 1 + rarityScore * 0.12 + rareBonus * 0.03;
+        price = Math.max(1, Math.round(picked.basePrice * sizeFactor * rareFactor * (1 + valueBonus)));
+      } else {
+        price = Math.max(1, Math.round(picked.basePrice * (1 + rareBonus * 0.02 + source.durationMin * 0.01 + valueBonus)));
+      }
+
+      const entry = {
+        uid: makeId(),
+        baseId: picked.id,
+        kind: picked.kind,
+        name: picked.name,
+        icon: picked.icon,
+        sellPrice: price,
+        sizeCm,
+        rarity: rarityScore,
+        rarityStars: picked.rarityStars || 1,
+        caughtAt: Date.now(),
+      };
+
+      const ency = state.encyclopedia[picked.id] || { count: 0, maxSize: 0, recordHolder: null };
+      const isRecord = isFish && sizeCm > (ency.maxSize || 0);
+      const isRare = rarityScore >= 8 || isHuge || price >= 220;
+      return { entry, isRecord, isRare, isHuge, bonusText: courseBonus.label, source, picked };
+    }
+
+    function getGreatnessText(size, avg) {
+      if (!avg || size <= avg) return "ふつう";
+      const plus = ((size - avg) / avg) * 100;
+      if (plus >= 40) return "上位3%";
+      if (plus >= 30) return "上位10%";
+      if (plus >= 20) return "上位20%";
+      if (plus >= 10) return "上位40%";
+      return "ちょっと大きめ";
+    }
+
+    function flagEl(text, klass) {
+      const div = document.createElement("div");
+      div.className = `flag ${klass}`.trim();
+      div.textContent = text;
+      return div;
+    }
+
+    function renderResultSizeMeter(result) {
+      el.sizeOverflowBadge.textContent = "";
+      el.sizeDeltaLabel.textContent = "";
+      el.sizeDeltaLabel.className = "size-delta-label";
+      el.sizeAvgBelow.textContent = "";
+      if (result.entry.kind !== "fish") {
+        el.sizeFill.style.width = "0%";
+        el.sizeDeltaLabel.style.left = "calc(100% + 6px)";
+        return;
+      }
+      const avg = result.picked.avgSize;
+      const size = result.entry.sizeCm;
+      const ratio = size / avg;
+      const normalized = ratio <= 1 ? Math.max(0, ratio * 0.5) : 0.5 + (ratio - 1) * 0.5;
+      const capped = Math.min(normalized, 1);
+      el.sizeFill.style.width = `${capped * 100}%`;
+      const delta = sizeDeltaText(size, avg);
+      el.sizeDeltaLabel.innerHTML = delta.html;
+      el.sizeDeltaLabel.style.left = `calc(${capped * 100}% + 6px)`;
+      el.sizeAvgBelow.textContent = `${formatSize(avg)}cm`;
+      if (normalized > 1) {
+        el.sizeOverflowBadge.style.left = "calc(100% + 8px)";
+        el.sizeOverflowBadge.textContent = "★";
+      }
+    }
+
+    function openResultModal(result) {
+      const delta = result.entry.kind === "fish" ? sizeDeltaText(result.entry.sizeCm, result.picked.avgSize) : null;
+      el.resultArtEmoji.textContent = result.entry.icon;
+      el.resultStarsInArt.textContent = "☆".repeat(result.picked.rarityStars || result.entry.rarityStars || 1);
+      el.resultArtAvg.textContent = "";
+      el.resultPrice.textContent = `${result.entry.sellPrice} zz`;
+      if (result.entry.kind === "fish") {
+        el.resultTitle.innerHTML = `${escapeHtml(result.entry.name)} <span class="result-size-colored ${result.entry.sizeCm >= result.picked.avgSize ? "plus" : "minus"}">(${formatSize(result.entry.sizeCm)}cm)</span>`;
+      } else {
+        el.resultTitle.textContent = result.entry.name;
+      }
+      const greatness = result.entry.kind === "fish" ? getGreatnessText(result.entry.sizeCm, result.picked.avgSize) : "漂流物";
+      el.resultLines.innerHTML = result.entry.kind === "fish"
+        ? `すごさ：${greatness}<br />条件：${translateTime(result.source.timeOfDay)} / ${translateWeather(result.source.weather)}`
+        : `すごさ：漂流物<br />条件：${translateTime(result.source.timeOfDay)} / ${translateWeather(result.source.weather)}`;
+      el.sizeMeterLabel.textContent = result.entry.kind === "fish" ? "平均を基準にしたサイズバー" : "サイズのない釣果です";
+      renderResultSizeMeter(result);
+      el.resultFlags.innerHTML = "";
+      if (result.isRare) el.resultFlags.appendChild(flagEl("レア", "rare"));
+      if (result.isRecord) el.resultFlags.appendChild(flagEl("最大更新", "record"));
+      if (result.isHuge) el.resultFlags.appendChild(flagEl("超巨大", "huge"));
+      if (result.bonusText) el.resultFlags.appendChild(flagEl(result.bonusText, ""));
+      el.resultCard.classList.toggle("rare", !!result.isRare);
+      el.resultCard.classList.toggle("record", !!result.isRecord);
+      el.resultModal.classList.add("show");
+    }
+
+    function closeResultModal() {
+      el.resultModal.classList.remove("show");
+    }
+
+    async function keepPendingResult() {
+      if (!pendingResult) return;
+      addInventoryEntry(pendingResult.entry);
+      applyCatchRecord(pendingResult);
+      toast(`${pendingResult.entry.name} を所持品に入れました。`);
+      pendingResult = null;
+      closeResultModal();
+      await recoverRoomAfterResult();
+    }
+
+    async function sellPendingResult() {
+      if (!pendingResult) return;
+      state.money += pendingResult.entry.sellPrice;
+      addEarnings(pendingResult.entry.sellPrice);
+      applyCatchRecord(pendingResult);
+      toast(`${pendingResult.entry.name} を ${pendingResult.entry.sellPrice} zz で売却しました。`);
+      pendingResult = null;
+      closeResultModal();
+      await recoverRoomAfterResult();
     }
 
     function renderStore() {
@@ -5134,21 +5338,20 @@
         col.className = "day-col";
         const workInside = workPercent >= 16;
         const restInside = restPercent >= 14;
+        const workText = minutesToHourText(workMin);
+        const restText = minutesToHourText(restMin);
+        const workMid = Math.max(0, workPercent * 0.5);
+        const restMid = Math.max(0, workPercent + restPercent * 0.5);
         col.innerHTML = `
           <div class="day-bar-wrap">
             <div class="day-stack">
-              ${workMin > 0 ? `<div class="day-segment work" style="height:${workPercent}%">${workInside ? minutesToHourText(workMin) : ``}</div>` : ``}
-              ${restMin > 0 ? `<div class="day-segment rest" style="height:${restPercent}%">${restInside ? minutesToHourText(restMin) : ``}</div>` : ``}
+              ${restMin > 0 ? `<div class="day-segment rest" style="height:${restPercent}%">${restInside ? restText : ``}</div>` : ``}
+              ${workMin > 0 ? `<div class="day-segment work" style="height:${workPercent}%">${workInside ? workText : ``}</div>` : ``}
             </div>
-            ${workMin > 0 && !workInside ? `<div class="day-seg-note" style="bottom:${Math.max(0, workPercent)}%" data-full="${escapeHtml(minutesToHourText(workMin))}">${minutesToHourText(workMin)}</div>` : ``}
+            ${workMin > 0 ? `<div class="day-seg-note work-note" style="bottom:${workMid}%">作業 ${workText}</div>` : ``}
+            ${restMin > 0 ? `<div class="day-seg-note rest-note" style="bottom:${restMid}%">休憩 ${restText}</div>` : ``}
           </div>
         `;
-        const note = col.querySelector(".day-seg-note");
-        if (note) {
-          const label = note.dataset.full;
-          note.addEventListener("mouseenter", () => { note.textContent = label; });
-          note.addEventListener("mouseleave", () => { note.textContent = label; });
-        }
         el.weekBars.appendChild(col);
         const label = document.createElement("div");
         label.className = "day-label-item";
@@ -5360,7 +5563,7 @@
 
     function openGiftModal(member) {
       selectedGiftTarget = member;
-      el.giftModalTitle.textContent = `${member.name} に送る`;
+      el.giftModalTitle.textContent = `${member.name} にメッセージ / プレゼント`;
       renderGiftModalCards();
       el.giftShellInput.value = "";
       el.giftModal.classList.add("show");
@@ -5750,9 +5953,9 @@
       return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, "0")}/${String(d.getDate()).padStart(2, "0")} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
     }
     function minutesToHourText(min) {
-      const hours = Math.floor(min / 60);
-      const minutes = min % 60;
-      if (hours <= 0) return `${minutes}分`;
+      const safeMin = Math.max(0, Number(min || 0));
+      const hours = Math.floor(safeMin / 60);
+      const minutes = safeMin % 60;
       return `${hours}時間${minutes}分`;
     }
     function translateWeather(w) { return ({ sunny: "晴れ", cloudy: "曇り", rainy: "雨" })[w] || w; }
