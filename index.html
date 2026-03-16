@@ -393,7 +393,7 @@
       border: 1px solid rgba(255,255,255,0.12);
       box-shadow: var(--shadow);
       font-size: 14px;
-      color: rgba(255,255,255,0.9);
+      color: var(--accent-2);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       cursor: pointer;
@@ -2377,7 +2377,7 @@
           </div>
 
           <div class="stamp-rail fade-ui">
-            <button id="roomMessageBtn" class="message-trigger" aria-label="メッセージ">🗨<span id="roomMessageDot" class="message-dot"></span></button>
+            <button id="roomMessageBtn" class="message-trigger" aria-label="メッセージ">📨<span id="roomMessageDot" class="message-dot"></span></button>
             <div class="stamp-buttons">
               <button class="stamp-btn" data-stamp="❤">❤</button>
               <button class="stamp-btn" data-stamp="✨">✨</button>
@@ -2479,7 +2479,7 @@
         </div>
 
         <div class="stamp-rail fade-ui">
-          <button id="fishingMessageBtn" class="message-trigger" aria-label="メッセージ">🗨<span id="fishingMessageDot" class="message-dot"></span></button>
+          <button id="fishingMessageBtn" class="message-trigger" aria-label="メッセージ">📨<span id="fishingMessageDot" class="message-dot"></span></button>
           <div class="stamp-buttons">
             <button class="stamp-btn" data-stamp="❤">❤</button>
             <button class="stamp-btn" data-stamp="✨">✨</button>
@@ -4828,18 +4828,8 @@
       }
     }
 
-    function openNextGiftMessage() {
-      const gifts = getGiftMessages();
-      if (!gifts.length) return;
-      const unread = gifts.find((item) => !item.opened) || gifts[gifts.length - 1];
-      if (unread && !unread.opened) markMailOpened(unread.id);
-      openMailboxModal(unread?.id || null);
-    }
-
-    function getGiftMessages() {
-      return [...(state.mailbox.items || [])].filter((item) => item.type === "gift").sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
-    }
-
+    
+    
     function renderAll() {
       applyStateToSelectors();
       applyNavState();
@@ -5108,7 +5098,7 @@
       const delta = result.entry.kind === "fish" ? sizeDeltaText(result.entry.sizeCm, result.picked.avgSize) : null;
       el.resultArtEmoji.textContent = result.entry.icon;
       el.resultStarsInArt.textContent = "☆".repeat(result.picked.rarityStars || result.entry.rarityStars || 1);
-      el.resultArtAvg.textContent = result.entry.kind === "fish" ? `平均 ${formatSize(result.picked.avgSize)} cm` : "平均なし";
+      el.resultArtAvg.textContent = "";
       el.resultPrice.textContent = `${result.entry.sellPrice} zz`;
       if (result.entry.kind === "fish") {
         el.resultTitle.innerHTML = `${escapeHtml(result.entry.name)} <span class="result-size-colored ${result.entry.sizeCm >= result.picked.avgSize ? "plus" : "minus"}">(${formatSize(result.entry.sizeCm)}cm ${delta.raw})</span>`;
@@ -5508,7 +5498,7 @@
 
     function openGiftModal(member) {
       selectedGiftTarget = member;
-      el.giftModalTitle.textContent = `${member.name} に送る`;
+      el.giftModalTitle.textContent = `${member.name} にメッセージ / プレゼント`;
       renderGiftModalCards();
       el.giftShellInput.value = "";
       el.giftModal.classList.add("show");
@@ -5898,9 +5888,9 @@
       return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, "0")}/${String(d.getDate()).padStart(2, "0")} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
     }
     function minutesToHourText(min) {
-      const hours = Math.floor(min / 60);
-      const minutes = min % 60;
-      if (hours <= 0) return `${minutes}分`;
+      const safeMin = Math.max(0, Number(min || 0));
+      const hours = Math.floor(safeMin / 60);
+      const minutes = safeMin % 60;
       return `${hours}時間${minutes}分`;
     }
     function translateWeather(w) { return ({ sunny: "晴れ", cloudy: "曇り", rainy: "雨" })[w] || w; }
