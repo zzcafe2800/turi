@@ -2350,6 +2350,106 @@
       .toast { min-width: 0; max-width: min(88vw, 320px); }
       .user-pill { display: none; }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+/* =========================
+   1) 便利機能の右に退出ボタン
+   2) ボタン重なり防止
+   ========================= */
+
+.room-controls{
+  width: min(340px, 44vw);
+}
+
+.room-action-row{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  width: 100%;
+  align-items: stretch;
+}
+
+#utilityBtn{
+  grid-column: 1;
+}
+
+#leaveRoomBtn{
+  grid-column: 2;
+}
+
+#roomFishingBtn{
+  grid-column: 1 / -1;
+}
+
+.action-btn{
+  width: 100%;
+  min-width: 0;
+  padding-inline: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 760px){
+  .room-controls{
+    width: min(280px, 76vw);
+  }
+
+  .room-action-row{
+    gap: 8px;
+  }
+}
+
+@media (max-width: 520px){
+  .room-controls{
+    width: min(260px, 78vw);
+  }
+}
+
+
+/* =========================
+   リザルトの休憩吹き出しを上へ
+   作業吹き出しとかぶらないように
+   ========================= */
+
+.day-col,
+.day-bar-wrap,
+.chart-area{
+  overflow: visible;
+}
+
+.day-bar-note{
+  left: calc(50% + 18px);
+}
+
+.day-bar-note.work-note{
+  z-index: 5;
+  transform: translateY(38%);
+}
+
+.day-bar-note.rest-note{
+  z-index: 6;
+  left: calc(50% + 18px);
+  transform: translateY(-235%);
+}
+
+
+
+
+
+
+
+
+    
   </style>
 </head>
 <body>
