@@ -794,11 +794,12 @@
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
     }
-    .room-action-row {
-      display: grid;
-      grid-template-columns: 1fr 1.55fr;
-      gap: 10px;
-    }
+  .room-action-row {
+  display: grid;
+  grid-template-columns: minmax(72px, 1fr) minmax(72px, 1fr) minmax(120px, 1.55fr);
+  gap: 10px;
+  align-items: stretch;
+}
     .action-btn {
       min-height: calc(54px * var(--uiScale));
       border: 0;
