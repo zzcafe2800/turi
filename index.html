@@ -2360,105 +2360,104 @@
 
 
 
-/* =========================================
-   追加修正：必ず style の一番最後に置く
-   ========================================= */
 
-/* 退出ボタンを便利機能の右に並べて、重なりにくくする */
-.room-controls{
-  width: min(340px, 52vw) !important;
-}
 
-.room-action-row{
-  display: flex !important;
-  flex-wrap: nowrap !important;
-  align-items: stretch !important;
-  gap: 10px !important;
-  width: 100% !important;
-}
+/* =========================
+   1) 便利機能の右に退出を並べる
+   ========================= */
 
-#utilityBtn,
-#leaveRoomBtn,
-#roomFishingBtn{
-  grid-column: auto !important;
-  width: auto !important;
-  min-width: 0 !important;
+/* 今の最新版では room-action-row 側を上書きするのが安全 */
+.room-action-row {
+  display: grid;
+  grid-template-columns: max-content max-content minmax(0, 1fr);
+  gap: 10px;
+  align-items: end;
+  width: 100%;
 }
 
 #utilityBtn,
-#leaveRoomBtn{
-  flex: 0 0 clamp(84px, 8vw, 110px) !important;
+#leaveRoomBtn {
+  width: max-content;
+  min-width: 96px;
+  justify-self: start;
 }
 
-#roomFishingBtn{
-  flex: 1 1 auto !important;
+#roomFishingBtn {
+  width: 100%;
+  min-width: 0;
+  justify-self: stretch;
 }
 
-/* リザルトの休憩吹き出しを上に、作業吹き出しを下に */
-#weekBars .day-bar-note{
-  left: calc(50% + 34px) !important;
-  white-space: nowrap !important;
+/* 念のため、古い配置クラスが残っている場合の保険 */
+.bottom-left-stack {
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 10px;
+  max-width: none;
 }
 
-#weekBars .day-bar-note.rest-note{
-  z-index: 9 !important;
-  transform: translateY(-240%) !important;
+.fishing-side-tools {
+  position: static;
+  left: auto;
+  bottom: auto;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
 }
 
-#weekBars .day-bar-note.work-note{
-  z-index: 8 !important;
-  transform: translateY(28%) !important;
+
+/* =========================
+   2) 作業 / 休憩の吹き出し重なり防止
+   休憩を上、作業を下にする
+   ========================= */
+
+.day-col,
+.day-bar-wrap,
+.bar-stack {
+  overflow: visible;
 }
 
-/* 少し狭いPCやタブレット */
-@media (max-width: 1100px){
-  .room-controls{
-    width: min(300px, 58vw) !important;
+.day-bar-note {
+  left: calc(50% + 22px);
+  white-space: nowrap;
+}
+
+/* 作業時間の吹き出しは少し下 */
+.day-bar-note.work-note {
+  z-index: 5;
+  transform: translateY(44%);
+}
+
+/* 休憩時間の吹き出しはもっと上 */
+.day-bar-note.rest-note {
+  z-index: 6;
+  transform: translateY(-230%);
+  background: rgba(70, 54, 10, 0.9);
+  border-color: rgba(255, 216, 109, 0.24);
+  color: #fff5d3;
+}
+
+/* スマホでは吹き出しを少しだけ近づける */
+@media (max-width: 760px) {
+  .day-bar-note {
+    left: calc(50% + 16px);
+    font-size: 10px;
+    padding: 3px 7px;
   }
 
-  #utilityBtn,
-  #leaveRoomBtn{
-    flex-basis: 82px !important;
+  .day-bar-note.work-note {
+    transform: translateY(40%);
+  }
+
+  .day-bar-note.rest-note {
+    transform: translateY(-205%);
   }
 }
 
-/* スマホ */
-@media (max-width: 760px){
-  .room-controls{
-    width: min(280px, 74vw) !important;
-  }
 
-  .room-action-row{
-    gap: 8px !important;
-  }
 
-  #utilityBtn,
-  #leaveRoomBtn{
-    flex-basis: 74px !important;
-    font-size: 13px !important;
-    padding: 0 10px !important;
-  }
 
-  #roomFishingBtn{
-    font-size: 17px !important;
-  }
-
-  #weekBars .day-bar-note.rest-note{
-    transform: translateY(-255%) !important;
-  }
-}
-
-@media (max-width: 520px){
-  .room-controls{
-    width: min(260px, 78vw) !important;
-  }
-
-  #utilityBtn,
-  #leaveRoomBtn{
-    flex-basis: 70px !important;
-    font-size: 12px !important;
-  }
-}
+    
 
 
 
