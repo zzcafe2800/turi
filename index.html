@@ -393,7 +393,7 @@
       border: 1px solid rgba(255,255,255,0.12);
       box-shadow: var(--shadow);
       font-size: 14px;
-      color: rgba(255,255,255,0.9);
+      color: var(--text);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       cursor: pointer;
@@ -402,6 +402,8 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+    .goal-title-text { color: rgba(255,255,255,0.96); }
+    .goal-value-text { color: var(--accent-2); }
     .goal-inline-row {
       display: flex;
       align-items: center;
@@ -2017,6 +2019,45 @@
       z-index: 2;
       transition: background 0.16s ease;
     }
+    .day-seg-note.work-note {
+      background: rgba(13,40,23,0.88);
+      color: #88f6a4;
+      border-color: rgba(136,246,164,0.24);
+    }
+    .day-seg-note.rest-note {
+      background: rgba(72,55,8,0.9);
+      color: #ffe68b;
+      border-color: rgba(255,230,139,0.24);
+    }
+    .fishing-side-tools {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      z-index: 8;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .utility-open-btn {
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(8,18,29,0.52);
+      color: var(--text);
+      font-weight: 800;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .utility-open-hint {
+      margin-left: 10px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.8);
+      text-shadow: 0 4px 12px rgba(0,0,0,0.32);
+      min-height: 14px;
+    }
     .result-flags {
       display: flex;
       flex-wrap: wrap;
@@ -2286,7 +2327,7 @@
       .bait-card .bait-desc,
       .item-card .item-desc,
       .upgrade-card .upgrade-desc { opacity: 1 !important; filter: blur(0) !important; }
-      .current-time-chip { font-size: clamp(38px, 10vw, 66px); min-height: 0; padding: 0; }
+      .current-time-chip { font-size: clamp(18px, 4.8vw, 30px); min-height: 0; padding: 0; }
       .money-inline { font-size: 12px; }
       .mail-mini-trigger { width: 38px; height: 38px; font-size: 18px; }
     }
@@ -2376,7 +2417,12 @@
             <div id="roomParticipants" class="participants-strip"></div>
           </div>
 
-          <div class="stamp-rail fade-ui">
+          <div class="fishing-side-tools fade-ui">
+          <div id="fishingUtilityHint" class="utility-open-hint"></div>
+          <button id="fishingUtilityBtn" class="utility-open-btn">便利機能</button>
+        </div>
+
+        <div class="stamp-rail fade-ui">
             <button id="roomMessageBtn" class="message-trigger">💬<span id="roomMessageDot" class="message-dot"></span></button>
             <div class="stamp-buttons">
               <button class="stamp-btn" data-stamp="❤">❤</button>
@@ -2465,6 +2511,7 @@
 
         <div class="top-right-stack fade-ui">
           <div class="stats-row">
+            <div id="fishingTimeMini" class="stat-pill">00:00</div>
             <div id="baitTotalMini" class="stat-pill cyan">餌 0</div>
             <div id="weatherTimeCircle" class="weather-time-circle">
               <div id="weatherHalf" class="weather-half">☀️</div>
@@ -3039,6 +3086,9 @@
       roomCurrentTime: document.getElementById("roomCurrentTime"),
       roomClockHelp: document.getElementById("roomClockHelp"),
       fishingCurrentTime: document.getElementById("fishingCurrentTime"),
+      fishingTimeMini: document.getElementById("fishingTimeMini"),
+      fishingUtilityBtn: document.getElementById("fishingUtilityBtn"),
+      fishingUtilityHint: document.getElementById("fishingUtilityHint"),
       fishingClockHelp: document.getElementById("fishingClockHelp"),
       roomGoalChip: document.getElementById("roomGoalChip"),
       fishingGoalChip: document.getElementById("fishingGoalChip"),
@@ -3378,8 +3428,7 @@
       el.setMiniGoalBtnLobby.addEventListener("click", editMiniGoal);
       el.roomGoalChip.addEventListener("click", editMiniGoal);
       el.fishingGoalChip.addEventListener("click", editMiniGoal);
-      el.roomCurrentTime.addEventListener("click", toggleUtilityModal);
-      el.fishingCurrentTime.addEventListener("click", toggleUtilityModal);
+      el.fishingUtilityBtn.addEventListener("click", toggleUtilityModal);
 
       el.leaveRoomBtnLeft.addEventListener("click", () => leaveRoom(false).catch(console.error));
       el.roomFishingBtn.addEventListener("click", startFishingFromRoom);
@@ -3765,6 +3814,7 @@
       renderStoreSectionState();
       renderNavPartsVisibility();
       renderGoalTexts();
+      el.fishingCurrentTime.style.display = "none";
       renderLoopModeState();
     }
 
