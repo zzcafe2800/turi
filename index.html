@@ -3794,12 +3794,8 @@
       }
     }
 
-    function renderStoreSectionState() {
-      setSectionState(el.baitSectionToggle, el.baitSectionBody, state.ui.storeSections.bait);
-      setSectionState(el.upgradeSectionToggle, el.upgradeSectionBody, state.ui.storeSections.upgrade);
-      setSectionState(el.itemsSectionToggle, el.itemsSectionBody, state.ui.storeSections.items);
-      setSectionState(el.sellSectionToggle, el.sellSectionBody, state.ui.storeSections.sell);
-    }
+  
+  
 
     function setSectionState(toggleEl, bodyEl, open) {
       toggleEl.classList.toggle("closed", !open);
