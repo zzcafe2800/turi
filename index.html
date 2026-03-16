@@ -2377,7 +2377,7 @@
           </div>
 
           <div class="stamp-rail fade-ui">
-            <button id="roomMessageBtn" class="message-trigger">💬<span id="roomMessageDot" class="message-dot"></span></button>
+            <button id="roomMessageBtn" class="message-trigger" aria-label="メッセージ">🗨<span id="roomMessageDot" class="message-dot"></span></button>
             <div class="stamp-buttons">
               <button class="stamp-btn" data-stamp="❤">❤</button>
               <button class="stamp-btn" data-stamp="✨">✨</button>
@@ -2479,7 +2479,7 @@
         </div>
 
         <div class="stamp-rail fade-ui">
-          <button id="fishingMessageBtn" class="message-trigger">💬<span id="fishingMessageDot" class="message-dot"></span></button>
+          <button id="fishingMessageBtn" class="message-trigger" aria-label="メッセージ">🗨<span id="fishingMessageDot" class="message-dot"></span></button>
           <div class="stamp-buttons">
             <button class="stamp-btn" data-stamp="❤">❤</button>
             <button class="stamp-btn" data-stamp="✨">✨</button>
@@ -3794,14 +3794,12 @@
       }
     }
 
-     function renderStoreSectionState() {
+    function renderStoreSectionState() {
       setSectionState(el.baitSectionToggle, el.baitSectionBody, state.ui.storeSections.bait);
       setSectionState(el.upgradeSectionToggle, el.upgradeSectionBody, state.ui.storeSections.upgrade);
       setSectionState(el.itemsSectionToggle, el.itemsSectionBody, state.ui.storeSections.items);
       setSectionState(el.sellSectionToggle, el.sellSectionBody, state.ui.storeSections.sell);
     }
-
-  
 
     function setSectionState(toggleEl, bodyEl, open) {
       toggleEl.classList.toggle("closed", !open);
@@ -5158,6 +5156,13 @@
       await recoverRoomAfterResult();
     }
 
+    function renderStore() {
+      renderStoreSectionState();
+      renderBaitCards();
+      renderGiftStoreCards();
+      renderUpgradeCards();
+      renderSellCards();
+    }
 
     function renderBaitCards() {
       el.baitBuyList.innerHTML = "";
@@ -5274,21 +5279,24 @@
         col.className = "day-col";
         const workInside = workPercent >= 16;
         const restInside = restPercent >= 14;
+        const workText = minutesToHourText(workMin);
+        const restText = minutesToHourText(restMin);
+        const restBottom = Math.max(0, workPercent + restPercent);
         col.innerHTML = `
           <div class="day-bar-wrap">
             <div class="day-stack">
-              ${workMin > 0 ? `<div class="day-segment work" style="height:${workPercent}%">${workInside ? minutesToHourText(workMin) : ``}</div>` : ``}
-              ${restMin > 0 ? `<div class="day-segment rest" style="height:${restPercent}%">${restInside ? minutesToHourText(restMin) : ``}</div>` : ``}
+              ${restMin > 0 ? `<div class="day-segment rest" style="height:${restPercent}%">${restInside ? restText : ``}</div>` : ``}
+              ${workMin > 0 ? `<div class="day-segment work" style="height:${workPercent}%">${workInside ? workText : ``}</div>` : ``}
             </div>
-            ${workMin > 0 && !workInside ? `<div class="day-seg-note" style="bottom:${Math.max(0, workPercent)}%" data-full="${escapeHtml(minutesToHourText(workMin))}">${minutesToHourText(workMin)}</div>` : ``}
+            ${workMin > 0 && !workInside ? `<div class="day-seg-note" style="bottom:${Math.max(0, workPercent)}%" data-full="${escapeHtml(workText)}">${workText}</div>` : ``}
+            ${restMin > 0 && !restInside ? `<div class="day-seg-note" style="bottom:${restBottom}%" data-full="${escapeHtml(restText)}">${restText}</div>` : ``}
           </div>
         `;
-        const note = col.querySelector(".day-seg-note");
-        if (note) {
+        [...col.querySelectorAll(".day-seg-note")].forEach((note) => {
           const label = note.dataset.full;
           note.addEventListener("mouseenter", () => { note.textContent = label; });
           note.addEventListener("mouseleave", () => { note.textContent = label; });
-        }
+        });
         el.weekBars.appendChild(col);
         const label = document.createElement("div");
         label.className = "day-label-item";
