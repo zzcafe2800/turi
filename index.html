@@ -2362,97 +2362,6 @@
 
 
 
-/* =========================
-   1) 便利機能の右に退出を並べる
-   ========================= */
-
-/* 今の最新版では room-action-row 側を上書きするのが安全 */
-.room-action-row {
-  display: grid;
-  grid-template-columns: max-content max-content minmax(0, 1fr);
-  gap: 10px;
-  align-items: end;
-  width: 100%;
-}
-
-#utilityBtn,
-#leaveRoomBtn {
-  width: max-content;
-  min-width: 96px;
-  justify-self: start;
-}
-
-#roomFishingBtn {
-  width: 100%;
-  min-width: 0;
-  justify-self: stretch;
-}
-
-/* 念のため、古い配置クラスが残っている場合の保険 */
-.bottom-left-stack {
-  flex-direction: row;
-  align-items: flex-end;
-  gap: 10px;
-  max-width: none;
-}
-
-.fishing-side-tools {
-  position: static;
-  left: auto;
-  bottom: auto;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-}
-
-
-/* =========================
-   2) 作業 / 休憩の吹き出し重なり防止
-   休憩を上、作業を下にする
-   ========================= */
-
-.day-col,
-.day-bar-wrap,
-.bar-stack {
-  overflow: visible;
-}
-
-.day-bar-note {
-  left: calc(50% + 22px);
-  white-space: nowrap;
-}
-
-/* 作業時間の吹き出しは少し下 */
-.day-bar-note.work-note {
-  z-index: 5;
-  transform: translateY(44%);
-}
-
-/* 休憩時間の吹き出しはもっと上 */
-.day-bar-note.rest-note {
-  z-index: 6;
-  transform: translateY(-230%);
-  background: rgba(70, 54, 10, 0.9);
-  border-color: rgba(255, 216, 109, 0.24);
-  color: #fff5d3;
-}
-
-/* スマホでは吹き出しを少しだけ近づける */
-@media (max-width: 760px) {
-  .day-bar-note {
-    left: calc(50% + 16px);
-    font-size: 10px;
-    padding: 3px 7px;
-  }
-
-  .day-bar-note.work-note {
-    transform: translateY(40%);
-  }
-
-  .day-bar-note.rest-note {
-    transform: translateY(-205%);
-  }
-}
 
 
 
@@ -2460,7 +2369,81 @@
     
 
 
+/* ===== 退出ボタンを左バーの設定アイコンの下へ固定 ===== */
+#leaveRoomBtn {
+  position: fixed !important;
+  left: calc((var(--navExpanded) - 52px) / 2) !important;
+  top: calc(
+    var(--safeTop) + 10px +   /* side-nav top */
+    56px +                    /* side-nav padding-top */
+    (52px * 5) +              /* アイコン5個分 */
+    (12px * 4) +              /* アイコン間のgap 4個分 */
+    8px                       /* 少し余白 */
+  ) !important;
 
+  width: 52px !important;
+  height: 52px !important;
+  min-width: 52px !important;
+  min-height: 52px !important;
+  padding: 0 !important;
+
+  display: grid !important;
+  place-items: center !important;
+
+  border-radius: 18px !important;
+  z-index: 46 !important;
+  font-size: 12px !important;
+  line-height: 1.1 !important;
+  box-shadow: var(--shadow) !important;
+}
+
+/* 部屋画面以外では消す */
+#screen-room:not(.active) #leaveRoomBtn,
+#app.nav-collapsed #leaveRoomBtn,
+#app.nav-hidden #leaveRoomBtn {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* 退出ボタンを下固定にしたので、下の操作列は2つで並べる */
+.room-action-row {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.55fr) !important;
+  gap: 10px !important;
+}
+
+#utilityBtn {
+  grid-column: 1 !important;
+}
+
+#roomFishingBtn {
+  grid-column: 2 !important;
+}
+
+/* スマホ用 */
+@media (max-width: 760px) {
+  #leaveRoomBtn {
+    left: calc((var(--navExpanded) - 46px) / 2) !important;
+    top: calc(
+      var(--safeTop) + 8px +
+      44px +
+      (46px * 5) +
+      (12px * 4) +
+      8px
+    ) !important;
+
+    width: 46px !important;
+    height: 46px !important;
+    min-width: 46px !important;
+    min-height: 46px !important;
+    border-radius: 16px !important;
+    font-size: 11px !important;
+  }
+
+  .room-action-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) !important;
+    gap: 8px !important;
+  }
+}
 
 
 
