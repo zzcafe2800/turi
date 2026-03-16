@@ -326,22 +326,152 @@
       gap: 10px;
       max-width: min(60vw, 420px);
     }
+    .clock-stack {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: auto;
+      z-index: 9;
+    }
+    .clock-wrap {
+      position: relative;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
     .current-time-chip {
-      min-height: 42px;
-      padding: 0 14px;
+      min-height: 0;
+      padding: 0;
+      border-radius: 0;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(56px, 7vw, 110px);
+      line-height: 0.95;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      text-shadow: 0 12px 28px rgba(0,0,0,0.32);
+      user-select: none;
+    }
+    .clock-help-bubble {
+      position: absolute;
+      right: -4px;
+      top: -10px;
+      min-width: 66px;
+      min-height: 22px;
+      padding: 2px 8px;
       border-radius: 999px;
-      background: rgba(8,18,29,0.44);
+      background: rgba(8,18,29,0.72);
+      border: 1px solid rgba(255,255,255,0.14);
+      color: rgba(255,255,255,0.86);
+      font-size: 11px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: var(--shadow);
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .top-center-goal {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 8;
+      max-width: min(64vw, 520px);
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(8,18,29,0.42);
       border: 1px solid rgba(255,255,255,0.12);
       box-shadow: var(--shadow);
+      font-size: 14px;
+      color: rgba(255,255,255,0.9);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      cursor: pointer;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .goal-inline-row {
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
-      font-weight: 800;
-      letter-spacing: 0.06em;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      gap: 10px;
+      flex-wrap: wrap;
     }
+    .goal-inline-btn {
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(8,18,29,0.42);
+      color: var(--text);
+      font-weight: 700;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .room-loop-info {
+      position: absolute;
+      right: 0;
+      bottom: calc(100% + 12px);
+      min-width: 180px;
+      padding: 10px 12px;
+      border-radius: 18px;
+      background: rgba(8,18,29,0.48);
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow: var(--shadow);
+      font-size: 12px;
+      line-height: 1.6;
+      color: rgba(255,255,255,0.88);
+      display: none;
+    }
+    .room-loop-info.show { display: block; }
+    .message-trigger {
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(8,18,29,0.52);
+      color: var(--text);
+      font-size: 20px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: none;
+      place-items: center;
+      position: relative;
+    }
+    .message-trigger.show { display: grid; }
+    .message-dot {
+      position: absolute;
+      right: -1px;
+      top: -1px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ff6767;
+      box-shadow: 0 0 10px rgba(255,103,103,0.45);
+      display: none;
+    }
+    .message-dot.show { display: block; }
+    .self-money-mini {
+      font-size: 11px;
+      color: rgba(255,255,255,0.82);
+      margin-top: 3px;
+      display: none;
+    }
+    .self-money-mini.show { display: block; }
     .count-chip,
     .stat-pill {
       min-height: 42px;
@@ -538,7 +668,7 @@
       box-shadow: var(--shadow);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
-      display: grid;
+      display: none;
       place-items: center;
       position: relative;
       flex: 0 0 auto;
@@ -672,10 +802,233 @@
       color: var(--text);
       border: 1px solid rgba(255,255,255,0.14);
     }
+    .action-btn.loop {
+      background: rgba(255,255,255,0.16);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.14);
+    }
+    .action-btn.loop.active {
+      background: rgba(123,223,245,0.18);
+      color: rgba(255,255,255,0.96);
+      border-color: rgba(123,223,245,0.4);
+    }
     .action-btn.primary {
       background: linear-gradient(135deg, #b8f8f1, #78e9d3);
       color: #0d2131;
       font-size: calc(20px * var(--uiScale));
+    }
+    .utility-modal-card {
+      width: min(560px, 100%);
+      padding: 18px 18px 14px;
+      border-radius: 28px;
+      background: linear-gradient(180deg, rgba(17,33,48,0.92), rgba(8,17,28,0.96));
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow: 0 28px 60px rgba(0,0,0,0.38);
+      position: relative;
+    }
+    .utility-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .utility-title {
+      font-size: 20px;
+      font-weight: 800;
+    }
+    .utility-content {
+      min-height: 260px;
+      max-height: min(56vh, 520px);
+      overflow: auto;
+      padding: 6px 2px 10px;
+    }
+    .utility-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .utility-tab {
+      min-height: 52px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      font-weight: 800;
+      font-size: 18px;
+      position: relative;
+    }
+    .utility-tab.active {
+      background: rgba(123,223,245,0.18);
+      border-color: rgba(123,223,245,0.32);
+    }
+    .utility-badge {
+      position: absolute;
+      right: 10px;
+      top: 8px;
+      min-width: 16px;
+      height: 16px;
+      padding: 0 4px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.18);
+      color: rgba(255,255,255,0.92);
+      font-size: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .utility-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .utility-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .utility-item-main {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+      flex: 1;
+    }
+    .utility-item-title {
+      font-size: 14px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .utility-item-sub {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .utility-mini-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex: 0 0 auto;
+    }
+    .utility-mini-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+    }
+    .quick-record-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .quick-record-btn {
+      min-height: 42px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      font-weight: 800;
+    }
+    .utility-form {
+      display: none;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+      padding: 12px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .utility-form.show { display: grid; }
+    .utility-form input,
+    .utility-form select {
+      min-height: 42px;
+      padding: 0 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+    }
+    .utility-empty {
+      min-height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: var(--muted);
+    }
+    .loop-need-text {
+      font-size: 12px;
+      color: rgba(255,255,255,0.82);
+      margin-top: 4px;
+    }
+    .loop-need-text.warn { color: #ffd1c7; }
+    .batch-modal-card {
+      width: min(780px, 100%);
+      padding: 22px;
+      border-radius: 30px;
+      background: linear-gradient(180deg, rgba(17,33,48,0.92), rgba(8,17,28,0.96));
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow: 0 28px 60px rgba(0,0,0,0.38);
+    }
+    .batch-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: min(56vh, 520px);
+      overflow: auto;
+      margin-top: 14px;
+    }
+    .batch-row {
+      display: grid;
+      grid-template-columns: 56px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .batch-art {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,0.1);
+      font-size: 28px;
+    }
+    .batch-meta {
+      min-width: 0;
+    }
+    .batch-name {
+      font-size: 15px;
+      font-weight: 800;
+      margin-bottom: 4px;
+      word-break: break-word;
+    }
+    .batch-sub {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .batch-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
 
     .fishing-timer {
@@ -1848,7 +2201,7 @@
       .count-chip, .stat-pill { min-height: 34px; font-size: 12px; padding: 0 10px; }
       .weather-time-circle { width: 42px; height: 42px; }
       .weather-half, .time-half { font-size: 16px; }
-      .room-controls { width: min(210px, 56vw); }
+      .room-controls { width: min(230px, 62vw); }
       .fishing-timer.active { width: min(40vw, 210px); }
       .fishing-timer:not(.active) { width: min(24vw, 126px); }
       .timer-btn { width: 24px; height: 24px; }
@@ -1861,7 +2214,7 @@
       .bait-card .bait-desc,
       .item-card .item-desc,
       .upgrade-card .upgrade-desc { opacity: 1 !important; filter: blur(0) !important; }
-      .current-time-chip { font-size: 16px; min-height: 36px; padding: 0 12px; }
+      .current-time-chip { font-size: clamp(38px, 10vw, 66px); min-height: 0; padding: 0; }
       .money-inline { font-size: 12px; }
       .mail-mini-trigger { width: 38px; height: 38px; font-size: 18px; }
     }
@@ -1931,27 +2284,28 @@
         <div id="roomLobby" class="lobby-center">
           <div class="lobby-title">釣り部屋</div>
           <div class="lobby-sub">プレイを押すと、空いている部屋に優先的に入ります。最大3人のお部屋が自動で作られ、日本時間の0時にリセットされます。</div>
-          <button id="playRoomBtn" class="play-btn">プレイ</button>
+          <div class="goal-inline-row">
+            <button id="playRoomBtn" class="play-btn">プレイ</button>
+            <button id="setMiniGoalBtnLobby" class="goal-inline-btn">今日のミニ目標</button>
+          </div>
         </div>
 
-        <div class="bottom-left-stack fade-ui">
-          <div id="roomCurrentTime" class="current-time-chip">00:00</div>
+        <div class="top-left-meta fade-ui">
+          <div class="clock-wrap">
+            <div id="roomCurrentTime" class="current-time-chip">00:00</div>
+            <div id="roomClockHelp" class="clock-help-bubble">タップで便利機能</div>
+          </div>
         </div>
+
+        <div id="roomGoalChip" class="top-center-goal fade-ui">今日のミニ目標＿＿＿＿＿＿＿＿＿</div>
 
         <div id="roomActiveUI" style="display:none; position:absolute; inset:0; z-index:4;">
-          <div class="top-left-meta fade-ui">
-            <div id="roomCountChip" class="count-chip">1 / 3</div>
-            <div id="roomMoneyInline" class="money-inline">0 zz</div>
-          </div>
-
           <div class="top-right-stack fade-ui">
-            <div class="participant-row">
-              <button id="roomMailMiniBtn" class="mail-mini-trigger">💌<span id="roomMailMiniCount" class="mail-mini-count"></span></button>
-              <div id="roomParticipants" class="participants-strip"></div>
-            </div>
+            <div id="roomParticipants" class="participants-strip"></div>
           </div>
 
           <div class="stamp-rail fade-ui">
+            <button id="roomMessageBtn" class="message-trigger">💬<span id="roomMessageDot" class="message-dot"></span></button>
             <div class="stamp-buttons">
               <button class="stamp-btn" data-stamp="❤">❤</button>
               <button class="stamp-btn" data-stamp="✨">✨</button>
@@ -1959,8 +2313,13 @@
             <div id="roomStampFeed" class="stamp-feed"></div>
           </div>
 
+          <div class="bottom-left-stack fade-ui">
+            <button id="leaveRoomBtnLeft" class="action-btn exit">退出</button>
+          </div>
+
           <div class="room-controls fade-ui">
-            <div class="control-fields">
+            <div id="roomLoopInfo" class="room-loop-info"></div>
+            <div id="normalFields" class="control-fields">
               <div class="field">
                 <label for="roomCourseSelect">コース</label>
                 <select id="roomCourseSelect"></select>
@@ -1968,18 +2327,7 @@
               <div class="field">
                 <label for="roomBaitSelect">餌</label>
                 <select id="roomBaitSelect"></select>
-              </div>
-            </div>
-            <div class="room-action-row">
-              <button id="leaveRoomBtn" class="action-btn exit">退出</button>
-              <button id="roomFishingBtn" class="action-btn primary">釣り</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="screen-fishing" class="screen">
+           <section id="screen-fishing" class="screen">
       <div class="screen-shell">
         <div class="bg-screen">
           <video id="fishingVideo" class="bg-video" autoplay muted loop playsinline preload="auto"></video>
@@ -2005,13 +2353,17 @@
         </div>
 
         <div class="top-left-meta fade-ui">
-          <div id="fishingRoomCountChip" class="count-chip">1 / 3</div>
+          <div class="clock-wrap">
+            <div id="fishingCurrentTime" class="current-time-chip">00:00</div>
+            <div id="fishingClockHelp" class="clock-help-bubble">タップで便利機能</div>
+          </div>
         </div>
+
+        <div id="fishingGoalChip" class="top-center-goal fade-ui">今日のミニ目標＿＿＿＿＿＿＿＿＿</div>
 
         <div class="top-right-stack fade-ui">
           <div class="stats-row">
             <div id="baitTotalMini" class="stat-pill cyan">餌 0</div>
-            <div id="fishMoneyMini" class="stat-pill gold">0 zz</div>
             <div id="weatherTimeCircle" class="weather-time-circle">
               <div id="weatherHalf" class="weather-half">☀️</div>
               <div id="timeHalf" class="time-half">🌙</div>
@@ -2021,6 +2373,29 @@
         </div>
 
         <div class="bottom-right-stack fade-ui">
+          <div id="fishingParticipants" class="participants-strip"></div>
+        </div>
+
+        <div class="stamp-rail fade-ui">
+          <button id="fishingMessageBtn" class="message-trigger">💬<span id="fishingMessageDot" class="message-dot"></span></button>
+          <div class="stamp-buttons">
+            <button class="stamp-btn" data-stamp="❤">❤</button>
+            <button class="stamp-btn" data-stamp="✨">✨</button>
+          </div>
+          <div id="fishingStampFeed" class="stamp-feed"></div>
+        </div>
+
+        <div id="focusOverlay" class="focus-overlay">
+          <div class="focus-wrap">
+            <div id="focusTime" class="focus-time">00:00</div>
+            <div id="focusPlan" class="focus-plan">25min</div>
+          </div>
+          <button id="focusBackBtn" class="focus-back">戻る</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="screen-store"div class="bottom-right-stack fade-ui">
           <div class="participant-row">
             <button id="fishingMailMiniBtn" class="mail-mini-trigger">💌<span id="fishingMailMiniCount" class="mail-mini-count"></span></button>
             <div id="fishingParticipants" class="participants-strip"></div>
@@ -2294,7 +2669,48 @@
       </div>
     </div>
 
-    <div id="toastWrap" class="toast-wrap"></div>
+    <div id="utilityModal" class="modal">
+      <div class="utility-modal-card">
+        <div class="utility-header">
+          <div id="utilityTitle" class="utility-title">やること</div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <button id="utilityAddBtn" class="btn soft">＋</button>
+            <button id="closeUtilityBtn" class="close-btn">×</button>
+          </div>
+        </div>
+        <div id="utilityForm" class="utility-form">
+          <input id="utilityTextInput" type="text" maxlength="32" placeholder="タイトル" />
+          <input id="utilityTimeInput" type="time" />
+          <select id="utilitySelectInput"></select>
+          <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:rgba(255,255,255,0.82);"><input id="utilityCheckInput" type="checkbox" /> 通知/記録連携</label>
+          <div style="display:flex; gap:8px; justify-content:flex-end;">
+            <button id="utilityCancelFormBtn" class="btn soft">×</button>
+            <button id="utilitySaveBtn" class="btn primary">保存</button>
+          </div>
+        </div>
+        <div id="utilityContent" class="utility-content"></div>
+        <div class="utility-tabs">
+          <button class="utility-tab" data-utab="reminder">🔔 <span id="utilityBadgeReminder" class="utility-badge">0</span></button>
+          <button class="utility-tab" data-utab="todo">✅ <span id="utilityBadgeTodo" class="utility-badge">0</span></button>
+          <button class="utility-tab" data-utab="record">⏱ <span id="utilityBadgeRecord" class="utility-badge">0</span></button>
+        </div>
+      </div>
+    </div>
+
+    <div id="batchResultModal" class="modal">
+      <div class="batch-modal-card">
+        <div class="modal-top">
+          <h2>まとめて釣果</h2>
+          <button id="closeBatchResultBtn" class="close-btn">×</button>
+        </div>
+        <div id="batchResultList" class="batch-list"></div>
+        <div class="modal-actions" style="margin-top:14px;">
+          <button id="finishBatchResultBtn" class="btn primary">閉じる</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toastWrap" class="toast-wra
   </div>
 
   <script type="module">
