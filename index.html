@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>作業連動型 釣りサブサイト</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='50' font-size='48'%3E%F0%9F%8E%A3%3C/text%3E%3C/svg%3E" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='50' font-size='48'%3E%F0%9F%8E%A3%3C/text%3E%3C/svg%3E" />
   <style>
     :root {
       --text: rgba(255,255,255,0.96);
@@ -37,7 +37,7 @@
       font-family: "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
     }
     body { overflow: hidden; }
-    button, input, select { font: inherit; }
+    button, input, select, textarea { font: inherit; }
     button { cursor: pointer; }
     img { max-width: 100%; display: block; }
 
@@ -56,9 +56,7 @@
       pointer-events: none;
       transform: translateX(calc(-100% - 22px));
     }
-    #app.nav-hidden .screen-shell {
-      left: 8px;
-    }
+    #app.nav-hidden .screen-shell { left: 8px; }
 
     .bg-screen {
       position: absolute;
@@ -79,7 +77,7 @@
     .bg-shade {
       position: absolute;
       inset: 0;
-      background: linear-gradient(180deg, rgba(0,0,0,0.16), rgba(0,0,0,0.28));
+      background: linear-gradient(180deg, rgba(0,0,0,0.14), rgba(0,0,0,0.3));
       z-index: 1;
       pointer-events: none;
     }
@@ -104,7 +102,6 @@
       font-size: 18px;
       transition: opacity 0.2s ease, transform 0.2s ease;
     }
-
     .side-nav {
       position: absolute;
       top: calc(var(--safeTop) + 10px);
@@ -130,8 +127,6 @@
       pointer-events: none;
       transform: translateX(calc(-100% - 18px));
     }
-
-    .nav-notch { display: none; }
     .nav-active-bubble {
       position: absolute;
       width: 52px;
@@ -143,7 +138,6 @@
       z-index: 1;
       left: 20px;
     }
-
     .nav-btn {
       position: relative;
       z-index: 2;
@@ -168,10 +162,7 @@
       stroke-linejoin: round;
       opacity: 0.95;
     }
-    .nav-btn.active {
-      transform: none;
-      color: #103148;
-    }
+    .nav-btn.active { color: #103148; }
     .nav-btn .tip {
       position: absolute;
       left: calc(100% + 10px);
@@ -188,7 +179,6 @@
       transition: opacity 0.16s ease;
     }
     .nav-btn:hover .tip { opacity: 1; }
-
     .nav-level-wrap {
       margin-top: auto;
       width: 100%;
@@ -212,11 +202,9 @@
       gap: 2px;
       font-size: 11px;
       font-weight: 700;
+      position: relative;
     }
-    .nav-level-toggle .rod-mini {
-      font-size: 16px;
-      line-height: 1;
-    }
+    .nav-level-toggle .rod-mini { font-size: 16px; line-height: 1; }
     .nav-level-list {
       display: none;
       flex-direction: column;
@@ -258,6 +246,18 @@
       line-height: 1.45;
       word-break: break-word;
     }
+    .mail-nav-dot {
+      position: absolute;
+      right: 8px;
+      top: 8px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ff6464;
+      box-shadow: 0 0 10px rgba(255,100,100,0.45);
+      display: none;
+    }
+    .mail-nav-dot.show { display: block; }
 
     .screen {
       position: absolute;
@@ -277,9 +277,7 @@
       z-index: 4;
     }
 
-    .fade-ui {
-      transition: opacity 0.35s ease, transform 0.35s ease;
-    }
+    .fade-ui { transition: opacity 0.35s ease, transform 0.35s ease; }
     #app.fishing-ui-faded #screen-fishing.active .fade-ui {
       opacity: 0;
       pointer-events: none;
@@ -344,75 +342,6 @@
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
     }
-    .money-inline {
-      font-size: 20px;
-      font-weight: 800;
-      color: rgba(255,255,255,0.92);
-      text-shadow: 0 8px 24px rgba(0,0,0,0.35);
-      padding-left: 2px;
-    }
-    .participant-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      width: 100%;
-      justify-content: flex-end;
-    }
-    .mail-mini-trigger {
-      position: relative;
-      width: 42px;
-      height: 42px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(8,18,29,0.52);
-      color: var(--text);
-      font-size: 20px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      display: grid;
-      place-items: center;
-      flex: 0 0 auto;
-    }
-    .mail-mini-count,
-    .mail-nav-dot {
-      position: absolute;
-      right: -2px;
-      top: -2px;
-      min-width: 16px;
-      height: 16px;
-      padding: 0 4px;
-      border-radius: 999px;
-      background: #ff6767;
-      color: #fff;
-      font-size: 10px;
-      font-weight: 800;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.28);
-    }
-    .mail-mini-count.show,
-    .mail-nav-dot.show {
-      display: flex;
-    }
-    .participant-clickable {
-      cursor: pointer;
-    }
-    .participant-clickable:hover .participant-avatar {
-      box-shadow: 0 0 0 2px rgba(123,223,245,0.5), 0 10px 18px rgba(0,0,0,0.22);
-    }
-      position: absolute;
-      right: 0;
-      bottom: 0;
-      z-index: 8;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 10px;
-      max-width: min(72vw, 760px);
-    }
-
     .count-chip,
     .stat-pill {
       min-height: 42px;
@@ -432,6 +361,12 @@
     .count-chip { min-width: 76px; }
     .stat-pill.gold { color: var(--gold); }
     .stat-pill.cyan { color: var(--accent-2); }
+    .money-inline {
+      font-size: 14px;
+      color: rgba(255,255,255,0.8);
+      font-weight: 700;
+      text-shadow: 0 6px 16px rgba(0,0,0,0.35);
+    }
     .stats-row {
       display: flex;
       gap: 8px;
@@ -510,6 +445,13 @@
       max-width: 100%;
       padding-right: 2px;
     }
+    .participant-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      width: 100%;
+      justify-content: flex-end;
+    }
     .participant-item {
       position: relative;
       min-width: 56px;
@@ -517,6 +459,7 @@
       text-align: center;
       line-height: 1.2;
       text-shadow: 0 4px 14px rgba(0,0,0,0.35);
+      cursor: pointer;
     }
     .participant-name {
       font-size: 12px;
@@ -538,6 +481,10 @@
       box-shadow: 0 10px 18px rgba(0,0,0,0.22);
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
+      transition: box-shadow 0.16s ease;
+    }
+    .participant-item:hover .participant-avatar {
+      box-shadow: 0 0 0 2px rgba(123,223,245,0.45), 0 10px 18px rgba(0,0,0,0.22);
     }
     .participant-status {
       font-size: 11px;
@@ -579,7 +526,8 @@
       gap: 8px;
       align-items: flex-end;
     }
-    .stamp-btn {
+    .stamp-btn,
+    .mail-mini-trigger {
       width: 42px;
       height: 42px;
       border-radius: 999px;
@@ -590,7 +538,29 @@
       box-shadow: var(--shadow);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
+      display: grid;
+      place-items: center;
+      position: relative;
+      flex: 0 0 auto;
     }
+    .mail-mini-count {
+      position: absolute;
+      right: -2px;
+      top: -2px;
+      min-width: 16px;
+      height: 16px;
+      padding: 0 4px;
+      border-radius: 999px;
+      background: #ff6767;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.28);
+    }
+    .mail-mini-count.show { display: flex; }
     .stamp-feed-item {
       min-width: 112px;
       max-width: 180px;
@@ -722,10 +692,6 @@
       width: min(78vw, calc(var(--timerSizeActive) * 3));
       max-width: 720px;
     }
-    .timer-main-time.clickable,
-    .focus-time.clickable {
-      cursor: pointer;
-    }
     .timer-gauge {
       width: 100%;
       height: 100%;
@@ -774,12 +740,16 @@
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
     }
-    .timer-main-time {
-      font-size: clamp(16px, 2vw, 30px);
+    .timer-main-time,
+    .focus-time {
       font-weight: 800;
       line-height: 1;
       letter-spacing: 0.05em;
+      cursor: pointer;
+      user-select: none;
     }
+    .timer-main-time { font-size: clamp(16px, 2vw, 30px); }
+    .focus-time { font-size: clamp(60px, 11vw, 160px); letter-spacing: 0.08em; }
     .timer-mini-plan {
       font-size: clamp(9px, 0.8vw, 12px);
       color: var(--muted);
@@ -844,12 +814,6 @@
       justify-content: center;
       gap: 10px;
       text-align: center;
-    }
-    .focus-time {
-      font-size: clamp(60px, 11vw, 160px);
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      line-height: 1;
     }
     .focus-plan {
       font-size: clamp(16px, 2vw, 24px);
@@ -934,12 +898,8 @@
       font-weight: 600;
       margin-left: 10px;
     }
-    .section-toggle .arrow {
-      transition: transform 0.2s ease;
-    }
-    .section-toggle.closed .arrow {
-      transform: rotate(90deg);
-    }
+    .section-toggle .arrow { transition: transform 0.2s ease; }
+    .section-toggle.closed .arrow { transform: rotate(90deg); }
     .section-body.closed { display: none; }
 
     .product-grid {
@@ -947,10 +907,11 @@
       gap: 14px;
       grid-template-columns: repeat(5, minmax(0, 1fr));
     }
-    .bait-card {
+    .bait-card,
+    .item-card {
       display: flex;
       flex-direction: column;
-      min-height: 280px;
+      min-height: 282px;
       padding: 14px 14px 16px;
       border-radius: 24px;
       background: rgba(255,255,255,0.06);
@@ -959,7 +920,8 @@
       position: relative;
       overflow: hidden;
     }
-    .bait-art-frame {
+    .bait-art-frame,
+    .item-art-frame {
       width: 100%;
       aspect-ratio: 1 / 1.12;
       border-radius: 20px;
@@ -971,26 +933,39 @@
       font-size: 56px;
       margin-bottom: 12px;
     }
-    .bait-name {
+    .bait-name,
+    .item-name {
       font-size: 17px;
       font-weight: 800;
       margin-bottom: 8px;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      flex-wrap: wrap;
     }
-    .bait-desc {
+    .owned-mini {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .bait-desc,
+    .item-desc {
       font-size: 12px;
       color: var(--muted);
       line-height: 1.65;
       flex: 1;
       margin-bottom: 12px;
     }
-    .bait-bottom {
+    .bait-bottom,
+    .item-bottom {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 10px;
       margin-top: auto;
     }
-    .bait-price {
+    .bait-price,
+    .item-price {
       font-size: 18px;
       font-weight: 800;
       color: var(--gold);
@@ -1226,7 +1201,6 @@
       font-size: 12px;
       color: var(--muted);
       padding-top: 4px;
-      padding-bottom: 0;
       height: 100%;
     }
     .chart-area {
@@ -1301,6 +1275,7 @@
       white-space: nowrap;
       transform: translateY(50%);
       z-index: 2;
+      transition: background 0.16s ease;
     }
     .week-label-row {
       display: grid;
@@ -1533,6 +1508,17 @@
       background: rgba(255,255,255,0.08);
       border: 1px solid rgba(255,255,255,0.14);
     }
+    .result-stars-in-art {
+      position: absolute;
+      top: 8px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 16px;
+      color: var(--gold);
+      text-shadow: 0 0 18px rgba(255,216,109,0.36);
+      pointer-events: none;
+    }
     .result-art-avg {
       position: absolute;
       left: 0;
@@ -1563,12 +1549,6 @@
       font-weight: 900;
       line-height: 1.1;
       color: rgba(255,255,255,0.95);
-    }
-    .rarity-stars {
-      font-size: 18px;
-      letter-spacing: 0.06em;
-      color: var(--gold);
-      text-shadow: 0 0 18px rgba(255,216,109,0.36);
     }
     .result-lines {
       font-size: 14px;
@@ -1635,88 +1615,6 @@
       justify-content: flex-end;
     }
 
-    .mailbox-modal-card {
-      width: min(560px, 100%);
-      padding: 22px;
-      border-radius: 28px;
-      background: linear-gradient(180deg, rgba(30,38,48,0.96), rgba(15,22,28,0.98));
-      border: 1px solid rgba(255,255,255,0.14);
-      box-shadow: 0 28px 60px rgba(0,0,0,0.38);
-    }
-    .mailbox-paper {
-      margin-top: 12px;
-      padding: 18px;
-      border-radius: 24px;
-      background: linear-gradient(180deg, rgba(255,248,235,0.96), rgba(241,233,218,0.94));
-      color: #5b4733;
-      min-height: 240px;
-      box-shadow: inset 0 0 0 1px rgba(120,90,60,0.08), 0 14px 26px rgba(0,0,0,0.16);
-    }
-    .mailbox-paper h3 {
-      margin: 0 0 12px;
-      font-size: 20px;
-      color: #5b4733;
-    }
-    .mailbox-paper .sender {
-      font-size: 12px;
-      color: rgba(91,71,51,0.72);
-      margin-bottom: 10px;
-    }
-    .mailbox-paper .mail-body {
-      white-space: pre-wrap;
-      line-height: 1.9;
-      font-size: 14px;
-    }
-    .gift-grid {
-      display: grid;
-      gap: 10px;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      margin-top: 14px;
-    }
-    .gift-card {
-      padding: 12px;
-      border-radius: 18px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.12);
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      min-height: 130px;
-    }
-    .gift-name {
-      font-size: 15px;
-      font-weight: 800;
-    }
-    .gift-note {
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.6;
-      flex: 1;
-    }
-    .gift-meta {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      font-size: 12px;
-    }
-    .gift-text-row {
-      display: flex;
-      gap: 8px;
-      margin-top: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    .gift-text-row input {
-      flex: 1;
-      min-width: 120px;
-      height: 42px;
-      padding: 0 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(255,255,255,0.08);
-      color: var(--text);
-    }
     .auth-overlay {
       position: absolute;
       inset: 0;
@@ -1761,6 +1659,99 @@
       background: #000;
     }
 
+    .mailbox-modal-card {
+      width: min(560px, 100%);
+      padding: 22px;
+      border-radius: 28px;
+      background: linear-gradient(180deg, rgba(30,38,48,0.96), rgba(15,22,28,0.98));
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow: 0 28px 60px rgba(0,0,0,0.38);
+    }
+    .mailbox-paper {
+      margin-top: 12px;
+      padding: 18px;
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(255,248,235,0.96), rgba(241,233,218,0.94));
+      color: #5b4733;
+      min-height: 240px;
+      box-shadow: inset 0 0 0 1px rgba(120,90,60,0.08), 0 14px 26px rgba(0,0,0,0.16);
+      animation: paperIn 0.28s ease;
+    }
+    .mailbox-paper h3 {
+      margin: 0 0 12px;
+      font-size: 20px;
+      color: #5b4733;
+    }
+    .mailbox-paper .sender {
+      font-size: 12px;
+      color: rgba(91,71,51,0.72);
+      margin-bottom: 10px;
+    }
+    .mailbox-paper .mail-body {
+      white-space: pre-wrap;
+      line-height: 1.9;
+      font-size: 14px;
+    }
+    .mail-gift-icon {
+      font-size: 42px;
+      margin-bottom: 8px;
+    }
+
+    .gift-grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      margin-top: 14px;
+    }
+    .gift-card {
+      padding: 12px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 130px;
+    }
+    .gift-name {
+      font-size: 15px;
+      font-weight: 800;
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .gift-note {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+      flex: 1;
+    }
+    .gift-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 12px;
+    }
+    .gift-text-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .gift-text-row input {
+      flex: 1;
+      min-width: 120px;
+      height: 42px;
+      padding: 0 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+    }
+
     .toast-wrap {
       position: absolute;
       right: 18px;
@@ -1789,13 +1780,14 @@
 
     @media (hover: hover) and (pointer: fine) {
       .bait-card .bait-desc,
+      .item-card .item-desc,
       .upgrade-card .upgrade-desc {
         opacity: 0.26;
         filter: blur(2.2px);
-        transform: translateY(0);
         transition: opacity 0.16s ease, filter 0.16s ease;
       }
       .bait-card:hover .bait-desc,
+      .item-card:hover .item-desc,
       .upgrade-card:hover .upgrade-desc {
         opacity: 1;
         filter: blur(0);
@@ -1816,6 +1808,10 @@
       0% { opacity: 1; }
       100% { opacity: 0; }
     }
+    @keyframes paperIn {
+      0% { opacity: 0; transform: translateY(6px) scale(0.98); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
 
     @media (max-width: 1500px) {
       .product-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -1830,11 +1826,6 @@
       .upgrade-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     }
     @media (max-width: 760px) {
-      .bottom-left-stack { max-width: 70vw; }
-      .current-time-chip { font-size: 16px; min-height: 36px; padding: 0 12px; }
-      .money-inline { font-size: 16px; }
-      .participant-row { gap: 8px; }
-      .mail-mini-trigger { width: 38px; height: 38px; font-size: 18px; }
       :root { --navExpanded: 72px; --navCollapsed: 22px; }
       .nav-toggle { top: calc(var(--safeTop) + 8px); left: 10px; }
       .side-nav {
@@ -1868,7 +1859,11 @@
       .modal-card { width: min(96vw, 620px); }
       .week-chart { height: 280px; }
       .bait-card .bait-desc,
-      .upgrade-card .upgrade-desc { opacity: 1 !important; filter: blur(0) !important; transform: none !important; }
+      .item-card .item-desc,
+      .upgrade-card .upgrade-desc { opacity: 1 !important; filter: blur(0) !important; }
+      .current-time-chip { font-size: 16px; min-height: 36px; padding: 0 12px; }
+      .money-inline { font-size: 12px; }
+      .mail-mini-trigger { width: 38px; height: 38px; font-size: 18px; }
     }
     @media (max-width: 520px) {
       .room-controls { width: min(206px, 60vw); }
@@ -1887,7 +1882,6 @@
     <button id="navToggle" class="nav-toggle" aria-label="メニュー切り替え">❯</button>
 
     <nav class="side-nav">
-      <div id="navNotch" class="nav-notch"></div>
       <div id="navActiveBubble" class="nav-active-bubble"></div>
 
       <button class="nav-btn active" data-screen="room" aria-label="プレイ">
@@ -1917,7 +1911,7 @@
           <div class="rod-mini">🎣</div>
         </button>
         <div id="navLevelList" class="nav-level-list"></div>
-        <button id="mailboxNavBtn" class="nav-level-toggle" style="position:relative; min-height:46px;">
+        <button id="mailboxNavBtn" class="nav-level-toggle">
           <div>お便り</div>
           <div class="rod-mini">💌</div>
           <span id="mailNavDot" class="mail-nav-dot"></span>
@@ -1940,10 +1934,11 @@
           <button id="playRoomBtn" class="play-btn">プレイ</button>
         </div>
 
+        <div class="bottom-left-stack fade-ui">
+          <div id="roomCurrentTime" class="current-time-chip">00:00</div>
+        </div>
+
         <div id="roomActiveUI" style="display:none; position:absolute; inset:0; z-index:4;">
-          <div class="bottom-left-stack fade-ui">
-            <div id="roomCurrentTime" class="current-time-chip">00:00</div>
-          </div>
           <div class="top-left-meta fade-ui">
             <div id="roomCountChip" class="count-chip">1 / 3</div>
             <div id="roomMoneyInline" class="money-inline">0 zz</div>
@@ -1958,8 +1953,8 @@
 
           <div class="stamp-rail fade-ui">
             <div class="stamp-buttons">
-              <button class="stamp-btn" data-stamp="❤" data-target="room">❤</button>
-              <button class="stamp-btn" data-stamp="✨" data-target="room">✨</button>
+              <button class="stamp-btn" data-stamp="❤">❤</button>
+              <button class="stamp-btn" data-stamp="✨">✨</button>
             </div>
             <div id="roomStampFeed" class="stamp-feed"></div>
           </div>
@@ -2038,8 +2033,8 @@
 
         <div class="stamp-rail fade-ui">
           <div class="stamp-buttons">
-            <button class="stamp-btn" data-stamp="❤" data-target="fishing">❤</button>
-            <button class="stamp-btn" data-stamp="✨" data-target="fishing">✨</button>
+            <button class="stamp-btn" data-stamp="❤">❤</button>
+            <button class="stamp-btn" data-stamp="✨">✨</button>
           </div>
           <div id="fishingStampFeed" class="stamp-feed"></div>
         </div>
@@ -2060,7 +2055,7 @@
           <div class="header-row">
             <div>
               <h1 class="section-title">ストア</h1>
-              <p class="section-sub">購入は餌、強化はアップグレード、売却は一番下にまとめています。餌がないと釣りを始められません。</p>
+              <p class="section-sub">購入は餌、強化はアップグレード、プレゼント用アイテム、売却は一番下にまとめています。餌がないと釣りを始められません。</p>
             </div>
             <div class="header-stats">
               <div id="storeMoneyChip" class="stat-chip">0 zz</div>
@@ -2081,6 +2076,11 @@
               </div>
               <div id="upgradeList" class="upgrade-cards"></div>
             </div>
+          </div>
+
+          <button id="itemsSectionToggle" class="section-toggle"><span>アイテム <small>プレゼント用</small></span><span class="arrow">⌄</span></button>
+          <div id="itemsSectionBody" class="section-body">
+            <div id="giftItemList" class="product-grid"></div>
           </div>
 
           <button id="sellSectionToggle" class="section-toggle"><span>売却 <small>所持している釣果や漂流物</small></span><span class="arrow">⌄</span></button>
@@ -2207,13 +2207,16 @@
         </div>
         <div class="result-core">
           <div class="result-art-wrap">
-            <div id="resultArt" class="result-art"><span id="resultArtEmoji">🐟</span><div id="resultArtAvg" class="result-art-avg">平均 0.0 cm</div></div>
+            <div id="resultArt" class="result-art">
+              <div id="resultStarsInArt" class="result-stars-in-art">☆</div>
+              <div id="resultArtEmoji">🐟</div>
+              <div id="resultArtAvg" class="result-art-avg">平均 0.0 cm</div>
+            </div>
             <div id="resultPrice" class="result-price">0 zz</div>
           </div>
           <div>
             <div class="result-title-row">
               <div id="resultTitle" class="result-title">-</div>
-              <div id="resultRarity" class="rarity-stars">☆☆</div>
             </div>
             <div id="resultLines" class="result-lines">-</div>
             <div class="size-meter-wrap">
@@ -2319,6 +2322,7 @@
       onSnapshot,
       runTransaction,
       serverTimestamp,
+      updateDoc,
     } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -2331,16 +2335,16 @@
       measurementId: "G-H7P3WR4DR3"
     };
 
-    const LS_KEY = "zz_fishing_subsite_save_v12";
-    const ENCY_TOP_LIMIT = 50;
-    const SELL_RATE_ITEM = 0.5;
+    const LS_KEY = "zz_fishing_subsite_save_v13";
     const ROOM_CAPACITY = 3;
     const STAMP_TTL = 3000;
     const TIMER_R = 88;
     const TIMER_C = 2 * Math.PI * TIMER_R;
     const FISHING_UI_IDLE_MS = 10000;
-
     const COURSE_OPTIONS = [60, 40, 25, 10, 5];
+    const SELL_RATE_ITEM = 0.5;
+    const ENCY_TOP_LIMIT = 50;
+    const WELCOME_MAIL_ID = "mail_welcome_v1";
 
     const BAIT_TYPES = [
       { id: "bait_trial", name: "おためし餌", icon: "🪱", packQty: 10, price: 0, dailyFree: true, power: 0, rareBonus: 0, sizeBonus: 0, valueBonus: 0, desc: "毎日1回だけ無料でもらえる基本の餌。" },
@@ -2356,6 +2360,15 @@
       { id: "line", name: "釣り糸", icon: "〰️", baseCost: 110, desc: "安定性が増してハズレが減る。" },
       { id: "hook", name: "針", icon: "🪝", baseCost: 130, desc: "価値補正とレア補正が上がる。" },
       { id: "rig", name: "仕掛け", icon: "🧰", baseCost: 140, desc: "全体補正を少しずつ底上げする。" },
+    ];
+
+    const GIFT_ITEMS = [
+      { id: "gift_thanks", name: "ありがとう札", icon: "🎁", price: 10, comment: "ありがとう" },
+      { id: "gift_otsukare", name: "おつかれ花", icon: "🌼", price: 10, comment: "おつかれ" },
+      { id: "gift_fight", name: "ファイト葉", icon: "🍀", price: 10, comment: "ファイト" },
+      { id: "gift_sugoi", name: "すごい星", icon: "⭐", price: 10, comment: "すごい" },
+      { id: "gift_break", name: "休憩茶", icon: "🍵", price: 10, comment: "休憩！" },
+      { id: "gift_shell", name: "お話貝", icon: "🐚", price: 10, comment: "6文字まで送れる" },
     ];
 
     const FISHES = [
@@ -2376,14 +2389,29 @@
       { id: "item_004_treasure_piece", kind: "item", name: "宝箱の欠片", icon: "🧩", basePrice: 110, rarity: 8, rarityStars: 3, strength: 10, timeBonus: { day: 0, evening: 1, night: 2 }, weatherBonus: { sunny: -1, cloudy: 1, rainy: 2 }, description: "珍しい漂流物。" },
     ];
 
+    const WELCOME_MAIL_TEXT = `はじめまして、個人開発をしているユメです。
+このアプリは、イラスト・アニメーション・開発まですべて一人で少しずつ作っています。
+
+みなさんの作業のじゃまになってほしくなくて、広告は入れていません。
+そのぶん更新には少し時間がかかりますが、より使いやすく、作業がはかどる場所になるように大切に育てています。
+
+「こんな機能がほしい」などの感想や口コミも、とても励みになります。
+みなさんと一緒に、この場所を少しずつ育てていけたらうれしいです。
+
+※新機能の参考にした際、お名前をお知らせに小さく載せさせていただく場合があります。
+載せても大丈夫な方は、感想や口コミのときに 「掲載○」 と添えていただけると助かります。
+
+使ってくださって、本当にありがとうございます。`;
+
     const DEFAULT_STATE = {
-      version: 12,
+      version: 13,
       ui: {
         navCollapsed: false,
         focusMode: false,
         fishingUiVisible: true,
         partsPanelOpen: false,
-        storeSections: { bait: true, upgrade: true, sell: true },
+        timerMega: false,
+        storeSections: { bait: true, upgrade: true, items: true, sell: true },
       },
       user: {
         uid: null,
@@ -2398,34 +2426,24 @@
         status: "idle",
       },
       money: 220,
-      baitCounts: {
-        bait_trial: 10,
-        bait_basic: 0,
-        bait_glow: 0,
-        bait_premium: 0,
+      baitCounts: { bait_trial: 10, bait_basic: 0, bait_glow: 0, bait_premium: 0 },
+      giftCounts: {
+        gift_thanks: 0,
+        gift_otsukare: 0,
+        gift_fight: 0,
+        gift_sugoi: 0,
+        gift_break: 0,
+        gift_shell: 0,
       },
       selectedBaitId: "bait_trial",
       selectedCourseMin: 25,
-      upgrades: {
-        rod: 0,
-        reel: 0,
-        float: 0,
-        line: 0,
-        hook: 0,
-        rig: 0,
-      },
-      shop: {
-        freeBaitClaimDate: null,
-      },
+      upgrades: { rod: 0, reel: 0, float: 0, line: 0, hook: 0, rig: 0 },
+      shop: { freeBaitClaimDate: null },
       inventory: [],
       encyclopedia: {},
       history: { daily: {} },
-      settings: {
-        waveSound: false,
-        catchSound: true,
-        browserNotify: false,
-        shakeOnFinish: true,
-      },
+      mailbox: { items: [], activeIndex: 0, seededWelcome: false },
+      settings: { waveSound: false, catchSound: true, browserNotify: false, shakeOnFinish: true },
       fishing: {
         inProgress: false,
         paused: false,
@@ -2438,10 +2456,8 @@
         weather: null,
         timeOfDay: null,
       },
-      currentConditions: {
-        timeOfDay: "day",
-        weather: "sunny",
-      },
+      currentConditions: { timeOfDay: "day", weather: "sunny" },
+      currentTimeText: "00:00",
       lastCatch: null,
       lastSavedAt: null,
     };
@@ -2455,9 +2471,11 @@
     let state = loadLocalState();
     let globalRecords = {};
     let roomUnsub = null;
+    let inboxUnsub = null;
     let currentRoomData = null;
     let timerTickHandle = null;
     let midnightTickHandle = null;
+    let clockTickHandle = null;
     let fishingUiTimeout = null;
     let authResolved = false;
     let processedStampIds = new Set();
@@ -2466,13 +2484,20 @@
     let pendingDisplayName = null;
     let pendingGuestMobileIntro = false;
     let mobileHintShown = false;
+    let selectedGiftTarget = null;
+    let reloadNavigation = false;
 
     const el = {
       app: document.getElementById("app"),
       navToggle: document.getElementById("navToggle"),
       navBtns: [...document.querySelectorAll(".nav-btn")],
-      navNotch: document.getElementById("navNotch"),
       navActiveBubble: document.getElementById("navActiveBubble"),
+      partsPanelToggle: document.getElementById("partsPanelToggle"),
+      navLevelList: document.getElementById("navLevelList"),
+      mailboxNavBtn: document.getElementById("mailboxNavBtn"),
+      mailNavDot: document.getElementById("mailNavDot"),
+      userPill: document.getElementById("userPill"),
+
       screens: {
         room: document.getElementById("screen-room"),
         fishing: document.getElementById("screen-fishing"),
@@ -2481,9 +2506,6 @@
         encyclopedia: document.getElementById("screen-encyclopedia"),
         settings: document.getElementById("screen-settings"),
       },
-      partsPanelToggle: document.getElementById("partsPanelToggle"),
-      navLevelList: document.getElementById("navLevelList"),
-      userPill: document.getElementById("userPill"),
 
       lobbyVideo: document.getElementById("lobbyVideo"),
       roomVideo: document.getElementById("roomVideo"),
@@ -2491,14 +2513,19 @@
 
       roomLobby: document.getElementById("roomLobby"),
       roomActiveUI: document.getElementById("roomActiveUI"),
+      roomCurrentTime: document.getElementById("roomCurrentTime"),
+      fishingCurrentTime: document.getElementById("fishingCurrentTime"),
       playRoomBtn: document.getElementById("playRoomBtn"),
       roomParticipants: document.getElementById("roomParticipants"),
       roomCountChip: document.getElementById("roomCountChip"),
+      roomMoneyInline: document.getElementById("roomMoneyInline"),
       roomCourseSelect: document.getElementById("roomCourseSelect"),
       roomBaitSelect: document.getElementById("roomBaitSelect"),
       roomFishingBtn: document.getElementById("roomFishingBtn"),
       leaveRoomBtn: document.getElementById("leaveRoomBtn"),
       roomStampFeed: document.getElementById("roomStampFeed"),
+      roomMailMiniBtn: document.getElementById("roomMailMiniBtn"),
+      roomMailMiniCount: document.getElementById("roomMailMiniCount"),
 
       fishingParticipants: document.getElementById("fishingParticipants"),
       fishingRoomCountChip: document.getElementById("fishingRoomCountChip"),
@@ -2508,6 +2535,8 @@
       timeHalf: document.getElementById("timeHalf"),
       weatherTimeBalloon: document.getElementById("weatherTimeBalloon"),
       fishingStampFeed: document.getElementById("fishingStampFeed"),
+      fishingMailMiniBtn: document.getElementById("fishingMailMiniBtn"),
+      fishingMailMiniCount: document.getElementById("fishingMailMiniCount"),
 
       fishingTimer: document.getElementById("fishingTimer"),
       timerText: document.getElementById("timerText"),
@@ -2530,9 +2559,12 @@
       baitSectionBody: document.getElementById("baitSectionBody"),
       upgradeSectionToggle: document.getElementById("upgradeSectionToggle"),
       upgradeSectionBody: document.getElementById("upgradeSectionBody"),
+      itemsSectionToggle: document.getElementById("itemsSectionToggle"),
+      itemsSectionBody: document.getElementById("itemsSectionBody"),
       sellSectionToggle: document.getElementById("sellSectionToggle"),
       sellSectionBody: document.getElementById("sellSectionBody"),
       baitBuyList: document.getElementById("baitBuyList"),
+      giftItemList: document.getElementById("giftItemList"),
       upgradeList: document.getElementById("upgradeList"),
       shopSellList: document.getElementById("shopSellList"),
 
@@ -2565,9 +2597,11 @@
       resultModal: document.getElementById("resultModal"),
       resultCard: document.getElementById("resultCard"),
       resultArt: document.getElementById("resultArt"),
+      resultArtEmoji: document.getElementById("resultArtEmoji"),
+      resultStarsInArt: document.getElementById("resultStarsInArt"),
+      resultArtAvg: document.getElementById("resultArtAvg"),
       resultPrice: document.getElementById("resultPrice"),
       resultTitle: document.getElementById("resultTitle"),
-      resultRarity: document.getElementById("resultRarity"),
       resultLines: document.getElementById("resultLines"),
       sizeMeterLabel: document.getElementById("sizeMeterLabel"),
       sizeFill: document.getElementById("sizeFill"),
@@ -2589,6 +2623,19 @@
       mobileIntro: document.getElementById("mobileIntro"),
       mobileIntroVideo: document.getElementById("mobileIntroVideo"),
 
+      mailboxModal: document.getElementById("mailboxModal"),
+      mailboxPaper: document.getElementById("mailboxPaper"),
+      closeMailboxBtn: document.getElementById("closeMailboxBtn"),
+      prevMailBtn: document.getElementById("prevMailBtn"),
+      nextMailBtn: document.getElementById("nextMailBtn"),
+
+      giftModal: document.getElementById("giftModal"),
+      giftModalTitle: document.getElementById("giftModalTitle"),
+      giftGrid: document.getElementById("giftGrid"),
+      giftShellInput: document.getElementById("giftShellInput"),
+      sendShellBtn: document.getElementById("sendShellBtn"),
+      closeGiftBtn: document.getElementById("closeGiftBtn"),
+
       stampButtons: [...document.querySelectorAll(".stamp-btn")],
       toastWrap: document.getElementById("toastWrap"),
     };
@@ -2599,21 +2646,28 @@
       setAppViewportHeight();
       initTimerGauge();
       ensurePlayerToken();
+      ensureWelcomeMailSeeded();
+      detectReloadNavigation();
       updateResponsiveScale();
       fillStaticSelectors();
       updateTimerControlIcon(false, true);
       tryInitFirebase();
       bindEvents();
       refreshConditions();
+      startClockTick();
       await loadGlobalRecords();
       applyStateToSelectors();
       applyNavState();
       switchScreen("room");
       renderAll();
-      restoreFishingTimer();
       startMidnightWatcher();
       if (!authResolved) el.authOverlay.style.display = "grid";
       if (state.room.inRoom && state.room.roomId) startRoomListener(state.room.roomId);
+      if (reloadNavigation && state.fishing.inProgress) {
+        cancelFishingOnReload();
+      } else {
+        restoreFishingTimer();
+      }
       maybeShowMobileFullscreenHint();
     }
 
@@ -2626,6 +2680,15 @@
       el.app.style.setProperty("--appVh", `${vh}px`);
     }
 
+    function detectReloadNavigation() {
+      try {
+        const nav = performance.getEntriesByType("navigation")[0];
+        reloadNavigation = nav?.type === "reload";
+      } catch {
+        reloadNavigation = false;
+      }
+    }
+
     function initTimerGauge() {
       [el.timerProgress, el.timerGlow].forEach((node) => {
         node.style.strokeDasharray = String(TIMER_C);
@@ -2635,6 +2698,25 @@
 
     function ensurePlayerToken() {
       if (!state.user?.playerToken) state.user.playerToken = makeId();
+    }
+
+    function ensureWelcomeMailSeeded() {
+      if (!state.mailbox) state.mailbox = { items: [], activeIndex: 0, seededWelcome: false };
+      if (state.mailbox.seededWelcome) return;
+      const exists = state.mailbox.items.some((item) => item.id === WELCOME_MAIL_ID);
+      if (!exists) {
+        state.mailbox.items.unshift({
+          id: WELCOME_MAIL_ID,
+          type: "welcome",
+          title: "ユメからのお便り",
+          icon: "💌",
+          senderName: "ユメ",
+          body: WELCOME_MAIL_TEXT,
+          createdAt: Date.now(),
+          opened: false,
+        });
+      }
+      state.mailbox.seededWelcome = true;
     }
 
     function isMobileLike() {
@@ -2690,22 +2772,25 @@
             }
             state.user.displayName = safeName(pendingDisplayName || state.user.displayName || "釣り人") || "釣り人";
             firebaseSyncOk = true;
+            startInboxListener();
             const shouldIntro = pendingGuestMobileIntro && isAnon && isMobileLike();
             pendingGuestMobileIntro = false;
             pendingDisplayName = null;
             pendingAuthMode = null;
+            if (reloadNavigation && state.fishing.inProgress) cancelFishingOnReload();
             if (shouldIntro) {
               await playMobileIntroThenEnter();
             } else {
               el.authOverlay.style.display = "none";
               toast(isAnon ? "ローカル開始しました。" : "Googleログインしました。");
-              saveAll();
+              saveAll().catch(console.error);
               switchScreen("room");
               renderAll();
               maybeShowMobileFullscreenHint();
             }
           } else {
             firebaseSyncOk = false;
+            if (inboxUnsub) { inboxUnsub(); inboxUnsub = null; }
             renderAll();
           }
         });
@@ -2729,6 +2814,7 @@
         renderNavPartsVisibility();
         saveAll().catch(console.error);
       });
+      el.mailboxNavBtn.addEventListener("click", () => openMailboxModal(null));
 
       el.playRoomBtn.addEventListener("click", () => joinBestRoom().catch(console.error));
       el.leaveRoomBtn.addEventListener("click", () => leaveRoom(false).catch(console.error));
@@ -2746,6 +2832,8 @@
       el.cancelFishingBtn.addEventListener("click", cancelFishingNoReward);
       el.focusModeBtn.addEventListener("click", () => setFocusMode(true));
       el.focusBackBtn.addEventListener("click", () => setFocusMode(false));
+      el.timerText.addEventListener("click", () => toggleTimerMega());
+      el.focusTime.addEventListener("click", () => toggleFishingPauseResume());
 
       el.googleLoginBtn.addEventListener("click", () => openNameStep("google"));
       el.guestStartBtn.addEventListener("click", () => openNameStep("guest"));
@@ -2779,12 +2867,21 @@
 
       el.baitSectionToggle.addEventListener("click", () => toggleStoreSection("bait"));
       el.upgradeSectionToggle.addEventListener("click", () => toggleStoreSection("upgrade"));
+      el.itemsSectionToggle.addEventListener("click", () => toggleStoreSection("items"));
       el.sellSectionToggle.addEventListener("click", () => toggleStoreSection("sell"));
 
       el.stampButtons.forEach((btn) => btn.addEventListener("click", () => sendStamp(btn.dataset.stamp).catch(console.error)));
       el.sellResultBtn.addEventListener("click", () => sellPendingResult().catch(console.error));
       el.keepResultBtn.addEventListener("click", () => keepPendingResult().catch(console.error));
       el.closeResultBtn.addEventListener("click", () => { if (pendingResult) keepPendingResult().catch(console.error); else closeResultModal(); });
+
+      el.roomMailMiniBtn.addEventListener("click", () => openNextUnreadMail());
+      el.fishingMailMiniBtn.addEventListener("click", () => openNextUnreadMail());
+      el.closeMailboxBtn.addEventListener("click", closeMailboxModal);
+      el.prevMailBtn.addEventListener("click", () => stepMailbox(-1));
+      el.nextMailBtn.addEventListener("click", () => stepMailbox(1));
+      el.closeGiftBtn.addEventListener("click", closeGiftModal);
+      el.sendShellBtn.addEventListener("click", () => sendShellGift().catch(console.error));
 
       window.addEventListener("resize", () => { setAppViewportHeight(); updateResponsiveScale(); renderAll(); });
       window.addEventListener("orientationchange", () => { setTimeout(() => { setAppViewportHeight(); updateResponsiveScale(); renderAll(); }, 120); });
@@ -2951,9 +3048,11 @@
       } catch (err) {
         console.error(err);
       }
-      state = deepMerge(cloneDefault(), { user: { playerToken: makeId() } });
-      currentRoomData = null;
       if (roomUnsub) { roomUnsub(); roomUnsub = null; }
+      if (inboxUnsub) { inboxUnsub(); inboxUnsub = null; }
+      state = deepMerge(cloneDefault(), { user: { playerToken: makeId() } });
+      ensureWelcomeMailSeeded();
+      currentRoomData = null;
       state.ui.fishingUiVisible = true;
       el.app.classList.remove("fishing-ui-faded");
       clearFishingUiTimeout();
@@ -3071,6 +3170,7 @@
     function renderStoreSectionState() {
       setSectionState(el.baitSectionToggle, el.baitSectionBody, state.ui.storeSections.bait);
       setSectionState(el.upgradeSectionToggle, el.upgradeSectionBody, state.ui.storeSections.upgrade);
+      setSectionState(el.itemsSectionToggle, el.itemsSectionBody, state.ui.storeSections.items);
       setSectionState(el.sellSectionToggle, el.sellSectionBody, state.ui.storeSections.sell);
     }
 
@@ -3161,14 +3261,13 @@
 
     async function tryJoinRoom(roomId, index, allowCreate) {
       const roomRef = doc(db, "rooms", roomId);
-      const token = state.user.playerToken;
       const member = makeCurrentMember();
       try {
         await runTransaction(db, async (tx) => {
           const snap = await tx.get(roomRef);
           const data = snap.exists() ? normalizeRoomDoc(snap.data()) : null;
           if (!snap.exists() && !allowCreate) throw new Error("missing-room");
-          const members = [...(data?.members || [])].filter((m) => m.token !== token);
+          const members = [...(data?.members || [])].filter((m) => m.uid !== member.uid);
           if (members.length >= ROOM_CAPACITY) throw new Error("room-full");
           members.push(member);
           const payload = {
@@ -3224,6 +3323,17 @@
       }, (err) => console.error(err));
     }
 
+    function startInboxListener() {
+      if (!db || !state.user.uid) return;
+      if (inboxUnsub) inboxUnsub();
+      const inboxRef = doc(db, "inboxes", state.user.uid);
+      inboxUnsub = onSnapshot(inboxRef, (snap) => {
+        if (!snap.exists()) return;
+        const remoteItems = Array.isArray(snap.data()?.items) ? snap.data().items : [];
+        mergeInboxItems(remoteItems);
+      }, (err) => console.error(err));
+    }
+
     async function leaveRoom(silent = false) {
       if (!db || !state.room.inRoom || !state.room.roomId) return;
       const roomId = state.room.roomId;
@@ -3233,7 +3343,7 @@
           const snap = await tx.get(roomRef);
           if (!snap.exists()) return;
           const data = normalizeRoomDoc(snap.data());
-          const members = data.members.filter((m) => m.token !== state.user.playerToken);
+          const members = data.members.filter((m) => m.uid !== state.user.uid);
           const recentStamps = data.recentStamps || [];
           if (members.length === 0) tx.delete(roomRef);
           else tx.set(roomRef, { members, recentStamps, updatedAt: Date.now() }, { merge: true });
@@ -3252,14 +3362,14 @@
     }
 
     async function syncPresenceToRoom() {
-      if (!db || !state.room.inRoom || !state.room.roomId) return;
+      if (!db || !state.room.inRoom || !state.room.roomId || !state.user.uid) return;
       const roomRef = doc(db, "rooms", state.room.roomId);
       const member = makeCurrentMember();
       await runTransaction(db, async (tx) => {
         const snap = await tx.get(roomRef);
         if (!snap.exists()) return;
         const data = normalizeRoomDoc(snap.data());
-        const members = data.members.filter((m) => m.token !== state.user.playerToken);
+        const members = data.members.filter((m) => m.uid !== state.user.uid);
         members.push(member);
         tx.set(roomRef, { members, recentStamps: data.recentStamps || [], updatedAt: Date.now() }, { merge: true });
       });
@@ -3267,7 +3377,7 @@
 
     function makeCurrentMember() {
       return {
-        token: state.user.playerToken,
+        uid: state.user.uid || state.user.playerToken,
         name: state.user.displayName || "釣り人",
         status: state.room.status || "idle",
       };
@@ -3292,7 +3402,7 @@
     async function sendStamp(stamp) {
       if (!db || !state.room.inRoom || !state.room.roomId) return;
       const roomRef = doc(db, "rooms", state.room.roomId);
-      const stampObj = { id: makeId(), token: state.user.playerToken, name: state.user.displayName || "釣り人", stamp, at: Date.now() };
+      const stampObj = { id: makeId(), uid: state.user.uid || state.user.playerToken, name: state.user.displayName || "釣り人", stamp, at: Date.now() };
       try {
         await runTransaction(db, async (tx) => {
           const snap = await tx.get(roomRef);
@@ -3315,9 +3425,9 @@
       });
     }
 
-    function getLatestMemberStamp(token) {
+    function getLatestMemberStamp(uid) {
       const now = Date.now();
-      return [...(currentRoomData?.recentStamps || [])].reverse().find((stamp) => stamp.token === token && now - stamp.at < STAMP_TTL) || null;
+      return [...(currentRoomData?.recentStamps || [])].reverse().find((stamp) => stamp.uid === uid && now - stamp.at < STAMP_TTL) || null;
     }
 
     async function resetRoomsIfNeeded() {
@@ -3349,6 +3459,40 @@
     function stopMidnightWatcher() {
       if (midnightTickHandle) clearInterval(midnightTickHandle);
       midnightTickHandle = null;
+    }
+
+    function startClockTick() {
+      stopClockTick();
+      updateCurrentTimeText();
+      clockTickHandle = setInterval(updateCurrentTimeText, 1000);
+    }
+
+    function stopClockTick() {
+      if (clockTickHandle) clearInterval(clockTickHandle);
+      clockTickHandle = null;
+    }
+
+    function updateCurrentTimeText() {
+      const now = new Date();
+      const text = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+      state.currentTimeText = text;
+      el.roomCurrentTime.textContent = text;
+      el.fishingCurrentTime.textContent = text;
+    }
+
+    function cancelFishingOnReload() {
+      stopTimerTick();
+      state.fishing.inProgress = false;
+      state.fishing.paused = false;
+      state.fishing.remainingMs = null;
+      state.fishing.pausedAt = null;
+      state.room.status = "idle";
+      state.ui.focusMode = false;
+      state.ui.timerMega = false;
+      syncPresenceToRoom().catch(() => {});
+      saveAll().catch(console.error);
+      toast("リロード検出のため、進行中の釣りを終了しました。");
+      renderAll();
     }
 
     function startFishingFromRoom() {
@@ -3400,7 +3544,8 @@
       syncPresenceToRoom().catch(console.error);
       stopTimerTick();
       toast("タイマーを一時停止しました。");
-      saveAll().catch(console.error); renderAll();
+      saveAll().catch(console.error);
+      renderAll();
     }
 
     function resumeFishing() {
@@ -3412,7 +3557,9 @@
       state.room.status = "fishing";
       syncPresenceToRoom().catch(console.error);
       toast("タイマーを再開しました。");
-      saveAll().catch(console.error); renderAll(); startTimerTick();
+      saveAll().catch(console.error);
+      renderAll();
+      startTimerTick();
     }
 
     function cancelFishingNoReward() {
@@ -3423,6 +3570,7 @@
       state.fishing.remainingMs = null;
       state.fishing.pausedAt = null;
       state.room.status = "idle";
+      state.ui.timerMega = false;
       syncPresenceToRoom().catch(console.error);
       setFocusMode(false);
       toast("報酬なしで終了しました。");
@@ -3462,6 +3610,11 @@
       renderFishingStatus();
     }
 
+    function toggleTimerMega() {
+      state.ui.timerMega = !state.ui.timerMega;
+      renderFishingStatus();
+    }
+
     function finishFishing() {
       stopTimerTick();
       if (!state.fishing.inProgress) return;
@@ -3473,6 +3626,7 @@
       addWorkSession(state.fishing.durationMin, result);
       state.fishing.inProgress = false;
       state.fishing.paused = false;
+      state.ui.timerMega = false;
       state.room.status = "idle";
       syncPresenceToRoom().catch(console.error);
       setFocusMode(false);
@@ -3520,8 +3674,16 @@
         price = Math.max(1, Math.round(picked.basePrice * (1 + rareBonus * 0.02 + source.durationMin * 0.01 + valueBonus)));
       }
       const entry = {
-        uid: makeId(), baseId: picked.id, kind: picked.kind, name: picked.name, icon: picked.icon,
-        sellPrice: price, sizeCm, rarity: rarityScore, rarityStars: picked.rarityStars || 1, caughtAt: Date.now()
+        uid: makeId(),
+        baseId: picked.id,
+        kind: picked.kind,
+        name: picked.name,
+        icon: picked.icon,
+        sellPrice: price,
+        sizeCm,
+        rarity: rarityScore,
+        rarityStars: picked.rarityStars || 1,
+        caughtAt: Date.now()
       };
       const ency = state.encyclopedia[picked.id] || { count: 0, maxSize: 0, recordHolder: null };
       const isRecord = isFish && sizeCm > (ency.maxSize || 0);
@@ -3539,14 +3701,17 @@
 
     function openResultModal(result) {
       const delta = result.entry.kind === "fish" ? sizeDeltaText(result.entry.sizeCm, result.picked.avgSize) : null;
-      el.resultArt.textContent = result.entry.icon;
+      el.resultArtEmoji.textContent = result.entry.icon;
+      el.resultStarsInArt.textContent = "☆".repeat(result.picked.rarityStars || result.entry.rarityStars || 1);
+      el.resultArtAvg.textContent = result.entry.kind === "fish" ? `平均 ${formatSize(result.picked.avgSize)} cm` : "平均なし";
       el.resultPrice.textContent = `${result.entry.sellPrice} zz`;
-      el.resultTitle.textContent = result.entry.name;
-      el.resultRarity.textContent = "☆".repeat(result.picked.rarityStars || result.entry.rarityStars || 1);
+      const sizeText = result.entry.kind === "fish" ? ` (${formatSize(result.entry.sizeCm)}cm ${delta.raw})` : "";
+      el.resultTitle.textContent = `${result.entry.name}${sizeText}`;
+      const greatness = result.entry.kind === "fish" ? getGreatnessText(result.entry.sizeCm, result.picked.avgSize) : "しずかな拾いもの";
       el.resultLines.innerHTML = result.entry.kind === "fish"
-        ? `大きさ：${formatSize(result.entry.sizeCm)} cm（平均 ${formatSize(result.picked.avgSize)} cm / ${delta.html}）<br />条件：${translateTime(result.source.timeOfDay)} / ${translateWeather(result.source.weather)}`
-        : `価値：${result.entry.sellPrice} zz<br />条件：${translateTime(result.source.timeOfDay)} / ${translateWeather(result.source.weather)}`;
-      el.sizeMeterLabel.textContent = result.entry.kind === "fish" ? `平均 ${formatSize(result.picked.avgSize)} cm を基準に表示` : `サイズのない釣果です`;
+        ? `すごさ：${greatness}<br />条件：${translateTime(result.source.timeOfDay)} / ${translateWeather(result.source.weather)}`
+        : `すごさ：漂流物<br />条件：${translateTime(result.source.timeOfDay)} / ${translateWeather(result.source.weather)}`;
+      el.sizeMeterLabel.textContent = result.entry.kind === "fish" ? `平均を基準にしたサイズバー` : `サイズのない釣果です`;
       renderResultSizeMeter(result);
       el.resultFlags.innerHTML = "";
       if (result.isRare) el.resultFlags.appendChild(flagEl("レア", "rare"));
@@ -3571,6 +3736,16 @@
         el.sizeOverflowBadge.style.left = "calc(100% + 8px)";
         el.sizeOverflowBadge.textContent = "★ はみ出し級";
       }
+    }
+
+    function getGreatnessText(size, avg) {
+      if (size <= avg) return "ふつう";
+      const plus = ((size - avg) / avg) * 100;
+      if (plus >= 40) return "上位3%";
+      if (plus >= 30) return "上位10%";
+      if (plus >= 20) return "上位20%";
+      if (plus >= 10) return "上位40%";
+      return "ちょっと大きめ";
     }
 
     function flagEl(text, klass) {
@@ -3648,7 +3823,7 @@
       day.workMin += durationMin;
       day.sessions += 1;
       if (result?.entry?.kind === "fish") {
-        day.catches.push({ baseId: result.entry.baseId, name: result.entry.name, icon: result.entry.icon, sizeCm: result.entry.sizeCm, avgSize: result.picked.avgSize });
+        day.catches.push({ baseId: result.entry.baseId, name: result.entry.name, icon: result.entry.icon, sizeCm: result.entry.sizeCm, avgSize: result.picked.avgSize, price: result.entry.sellPrice });
         day.catches = day.catches.slice(-50);
       }
     }
@@ -3678,10 +3853,13 @@
       updateSyncStatus();
       updateRoomVideo();
       updateFishingVideo();
+      renderMailboxIndicators();
       el.fishMoneyMini.textContent = `${state.money} zz`;
       el.baitTotalMini.textContent = `餌 ${getTotalBaitCount()}`;
       el.storeMoneyChip.textContent = `${state.money} zz`;
       el.storeBaitChip.textContent = `餌 ${getTotalBaitCount()}`;
+      el.roomMoneyInline.textContent = `${state.money} zz`;
+      el.fishingTimer.classList.toggle("mega", !!state.ui.timerMega);
     }
 
     function renderNavLevelCards() {
@@ -3715,7 +3893,7 @@
       members.forEach((member) => {
         const item = document.createElement("div");
         item.className = "participant-item";
-        const bubble = getLatestMemberStamp(member.token);
+        const bubble = getLatestMemberStamp(member.uid);
         const statusText = member.status === "fishing" ? "釣り中" : member.status === "paused" ? "停止中" : "待機中";
         item.innerHTML = `
           <div class="participant-name">${escapeHtml(member.name)}</div>
@@ -3723,6 +3901,11 @@
           <div class="participant-status">${escapeHtml(statusText)}</div>
           ${bubble ? `<div class="participant-bubble">${bubble.stamp}</div>` : ""}
         `;
+        if ((member.uid || "") !== (state.user.uid || state.user.playerToken || "")) {
+          item.addEventListener("click", () => openGiftModal(member));
+        } else {
+          item.style.cursor = "default";
+        }
         container.appendChild(item);
       });
     }
@@ -3769,6 +3952,7 @@
       }
       el.focusTime.textContent = el.timerText.textContent;
       el.focusPlan.textContent = el.timerPlanMini.textContent;
+      el.fishingTimer.classList.toggle("mega", !!state.ui.timerMega);
     }
 
     function updateTimerControlIcon(paused, noActive) {
@@ -3787,6 +3971,7 @@
     function renderStore() {
       renderStoreSectionState();
       renderBaitCards();
+      renderGiftStoreCards();
       renderUpgradeCards();
       renderSellCards();
     }
@@ -3800,8 +3985,8 @@
         card.className = "bait-card";
         card.innerHTML = `
           <div class="bait-art-frame">${bait.icon}</div>
-          <div class="bait-name">${bait.name}</div>
-          <div class="bait-desc">${bait.desc}<br />所持 ${owned} / ${bait.packQty}個セット</div>
+          <div class="bait-name">${bait.name}<span class="owned-mini">所持 ${owned}</span></div>
+          <div class="bait-desc">${bait.desc}<br />${bait.packQty}個セット</div>
           <div class="bait-bottom">
             <div class="bait-price">${bait.price} zz</div>
             <button class="buy-btn">${bait.dailyFree ? (freeClaimedToday ? "受取済み" : "受け取る") : "買う"}</button>
@@ -3811,6 +3996,26 @@
         btn.disabled = bait.dailyFree ? freeClaimedToday : state.money < bait.price;
         btn.addEventListener("click", () => buyBaitPack(bait));
         el.baitBuyList.appendChild(card);
+      });
+    }
+
+    function renderGiftStoreCards() {
+      el.giftItemList.innerHTML = "";
+      GIFT_ITEMS.forEach((gift) => {
+        const owned = state.giftCounts[gift.id] || 0;
+        const card = document.createElement("div");
+        card.className = "item-card";
+        card.innerHTML = `
+          <div class="item-art-frame">${gift.icon}</div>
+          <div class="item-name">${gift.name}<span class="owned-mini">所持 ${owned}</span></div>
+          <div class="item-desc">${gift.comment}</div>
+          <div class="item-bottom">
+            <div class="item-price">${gift.price} zz</div>
+            <button class="buy-btn">買う</button>
+          </div>
+        `;
+        card.querySelector(".buy-btn").addEventListener("click", () => buyGiftItem(gift));
+        el.giftItemList.appendChild(card);
       });
     }
 
@@ -3874,7 +4079,7 @@
       el.weekTotalWork.textContent = `今週の合計作業時間 ${totalWeekMin}分`;
       el.weekBars.innerHTML = "";
       el.weekLabels.innerHTML = `<div class="week-label-spacer"></div><div class="week-labels-inner"></div>`;
-      const labelsInner = el.weekLabels.querySelector('.week-labels-inner');
+      const labelsInner = el.weekLabels.querySelector(".week-labels-inner");
       week.days.forEach((day) => {
         const minutes = day.stat.workMin;
         const percent = Math.max(0, Math.min(100, (minutes / 1440) * 100));
@@ -3883,23 +4088,32 @@
         col.className = "day-col";
         const showInside = minutes > 0 && percent >= 14;
         const noteBottom = Math.max(0, percent);
+        const fullText = minutesToHourText(minutes);
         col.innerHTML = `
           <div class="day-bar-wrap">
-            ${minutes > 0 ? `<div class="day-bar ${isToday ? "today" : ""}" style="height:${percent}%;">${showInside ? `${minutes}分` : ``}</div>` : ``}
-            ${minutes > 0 && !showInside ? `<div class="day-bar-note" style="bottom:${noteBottom}%;">${minutes}分</div>` : ``}
+            ${minutes > 0 ? `<div class="day-bar ${isToday ? "today" : ""}" style="height:${percent}%">${showInside ? `${minutes}分` : ``}</div>` : ``}
+            ${minutes > 0 && !showInside ? `<div class="day-bar-note" style="bottom:${noteBottom}%" data-minutes="${minutes}" title="${escapeHtml(fullText)}">${minutes}分</div>` : ``}
           </div>
         `;
+        const note = col.querySelector(".day-bar-note");
+        if (note) {
+          note.addEventListener("mouseenter", () => { note.textContent = fullText; });
+          note.addEventListener("mouseleave", () => { note.textContent = `${minutes}分`; });
+        }
         el.weekBars.appendChild(col);
 
-        const label = document.createElement('div');
-        label.className = 'day-label-item';
+        const label = document.createElement("div");
+        label.className = "day-label-item";
         label.innerHTML = `<div class="day-label-main"><span class="today-dot ${isToday ? "active" : ""}"></span><span>${day.dateLabel}</span><span>${day.label}</span></div>`;
         labelsInner.appendChild(label);
       });
+
       const today = ensureDailyStat(todayKey());
       const bestFish = [...(today.catches || [])].sort((a, b) => (b.sizeCm - b.avgSize) - (a.sizeCm - a.avgSize))[0];
       el.todayBestFish.textContent = bestFish ? `${bestFish.icon} ${bestFish.name}` : "まだなし";
-      el.todayBestFishSub.textContent = bestFish ? `平均 ${formatSize(bestFish.avgSize)} cm に対して ${formatSize(bestFish.sizeCm)} cm でした。` : "今日釣った魚の中から、平均サイズとの差が最も大きい魚を表示します。";
+      el.todayBestFishSub.textContent = bestFish
+        ? `平均 ${formatSize(bestFish.avgSize)} cm に対して ${formatSize(bestFish.sizeCm)} cm / ${bestFish.price} zz`
+        : "今日釣った魚の中から、平均サイズとの差が最も大きい魚を表示します。";
       el.todayEarnedValue.textContent = `${today.earnings} zz`;
       el.todaySessionCount.textContent = `${today.sessions}回`;
     }
@@ -3968,6 +4182,208 @@
       else el.syncStatus.textContent = "Firebase未接続";
     }
 
+    function renderMailboxIndicators() {
+      const unread = getUnreadMailItems();
+      const unreadGiftCount = unread.filter((item) => item.type !== "welcome").length;
+      el.mailNavDot.classList.toggle("show", unread.length > 0);
+      setMailMiniCount(el.roomMailMiniCount, unreadGiftCount);
+      setMailMiniCount(el.fishingMailMiniCount, unreadGiftCount);
+    }
+
+    function setMailMiniCount(node, count) {
+      if (!node) return;
+      if (count > 0) {
+        node.textContent = count > 9 ? "9+" : String(count);
+        node.classList.add("show");
+      } else {
+        node.textContent = "";
+        node.classList.remove("show");
+      }
+    }
+
+    function getUnreadMailItems() {
+      return [...(state.mailbox.items || [])].filter((item) => !item.opened).sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+    }
+
+    function openNextUnreadMail() {
+      const unread = getUnreadMailItems();
+      if (unread.length === 0) {
+        openMailboxModal(null);
+        return;
+      }
+      const targetId = unread[0].id;
+      markMailOpened(targetId);
+      openMailboxModal(targetId);
+    }
+
+    function openMailboxModal(targetId = null) {
+      const items = state.mailbox.items || [];
+      if (items.length === 0) {
+        toast("まだお便りがありません。");
+        return;
+      }
+      let index = 0;
+      if (targetId) index = Math.max(0, items.findIndex((item) => item.id === targetId));
+      state.mailbox.activeIndex = index;
+      const current = items[index] || items[0];
+      if (current && !current.opened) markMailOpened(current.id);
+      renderMailboxModal();
+      el.mailboxModal.classList.add("show");
+    }
+
+    function closeMailboxModal() {
+      el.mailboxModal.classList.remove("show");
+      saveAll().catch(console.error);
+      renderMailboxIndicators();
+      renderAll();
+    }
+
+    function stepMailbox(delta) {
+      const items = state.mailbox.items || [];
+      if (!items.length) return;
+      const next = (state.mailbox.activeIndex + delta + items.length) % items.length;
+      state.mailbox.activeIndex = next;
+      const current = items[next];
+      if (current && !current.opened) markMailOpened(current.id);
+      renderMailboxModal();
+    }
+
+    function renderMailboxModal() {
+      const items = state.mailbox.items || [];
+      if (!items.length) {
+        el.mailboxPaper.innerHTML = `<h3>お便りはまだありません</h3>`;
+        return;
+      }
+      const current = items[state.mailbox.activeIndex] || items[0];
+      el.mailboxPaper.innerHTML = `
+        <div class="mail-gift-icon">${current.icon || "💌"}</div>
+        <h3>${escapeHtml(current.title || "お便り")}</h3>
+        <div class="sender">送り主：${escapeHtml(current.senderName || "不明")}</div>
+        <div class="mail-body">${escapeHtml(current.body || "")}</div>
+      `;
+    }
+
+    function markMailOpened(id) {
+      const item = state.mailbox.items.find((mail) => mail.id === id);
+      if (!item) return;
+      item.opened = true;
+      saveAll().catch(console.error);
+    }
+
+    function mergeInboxItems(remoteItems) {
+      const currentMap = new Map((state.mailbox.items || []).map((item) => [item.id, item]));
+      remoteItems.forEach((remote) => {
+        const existing = currentMap.get(remote.id);
+        if (!existing) currentMap.set(remote.id, remote);
+        else currentMap.set(remote.id, { ...remote, opened: existing.opened || remote.opened });
+      });
+      state.mailbox.items = [...currentMap.values()].sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+      renderMailboxIndicators();
+      saveLocalState(state);
+    }
+
+    function openGiftModal(member) {
+      selectedGiftTarget = member;
+      el.giftModalTitle.textContent = `${member.name} に送る`;
+      renderGiftModalCards();
+      el.giftShellInput.value = "";
+      el.giftModal.classList.add("show");
+    }
+
+    function closeGiftModal() {
+      selectedGiftTarget = null;
+      el.giftModal.classList.remove("show");
+    }
+
+    function renderGiftModalCards() {
+      el.giftGrid.innerHTML = "";
+      GIFT_ITEMS.filter((gift) => gift.id !== "gift_shell").forEach((gift) => {
+        const owned = state.giftCounts[gift.id] || 0;
+        const card = document.createElement("div");
+        card.className = "gift-card";
+        card.innerHTML = `
+          <div class="gift-name">${gift.icon} ${gift.name}<span class="owned-mini">所持 ${owned}</span></div>
+          <div class="gift-note">${gift.comment}</div>
+          <div class="gift-meta"><span>${gift.price} zz</span></div>
+        `;
+        const btn = document.createElement("button");
+        btn.className = "btn primary";
+        btn.textContent = "送る";
+        btn.disabled = owned <= 0;
+        btn.addEventListener("click", () => sendGiftToTarget(gift).catch(console.error));
+        card.appendChild(btn);
+        el.giftGrid.appendChild(card);
+      });
+      const shellOwned = state.giftCounts.gift_shell || 0;
+      el.sendShellBtn.disabled = shellOwned <= 0 || !selectedGiftTarget;
+      el.sendShellBtn.textContent = `お話貝を送る（所持 ${shellOwned}）`;
+    }
+
+    async function sendGiftToTarget(gift) {
+      if (!selectedGiftTarget) return;
+      if ((state.giftCounts[gift.id] || 0) <= 0) {
+        toast("アイテムが足りません。");
+        return;
+      }
+      state.giftCounts[gift.id] -= 1;
+      await pushMailToUser(selectedGiftTarget.uid, {
+        id: makeId(),
+        type: "gift",
+        title: gift.name,
+        icon: gift.icon,
+        senderName: state.user.displayName || "釣り人",
+        body: gift.comment,
+        createdAt: Date.now(),
+        opened: false,
+      });
+      toast(`${selectedGiftTarget.name} に ${gift.name} を送りました。`);
+      closeGiftModal();
+      saveAll().catch(console.error);
+      renderAll();
+    }
+
+    async function sendShellGift() {
+      if (!selectedGiftTarget) return;
+      if ((state.giftCounts.gift_shell || 0) <= 0) {
+        toast("お話貝が足りません。");
+        return;
+      }
+      const text = safeGiftText(el.giftShellInput.value);
+      if (!text) {
+        toast("6文字以内で入力してください。");
+        return;
+      }
+      state.giftCounts.gift_shell -= 1;
+      await pushMailToUser(selectedGiftTarget.uid, {
+        id: makeId(),
+        type: "gift",
+        title: "お話貝",
+        icon: "🐚",
+        senderName: state.user.displayName || "釣り人",
+        body: text,
+        createdAt: Date.now(),
+        opened: false,
+      });
+      toast(`${selectedGiftTarget.name} にお話貝を送りました。`);
+      closeGiftModal();
+      saveAll().catch(console.error);
+      renderAll();
+    }
+
+    async function pushMailToUser(uid, mail) {
+      if (!db || !uid) return;
+      const inboxRef = doc(db, "inboxes", uid);
+      try {
+        const snap = await getDoc(inboxRef);
+        const currentItems = snap.exists() && Array.isArray(snap.data()?.items) ? snap.data().items : [];
+        const nextItems = [...currentItems, mail];
+        await setDoc(inboxRef, { items: nextItems, updatedAt: serverTimestamp() }, { merge: true });
+      } catch (err) {
+        console.error(err);
+        toast("プレゼント送信に失敗しました。");
+      }
+    }
+
     function buyBaitPack(bait) {
       if (bait.dailyFree) {
         if (state.shop.freeBaitClaimDate === todayKey()) return;
@@ -3981,6 +4397,15 @@
       saveAll().catch(console.error); renderAll();
     }
 
+    function buyGiftItem(gift) {
+      if (state.money < gift.price) { toast("所持金が足りません。"); return; }
+      state.money -= gift.price;
+      state.giftCounts[gift.id] = (state.giftCounts[gift.id] || 0) + 1;
+      toast(`${gift.name} を購入しました。`);
+      saveAll().catch(console.error);
+      renderAll();
+    }
+
     function buyUpgrade(partId) {
       const level = state.upgrades[partId] || 0;
       const cost = getUpgradeCost(partId, level);
@@ -3989,7 +4414,8 @@
       state.upgrades[partId] = level + 1;
       const part = UPGRADE_PARTS.find((p) => p.id === partId);
       toast(`${part.name} を Lv.${state.upgrades[partId]} に強化しました。`);
-      saveAll().catch(console.error); renderAll();
+      saveAll().catch(console.error);
+      renderAll();
     }
 
     function sellInventoryEntry(uid, sellPrice) {
@@ -3999,13 +4425,15 @@
       state.money += sellPrice;
       addEarnings(sellPrice);
       toast(`${entry.name} を ${sellPrice} zz で売却しました。`);
-      saveAll().catch(console.error); renderAll();
+      saveAll().catch(console.error);
+      renderAll();
     }
 
     function updateSetting(key, value) {
       state.settings[key] = value;
       toast("設定を更新しました。");
-      saveAll().catch(console.error); renderAll();
+      saveAll().catch(console.error);
+      renderAll();
     }
 
     async function loadRemoteUser(uid) {
@@ -4023,7 +4451,12 @@
     async function saveRemoteUser() {
       if (!db || !firebaseSyncOk || !state.user.uid || state.user.isGuest) return;
       try {
-        await setDoc(doc(db, "users", state.user.uid), { uid: state.user.uid, displayName: state.user.displayName || "釣り人", updatedAt: serverTimestamp(), state }, { merge: true });
+        await setDoc(doc(db, "users", state.user.uid), {
+          uid: state.user.uid,
+          displayName: state.user.displayName || "釣り人",
+          updatedAt: serverTimestamp(),
+          state,
+        }, { merge: true });
       } catch (err) { console.error(err); }
     }
 
@@ -4049,7 +4482,10 @@
           }
         }));
         globalRecords = map;
-      } catch (err) { console.error(err); globalRecords = {}; }
+      } catch (err) {
+        console.error(err);
+        globalRecords = {};
+      }
     }
 
     async function saveAll(force = false) {
@@ -4079,13 +4515,17 @@
         await saveAll(true);
         renderAll();
       } catch (err) {
-        console.error(err); toast("読み込みに失敗しました。");
-      } finally { e.target.value = ""; }
+        console.error(err);
+        toast("読み込みに失敗しました。");
+      } finally {
+        e.target.value = "";
+      }
     }
 
     function mergeLoadedState(next) {
       state = deepMerge(cloneDefault(), next || {});
       ensurePlayerToken();
+      ensureWelcomeMailSeeded();
       applyStateToSelectors();
       renderAll();
       if (state.room.inRoom && state.room.roomId) startRoomListener(state.room.roomId);
@@ -4210,19 +4650,80 @@
       return base;
     }
 
-    function safeName(v) { return String(v || "").trim().slice(0, 16).replace(/[<>]/g, ""); }
-    function todayKey() { const d = new Date(); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; }
-    function formatRemain(ms) { const total = Math.ceil(ms / 1000); const m = Math.floor(total / 60); const s = total % 60; return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`; }
-    function formatSize(n) { return Number(n || 0).toFixed(1); }
-    function formatDateTime(ts) { const d = new Date(ts); return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, "0")}/${String(d.getDate()).padStart(2, "0")} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`; }
+    function safeName(v) {
+      return String(v || "").trim().slice(0, 16).replace(/[<>]/g, "");
+    }
+    function safeGiftText(v) {
+      return String(v || "").trim().slice(0, 6).replace(/[<>]/g, "");
+    }
+    function todayKey() {
+      const d = new Date();
+      return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+    }
+    function formatRemain(ms) {
+      const total = Math.ceil(ms / 1000);
+      const m = Math.floor(total / 60);
+      const s = total % 60;
+      return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+    }
+    function formatSize(n) {
+      return Number(n || 0).toFixed(1);
+    }
+    function formatDateTime(ts) {
+      const d = new Date(ts);
+      return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, "0")}/${String(d.getDate()).padStart(2, "0")} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+    }
+    function minutesToHourText(min) {
+      const hours = Math.floor(min / 60);
+      const minutes = min % 60;
+      if (hours <= 0) return `${minutes}分`;
+      return `${hours}時間${minutes}分`;
+    }
     function translateWeather(w) { return ({ sunny: "晴れ", cloudy: "曇り", rainy: "雨" })[w] || w; }
     function translateTime(t) { return ({ day: "昼", evening: "夕方", night: "夜" })[t] || t; }
-    function weightedPick(list) { const total = list.reduce((sum, v) => sum + v.weight, 0); let r = Math.random() * total; for (const item of list) { r -= item.weight; if (r <= 0) return item.entity; } return list[list.length - 1].entity; }
-    function approxGaussian() { let u = 0, v = 0; while (u === 0) u = Math.random(); while (v === 0) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
-    function seededNumber(seed) { let h = 2166136261; for (let i = 0; i < seed.length; i++) { h ^= seed.charCodeAt(i); h = Math.imul(h, 16777619); } return Math.abs(h >>> 0); }
-    function makeId() { return `${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`; }
-    function escapeHtml(str) { return String(str ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#39;"); }
-    function sizeDeltaText(size, avg) { const delta = Math.round((size - avg) * 10) / 10; const sign = delta > 0 ? "+" : ""; const klass = delta >= 0 ? "plus-size" : "minus-size"; return { raw: `${sign}${delta.toFixed(1)} cm`, html: `<span class="${klass}">${sign}${delta.toFixed(1)} cm</span>` }; }
+    function weightedPick(list) {
+      const total = list.reduce((sum, v) => sum + v.weight, 0);
+      let r = Math.random() * total;
+      for (const item of list) {
+        r -= item.weight;
+        if (r <= 0) return item.entity;
+      }
+      return list[list.length - 1].entity;
+    }
+    function approxGaussian() {
+      let u = 0, v = 0;
+      while (u === 0) u = Math.random();
+      while (v === 0) v = Math.random();
+      return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+    }
+    function seededNumber(seed) {
+      let h = 2166136261;
+      for (let i = 0; i < seed.length; i++) {
+        h ^= seed.charCodeAt(i);
+        h = Math.imul(h, 16777619);
+      }
+      return Math.abs(h >>> 0);
+    }
+    function makeId() {
+      return `${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+    }
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+    function sizeDeltaText(size, avg) {
+      const delta = Math.round((size - avg) * 10) / 10;
+      const sign = delta > 0 ? "+" : "";
+      const klass = delta >= 0 ? "plus-size" : "minus-size";
+      return {
+        raw: `${sign}${delta.toFixed(1)}`,
+        html: `<span class="${klass}">${sign}${delta.toFixed(1)} cm</span>`
+      };
+    }
 
     window.zzFishingDebug = {
       state: () => state,
@@ -4233,4 +4734,3 @@
   </script>
 </body>
 </html>
-
