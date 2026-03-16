@@ -317,6 +317,101 @@
       gap: 10px;
       max-width: min(72vw, 760px);
     }
+    .bottom-left-stack {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      z-index: 8;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+      max-width: min(60vw, 420px);
+    }
+    .current-time-chip {
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 999px;
+      background: rgba(8,18,29,0.44);
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    .money-inline {
+      font-size: 20px;
+      font-weight: 800;
+      color: rgba(255,255,255,0.92);
+      text-shadow: 0 8px 24px rgba(0,0,0,0.35);
+      padding-left: 2px;
+    }
+    .participant-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      width: 100%;
+      justify-content: flex-end;
+    }
+    .mail-mini-trigger {
+      position: relative;
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(8,18,29,0.52);
+      color: var(--text);
+      font-size: 20px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+    }
+    .mail-mini-count,
+    .mail-nav-dot {
+      position: absolute;
+      right: -2px;
+      top: -2px;
+      min-width: 16px;
+      height: 16px;
+      padding: 0 4px;
+      border-radius: 999px;
+      background: #ff6767;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.28);
+    }
+    .mail-mini-count.show,
+    .mail-nav-dot.show {
+      display: flex;
+    }
+    .participant-clickable {
+      cursor: pointer;
+    }
+    .participant-clickable:hover .participant-avatar {
+      box-shadow: 0 0 0 2px rgba(123,223,245,0.5), 0 10px 18px rgba(0,0,0,0.22);
+    }
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      z-index: 8;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+      max-width: min(72vw, 760px);
+    }
 
     .count-chip,
     .stat-pill {
@@ -623,6 +718,14 @@
       transition: width 0.22s ease;
     }
     .fishing-timer.active { width: var(--timerSizeActive); }
+    .fishing-timer.mega {
+      width: min(78vw, calc(var(--timerSizeActive) * 3));
+      max-width: 720px;
+    }
+    .timer-main-time.clickable,
+    .focus-time.clickable {
+      cursor: pointer;
+    }
     .timer-gauge {
       width: 100%;
       height: 100%;
@@ -1420,6 +1523,7 @@
       gap: 10px;
     }
     .result-art {
+      position: relative;
       width: 110px;
       height: 110px;
       border-radius: 28px;
@@ -1428,6 +1532,18 @@
       font-size: 54px;
       background: rgba(255,255,255,0.08);
       border: 1px solid rgba(255,255,255,0.14);
+    }
+    .result-art-avg {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 8px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.82);
+      text-shadow: 0 4px 12px rgba(0,0,0,0.35);
+      pointer-events: none;
     }
     .result-price {
       font-size: 26px;
@@ -1519,6 +1635,88 @@
       justify-content: flex-end;
     }
 
+    .mailbox-modal-card {
+      width: min(560px, 100%);
+      padding: 22px;
+      border-radius: 28px;
+      background: linear-gradient(180deg, rgba(30,38,48,0.96), rgba(15,22,28,0.98));
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow: 0 28px 60px rgba(0,0,0,0.38);
+    }
+    .mailbox-paper {
+      margin-top: 12px;
+      padding: 18px;
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(255,248,235,0.96), rgba(241,233,218,0.94));
+      color: #5b4733;
+      min-height: 240px;
+      box-shadow: inset 0 0 0 1px rgba(120,90,60,0.08), 0 14px 26px rgba(0,0,0,0.16);
+    }
+    .mailbox-paper h3 {
+      margin: 0 0 12px;
+      font-size: 20px;
+      color: #5b4733;
+    }
+    .mailbox-paper .sender {
+      font-size: 12px;
+      color: rgba(91,71,51,0.72);
+      margin-bottom: 10px;
+    }
+    .mailbox-paper .mail-body {
+      white-space: pre-wrap;
+      line-height: 1.9;
+      font-size: 14px;
+    }
+    .gift-grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      margin-top: 14px;
+    }
+    .gift-card {
+      padding: 12px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 130px;
+    }
+    .gift-name {
+      font-size: 15px;
+      font-weight: 800;
+    }
+    .gift-note {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+      flex: 1;
+    }
+    .gift-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 12px;
+    }
+    .gift-text-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .gift-text-row input {
+      flex: 1;
+      min-width: 120px;
+      height: 42px;
+      padding: 0 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+    }
     .auth-overlay {
       position: absolute;
       inset: 0;
@@ -1632,6 +1830,11 @@
       .upgrade-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     }
     @media (max-width: 760px) {
+      .bottom-left-stack { max-width: 70vw; }
+      .current-time-chip { font-size: 16px; min-height: 36px; padding: 0 12px; }
+      .money-inline { font-size: 16px; }
+      .participant-row { gap: 8px; }
+      .mail-mini-trigger { width: 38px; height: 38px; font-size: 18px; }
       :root { --navExpanded: 72px; --navCollapsed: 22px; }
       .nav-toggle { top: calc(var(--safeTop) + 8px); left: 10px; }
       .side-nav {
@@ -1714,6 +1917,11 @@
           <div class="rod-mini">🎣</div>
         </button>
         <div id="navLevelList" class="nav-level-list"></div>
+        <button id="mailboxNavBtn" class="nav-level-toggle" style="position:relative; min-height:46px;">
+          <div>お便り</div>
+          <div class="rod-mini">💌</div>
+          <span id="mailNavDot" class="mail-nav-dot"></span>
+        </button>
         <div id="userPill" class="user-pill">未ログイン</div>
       </div>
     </nav>
@@ -1733,12 +1941,19 @@
         </div>
 
         <div id="roomActiveUI" style="display:none; position:absolute; inset:0; z-index:4;">
+          <div class="bottom-left-stack fade-ui">
+            <div id="roomCurrentTime" class="current-time-chip">00:00</div>
+          </div>
           <div class="top-left-meta fade-ui">
             <div id="roomCountChip" class="count-chip">1 / 3</div>
+            <div id="roomMoneyInline" class="money-inline">0 zz</div>
           </div>
 
           <div class="top-right-stack fade-ui">
-            <div id="roomParticipants" class="participants-strip"></div>
+            <div class="participant-row">
+              <button id="roomMailMiniBtn" class="mail-mini-trigger">💌<span id="roomMailMiniCount" class="mail-mini-count"></span></button>
+              <div id="roomParticipants" class="participants-strip"></div>
+            </div>
           </div>
 
           <div class="stamp-rail fade-ui">
@@ -1811,7 +2026,14 @@
         </div>
 
         <div class="bottom-right-stack fade-ui">
-          <div id="fishingParticipants" class="participants-strip"></div>
+          <div class="participant-row">
+            <button id="fishingMailMiniBtn" class="mail-mini-trigger">💌<span id="fishingMailMiniCount" class="mail-mini-count"></span></button>
+            <div id="fishingParticipants" class="participants-strip"></div>
+          </div>
+        </div>
+
+        <div class="bottom-left-stack fade-ui">
+          <div id="fishingCurrentTime" class="current-time-chip">00:00</div>
         </div>
 
         <div class="stamp-rail fade-ui">
@@ -1985,7 +2207,7 @@
         </div>
         <div class="result-core">
           <div class="result-art-wrap">
-            <div id="resultArt" class="result-art">🐟</div>
+            <div id="resultArt" class="result-art"><span id="resultArtEmoji">🐟</span><div id="resultArtAvg" class="result-art-avg">平均 0.0 cm</div></div>
             <div id="resultPrice" class="result-price">0 zz</div>
           </div>
           <div>
@@ -2039,6 +2261,34 @@
 
     <div id="mobileIntro" class="mobile-intro">
       <video id="mobileIntroVideo" muted playsinline preload="auto" src="load1.mp4"></video>
+    </div>
+
+    <div id="mailboxModal" class="modal">
+      <div class="mailbox-modal-card">
+        <div class="modal-top">
+          <h2>お便り</h2>
+          <button id="closeMailboxBtn" class="close-btn">×</button>
+        </div>
+        <div id="mailboxPaper" class="mailbox-paper"></div>
+        <div class="modal-actions" style="margin-top:14px; justify-content:space-between;">
+          <button id="prevMailBtn" class="btn soft">前へ</button>
+          <button id="nextMailBtn" class="btn primary">次へ</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="giftModal" class="modal">
+      <div class="modal-card" style="max-width:640px;">
+        <div class="modal-top">
+          <h2 id="giftModalTitle">プレゼントを送る</h2>
+          <button id="closeGiftBtn" class="close-btn">×</button>
+        </div>
+        <div id="giftGrid" class="gift-grid"></div>
+        <div class="gift-text-row">
+          <input id="giftShellInput" type="text" maxlength="6" placeholder="6文字まで" />
+          <button id="sendShellBtn" class="btn primary">お話貝を送る</button>
+        </div>
+      </div>
     </div>
 
     <div id="toastWrap" class="toast-wrap"></div>
