@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -2327,7 +2328,37 @@
               <div class="field">
                 <label for="roomBaitSelect">餌</label>
                 <select id="roomBaitSelect"></select>
-           <section id="screen-fishing" class="screen">
+              </div>
+            </div>
+            <div id="loopFields" class="control-fields" style="display:none;">
+              <div class="field">
+                <label for="loopFishSelect">釣り</label>
+                <select id="loopFishSelect"></select>
+              </div>
+              <div class="field">
+                <label for="loopRestSelect">休憩</label>
+                <select id="loopRestSelect"></select>
+              </div>
+              <div class="field">
+                <label for="loopCountSelect">ループ</label>
+                <select id="loopCountSelect"></select>
+              </div>
+              <div class="field">
+                <label for="loopBaitSelect">餌</label>
+                <select id="loopBaitSelect"></select>
+              </div>
+              <div id="loopNeedText" class="loop-need-text"></div>
+            </div>
+            <div class="room-action-row">
+              <button id="loopModeBtn" class="action-btn loop">ループ</button>
+              <button id="roomFishingBtn" class="action-btn primary">釣る</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="screen-fishing" class="screen">
       <div class="screen-shell">
         <div class="bg-screen">
           <video id="fishingVideo" class="bg-video" autoplay muted loop playsinline preload="auto"></video>
@@ -2378,35 +2409,6 @@
 
         <div class="stamp-rail fade-ui">
           <button id="fishingMessageBtn" class="message-trigger">💬<span id="fishingMessageDot" class="message-dot"></span></button>
-          <div class="stamp-buttons">
-            <button class="stamp-btn" data-stamp="❤">❤</button>
-            <button class="stamp-btn" data-stamp="✨">✨</button>
-          </div>
-          <div id="fishingStampFeed" class="stamp-feed"></div>
-        </div>
-
-        <div id="focusOverlay" class="focus-overlay">
-          <div class="focus-wrap">
-            <div id="focusTime" class="focus-time">00:00</div>
-            <div id="focusPlan" class="focus-plan">25min</div>
-          </div>
-          <button id="focusBackBtn" class="focus-back">戻る</button>
-        </div>
-      </div>
-    </section>
-
-    <section id="screen-store"div class="bottom-right-stack fade-ui">
-          <div class="participant-row">
-            <button id="fishingMailMiniBtn" class="mail-mini-trigger">💌<span id="fishingMailMiniCount" class="mail-mini-count"></span></button>
-            <div id="fishingParticipants" class="participants-strip"></div>
-          </div>
-        </div>
-
-        <div class="bottom-left-stack fade-ui">
-          <div id="fishingCurrentTime" class="current-time-chip">00:00</div>
-        </div>
-
-        <div class="stamp-rail fade-ui">
           <div class="stamp-buttons">
             <button class="stamp-btn" data-stamp="❤">❤</button>
             <button class="stamp-btn" data-stamp="✨">✨</button>
@@ -2710,7 +2712,7 @@
       </div>
     </div>
 
-    <div id="toastWrap" class="toast-wra
+    <div id="toastWrap" class="toast-wrap"></div>
   </div>
 
   <script type="module">
@@ -2820,14 +2822,17 @@
 使ってくださって、本当にありがとうございます。`;
 
     const DEFAULT_STATE = {
-      version: 13,
+      version: 14,
       ui: {
         navCollapsed: false,
         focusMode: false,
         fishingUiVisible: true,
         partsPanelOpen: false,
         timerMega: false,
-        storeSections: { bait: true, upgrade: true, items: true, sell: true },
+        selfMoneyOpen: false,
+        storeSections: { bait: false, upgrade: false, items: false, sell: false },
+        utilityOpen: false,
+        utilityTab: "todo",
       },
       user: {
         uid: null,
@@ -2840,7 +2845,9 @@
         inRoom: false,
         roomId: null,
         status: "idle",
+        idleStartedAt: null,
       },
+      miniGoal: "",
       money: 220,
       baitCounts: { bait_trial: 10, bait_basic: 0, bait_glow: 0, bait_premium: 0 },
       giftCounts: {
@@ -2859,6 +2866,11 @@
       encyclopedia: {},
       history: { daily: {} },
       mailbox: { items: [], activeIndex: 0, seededWelcome: false },
+      productivity: {
+        todos: [],
+        reminders: [],
+        records: [],
+      },
       settings: { waveSound: false, catchSound: true, browserNotify: false, shakeOnFinish: true },
       fishing: {
         inProgress: false,
@@ -2871,6 +2883,24 @@
         baitId: "bait_trial",
         weather: null,
         timeOfDay: null,
+      },
+      loopConfig: {
+        enabled: false,
+        fishMin: 25,
+        restMin: 5,
+        count: 3,
+        baitId: "bait_basic",
+      },
+      loopRun: {
+        active: false,
+        phase: null,
+        current: 0,
+        total: 0,
+        fishMin: 25,
+        restMin: 5,
+        baitId: "bait_basic",
+        restEndAt: null,
+        results: [],
       },
       currentConditions: { timeOfDay: "day", weather: "sunny" },
       currentTimeText: "00:00",
@@ -2930,29 +2960,39 @@
       roomLobby: document.getElementById("roomLobby"),
       roomActiveUI: document.getElementById("roomActiveUI"),
       roomCurrentTime: document.getElementById("roomCurrentTime"),
+      roomClockHelp: document.getElementById("roomClockHelp"),
       fishingCurrentTime: document.getElementById("fishingCurrentTime"),
+      fishingClockHelp: document.getElementById("fishingClockHelp"),
+      roomGoalChip: document.getElementById("roomGoalChip"),
+      fishingGoalChip: document.getElementById("fishingGoalChip"),
+      setMiniGoalBtnLobby: document.getElementById("setMiniGoalBtnLobby"),
       playRoomBtn: document.getElementById("playRoomBtn"),
       roomParticipants: document.getElementById("roomParticipants"),
-      roomCountChip: document.getElementById("roomCountChip"),
-      roomMoneyInline: document.getElementById("roomMoneyInline"),
       roomCourseSelect: document.getElementById("roomCourseSelect"),
       roomBaitSelect: document.getElementById("roomBaitSelect"),
       roomFishingBtn: document.getElementById("roomFishingBtn"),
-      leaveRoomBtn: document.getElementById("leaveRoomBtn"),
+      leaveRoomBtnLeft: document.getElementById("leaveRoomBtnLeft"),
       roomStampFeed: document.getElementById("roomStampFeed"),
-      roomMailMiniBtn: document.getElementById("roomMailMiniBtn"),
-      roomMailMiniCount: document.getElementById("roomMailMiniCount"),
+      roomMessageBtn: document.getElementById("roomMessageBtn"),
+      roomMessageDot: document.getElementById("roomMessageDot"),
+      loopModeBtn: document.getElementById("loopModeBtn"),
+      normalFields: document.getElementById("normalFields"),
+      loopFields: document.getElementById("loopFields"),
+      loopFishSelect: document.getElementById("loopFishSelect"),
+      loopRestSelect: document.getElementById("loopRestSelect"),
+      loopCountSelect: document.getElementById("loopCountSelect"),
+      loopBaitSelect: document.getElementById("loopBaitSelect"),
+      loopNeedText: document.getElementById("loopNeedText"),
+      roomLoopInfo: document.getElementById("roomLoopInfo"),
 
       fishingParticipants: document.getElementById("fishingParticipants"),
-      fishingRoomCountChip: document.getElementById("fishingRoomCountChip"),
       baitTotalMini: document.getElementById("baitTotalMini"),
-      fishMoneyMini: document.getElementById("fishMoneyMini"),
       weatherHalf: document.getElementById("weatherHalf"),
       timeHalf: document.getElementById("timeHalf"),
       weatherTimeBalloon: document.getElementById("weatherTimeBalloon"),
       fishingStampFeed: document.getElementById("fishingStampFeed"),
-      fishingMailMiniBtn: document.getElementById("fishingMailMiniBtn"),
-      fishingMailMiniCount: document.getElementById("fishingMailMiniCount"),
+      fishingMessageBtn: document.getElementById("fishingMessageBtn"),
+      fishingMessageDot: document.getElementById("fishingMessageDot"),
 
       fishingTimer: document.getElementById("fishingTimer"),
       timerText: document.getElementById("timerText"),
@@ -3051,6 +3091,28 @@
       giftShellInput: document.getElementById("giftShellInput"),
       sendShellBtn: document.getElementById("sendShellBtn"),
       closeGiftBtn: document.getElementById("closeGiftBtn"),
+
+      utilityModal: document.getElementById("utilityModal"),
+      utilityTitle: document.getElementById("utilityTitle"),
+      utilityAddBtn: document.getElementById("utilityAddBtn"),
+      closeUtilityBtn: document.getElementById("closeUtilityBtn"),
+      utilityForm: document.getElementById("utilityForm"),
+      utilityTextInput: document.getElementById("utilityTextInput"),
+      utilityTimeInput: document.getElementById("utilityTimeInput"),
+      utilitySelectInput: document.getElementById("utilitySelectInput"),
+      utilityCheckInput: document.getElementById("utilityCheckInput"),
+      utilityCancelFormBtn: document.getElementById("utilityCancelFormBtn"),
+      utilitySaveBtn: document.getElementById("utilitySaveBtn"),
+      utilityContent: document.getElementById("utilityContent"),
+      utilityTabs: [...document.querySelectorAll(".utility-tab")],
+      utilityBadgeReminder: document.getElementById("utilityBadgeReminder"),
+      utilityBadgeTodo: document.getElementById("utilityBadgeTodo"),
+      utilityBadgeRecord: document.getElementById("utilityBadgeRecord"),
+
+      batchResultModal: document.getElementById("batchResultModal"),
+      batchResultList: document.getElementById("batchResultList"),
+      closeBatchResultBtn: document.getElementById("closeBatchResultBtn"),
+      finishBatchResultBtn: document.getElementById("finishBatchResultBtn"),
 
       stampButtons: [...document.querySelectorAll(".stamp-btn")],
       toastWrap: document.getElementById("toastWrap"),
@@ -3233,7 +3295,13 @@
       el.mailboxNavBtn.addEventListener("click", () => openMailboxModal(null));
 
       el.playRoomBtn.addEventListener("click", () => joinBestRoom().catch(console.error));
-      el.leaveRoomBtn.addEventListener("click", () => leaveRoom(false).catch(console.error));
+      el.setMiniGoalBtnLobby.addEventListener("click", editMiniGoal);
+      el.roomGoalChip.addEventListener("click", editMiniGoal);
+      el.fishingGoalChip.addEventListener("click", editMiniGoal);
+      el.roomCurrentTime.addEventListener("click", toggleUtilityModal);
+      el.fishingCurrentTime.addEventListener("click", toggleUtilityModal);
+
+      el.leaveRoomBtnLeft.addEventListener("click", () => leaveRoom(false).catch(console.error));
       el.roomFishingBtn.addEventListener("click", startFishingFromRoom);
       el.roomCourseSelect.addEventListener("change", () => {
         state.selectedCourseMin = Number(el.roomCourseSelect.value);
@@ -3243,12 +3311,34 @@
         state.selectedBaitId = el.roomBaitSelect.value;
         saveAll().catch(console.error); renderAll();
       });
+      el.loopFishSelect.addEventListener("change", () => {
+        state.loopConfig.fishMin = Number(el.loopFishSelect.value);
+        saveAll().catch(console.error); renderAll();
+      });
+      el.loopRestSelect.addEventListener("change", () => {
+        state.loopConfig.restMin = Number(el.loopRestSelect.value);
+        saveAll().catch(console.error); renderAll();
+      });
+      el.loopCountSelect.addEventListener("change", () => {
+        state.loopConfig.count = Number(el.loopCountSelect.value);
+        saveAll().catch(console.error); renderAll();
+      });
+      el.loopBaitSelect.addEventListener("change", () => {
+        state.loopConfig.baitId = el.loopBaitSelect.value;
+        saveAll().catch(console.error); renderAll();
+      });
+      el.loopModeBtn.addEventListener("click", () => {
+        if (state.loopRun.active) return;
+        state.loopConfig.enabled = !state.loopConfig.enabled;
+        renderLoopModeState();
+        saveAll().catch(console.error);
+      });
 
       el.toggleFishingBtn.addEventListener("click", toggleFishingPauseResume);
       el.cancelFishingBtn.addEventListener("click", cancelFishingNoReward);
       el.focusModeBtn.addEventListener("click", () => setFocusMode(true));
       el.focusBackBtn.addEventListener("click", () => setFocusMode(false));
-      el.timerText.addEventListener("click", () => toggleTimerMega());
+      el.timerText.addEventListener("click", toggleTimerMega);
       el.focusTime.addEventListener("click", () => toggleFishingPauseResume());
 
       el.googleLoginBtn.addEventListener("click", () => openNameStep("google"));
@@ -3287,17 +3377,36 @@
       el.sellSectionToggle.addEventListener("click", () => toggleStoreSection("sell"));
 
       el.stampButtons.forEach((btn) => btn.addEventListener("click", () => sendStamp(btn.dataset.stamp).catch(console.error)));
+      el.roomMessageBtn.addEventListener("click", () => openNextGiftMessage());
+      el.fishingMessageBtn.addEventListener("click", () => openNextGiftMessage());
       el.sellResultBtn.addEventListener("click", () => sellPendingResult().catch(console.error));
       el.keepResultBtn.addEventListener("click", () => keepPendingResult().catch(console.error));
       el.closeResultBtn.addEventListener("click", () => { if (pendingResult) keepPendingResult().catch(console.error); else closeResultModal(); });
 
-      el.roomMailMiniBtn.addEventListener("click", () => openNextUnreadMail());
-      el.fishingMailMiniBtn.addEventListener("click", () => openNextUnreadMail());
       el.closeMailboxBtn.addEventListener("click", closeMailboxModal);
       el.prevMailBtn.addEventListener("click", () => stepMailbox(-1));
       el.nextMailBtn.addEventListener("click", () => stepMailbox(1));
       el.closeGiftBtn.addEventListener("click", closeGiftModal);
       el.sendShellBtn.addEventListener("click", () => sendShellGift().catch(console.error));
+
+      el.utilityTabs.forEach((btn) => btn.addEventListener("click", () => {
+        state.ui.utilityTab = btn.dataset.utab;
+        renderUtilityPanel();
+        saveAll().catch(console.error);
+      }));
+      el.utilityAddBtn.addEventListener("click", () => toggleUtilityForm(true));
+      el.closeUtilityBtn.addEventListener("click", closeUtilityModal);
+      el.utilityCancelFormBtn.addEventListener("click", () => toggleUtilityForm(false));
+      el.utilitySaveBtn.addEventListener("click", saveUtilityForm);
+      el.utilityModal.addEventListener("click", (e) => {
+        if (e.target === el.utilityModal) closeUtilityModal();
+      });
+
+      el.closeBatchResultBtn.addEventListener("click", closeBatchResultModal);
+      el.finishBatchResultBtn.addEventListener("click", closeBatchResultModal);
+      el.batchResultModal.addEventListener("click", (e) => {
+        if (e.target === el.batchResultModal) closeBatchResultModal();
+      });
 
       window.addEventListener("resize", () => { setAppViewportHeight(); updateResponsiveScale(); renderAll(); });
       window.addEventListener("orientationchange", () => { setTimeout(() => { setAppViewportHeight(); updateResponsiveScale(); renderAll(); }, 120); });
@@ -3522,24 +3631,40 @@
     }
 
     function fillStaticSelectors() {
-      el.roomCourseSelect.innerHTML = "";
-      COURSE_OPTIONS.forEach((min) => {
+      const fillMinuteSelect = (node, values) => {
+        node.innerHTML = "";
+        values.forEach((min) => {
+          const option = document.createElement("option");
+          option.value = String(min);
+          option.textContent = `${min}分`;
+          node.appendChild(option);
+        });
+      };
+      fillMinuteSelect(el.roomCourseSelect, COURSE_OPTIONS);
+      fillMinuteSelect(el.loopFishSelect, COURSE_OPTIONS);
+      fillMinuteSelect(el.loopRestSelect, [1, 3, 5, 10, 15, 25, 40, 60]);
+      el.loopCountSelect.innerHTML = "";
+      for (let i = 1; i <= 10; i++) {
         const option = document.createElement("option");
-        option.value = String(min);
-        option.textContent = `${min}分`;
-        el.roomCourseSelect.appendChild(option);
-      });
+        option.value = String(i);
+        option.textContent = `${i}周`;
+        el.loopCountSelect.appendChild(option);
+      }
     }
 
     function fillBaitSelector() {
-      el.roomBaitSelect.innerHTML = "";
-      BAIT_TYPES.forEach((bait) => {
-        const count = state.baitCounts[bait.id] || 0;
-        const option = document.createElement("option");
-        option.value = bait.id;
-        option.textContent = `${bait.icon} ${bait.name} ×${count}`;
-        el.roomBaitSelect.appendChild(option);
-      });
+      const fill = (node) => {
+        node.innerHTML = "";
+        BAIT_TYPES.forEach((bait) => {
+          const count = state.baitCounts[bait.id] || 0;
+          const option = document.createElement("option");
+          option.value = bait.id;
+          option.textContent = `${bait.icon} ${bait.name} ×${count}`;
+          node.appendChild(option);
+        });
+      };
+      fill(el.roomBaitSelect);
+      fill(el.loopBaitSelect);
     }
 
     function applyStateToSelectors() {
@@ -3547,6 +3672,10 @@
       if (!BAIT_TYPES.some((bait) => bait.id === state.selectedBaitId)) state.selectedBaitId = BAIT_TYPES[0].id;
       el.roomCourseSelect.value = String(state.selectedCourseMin || 25);
       el.roomBaitSelect.value = state.selectedBaitId;
+      el.loopFishSelect.value = String(state.loopConfig.fishMin || 25);
+      el.loopRestSelect.value = String(state.loopConfig.restMin || 5);
+      el.loopCountSelect.value = String(state.loopConfig.count || 3);
+      el.loopBaitSelect.value = state.loopConfig.baitId || "bait_basic";
       el.displayNameInput.value = state.user.displayName || "釣り人";
       el.settingsDisplayName.textContent = state.user.displayName || "釣り人";
       el.toggleWave.checked = !!state.settings.waveSound;
@@ -3555,6 +3684,8 @@
       el.toggleShake.checked = !!state.settings.shakeOnFinish;
       renderStoreSectionState();
       renderNavPartsVisibility();
+      renderGoalTexts();
+      renderLoopModeState();
     }
 
     function renderNavPartsVisibility() {
@@ -3880,7 +4011,11 @@
     function startClockTick() {
       stopClockTick();
       updateCurrentTimeText();
-      clockTickHandle = setInterval(updateCurrentTimeText, 1000);
+      clockTickHandle = setInterval(() => {
+        updateCurrentTimeText();
+        checkLoopRestTick();
+        checkReminderNotifications();
+      }, 1000);
     }
 
     function stopClockTick() {
@@ -3894,6 +4029,10 @@
       state.currentTimeText = text;
       el.roomCurrentTime.textContent = text;
       el.fishingCurrentTime.textContent = text;
+      const pending = getUtilityPendingCount();
+      const helpText = pending > 0 ? String(pending) : "タップで便利機能";
+      el.roomClockHelp.textContent = helpText;
+      el.fishingClockHelp.textContent = helpText;
     }
 
     function cancelFishingOnReload() {
@@ -4252,6 +4391,312 @@
     function ensureDailyStat(key) {
       if (!state.history.daily[key]) state.history.daily[key] = { workMin: 0, earnings: 0, sessions: 0, catches: [] };
       return state.history.daily[key];
+    }
+
+    function renderGoalTexts() {
+      const text = state.miniGoal?.trim() ? `今日のミニ目標 ${state.miniGoal}` : "今日のミニ目標＿＿＿＿＿＿＿＿＿";
+      el.roomGoalChip.textContent = text;
+      el.fishingGoalChip.textContent = text;
+    }
+
+    function editMiniGoal() {
+      const next = prompt("今日のミニ目標", state.miniGoal || "") ?? state.miniGoal;
+      state.miniGoal = String(next || "").trim().slice(0, 28);
+      renderGoalTexts();
+      saveAll().catch(console.error);
+    }
+
+    function renderLoopModeState() {
+      const on = !!state.loopConfig.enabled;
+      el.loopModeBtn.classList.toggle("active", on);
+      el.normalFields.style.display = on ? "none" : "flex";
+      el.loopFields.style.display = on ? "flex" : "none";
+      const need = Math.max(0, (state.loopConfig.count || 1) - (state.baitCounts[state.loopConfig.baitId] || 0));
+      el.loopNeedText.textContent = on
+        ? (need > 0 ? `この餌は残り ${need} 個必要` : `必要数 OK / ${state.loopConfig.count} 個使います`)
+        : "";
+      el.loopNeedText.classList.toggle("warn", need > 0);
+      if (!on) el.roomLoopInfo.classList.remove("show");
+    }
+
+    function toggleUtilityModal() {
+      const show = !state.ui.utilityOpen;
+      state.ui.utilityOpen = show;
+      el.utilityModal.classList.toggle("show", show);
+      if (show) {
+        toggleUtilityForm(false);
+        renderUtilityPanel();
+      }
+      saveAll().catch(console.error);
+    }
+
+    function closeUtilityModal() {
+      state.ui.utilityOpen = false;
+      toggleUtilityForm(false);
+      el.utilityModal.classList.remove("show");
+      saveAll().catch(console.error);
+    }
+
+    function toggleUtilityForm(show) {
+      el.utilityForm.classList.toggle("show", !!show);
+      if (!show) {
+        el.utilityTextInput.value = "";
+        el.utilityTimeInput.value = "";
+        el.utilityCheckInput.checked = false;
+      }
+      const tab = state.ui.utilityTab;
+      el.utilitySelectInput.style.display = tab === "record" || tab === "reminder" ? "block" : "none";
+      if (tab === "record") {
+        el.utilitySelectInput.innerHTML = `
+          <option value="start">🎣開始</option>
+          <option value="break">☕休憩</option>
+          <option value="end">🏁終了</option>
+          <option value="memo">📝メモ</option>
+          <option value="todo">✅Todo完了</option>`;
+      } else if (tab === "reminder") {
+        el.utilitySelectInput.innerHTML = `
+          <option value="once">1回</option>
+          <option value="daily">毎日</option>
+          <option value="weekly">毎週</option>`;
+      } else {
+        el.utilitySelectInput.innerHTML = "";
+      }
+    }
+
+    function getTodayReminderCount() {
+      return (state.productivity.reminders || []).filter((r) => r.on !== false).length;
+    }
+    function getTodayTodoCount() {
+      return (state.productivity.todos || []).filter((t) => !t.completed).length;
+    }
+    function getTodayRecordCount() {
+      const today = todayKey();
+      return (state.productivity.records || []).filter((r) => r.dayKey === today).length;
+    }
+    function getUtilityPendingCount() {
+      const todo = getTodayTodoCount();
+      const reminder = getTodayReminderCount();
+      return todo > 0 ? todo : reminder;
+    }
+
+    function saveUtilityForm() {
+      const tab = state.ui.utilityTab;
+      const title = String(el.utilityTextInput.value || "").trim().slice(0, 32);
+      const time = el.utilityTimeInput.value || "";
+      if (tab !== "record" && !title) {
+        toast("タイトルを入れてください。");
+        return;
+      }
+      if (tab === "todo") {
+        const todo = {
+          id: makeId(), title, time, remind: !!el.utilityCheckInput.checked,
+          completed: false, createdAt: Date.now(), dayKey: todayKey(), recordLink: true,
+        };
+        state.productivity.todos.unshift(todo);
+        if (todo.remind && time) {
+          state.productivity.reminders.unshift({ id: makeId(), title, time, repeat: "once", on: true, todoId: todo.id, lastFiredDay: null });
+        }
+      } else if (tab === "reminder") {
+        state.productivity.reminders.unshift({
+          id: makeId(), title, time, repeat: el.utilitySelectInput.value || "once", on: true, todoId: null, lastFiredDay: null,
+        });
+      } else {
+        state.productivity.records.unshift({
+          id: makeId(),
+          type: el.utilitySelectInput.value || "memo",
+          title: title || recordTypeLabel(el.utilitySelectInput.value || "memo"),
+          time: time || currentHm(),
+          dayKey: todayKey(),
+          createdAt: Date.now(),
+        });
+      }
+      toggleUtilityForm(false);
+      renderUtilityPanel();
+      saveAll().catch(console.error);
+    }
+
+    function recordTypeLabel(type) {
+      return ({ start: "🎣開始", break: "☕休憩", end: "🏁終了", memo: "📝メモ", todo: "✅Todo完了" })[type] || type;
+    }
+
+    function currentHm() {
+      const d = new Date();
+      return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+    }
+
+    function renderUtilityPanel() {
+      const tab = state.ui.utilityTab;
+      el.utilityTabs.forEach((btn) => btn.classList.toggle("active", btn.dataset.utab === tab));
+      el.utilityTitle.textContent = tab === "todo" ? "やること" : tab === "reminder" ? "通知" : "記録";
+      el.utilityBadgeReminder.textContent = String(getTodayReminderCount());
+      el.utilityBadgeTodo.textContent = String(getTodayTodoCount());
+      el.utilityBadgeRecord.textContent = String(getTodayRecordCount());
+      const box = el.utilityContent;
+      box.innerHTML = "";
+      if (tab === "record") {
+        const row = document.createElement("div");
+        row.className = "quick-record-row";
+        row.innerHTML = `<button class="quick-record-btn">🎣開始</button><button class="quick-record-btn">☕休憩</button><button class="quick-record-btn">🏁終了</button>`;
+        [...row.querySelectorAll("button")].forEach((btn, i) => {
+          const type = ["start", "break", "end"][i];
+          btn.addEventListener("click", () => {
+            state.productivity.records.unshift({ id: makeId(), type, title: recordTypeLabel(type), time: currentHm(), dayKey: todayKey(), createdAt: Date.now() });
+            saveAll().catch(console.error);
+            renderUtilityPanel();
+          });
+        });
+        box.appendChild(row);
+      }
+      const list = document.createElement("div");
+      list.className = "utility-list";
+      box.appendChild(list);
+
+      if (tab === "todo") {
+        const todos = state.productivity.todos || [];
+        if (!todos.length) list.innerHTML = `<div class="utility-empty">📝 なし</div>`;
+        todos.slice(0, 8).forEach((todo) => {
+          const item = document.createElement("div");
+          item.className = "utility-item";
+          item.innerHTML = `
+            <div class="utility-item-main">
+              <div class="utility-item-title">${todo.completed ? "☑" : "□"} ${escapeHtml(todo.title)}</div>
+              <div class="utility-item-sub">${todo.time || "時間なし"}${todo.remind ? " / 🔔" : ""}</div>
+            </div>
+            <div class="utility-mini-actions"></div>`;
+          const actions = item.querySelector(".utility-mini-actions");
+          const doneBtn = document.createElement("button");
+          doneBtn.className = "utility-mini-btn";
+          doneBtn.textContent = todo.completed ? "↺" : "✓";
+          doneBtn.addEventListener("click", () => toggleTodo(todo.id));
+          const delBtn = document.createElement("button");
+          delBtn.className = "utility-mini-btn";
+          delBtn.textContent = "×";
+          delBtn.addEventListener("click", () => removeTodo(todo.id));
+          actions.append(doneBtn, delBtn);
+          list.appendChild(item);
+        });
+      } else if (tab === "reminder") {
+        const reminders = state.productivity.reminders || [];
+        if (!reminders.length) list.innerHTML = `<div class="utility-empty">🔕 なし</div>`;
+        reminders.slice(0, 8).forEach((rem) => {
+          const item = document.createElement("div");
+          item.className = "utility-item";
+          item.innerHTML = `
+            <div class="utility-item-main">
+              <div class="utility-item-title">🔔 ${escapeHtml(rem.title)}</div>
+              <div class="utility-item-sub">${rem.time || "--:--"} / ${rem.repeat || "once"}</div>
+            </div>
+            <div class="utility-mini-actions"></div>`;
+          const actions = item.querySelector(".utility-mini-actions");
+          const toggleBtn = document.createElement("button");
+          toggleBtn.className = "utility-mini-btn";
+          toggleBtn.textContent = rem.on === false ? "○" : "●";
+          toggleBtn.addEventListener("click", () => { rem.on = rem.on === false ? true : false; saveAll().catch(console.error); renderUtilityPanel(); });
+          const delBtn = document.createElement("button");
+          delBtn.className = "utility-mini-btn";
+          delBtn.textContent = "×";
+          delBtn.addEventListener("click", () => removeReminder(rem.id));
+          actions.append(toggleBtn, delBtn);
+          list.appendChild(item);
+        });
+      } else {
+        const records = (state.productivity.records || []).filter((r) => r.dayKey === todayKey());
+        if (!records.length) list.innerHTML = `<div class="utility-empty">⏱ なし</div>`;
+        records.slice(0, 12).forEach((rec) => {
+          const item = document.createElement("div");
+          item.className = "utility-item";
+          item.innerHTML = `
+            <div class="utility-item-main">
+              <div class="utility-item-title">${escapeHtml(rec.title)}</div>
+              <div class="utility-item-sub">${rec.time} / ${recordTypeLabel(rec.type)}</div>
+            </div>
+            <div class="utility-mini-actions"></div>`;
+          const delBtn = document.createElement("button");
+          delBtn.className = "utility-mini-btn";
+          delBtn.textContent = "×";
+          delBtn.addEventListener("click", () => removeRecord(rec.id));
+          item.querySelector(".utility-mini-actions").appendChild(delBtn);
+          list.appendChild(item);
+        });
+      }
+    }
+
+    function toggleTodo(id) {
+      const todo = (state.productivity.todos || []).find((v) => v.id === id);
+      if (!todo) return;
+      todo.completed = !todo.completed;
+      if (todo.completed) {
+        todo.completedAt = Date.now();
+        state.productivity.records.unshift({ id: makeId(), type: "todo", title: `Todo完了：${todo.title}`, time: currentHm(), dayKey: todayKey(), createdAt: Date.now() });
+      }
+      saveAll().catch(console.error);
+      renderUtilityPanel();
+    }
+    function removeTodo(id) {
+      state.productivity.todos = (state.productivity.todos || []).filter((v) => v.id !== id);
+      saveAll().catch(console.error);
+      renderUtilityPanel();
+    }
+    function removeReminder(id) {
+      state.productivity.reminders = (state.productivity.reminders || []).filter((v) => v.id !== id);
+      saveAll().catch(console.error);
+      renderUtilityPanel();
+    }
+    function removeRecord(id) {
+      state.productivity.records = (state.productivity.records || []).filter((v) => v.id !== id);
+      saveAll().catch(console.error);
+      renderUtilityPanel();
+    }
+
+    function checkReminderNotifications() {
+      if (!state.settings.browserNotify) return;
+      const now = new Date();
+      const hm = currentHm();
+      const today = todayKey();
+      (state.productivity.reminders || []).forEach((rem) => {
+        if (rem.on === false || !rem.time) return;
+        if (rem.time !== hm) return;
+        if (rem.lastFiredDay === today) return;
+        rem.lastFiredDay = today;
+        maybeNotify();
+      });
+    }
+
+    function startRoomIdleTracking() {
+      if (!state.room.inRoom || state.fishing.inProgress || state.room.idleStartedAt) return;
+      state.room.idleStartedAt = Date.now();
+    }
+
+    function stopRoomIdleTracking() {
+      if (!state.room.idleStartedAt) return;
+      const elapsedMs = Date.now() - state.room.idleStartedAt;
+      state.room.idleStartedAt = null;
+      const addMin = Math.max(0, Math.round(elapsedMs / 60000));
+      if (addMin > 0) {
+        const day = ensureDailyStat(todayKey());
+        day.restMin = (day.restMin || 0) + addMin;
+      }
+    }
+
+    function checkLoopRestTick() {
+      if (!state.loopRun.active || state.loopRun.phase !== "rest" || !state.loopRun.restEndAt) return;
+      if (Date.now() >= state.loopRun.restEndAt) {
+        startNextLoopFishing();
+      } else {
+        renderLoopInfo();
+      }
+    }
+
+    function openNextGiftMessage() {
+      const gifts = getGiftMessages();
+      if (!gifts.length) return;
+      const unread = gifts.find((item) => !item.opened) || gifts[gifts.length - 1];
+      if (unread && !unread.opened) markMailOpened(unread.id);
+      openMailboxModal(unread?.id || null);
+    }
+
+    function getGiftMessages() {
+      return [...(state.mailbox.items || [])].filter((item) => item.type === "gift").sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
     }
 
     function renderAll() {
