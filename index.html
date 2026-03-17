@@ -2472,12 +2472,21 @@
     .result-top-value { font-size: clamp(26px, 3.2vw, 46px) !important; line-height: 1.05 !important; flex: 1 !important; display: flex !important; align-items: center !important; }
     .day-segment.rest { background: rgba(255,255,255,0.88) !important; color: #222 !important; }
     .day-seg-note.rest-note { background: rgba(240,240,240,0.92) !important; color: #333 !important; border-color: rgba(0,0,0,0.1) !important; }
-    .action-btn.exit { min-height: calc(130px * var(--uiScale)) !important; font-size: calc(20px * var(--uiScale)) !important; padding: 0 24px !important; }
-    .mini-goal-input { font-size: 22px !important; min-width: 260px !important; padding: 8px 12px !important; }
-    .mini-goal-label { font-size: 15px !important; }
+    /* Exit button - reasonable height, not too tall */
+    .action-btn.exit { min-height: calc(54px * var(--uiScale)) !important; font-size: calc(16px * var(--uiScale)) !important; padding: 0 20px !important; }
+    /* Goal text centered */
+    .mini-goal-wrap { align-items: center !important; }
+    .mini-goal-input { font-size: 22px !important; min-width: 260px !important; padding: 8px 12px !important; text-align: center !important; }
+    .mini-goal-label { font-size: 15px !important; text-align: center !important; }
+    .mini-goal-visibility { text-align: center !important; }
     .utility-icon-btn { border: 0 !important; background: transparent !important; backdrop-filter: none !important; box-shadow: none !important; }
-    @media (min-width: 761px) { .audio-player-wrap { transform: scale(2.2) !important; transform-origin: bottom left !important; margin-bottom: 16px !important; margin-left: 12px !important; } }
-    @media (max-width: 760px) { .audio-player-wrap { transform: scale(1.4) !important; transform-origin: bottom left !important; margin-bottom: 8px !important; } .action-btn.exit { min-height: calc(80px * var(--uiScale)) !important; } .mini-goal-input { font-size: 17px !important; min-width: 160px !important; } }
+    /* BGM UI half size from before */
+    @media (min-width: 761px) { .audio-player-wrap { transform: scale(1.1) !important; transform-origin: bottom left !important; margin-bottom: 8px !important; margin-left: 6px !important; } }
+    @media (max-width: 760px) { .audio-player-wrap { transform: scale(0.75) !important; transform-origin: bottom left !important; margin-bottom: 4px !important; } .action-btn.exit { min-height: calc(46px * var(--uiScale)) !important; } .mini-goal-input { font-size: 17px !important; min-width: 160px !important; } }
+    /* Volume ring gauge for long-press */
+    .audio-ctrl-btn { position: relative !important; }
+    .vol-ring { position: absolute; inset: -4px; width: calc(100% + 8px); height: calc(100% + 8px); pointer-events: none; transform: rotate(-90deg); }
+    .vol-ring circle { fill: none; stroke: var(--accent); stroke-width: 3; stroke-linecap: round; transition: none; }
   </style>
 </head>
 <body>
@@ -2546,12 +2555,15 @@
             </div>
           </div>
 
-          <div class="top-right-stack fade-ui">
-            <div class="mini-goal-wrap" style="align-items:flex-end">
+          <div style="position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:8" class="fade-ui">
+            <div class="mini-goal-wrap" style="align-items:center">
               <span class="mini-goal-label">今日の目標</span>
-              <input id="roomGoalInput" class="mini-goal-input" type="text" maxlength="28" placeholder="目標..." style="text-align:right" />
+              <input id="roomGoalInput" class="mini-goal-input" type="text" maxlength="28" placeholder="目標..." style="text-align:center" />
               <span id="roomGoalVisibility" class="mini-goal-visibility">公開中</span>
             </div>
+          </div>
+
+          <div class="top-right-stack fade-ui">
             <div id="roomParticipants"></div>
           </div>
 
@@ -2631,13 +2643,13 @@
           </div>
         </div>
 
-        <div class="mini-goal-wrap fade-ui" id="fishingGoalWrap" style="position:absolute;top:10px;right:0;z-index:8;align-items:flex-end">
+        <div class="mini-goal-wrap fade-ui" id="fishingGoalWrap" style="position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:8;align-items:center">
           <span class="mini-goal-label">今日の目標</span>
-          <input id="fishingGoalInput" class="mini-goal-input" type="text" maxlength="28" placeholder="目標..." readonly style="text-align:right" />
+          <input id="fishingGoalInput" class="mini-goal-input" type="text" maxlength="28" placeholder="目標..." readonly style="text-align:center" />
           <span id="fishingGoalVisibility" class="mini-goal-visibility">公開中</span>
         </div>
 
-        <div class="top-right-stack fade-ui" style="top:80px;">
+        <div class="top-right-stack fade-ui">
           <div class="stats-row">
             <div id="fishingTimeMini" class="stat-pill">00:00</div>
             <div id="baitTotalMini" class="stat-pill cyan">餌 0</div>
@@ -2663,12 +2675,12 @@
             <span id="audioTimeText" class="audio-time-text">00:00/00:00</span>
           </div>
           <div class="audio-controls">
-            <button id="audioMuteBtn" class="audio-ctrl-btn" title="BGM音量"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></button>
+            <button id="audioMuteBtn" class="audio-ctrl-btn" title="BGM音量"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg><svg class="vol-ring" viewBox="0 0 36 36"><circle cx="18" cy="18" r="16" stroke-dasharray="100.53" stroke-dashoffset="100.53"/></svg></button>
             <button id="audioPlayBtn" class="audio-ctrl-btn" title="再生/停止"><svg viewBox="0 0 24 24" width="16" height="16" fill="#fff" stroke="none"><path d="M8 5v14l11-7z"/></svg></button>
             <button id="audioNextBtn" class="audio-ctrl-btn" title="次の曲"><svg viewBox="0 0 24 24" width="16" height="16" fill="#fff" stroke="none"><path d="M5 4l10 8-10 8V4z"/><rect x="17" y="5" width="2" height="14"/></svg></button>
             <button id="audioLoopBtn" class="audio-ctrl-btn" title="ループ"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></button>
             <button id="audioFavListBtn" class="audio-ctrl-btn" title="全曲/お気に入り"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
-            <button id="audioSfxMuteBtn" class="audio-ctrl-btn" title="効果音"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M18 8a6 6 0 0 1 0 8"/><path d="M6 16a6 6 0 0 1 0-8"/></svg></button>
+            <button id="audioSfxMuteBtn" class="audio-ctrl-btn" title="効果音"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M18 8a6 6 0 0 1 0 8"/><path d="M6 16a6 6 0 0 1 0-8"/></svg><svg class="vol-ring" viewBox="0 0 36 36"><circle cx="18" cy="18" r="16" stroke-dasharray="100.53" stroke-dashoffset="100.53"/></svg></button>
           </div>
         </div>
 
@@ -2773,11 +2785,11 @@
                   </div>
                   <div class="goal-side">
                     <div class="goal-side-label">目標</div>
-                    <div style="display:flex;align-items:center;gap:4px;">
-                      <input id="goalHourInput" type="text" maxlength="2" placeholder="--" style="width:38px;height:34px;text-align:center;border:none;border-bottom:2px dashed rgba(255,255,255,0.35);background:transparent;color:#fff;font-size:18px;font-weight:800;outline:none;" />
-                      <span style="color:rgba(255,255,255,0.4);font-weight:800;font-size:18px;">:</span>
-                      <input id="goalMinInput" type="text" maxlength="2" placeholder="--" style="width:38px;height:34px;text-align:center;border:none;border-bottom:2px dashed rgba(255,255,255,0.35);background:transparent;color:#fff;font-size:18px;font-weight:800;outline:none;" />
-                      <span style="font-size:10px;color:rgba(255,255,255,0.35);margin-left:4px;">時間:分</span>
+                    <div style="display:flex;align-items:baseline;gap:2px;">
+                      <input id="goalHourInput" type="text" maxlength="2" placeholder="00" style="width:32px;height:28px;text-align:center;border:none;background:rgba(255,255,255,0.08);border-radius:6px;color:#fff;font-size:16px;font-weight:800;outline:none;" />
+                      <span style="font-size:11px;color:rgba(255,255,255,0.4);">時間</span>
+                      <input id="goalMinInput" type="text" maxlength="2" placeholder="00" style="width:32px;height:28px;text-align:center;border:none;background:rgba(255,255,255,0.08);border-radius:6px;color:#fff;font-size:16px;font-weight:800;outline:none;" />
+                      <span style="font-size:11px;color:rgba(255,255,255,0.4);">分</span>
                     </div>
                     <div class="goal-side-label" style="margin-top:6px;">達成</div>
                     <div id="goalCurrentText" class="goal-side-value current">0時間0分</div>
@@ -3342,13 +3354,77 @@
       el.batchResultModal.addEventListener("click",e=>{if(e.target===el.batchResultModal)closeBatchModal();});
       // Audio
       el.audioPlayBtn.addEventListener("click",toggleBgmPlay);
-      el.audioMuteBtn.addEventListener("click",handleBgmMuteClick);
       el.audioNextBtn.addEventListener("click",nextBgm);
       el.audioLoopBtn.addEventListener("click",()=>{bgmLoopMode=bgmLoopMode==='loop'?'shuffle':'loop';el.audioLoopBtn.textContent=bgmLoopMode==='loop'?'🔁':'🔀';});
       el.audioFavListBtn.addEventListener("click",()=>{bgmFavOnly=!bgmFavOnly;el.audioFavListBtn.textContent=bgmFavOnly?'❤':'📋';});
       el.audioBgmTitle.addEventListener("click",openBgmList);
       el.bgmListClose.addEventListener("click",closeBgmList);
-      el.audioSfxMuteBtn.addEventListener("click",()=>{sfxMuted=!sfxMuted;el.audioSfxMuteBtn.textContent=sfxMuted?'🔕':'🔔';el.audioSfxMuteBtn.classList.toggle('muted',sfxMuted);});
+      // Volume long-press system for BGM mute
+      setupVolumeLongPress(el.audioMuteBtn, 'bgm');
+      // Volume long-press system for SFX mute
+      setupVolumeLongPress(el.audioSfxMuteBtn, 'sfx');
+
+      function setupVolumeLongPress(btn, type) {
+        const CIRC = 2 * Math.PI * 16; // r=16 in the SVG
+        const ring = btn.querySelector('.vol-ring circle');
+        let pressTimer = null;
+        let volInterval = null;
+        let wasLongPress = false;
+        let currentVol = type === 'bgm' ? bgmVolume : sfxVolume;
+
+        function resetRing() { if(ring) ring.style.strokeDashoffset = String(CIRC); }
+        resetRing();
+
+        function onDown(e) {
+          wasLongPress = false;
+          pressTimer = setTimeout(() => {
+            wasLongPress = true;
+            currentVol = 0;
+            if(type === 'bgm') { bgmVolume = 0; if(bgmAudio) bgmAudio.volume = 0; }
+            else { sfxVolume = 0; }
+            volInterval = setInterval(() => {
+              currentVol = Math.min(100, currentVol + 100 / 60);
+              if(type === 'bgm') { bgmVolume = currentVol; if(bgmAudio) bgmAudio.volume = currentVol / 100; }
+              else { sfxVolume = currentVol; }
+              // Update ring gauge
+              const offset = CIRC * (1 - currentVol / 100);
+              if(ring) ring.style.strokeDashoffset = String(Math.max(0, offset));
+              btn.title = `${type === 'bgm' ? 'BGM' : '効果音'} ${Math.round(currentVol)}%`;
+              if(currentVol >= 100) { clearInterval(volInterval); volInterval = null; }
+            }, 100);
+          }, 400);
+        }
+
+        function onUp(e) {
+          clearTimeout(pressTimer); pressTimer = null;
+          if(volInterval) { clearInterval(volInterval); volInterval = null; }
+          if(wasLongPress) {
+            // After long-press: keep volume where it stopped, do NOT toggle mute
+            if(type === 'bgm') bgmVolume = currentVol;
+            else sfxVolume = currentVol;
+            // Fade ring out after a moment
+            setTimeout(resetRing, 600);
+          }
+        }
+
+        function onClick(e) {
+          if(wasLongPress) { wasLongPress = false; return; } // block click after long-press
+          if(type === 'bgm') {
+            bgmMuted = !bgmMuted;
+            if(bgmAudio) bgmAudio.muted = bgmMuted;
+            btn.classList.toggle('muted', bgmMuted);
+          } else {
+            sfxMuted = !sfxMuted;
+            btn.classList.toggle('muted', sfxMuted);
+          }
+        }
+
+        btn.addEventListener('mousedown', onDown);
+        btn.addEventListener('touchstart', onDown, {passive:true});
+        document.addEventListener('mouseup', onUp);
+        document.addEventListener('touchend', onUp);
+        btn.addEventListener('click', onClick);
+      }
       // Chart period
       el.chartPeriodBtns.forEach(b=>b.addEventListener("click",()=>{el.chartPeriodBtns.forEach(x=>x.classList.remove("active"));b.classList.add("active");}));
       // Custom graph
@@ -3365,14 +3441,10 @@
       ["mousemove","mousedown","touchstart","keydown"].forEach(ev=>document.addEventListener(ev,handleFishingActivity,{passive:true}));
       window.addEventListener("beforeunload",()=>{try{leaveRoom(true);}catch{}saveLocalState(state);});
       document.addEventListener("visibilitychange",()=>{if(!document.hidden){refreshConditions();if(state.fishing.inProgress&&!state.fishing.paused&&Date.now()>=state.fishing.endAt)finishFishing();renderAll();}});
-      // BGM volume long press
-      let muteTimer=null,muteVolDisplay=null;
-      el.audioMuteBtn.addEventListener("mousedown",startVolumeDrag);el.audioMuteBtn.addEventListener("touchstart",startVolumeDrag,{passive:true});
-      function startVolumeDrag(e){muteTimer=setTimeout(()=>{bgmVolume=0;const interval=setInterval(()=>{bgmVolume=Math.min(100,bgmVolume+100/60);if(bgmAudio)bgmAudio.volume=bgmVolume/100;el.audioMuteBtn.title=`BGM ${Math.round(bgmVolume)}%`;if(bgmVolume>=100)clearInterval(interval);},100);const stopFn=()=>{clearInterval(interval);document.removeEventListener("mouseup",stopFn);document.removeEventListener("touchend",stopFn);};document.addEventListener("mouseup",stopFn);document.addEventListener("touchend",stopFn);},600);const cancel=()=>{clearTimeout(muteTimer);document.removeEventListener("mouseup",cancel);document.removeEventListener("touchend",cancel);};document.addEventListener("mouseup",cancel);document.addEventListener("touchend",cancel);}
     }
 
     // ===== ALL CORE FUNCTIONS (preserved from original with modifications) =====
-    function handleBgmMuteClick(){bgmMuted=!bgmMuted;if(bgmAudio)bgmAudio.muted=bgmMuted;el.audioMuteBtn.textContent=bgmMuted?'🔇':'🔊';el.audioMuteBtn.classList.toggle('muted',bgmMuted);}
+    function handleBgmMuteClick(){/* now handled by setupVolumeLongPress */}
     function toggleBgmPlay(){if(!bgmAudio){bgmAudio=new Audio(BGM_LIST[bgmCurrentIndex].url);bgmAudio.volume=bgmVolume/100;bgmAudio.muted=bgmMuted;bgmAudio.addEventListener('ended',()=>{if(bgmLoopMode==='loop')nextBgm();else{bgmCurrentIndex=Math.floor(Math.random()*BGM_LIST.length);playCurrentBgm();}});bgmAudio.addEventListener('timeupdate',updateAudioUI);}if(bgmPlaying){bgmAudio.pause();bgmPlaying=false;el.audioPlayBtn.textContent='▶';}else{playCurrentBgm();}}
     function playCurrentBgm(){if(!bgmAudio)return;bgmAudio.src=BGM_LIST[bgmCurrentIndex].url;bgmAudio.play().catch(()=>{});bgmPlaying=true;el.audioPlayBtn.textContent='⏸';el.audioBgmTitle.textContent=BGM_LIST[bgmCurrentIndex].title;}
     function nextBgm(){bgmCurrentIndex=(bgmCurrentIndex+1)%BGM_LIST.length;if(bgmPlaying)playCurrentBgm();else{el.audioBgmTitle.textContent=BGM_LIST[bgmCurrentIndex].title;}}
