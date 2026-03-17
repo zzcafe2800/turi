@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>作業連動型 釣りサブサイト</title>
+  <title>αテスト</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='50' font-size='48'%3E%F0%9F%8E%A3%3C/text%3E%3C/svg%3E" />
   <style>
     :root {
@@ -2518,7 +2518,7 @@
       </button>
 
       <div class="nav-level-wrap">
-        <button id="partsPanelToggle" class="nav-emoji-btn" aria-label="パーツ詳細">🎣<span class="tip">パーツ詳細</span></button>
+        <button id="partsPanelToggle" class="nav-emoji-btn" aria-label="パーツ詳細">🎣<span class="tip">パーツ</span></button>
         <div id="navLevelList" class="nav-level-list"></div>
         <button id="mailboxNavBtn" class="nav-emoji-btn" aria-label="お便り">💌<span class="tip">お便り</span><span id="mailNavDot" class="mail-nav-dot"></span></button>
         <div id="userPill" class="user-pill">未ログイン</div>
@@ -2602,7 +2602,7 @@
               <select id="taskCategorySelect"></select>
             </div>
             <div class="room-action-row">
-              <button id="loopModeBtn" class="action-btn loop">ループ</button>
+              <button id="loopModeBtn" class="action-btn loop">連続</button>
               <button id="roomFishingBtn" class="action-btn primary">釣る</button>
             </div>
           </div>
@@ -2940,21 +2940,21 @@
     <!-- ===== AUTH OVERLAY ===== -->
     <div id="authOverlay" class="auth-overlay">
       <div class="auth-card">
-        <div class="auth-title">海辺に置いておく作業用の釣り場</div>
-        <div class="auth-text">Googleでログインすると、所持品や図鑑記録に加えて、部屋とスタンプもFirebaseで同期されます。</div>
+        <div class="auth-title">起動方法</div>
+        <div class="auth-text"></div>
         <div id="authChoiceStep" class="auth-step active">
           <div class="name-row">
-            <button id="googleLoginBtn" class="btn primary">Googleでログイン</button>
-            <button id="guestStartBtn" class="btn soft">ローカルだけで始める</button>
+            <button id="googleLoginBtn" class="btn primary">Googleログイン(pc)</button>
+            <button id="guestStartBtn" class="btn soft">ローカル</button>
           </div>
         </div>
         <div id="authNameStep" class="auth-step">
-          <div class="auth-note">表示名を決めてください。空なら「釣り人」です。</div>
+          <div class="auth-note">表示名を決めてください</div>
           <div class="name-row">
             <input id="authDisplayNameInput" type="text" maxlength="16" value="釣り人" />
           </div>
           <div class="name-row">
-            <button id="authConfirmBtn" class="btn primary">この名前で開始</button>
+            <button id="authConfirmBtn" class="btn primary">開始</button>
             <button id="authBackBtn" class="btn soft">戻る</button>
           </div>
         </div>
@@ -3110,7 +3110,13 @@
     const SFX_LIST = [
       { id:'sound01', title:'sound01', url:'sound01.mp3', credit:'Credit: Sample SFX' },
     ];
-    const WELCOME_MAIL_TEXT = `はじめまして、個人開発をしているユメです。\nこのアプリは、イラスト・アニメーション・開発まですべて一人で少しずつ作っています。\n\nみなさんの作業のじゃまになってほしくなくて、広告は入れていません。\nそのぶん更新には少し時間がかかりますが、より使いやすく、作業がはかどる場所になるように大切に育てています。\n\n「こんな機能がほしい」などの感想や口コミも、とても励みになります。\nみなさんと一緒に、この場所を少しずつ育てていけたらうれしいです。\n\n使ってくださって、本当にありがとうございます。`;
+    const WELCOME_MAIL_TEXT = `αテスト\n
+スマホは横画面・全画面・ローカル推奨｟※PC推奨｠\n
+【バグ(スマホ)】　1.ログイン　2,UI\n
+【未実装】　      1.背景や魚イラスト       2.リザルト(週間～年間)　3,各アイコンイラスト\n
+
+わかりにくい所、ほしい機能、UI改善、バグなどあれば教えてもらえるとうれしいです。\n
+`;
 
     /* ===== The full JavaScript continues below - preserving ALL original functionality ===== */
     /* Due to the extreme size, I'm providing the core structure with all features implemented */
