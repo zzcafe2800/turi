@@ -105,24 +105,27 @@
       z-index: -1;
     }
 
-    /* ===== Nav toggle ===== */
+    /* ===== Nav toggle - on sidebar right edge ===== */
     .nav-toggle {
       position: absolute;
-      top: calc(var(--safeTop) + 14px);
-      right: 0;
+      top: 50%;
+      left: calc(var(--navExpanded) + 8px);
+      transform: translateY(-50%);
       z-index: 50;
-      width: 28px;
-      height: 28px;
+      width: 22px;
+      height: 44px;
       border: 0;
-      border-radius: 0 0 0 8px;
+      border-radius: 0 8px 8px 0;
       background: rgba(255,255,255,0.85);
-      color: #333;
-      font-size: 14px;
+      color: #555;
+      font-size: 13px;
       display: grid;
       place-items: center;
-      transition: opacity 0.2s ease, transform 0.2s ease;
-      box-shadow: none;
-      backdrop-filter: none;
+      transition: opacity 0.2s ease, transform 0.2s ease, left 0.22s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    #app.nav-collapsed .nav-toggle {
+      left: 8px;
     }
 
     /* ===== Side nav - rounded tall rectangle ===== */
@@ -358,15 +361,19 @@
       user-select: none;
     }
     .clock-date-sub {
-      font-size: 14px;
+      font-size: 16px;
       color: rgba(255,255,255,0.6);
       font-weight: 600;
-      padding-left: 4px;
-      border-top: 1px dashed rgba(255,255,255,0.3);
-      padding-top: 4px;
+      padding: 6px 4px 4px;
+      border-top: 2px dashed rgba(255,255,255,0.3);
+      width: 100%;
+      text-align: center;
       display: none;
     }
     .clock-date-sub.show { display: block; }
+    /* Hide clock on fishing screen */
+    #screen-fishing .top-left-meta .current-time-chip { display: none !important; }
+    #screen-fishing .top-left-meta .clock-date-sub { display: none !important; }
 
     /* ===== Top positions ===== */
     .top-left-meta {
@@ -426,7 +433,7 @@
       gap: 2px;
     }
     .mini-goal-label {
-      font-size: 11px;
+      font-size: 14px;
       color: rgba(255,255,255,0.4);
       font-weight: 600;
     }
@@ -435,13 +442,13 @@
       border: none;
       border-bottom: 2px dashed rgba(255,255,255,0.3);
       color: var(--accent-2);
-      font-size: 15px;
+      font-size: 20px;
       font-weight: 700;
       text-align: center;
       outline: none;
-      min-width: 200px;
-      max-width: 400px;
-      padding: 4px 8px;
+      min-width: 260px;
+      max-width: 500px;
+      padding: 6px 10px;
     }
     .mini-goal-input::placeholder { color: rgba(255,255,255,0.25); }
     .mini-goal-visibility {
@@ -462,6 +469,7 @@
       padding: 10px 16px;
       min-width: 240px;
       align-items: center;
+      justify-content: flex-start;
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
     }
@@ -541,30 +549,26 @@
       width: 40px;
       height: 40px;
       border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(8,18,29,0.52);
+      border: 0;
+      background: transparent;
       color: var(--text);
-      font-size: 18px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      font-size: 20px;
       display: grid;
       place-items: center;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.4);
     }
     .message-trigger {
       width: 40px;
       height: 40px;
       border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(8,18,29,0.52);
+      border: 0;
+      background: transparent;
       color: var(--text);
-      font-size: 18px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      font-size: 20px;
       display: none;
       place-items: center;
       position: relative;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.4);
     }
     .message-trigger.show { display: grid; }
     .message-dot {
@@ -937,7 +941,7 @@
       color: var(--text);
     }
 
-    /* ===== Audio player UI ===== */
+    /* ===== Audio player UI - BIGGER ===== */
     .audio-player-wrap {
       position: absolute;
       left: 0;
@@ -945,28 +949,33 @@
       z-index: 9;
       display: flex;
       flex-direction: column;
-      gap: 2px;
-      max-width: min(280px, 50vw);
+      gap: 6px;
+      max-width: min(480px, 65vw);
+      transform: scale(1);
+      transform-origin: bottom left;
     }
     .audio-bgm-title {
-      font-size: 11px;
-      color: rgba(255,255,255,0.4);
+      font-size: 16px;
+      color: rgba(255,255,255,0.85);
+      font-weight: 700;
       padding-left: 4px;
       cursor: pointer;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      text-align: center;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
     }
-    .audio-bgm-title:hover { color: rgba(255,255,255,0.7); }
+    .audio-bgm-title:hover { color: #fff; }
     .audio-bar-wrap {
       display: flex;
       align-items: center;
-      gap: 6px;
-      height: 20px;
+      gap: 10px;
+      height: 28px;
     }
     .audio-seek-bar {
       flex: 1;
-      height: 4px;
+      height: 6px;
       border-radius: 999px;
       background: rgba(255,255,255,0.15);
       position: relative;
@@ -981,55 +990,71 @@
     .audio-seek-fill::after {
       content: '';
       position: absolute;
-      right: -5px;
+      right: -7px;
       top: 50%;
       transform: translateY(-50%);
-      width: 10px;
-      height: 10px;
+      width: 14px;
+      height: 14px;
       border-radius: 50%;
       background: #fff;
-      box-shadow: 0 0 4px rgba(0,0,0,0.3);
+      box-shadow: 0 0 6px rgba(0,0,0,0.3);
     }
     .audio-time-text {
-      font-size: 9px;
-      color: rgba(255,255,255,0.35);
+      font-size: 12px;
+      color: rgba(255,255,255,0.45);
       white-space: nowrap;
     }
     .audio-controls {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 14px;
+      justify-content: center;
     }
     .audio-ctrl-btn {
-      width: 24px;
-      height: 24px;
+      width: 36px;
+      height: 36px;
       border: 0;
       border-radius: 999px;
       background: transparent;
-      color: rgba(255,255,255,0.7);
+      color: rgba(255,255,255,0.85);
       display: grid;
       place-items: center;
-      font-size: 14px;
+      font-size: 18px;
       padding: 0;
       cursor: pointer;
+      position: relative;
     }
     .audio-ctrl-btn:hover { color: #fff; }
     .audio-ctrl-btn.muted { color: rgba(255,255,255,0.3); }
+    .audio-ctrl-btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .audio-vol-ring {
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      pointer-events: none;
+    }
     .audio-volume-popup {
       position: absolute;
-      bottom: 100%;
+      bottom: calc(100% + 6px);
       left: 50%;
       transform: translateX(-50%);
-      padding: 3px 8px;
-      border-radius: 8px;
-      background: rgba(0,0,0,0.8);
+      padding: 4px 10px;
+      border-radius: 10px;
+      background: rgba(0,0,0,0.85);
       color: #fff;
-      font-size: 11px;
+      font-size: 13px;
+      font-weight: 700;
       white-space: nowrap;
       display: none;
       pointer-events: none;
     }
     .audio-volume-popup.show { display: block; }
+    @media (max-width: 760px) {
+      .audio-player-wrap { max-width: min(320px, 55vw); }
+      .audio-bgm-title { font-size: 14px; }
+      .audio-ctrl-btn { width: 32px; height: 32px; font-size: 16px; }
+      .audio-controls { gap: 10px; }
+    }
 
     /* BGM list overlay */
     .bgm-list-overlay {
@@ -2433,6 +2458,26 @@
       .toast { max-width: min(88vw, 300px); }
       .day-segment { font-size: 9px; }
     }
+
+    /* === v2 UI OVERRIDES === */
+    #screen-fishing .top-left-meta { display: none !important; }
+    .clock-date-sub { font-size: clamp(16px, 1.8vw, 26px) !important; width: 100% !important; padding: 6px 0 0 0 !important; border-top: 2px dashed rgba(255,255,255,0.25) !important; }
+    .message-trigger { border: 0 !important; border-radius: 0 !important; background: transparent !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; box-shadow: none !important; font-size: 24px !important; width: auto !important; height: auto !important; }
+    .audio-bgm-title { text-align: center !important; color: rgba(255,255,255,0.92) !important; font-weight: 800 !important; font-size: 14px !important; }
+    .content-shell::before { content: ""; position: absolute; inset: 0; background: rgba(0,0,0,0.5); pointer-events: none; border-radius: 28px; z-index: 0; }
+    .content-shell > * { position: relative; z-index: 1; }
+    .bait-card, .item-card, .upgrade-card, .fish-card, .settings-box, .line-item, .store-cat-card, .result-top-card, .week-card, .rod-image-card { background: rgba(0,0,0,0.45) !important; box-shadow: 0 8px 28px rgba(0,0,0,0.45) !important; }
+    .results-top-3 { gap: 8px !important; }
+    .result-top-card { padding: 20px !important; }
+    .result-top-value { font-size: clamp(26px, 3.2vw, 46px) !important; line-height: 1.05 !important; flex: 1 !important; display: flex !important; align-items: center !important; }
+    .day-segment.rest { background: rgba(255,255,255,0.88) !important; color: #222 !important; }
+    .day-seg-note.rest-note { background: rgba(240,240,240,0.92) !important; color: #333 !important; border-color: rgba(0,0,0,0.1) !important; }
+    .action-btn.exit { min-height: calc(130px * var(--uiScale)) !important; font-size: calc(20px * var(--uiScale)) !important; padding: 0 24px !important; }
+    .mini-goal-input { font-size: 22px !important; min-width: 260px !important; padding: 8px 12px !important; }
+    .mini-goal-label { font-size: 15px !important; }
+    .utility-icon-btn { border: 0 !important; background: transparent !important; backdrop-filter: none !important; box-shadow: none !important; }
+    @media (min-width: 761px) { .audio-player-wrap { transform: scale(2.2) !important; transform-origin: bottom left !important; margin-bottom: 16px !important; margin-left: 12px !important; } }
+    @media (max-width: 760px) { .audio-player-wrap { transform: scale(1.4) !important; transform-origin: bottom left !important; margin-bottom: 8px !important; } .action-btn.exit { min-height: calc(80px * var(--uiScale)) !important; } .mini-goal-input { font-size: 17px !important; min-width: 160px !important; } }
   </style>
 </head>
 <body>
@@ -2499,20 +2544,19 @@
               <div id="roomCurrentTime" class="current-time-chip">00:00</div>
               <div id="roomDateSub" class="clock-date-sub"></div>
             </div>
-            <button id="roomUtilityIconBtn" class="utility-icon-btn" title="便利機能">📋<span id="roomUtilityBadge" class="utility-icon-badge"></span></button>
-          </div>
-
-          <div class="mini-goal-wrap fade-ui" id="roomGoalWrap">
-            <span class="mini-goal-label">今日の目標</span>
-            <input id="roomGoalInput" class="mini-goal-input" type="text" maxlength="28" placeholder="目標..." />
-            <span id="roomGoalVisibility" class="mini-goal-visibility">公開中</span>
           </div>
 
           <div class="top-right-stack fade-ui">
+            <div class="mini-goal-wrap" style="align-items:flex-end">
+              <span class="mini-goal-label">今日の目標</span>
+              <input id="roomGoalInput" class="mini-goal-input" type="text" maxlength="28" placeholder="目標..." style="text-align:right" />
+              <span id="roomGoalVisibility" class="mini-goal-visibility">公開中</span>
+            </div>
             <div id="roomParticipants"></div>
           </div>
 
           <div class="stamp-rail fade-ui">
+            <button id="roomUtilityIconBtn" class="utility-icon-btn" title="便利機能">📋<span id="roomUtilityBadge" class="utility-icon-badge"></span></button>
             <button id="roomMessageBtn" class="message-trigger" aria-label="メッセージ">📨<span id="roomMessageDot" class="message-dot"></span></button>
             <div class="stamp-buttons">
               <button class="stamp-btn" data-stamp="❤">❤</button>
@@ -2522,27 +2566,27 @@
           </div>
 
           <div class="bottom-left-stack fade-ui">
-            <button id="leaveRoomBtnLeft" class="action-btn exit" style="min-height:38px;font-size:13px;">退出</button>
+            <button id="leaveRoomBtnLeft" class="action-btn exit">退出</button>
           </div>
 
           <div class="room-controls fade-ui">
             <div id="roomLoopInfo" class="room-loop-info"></div>
             <div id="normalFields" class="control-fields">
-              <div class="field">
+              <div class="field" title="コース">
                 <select id="roomCourseSelect"></select>
               </div>
-              <div class="field">
+              <div class="field" title="餌">
                 <select id="roomBaitSelect"></select>
               </div>
             </div>
             <div id="loopFields" class="control-fields" style="display:none;">
-              <div class="field"><select id="loopFishSelect"></select></div>
-              <div class="field"><select id="loopRestSelect"></select></div>
-              <div class="field"><select id="loopCountSelect"></select></div>
-              <div class="field"><select id="loopBaitSelect"></select></div>
+              <div class="field" title="釣り時間"><select id="loopFishSelect"></select></div>
+              <div class="field" title="休憩時間"><select id="loopRestSelect"></select></div>
+              <div class="field" title="ループ回数"><select id="loopCountSelect"></select></div>
+              <div class="field" title="餌"><select id="loopBaitSelect"></select></div>
               <div id="loopNeedText" class="loop-need-text"></div>
             </div>
-            <div id="taskSelectField" class="field" style="margin-bottom:4px;">
+            <div id="taskSelectField" class="field" title="タスク" style="margin-bottom:4px;">
               <select id="taskCategorySelect"></select>
             </div>
             <div class="room-action-row">
@@ -2587,13 +2631,13 @@
           </div>
         </div>
 
-        <div class="mini-goal-wrap fade-ui" id="fishingGoalWrap">
+        <div class="mini-goal-wrap fade-ui" id="fishingGoalWrap" style="position:absolute;top:10px;right:0;z-index:8;align-items:flex-end">
           <span class="mini-goal-label">今日の目標</span>
-          <input id="fishingGoalInput" class="mini-goal-input" type="text" maxlength="28" placeholder="目標..." readonly />
+          <input id="fishingGoalInput" class="mini-goal-input" type="text" maxlength="28" placeholder="目標..." readonly style="text-align:right" />
           <span id="fishingGoalVisibility" class="mini-goal-visibility">公開中</span>
         </div>
 
-        <div class="top-right-stack fade-ui">
+        <div class="top-right-stack fade-ui" style="top:80px;">
           <div class="stats-row">
             <div id="fishingTimeMini" class="stat-pill">00:00</div>
             <div id="baitTotalMini" class="stat-pill cyan">餌 0</div>
@@ -2619,16 +2663,17 @@
             <span id="audioTimeText" class="audio-time-text">00:00/00:00</span>
           </div>
           <div class="audio-controls">
-            <button id="audioMuteBtn" class="audio-ctrl-btn" title="ミュート">🔊</button>
-            <button id="audioPlayBtn" class="audio-ctrl-btn" title="再生/停止">▶</button>
-            <button id="audioNextBtn" class="audio-ctrl-btn" title="次の曲">⏭</button>
-            <button id="audioLoopBtn" class="audio-ctrl-btn" title="ループ/シャッフル">🔁</button>
-            <button id="audioFavListBtn" class="audio-ctrl-btn" title="お気に入り/全曲">📋</button>
-            <button id="audioSfxMuteBtn" class="audio-ctrl-btn" title="効果音ミュート">🔔</button>
+            <button id="audioMuteBtn" class="audio-ctrl-btn" title="BGM音量"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></button>
+            <button id="audioPlayBtn" class="audio-ctrl-btn" title="再生/停止"><svg viewBox="0 0 24 24" width="16" height="16" fill="#fff" stroke="none"><path d="M8 5v14l11-7z"/></svg></button>
+            <button id="audioNextBtn" class="audio-ctrl-btn" title="次の曲"><svg viewBox="0 0 24 24" width="16" height="16" fill="#fff" stroke="none"><path d="M5 4l10 8-10 8V4z"/><rect x="17" y="5" width="2" height="14"/></svg></button>
+            <button id="audioLoopBtn" class="audio-ctrl-btn" title="ループ"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></button>
+            <button id="audioFavListBtn" class="audio-ctrl-btn" title="全曲/お気に入り"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+            <button id="audioSfxMuteBtn" class="audio-ctrl-btn" title="効果音"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M18 8a6 6 0 0 1 0 8"/><path d="M6 16a6 6 0 0 1 0-8"/></svg></button>
           </div>
         </div>
 
         <div class="stamp-rail fade-ui">
+          <button id="fishingUtilityBtn" class="utility-icon-btn" title="便利機能">📋</button>
           <button id="fishingMessageBtn" class="message-trigger" aria-label="メッセージ">📨<span id="fishingMessageDot" class="message-dot"></span></button>
           <div class="stamp-buttons">
             <button class="stamp-btn" data-stamp="❤">❤</button>
@@ -2720,7 +2765,7 @@
             </div>
             <div class="result-top-card">
               <div class="result-top-label">目標作業時間（今週）</div>
-              <div id="weeklyGoalDisplay" class="result-top-value" style="cursor:pointer;">
+              <div class="result-top-value" style="font-size:16px !important;">
                 <div class="weekly-goal-wrap">
                   <div class="goal-circle">
                     <svg viewBox="0 0 120 120"><circle class="track" cx="60" cy="60" r="50"/><circle id="goalProgress" class="progress" cx="60" cy="60" r="50"/></svg>
@@ -2728,7 +2773,12 @@
                   </div>
                   <div class="goal-side">
                     <div class="goal-side-label">目標</div>
-                    <div id="goalTargetText" class="goal-side-value target">未設定</div>
+                    <div style="display:flex;align-items:center;gap:4px;">
+                      <input id="goalHourInput" type="text" maxlength="2" placeholder="--" style="width:38px;height:34px;text-align:center;border:none;border-bottom:2px dashed rgba(255,255,255,0.35);background:transparent;color:#fff;font-size:18px;font-weight:800;outline:none;" />
+                      <span style="color:rgba(255,255,255,0.4);font-weight:800;font-size:18px;">:</span>
+                      <input id="goalMinInput" type="text" maxlength="2" placeholder="--" style="width:38px;height:34px;text-align:center;border:none;border-bottom:2px dashed rgba(255,255,255,0.35);background:transparent;color:#fff;font-size:18px;font-weight:800;outline:none;" />
+                      <span style="font-size:10px;color:rgba(255,255,255,0.35);margin-left:4px;">時間:分</span>
+                    </div>
                     <div class="goal-side-label" style="margin-top:6px;">達成</div>
                     <div id="goalCurrentText" class="goal-side-value current">0時間0分</div>
                   </div>
@@ -2949,7 +2999,7 @@
           <button id="closeGiftBtn" class="close-btn">×</button>
         </div>
         <div id="giftGrid" class="gift-grid"></div>
-        <div class="gift-text-row">
+        <div id="giftShellRow" class="gift-text-row" style="display:none">
           <input id="giftShellInput" type="text" maxlength="6" placeholder="6文字まで" />
           <button id="sendShellBtn" class="btn primary">お話貝を送る</button>
         </div>
@@ -3137,6 +3187,7 @@
       taskCategorySelect:document.getElementById("taskCategorySelect"),
       baitTotalMini:document.getElementById("baitTotalMini"),weatherHalf:document.getElementById("weatherHalf"),timeHalf:document.getElementById("timeHalf"),weatherTimeBalloon:document.getElementById("weatherTimeBalloon"),
       fishingStampFeed:document.getElementById("fishingStampFeed"),fishingMessageBtn:document.getElementById("fishingMessageBtn"),fishingMessageDot:document.getElementById("fishingMessageDot"),
+      fishingUtilityBtn:document.getElementById("fishingUtilityBtn"),
       fishingTimer:document.getElementById("fishingTimer"),timerText:document.getElementById("timerText"),timerPlanMini:document.getElementById("timerPlanMini"),timerStatus:document.getElementById("timerStatus"),
       timerProgress:document.getElementById("timerProgress"),timerGlow:document.getElementById("timerGlow"),
       toggleFishingBtn:document.getElementById("toggleFishingBtn"),toggleFishingIcon:document.getElementById("toggleFishingIcon"),
@@ -3155,7 +3206,7 @@
       weekBars:document.getElementById("weekBars"),weekLabels:document.getElementById("weekLabels"),
       todayBestFish:document.getElementById("todayBestFish"),todayBestFishSub:document.getElementById("todayBestFishSub"),todayEarnedValue:document.getElementById("todayEarnedValue"),
       todayWorkNum:document.getElementById("todayWorkNum"),todayRestNum:document.getElementById("todayRestNum"),
-      goalProgress:document.getElementById("goalProgress"),goalPercent:document.getElementById("goalPercent"),goalTargetText:document.getElementById("goalTargetText"),goalCurrentText:document.getElementById("goalCurrentText"),
+      goalProgress:document.getElementById("goalProgress"),goalPercent:document.getElementById("goalPercent"),goalHourInput:document.getElementById("goalHourInput"),goalMinInput:document.getElementById("goalMinInput"),goalCurrentText:document.getElementById("goalCurrentText"),
       customGraphList:document.getElementById("customGraphList"),customGraphForm:document.getElementById("customGraphForm"),customGraphTitle:document.getElementById("customGraphTitle"),customGraphColors:document.getElementById("customGraphColors"),saveCustomGraph:document.getElementById("saveCustomGraph"),addCustomGraphBtn:document.getElementById("addCustomGraphBtn"),
       // Ency
       encyStats:document.getElementById("encyStats"),encyList:document.getElementById("encyList"),
@@ -3230,6 +3281,7 @@
       // Clock date toggle
       [el.lobbyCurrentTime,el.roomCurrentTime,el.fishingCurrentTime].forEach(c=>{c.addEventListener("click",()=>{clockDateExpanded=!clockDateExpanded;updateDateSubs();});});
       el.roomUtilityIconBtn.addEventListener("click",toggleUtility);
+      if(el.fishingUtilityBtn)el.fishingUtilityBtn.addEventListener("click",toggleUtility);
       el.leaveRoomBtnLeft.addEventListener("click",()=>leaveRoom(false).catch(console.error));
       el.roomFishingBtn.addEventListener("click",startFishingFromRoom);
       el.roomCourseSelect.addEventListener("change",()=>{state.selectedCourseMin=Number(el.roomCourseSelect.value);saveAll().catch(console.error);renderAll();});
@@ -3303,7 +3355,10 @@
       el.addCustomGraphBtn.addEventListener("click",()=>{el.customGraphForm.style.display=el.customGraphForm.style.display==='none'?'block':'none';renderCustomGraphColors();});
       el.saveCustomGraph.addEventListener("click",saveCustomGraphItem);
       // Weekly goal click
-      el.goalTargetText.addEventListener("click",editWeeklyGoal);
+      // Weekly goal inputs
+      const goalHI=document.getElementById("goalHourInput"),goalMI=document.getElementById("goalMinInput");
+      if(goalHI){goalHI.addEventListener("blur",()=>{const h=parseInt(goalHI.value)||0;const m=parseInt(goalMI?.value)||0;state.weeklyGoal.targetMin=h*60+m;saveAll().catch(console.error);renderAll();});}
+      if(goalMI){goalMI.addEventListener("blur",()=>{const h=parseInt(goalHI?.value)||0;const m=parseInt(goalMI.value)||0;state.weeklyGoal.targetMin=h*60+m;saveAll().catch(console.error);renderAll();});}
       // Window events
       window.addEventListener("resize",()=>{setAppVh();updateScale();renderAll();});
       window.addEventListener("orientationchange",()=>setTimeout(()=>{setAppVh();updateScale();renderAll();},120));
@@ -3332,7 +3387,7 @@
     function openStoreCategory(cat){storeActiveCategory=cat;el.storeCategoryScreen.style.display='none';['bait','upgrade','items','sell'].forEach(k=>{document.getElementById(`storeSub${k.charAt(0).toUpperCase()+k.slice(1)}`).classList.toggle('active',k===cat);});renderStore();}
     function closeStoreCategory(){storeActiveCategory=null;el.storeCategoryScreen.style.display='flex';document.querySelectorAll('.store-sub-screen').forEach(s=>s.classList.remove('active'));}
 
-    function editWeeklyGoal(){const v=prompt("目標作業時間（分単位で入力、例: 120 = 2時間）",String(state.weeklyGoal.targetMin||0));if(v===null)return;state.weeklyGoal.targetMin=Math.max(0,parseInt(v)||0);saveAll().catch(console.error);renderAll();}
+    function editWeeklyGoal(){/* now handled by input blur events */}
 
     function renderCustomGraphColors(){el.customGraphColors.innerHTML='';const used=(state.customGraphs||[]).map(g=>g.color);CUSTOM_COLORS.forEach(c=>{if(used.includes(c))return;const b=document.createElement('button');b.style.cssText=`width:28px;height:28px;border-radius:50%;border:2px solid transparent;background:${c};cursor:pointer;`;b.addEventListener('click',()=>{el.customGraphColors.querySelectorAll('button').forEach(x=>x.style.borderColor='transparent');b.style.borderColor='#fff';b.dataset.color=c;});el.customGraphColors.appendChild(b);});}
     function saveCustomGraphItem(){const title=el.customGraphTitle.value.trim().slice(0,12);const selBtn=el.customGraphColors.querySelector('button[style*="border-color: rgb(255, 255, 255)"]')||el.customGraphColors.querySelector('button[data-color]');if(!title){toast("タイトルを入力してください");return;}if(!selBtn?.dataset?.color){toast("色を選んでください");return;}state.customGraphs.push({id:makeId(),title,color:selBtn.dataset.color});el.customGraphForm.style.display='none';el.customGraphTitle.value='';fillTaskSelect();saveAll().catch(console.error);renderAll();}
@@ -3458,7 +3513,7 @@
     function renderAll(){applySelectors();applyNavState();renderNavLevels();renderFishingStatus();renderRoom();renderStore();renderResults();renderEncyclopedia();renderSettings();renderUserPill();renderStampFeeds();updateSync();updateRoomVideo();updateFishingVideo();renderMailIndicators();el.baitTotalMini.textContent=`餌 ${getTotalBait()}`;el.storeMoneyChip.textContent=`${state.money} zz`;el.storeBaitChip.textContent=`餌 ${getTotalBait()}`;el.fishingTimer.classList.toggle("mega",!!state.ui.timerMega);if(state.ui.utilityOpen)renderUtility();renderLoopInfo();syncGoalInputs();renderCustomGraphList();fillTaskSelect();}
     function renderNavLevels(){el.navLevelList.innerHTML="";UPGRADE_PARTS.forEach(p=>{const c=document.createElement("div");c.className="part-level-card";c.innerHTML=`<div class="part-level-name">${p.name}</div><div class="part-level-value">${state.upgrades[p.id]||0}</div>`;el.navLevelList.appendChild(c);});}
     function renderRoom(){const inRoom=!!state.room.inRoom&&!!state.room.roomId;el.roomLobby.style.display=inRoom?"none":"flex";el.roomActiveUI.style.display=inRoom?"block":"none";if(!inRoom)return;const ms=currentRoomData?.members?.length?currentRoomData.members:[makeMember()];renderParticipants(el.roomParticipants,ms);renderParticipants(el.fishingParticipants,ms);el.roomFishingBtn.disabled=!!state.fishing.inProgress;if(!currentRoomData&&state.room.roomId)startRoomListener(state.room.roomId);ensureRoomVisual();}
-    function renderParticipants(container,members){container.innerHTML="";const card=document.createElement("div");card.className="participants-card";for(let i=0;i<ROOM_CAPACITY;i++){const slot=document.createElement("div");slot.className="participant-slot";const m=members[i];if(m){const isSelf=(m.uid||"")===(state.user.uid||state.user.playerToken||"");const statusText=isSelf&&state.ui.selfMoneyOpen?`${state.money} zz`:m.status==="fishing"?"釣り中":m.status==="paused"?"停止中":"待機中";const bubble=getLatestStamp(m.uid);slot.innerHTML=`<div class="participant-avatar" style="position:relative;">🐱${bubble?`<div class="participant-bubble">${bubble.stamp}</div>`:""}</div><div class="participant-name">${esc(m.name)}</div><div class="participant-status">${esc(statusText)}</div>`;slot.style.cursor="pointer";slot.addEventListener("click",()=>{if(isSelf){state.ui.selfMoneyOpen=!state.ui.selfMoneyOpen;renderAll();}else openGiftModalFn(m);});}card.appendChild(slot);}container.appendChild(card);}
+    function renderParticipants(container,members){container.innerHTML="";const card=document.createElement("div");card.className="participants-card";members.forEach(m=>{const slot=document.createElement("div");slot.className="participant-slot";const isSelf=(m.uid||"")===(state.user.uid||state.user.playerToken||"");const statusText=isSelf&&state.ui.selfMoneyOpen?`${state.money} zz`:m.status==="fishing"?"釣り中":m.status==="paused"?"停止中":"待機中";const bubble=getLatestStamp(m.uid);slot.innerHTML=`<div class="participant-avatar" style="position:relative;">🐱${bubble?`<div class="participant-bubble">${bubble.stamp}</div>`:""}</div><div class="participant-name">${esc(m.name)}</div><div class="participant-status">${esc(statusText)}</div>`;slot.style.cursor="pointer";slot.addEventListener("click",()=>{if(isSelf){state.ui.selfMoneyOpen=!state.ui.selfMoneyOpen;renderAll();}else openGiftModalFn(m);});card.appendChild(slot);});container.appendChild(card);}
     function renderStampFeeds(){[el.roomStampFeed,el.fishingStampFeed].forEach(f=>{f.innerHTML="";(currentRoomData?.recentStamps||[]).slice(-4).reverse().forEach(s=>{const d=document.createElement("div");d.className="stamp-feed-item";d.textContent=`${s.stamp} ${s.name}`;f.appendChild(d);});});}
     function renderStore(){if(!storeActiveCategory)return;if(storeActiveCategory==='bait')renderBaitCards();if(storeActiveCategory==='upgrade')renderUpgradeCards();if(storeActiveCategory==='items')renderGiftCards();if(storeActiveCategory==='sell')renderSellCards();}
     function renderBaitCards(){el.baitBuyList.innerHTML="";BAIT_TYPES.forEach(b=>{const o=state.baitCounts[b.id]||0;const fc=b.dailyFree&&state.shop.freeBaitClaimDate===todayKey();const c=document.createElement("div");c.className="bait-card";c.innerHTML=`<div class="bait-art-frame">${b.icon}</div><div class="bait-name">${b.name}<span class="owned-mini">×${o}</span></div><div class="bait-desc">${b.desc}<br/>${b.packQty}個</div><div class="bait-bottom"><div class="bait-price">${b.price} zz</div><button class="buy-btn">${b.dailyFree?(fc?"受取済":"受取る"):"買う"}</button></div>`;const btn=c.querySelector(".buy-btn");btn.disabled=b.dailyFree?fc:state.money<b.price;btn.addEventListener("click",()=>buyBait(b));el.baitBuyList.appendChild(c);});}
@@ -3471,7 +3526,9 @@
       // Weekly goal
       const goalTarget=state.weeklyGoal.targetMin||0;const goalCurrent=twMin;
       if(goalTarget>0){const pct=Math.min(Math.round(goalCurrent/goalTarget*100),999);el.goalPercent.textContent=`${pct}%`;el.goalPercent.style.color=pct>=100?'var(--green)':'var(--accent)';const offset=GOAL_CIRCLE_C*(1-Math.min(1,goalCurrent/goalTarget));el.goalProgress.style.strokeDasharray=String(GOAL_CIRCLE_C);el.goalProgress.style.strokeDashoffset=String(offset);}else{el.goalPercent.textContent="0%";el.goalProgress.style.strokeDasharray=String(GOAL_CIRCLE_C);el.goalProgress.style.strokeDashoffset=String(GOAL_CIRCLE_C);}
-      el.goalTargetText.textContent=goalTarget>0?`${Math.floor(goalTarget/60)}時間${goalTarget%60}分`:"未設定";
+      const ghi=document.getElementById("goalHourInput"),gmi=document.getElementById("goalMinInput");
+      if(ghi&&document.activeElement!==ghi)ghi.value=goalTarget>0?String(Math.floor(goalTarget/60)):"";
+      if(gmi&&document.activeElement!==gmi)gmi.value=goalTarget>0?String(goalTarget%60):"";
       el.goalCurrentText.textContent=`${Math.floor(goalCurrent/60)}時間${goalCurrent%60}分`;
       // Chart bars
       el.weekBars.innerHTML="";el.weekLabels.innerHTML=`<div class="week-label-spacer"></div><div class="week-labels-inner"></div>`;const li=el.weekLabels.querySelector(".week-labels-inner");
@@ -3521,9 +3578,11 @@
     function mergeInbox(remote){const cur=new Map((state.mailbox.items||[]).map(i=>[i.id,i]));remote.forEach(r=>{const e=cur.get(r.id);if(!e)cur.set(r.id,r);else cur.set(r.id,{...r,opened:e.opened||r.opened});});state.mailbox.items=[...cur.values()].sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));renderMailIndicators();saveLocalState(state);}
 
     // Gift modal
-    function openGiftModalFn(member){selectedGiftTarget=member;el.giftModalTitle.textContent=`${member.name} にプレゼント`;renderGiftCards();el.giftShellInput.value="";el.giftModal.classList.add("show");}
+    function openGiftModalFn(member){selectedGiftTarget=member;el.giftModalTitle.textContent=`${member.name} にプレゼント`;renderGiftModalCards();el.giftShellInput.value="";el.giftModal.classList.add("show");}
     function closeGiftModal(){selectedGiftTarget=null;el.giftModal.classList.remove("show");}
-     async function sendGift(g){if(!selectedGiftTarget||(state.giftCounts[g.id]||0)<=0)return;state.giftCounts[g.id]-=1;await pushMail(selectedGiftTarget.uid,{id:makeId(),type:"gift",title:g.name,icon:g.icon,senderName:state.user.displayName||"釣り人",body:g.comment,createdAt:Date.now(),opened:false});toast(`${selectedGiftTarget.name} に ${g.name} を送りました。`);closeGiftModal();saveAll().catch(console.error);renderAll();}
+    function renderGiftModalCards(){el.giftGrid.innerHTML="";GIFT_ITEMS.forEach(g=>{const o=state.giftCounts[g.id]||0;if(o<=0)return;const c=document.createElement("div");c.className="gift-card";c.innerHTML=`<div class="gift-name">${g.icon} ${g.name}<span class="owned-mini">×${o}</span></div><div class="gift-note">${g.comment}</div>`;if(g.id!=="gift_shell"){const btn=document.createElement("button");btn.className="btn primary";btn.textContent="送る";btn.addEventListener("click",()=>sendGift(g).catch(console.error));c.appendChild(btn);}el.giftGrid.appendChild(c);});const shellRow=document.getElementById("giftShellRow");const shellOwned=state.giftCounts.gift_shell||0;if(shellRow){shellRow.style.display=shellOwned>0?"flex":"none";}el.sendShellBtn.disabled=shellOwned<=0||!selectedGiftTarget;el.sendShellBtn.textContent=`お話貝を送る（×${shellOwned}）`;if(!el.giftGrid.children.length){el.giftGrid.innerHTML=`<div style="padding:20px;text-align:center;color:var(--muted);grid-column:1/-1;">送れるアイテムがありません。<br>ストアで購入してください。</div>`;}}
+
+    async function sendGift(g){if(!selectedGiftTarget||(state.giftCounts[g.id]||0)<=0)return;state.giftCounts[g.id]-=1;await pushMail(selectedGiftTarget.uid,{id:makeId(),type:"gift",title:g.name,icon:g.icon,senderName:state.user.displayName||"釣り人",body:g.comment,createdAt:Date.now(),opened:false});toast(`${selectedGiftTarget.name} に ${g.name} を送りました。`);closeGiftModal();saveAll().catch(console.error);renderAll();}
     async function sendShell(){if(!selectedGiftTarget||(state.giftCounts.gift_shell||0)<=0)return;const t=safeGiftText(el.giftShellInput.value);if(!t){toast("6文字以内で入力。");return;}state.giftCounts.gift_shell-=1;await pushMail(selectedGiftTarget.uid,{id:makeId(),type:"gift",title:"お話貝",icon:"🐚",senderName:state.user.displayName||"釣り人",body:t,createdAt:Date.now(),opened:false});toast(`お話貝を送りました。`);closeGiftModal();saveAll().catch(console.error);renderAll();}
     async function pushMail(uid,mail){if(!db||!uid)return;const ref=doc(db,"inboxes",uid);try{const s=await getDoc(ref);const cur=s.exists()&&Array.isArray(s.data()?.items)?s.data().items:[];await setDoc(ref,{items:[...cur,mail],updatedAt:serverTimestamp()},{merge:true});}catch(e){console.error(e);toast("送信失敗。");}}
 
