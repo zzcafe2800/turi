@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>作業連動型 釣りサブサイト</title>
+  <title>αテストト</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='50' font-size='48'%3E%F0%9F%8E%A3%3C/text%3E%3C/svg%3E" />
   <style>
     :root {
@@ -2488,8 +2488,8 @@
     @media (min-width: 761px) { .audio-player-wrap { transform: scale(1.1) !important; transform-origin: bottom left !important; margin-bottom: 8px !important; margin-left: 6px !important; } }
     @media (max-width: 760px) { .audio-player-wrap { transform: scale(0.75) !important; transform-origin: bottom left !important; margin-bottom: 4px !important; } .action-btn.exit { min-height: calc(46px * var(--uiScale)) !important; } .mini-goal-input { font-size: 17px !important; min-width: 160px !important; } }
     /* Volume ring gauge for long-press */
-    .audio-ctrl-btn { position: relative !important; }
-    .vol-ring { position: absolute; inset: -4px; width: calc(100% + 8px); height: calc(100% + 8px); pointer-events: none; transform: rotate(-90deg); }
+    .audio-ctrl-btn { position: relative !important; overflow: visible !important; }
+    .vol-ring { position: absolute; top: 50%; left: 50%; width: calc(100% + 10px); height: calc(100% + 10px); transform: translate(-50%,-50%) rotate(-90deg); pointer-events: none; z-index: 10; }
     .vol-ring circle { fill: none; stroke: var(--accent); stroke-width: 3; stroke-linecap: round; transition: none; }
 
     /* === Calendar === */
@@ -2865,7 +2865,11 @@
             </div>
           </div>
 
-          <div class="week-card">
+          <div class="week-card" style="position:relative;">
+            <div style="position:absolute;top:12px;right:14px;display:flex;align-items:center;gap:6px;z-index:2;">
+              <span style="font-size:11px;color:var(--muted);">カスタム</span>
+              <button id="addCustomGraphBtn" style="width:24px;height:24px;border:1px solid rgba(255,255,255,0.14);border-radius:50%;background:transparent;color:var(--accent);font-size:14px;cursor:pointer;display:grid;place-items:center;">+</button>
+            </div>
             <div class="week-chart">
               <div class="y-axis"><span>24h</span><span>18h</span><span>12h</span><span>6h</span><span>0h</span></div>
               <div class="chart-area">
@@ -2879,12 +2883,8 @@
           <!-- Calendar -->
           <div id="weekCalendar" class="week-calendar" style="margin-top:16px;"></div>
 
-          <!-- Custom graph categories -->
-          <div style="margin-top:14px;display:flex;align-items:center;gap:8px;">
-            <span style="font-size:13px;color:var(--muted);">カスタム棒グラフ</span>
-            <button id="addCustomGraphBtn" style="width:28px;height:28px;border:1px solid rgba(255,255,255,0.14);border-radius:50%;background:transparent;color:var(--accent);font-size:16px;cursor:pointer;">+</button>
-          </div>
-          <div id="customGraphList" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;"></div>
+          <!-- Custom graph list + form (below calendar) -->
+          <div id="customGraphList" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;"></div>
           <div id="customGraphForm" style="display:none;margin-top:8px;padding:12px;border-radius:14px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);">
             <input id="customGraphTitle" type="text" maxlength="12" placeholder="タイトル" style="min-height:36px;padding:0 10px;border-radius:10px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.08);color:#fff;margin-bottom:8px;width:100%;" />
             <div id="customGraphColors" style="display:flex;gap:6px;margin-bottom:8px;"></div>
@@ -3168,7 +3168,14 @@
     const SFX_LIST = [
       { id:'sound01', title:'sound01', url:'sound01.mp3', credit:'Credit: Sample SFX' },
     ];
-    const WELCOME_MAIL_TEXT = `はじめまして、個人開発をしているユメです。\nこのアプリは、イラスト・アニメーション・開発まですべて一人で少しずつ作っています。\n\nみなさんの作業のじゃまになってほしくなくて、広告は入れていません。\nそのぶん更新には少し時間がかかりますが、より使いやすく、作業がはかどる場所になるように大切に育てています。\n\n「こんな機能がほしい」などの感想や口コミも、とても励みになります。\nみなさんと一緒に、この場所を少しずつ育てていけたらうれしいです。\n\n使ってくださって、本当にありがとうございます。`;
+    const WELCOME_MAIL_TEXT = `αテスト\n
+スマホは横画面・全画面・ローカル推奨｟※PC推奨｠\n
+【バグ(スマホ)】　1.ログイン　2,UI\n
+【未実装】　      1.背景や魚イラスト       2.リザルト(週間～年間)　3,各アイコンイラスト\n
+
+わかりにくい所、ほしい機能、UI改善、バグなどあれば教えてもらえるとうれしいです。\n
+`;
+
 
     /* ===== The full JavaScript continues below - preserving ALL original functionality ===== */
     /* Due to the extreme size, I'm providing the core structure with all features implemented */
@@ -3211,7 +3218,7 @@
       weeklyGoal:{targetMin:0,resetWeek:null},
       customGraphs:[],selectedTaskCategory:'work',
       bgmFavList:[],
-      utilityRoomTab:null,utilityRoomVisible:true,
+      utilityRoomTabs:[],utilityRoomVisible:true,
     };
 
     function cloneDefault(){return JSON.parse(JSON.stringify(DEFAULT_STATE));}
@@ -3226,7 +3233,7 @@
     if(!state.selectedTaskCategory)state.selectedTaskCategory='work';
     if(!state.bgmFavList)state.bgmFavList=[];
     bgmFavList=state.bgmFavList||[];
-    if(state.utilityRoomTab===undefined)state.utilityRoomTab=null;
+    if(!Array.isArray(state.utilityRoomTabs))state.utilityRoomTabs=state.utilityRoomTab?[state.utilityRoomTab]:[];
     if(state.utilityRoomVisible===undefined)state.utilityRoomVisible=true;
     const U_ICONS=['📋','🔔','⏰','📝','✅','🎯','💡','⭐','🏃','📚','🎵','🍎','💪','🧘'];
     const U_COLORS=['#7bdff5','#ff7eb3','#fbbf24','#7fe89c','#a78bfa','#ff9a56','#60a5fa','#f472b6'];
@@ -3430,6 +3437,11 @@
       el.audioFavListBtn.addEventListener("click",()=>{bgmFavOnly=!bgmFavOnly;el.audioFavListBtn.textContent=bgmFavOnly?'❤':'📋';});
       el.audioBgmTitle.addEventListener("click",openBgmList);
       el.bgmListClose.addEventListener("click",closeBgmList);
+      // BGM list tab switching
+      let bgmListMode='all';
+      el.bgmTabAll.addEventListener("click",()=>{bgmListMode='all';[el.bgmTabAll,el.bgmTabFav,el.bgmTabSfx].forEach(t=>t.classList.remove('active'));el.bgmTabAll.classList.add('active');renderBgmList();});
+      el.bgmTabFav.addEventListener("click",()=>{bgmListMode='fav';[el.bgmTabAll,el.bgmTabFav,el.bgmTabSfx].forEach(t=>t.classList.remove('active'));el.bgmTabFav.classList.add('active');renderBgmList();});
+      el.bgmTabSfx.addEventListener("click",()=>{bgmListMode='sfx';[el.bgmTabAll,el.bgmTabFav,el.bgmTabSfx].forEach(t=>t.classList.remove('active'));el.bgmTabSfx.classList.add('active');renderBgmList();});
       // Volume long-press system for BGM mute
       setupVolumeLongPress(el.audioMuteBtn, 'bgm');
       // Volume long-press system for SFX mute
@@ -3522,8 +3534,18 @@
     function updateAudioUI(){if(!bgmAudio||!bgmAudio.duration)return;const p=bgmAudio.currentTime/bgmAudio.duration*100;el.audioSeekFill.style.width=`${p}%`;const fmt=t=>`${String(Math.floor(t/60)).padStart(2,'0')}:${String(Math.floor(t%60)).padStart(2,'0')}`;el.audioTimeText.textContent=`${fmt(bgmAudio.currentTime)}/${fmt(bgmAudio.duration)}`;}
     function openBgmList(){el.bgmListOverlay.classList.add("show");renderBgmList();}
     function closeBgmList(){el.bgmListOverlay.classList.remove("show");}
-    function renderBgmList(){el.bgmListBody.innerHTML="";BGM_LIST.forEach((b,i)=>{const c=document.createElement("div");c.className=`bgm-list-card ${i===bgmCurrentIndex&&bgmPlaying?'playing':''}`;const isFav=bgmFavList.includes(b.id);c.innerHTML=`<span class="bgm-card-drag">⠿</span><div class="bgm-card-info"><div class="bgm-card-name">${esc(b.title)}</div><div class="bgm-card-credit">${esc(b.credit)}</div></div><button class="bgm-card-fav ${isFav?'liked':''}">${isFav?'♥':'♡'}</button>`;c.querySelector('.bgm-card-info').addEventListener('click',()=>{bgmCurrentIndex=i;if(!bgmAudio){bgmAudio=new Audio();bgmAudio.volume=bgmVolume/100;bgmAudio.addEventListener('ended',()=>nextBgm());bgmAudio.addEventListener('timeupdate',updateAudioUI);}playCurrentBgm();renderBgmList();});c.querySelector('.bgm-card-fav').addEventListener('click',e=>{e.stopPropagation();if(isFav)bgmFavList=bgmFavList.filter(x=>x!==b.id);else bgmFavList.push(b.id);state.bgmFavList=bgmFavList;saveAll().catch(console.error);renderBgmList();});el.bgmListBody.appendChild(c);});}
+    function renderBgmList(){el.bgmListBody.innerHTML="";
+      if(typeof bgmListMode==='undefined')window.bgmListMode='all';
+      if(bgmListMode==='sfx'){
+        SFX_LIST.forEach((s,i)=>{const c=document.createElement("div");c.className="bgm-list-card";c.innerHTML=`<span class="bgm-card-drag">🔔</span><div class="bgm-card-info"><div class="bgm-card-name">${esc(s.title)}</div><div class="bgm-card-credit">${esc(s.credit)}</div></div>`;c.querySelector('.bgm-card-info').addEventListener('click',()=>{if(!sfxMuted){try{const a=new Audio(s.url);a.volume=sfxVolume/100;a.play().catch(()=>{});}catch(e){}}});el.bgmListBody.appendChild(c);});
+        if(!SFX_LIST.length)el.bgmListBody.innerHTML=`<div style="padding:20px;text-align:center;color:rgba(255,255,255,0.3);">効果音なし</div>`;
+        return;
+      }
+      const list=bgmListMode==='fav'?BGM_LIST.filter(b=>bgmFavList.includes(b.id)):BGM_LIST;
+      if(!list.length){el.bgmListBody.innerHTML=`<div style="padding:20px;text-align:center;color:rgba(255,255,255,0.3);">${bgmListMode==='fav'?"お気に入りなし":"BGMなし"}</div>`;return;}
+      list.forEach((b)=>{const origIdx=BGM_LIST.indexOf(b);const c=document.createElement("div");c.className=`bgm-list-card ${origIdx===bgmCurrentIndex&&bgmPlaying?'playing':''}`;const isFav=bgmFavList.includes(b.id);c.innerHTML=`<span class="bgm-card-drag">⠿</span><div class="bgm-card-info"><div class="bgm-card-name">${esc(b.title)}</div><div class="bgm-card-credit">${esc(b.credit)}</div></div><button class="bgm-card-fav ${isFav?'liked':''}">${isFav?'♥':'♡'}</button>`;c.querySelector('.bgm-card-info').addEventListener('click',()=>{bgmCurrentIndex=origIdx;if(!bgmAudio){bgmAudio=new Audio();bgmAudio.volume=bgmVolume/100;bgmAudio.addEventListener('ended',()=>nextBgm());bgmAudio.addEventListener('timeupdate',updateAudioUI);}playCurrentBgm();renderBgmList();});c.querySelector('.bgm-card-fav').addEventListener('click',e=>{e.stopPropagation();if(isFav)bgmFavList=bgmFavList.filter(x=>x!==b.id);else bgmFavList.push(b.id);state.bgmFavList=bgmFavList;saveAll().catch(console.error);renderBgmList();});el.bgmListBody.appendChild(c);});}
     function autoPlayBgmOnFishing(){if(!bgmPlaying){if(!bgmAudio){bgmAudio=new Audio(BGM_LIST[bgmCurrentIndex].url);bgmAudio.volume=bgmVolume/100;bgmAudio.muted=bgmMuted;bgmAudio.addEventListener('ended',()=>{if(bgmLoopMode==='loop')nextBgm();else{bgmCurrentIndex=Math.floor(Math.random()*BGM_LIST.length);playCurrentBgm();}});bgmAudio.addEventListener('timeupdate',updateAudioUI);}playCurrentBgm();}if(!sfxMuted){try{const sfx=new Audio(SFX_LIST[0]?.url||'sound01.mp3');sfx.volume=sfxVolume/100;sfx.play().catch(()=>{});}catch(e){}}}
+    function stopBgmOnFishEnd(){if(bgmAudio&&bgmPlaying){bgmAudio.pause();bgmPlaying=false;try{el.audioPlayBtn.innerHTML='<svg viewBox="0 0 24 24" width="16" height="16" fill="#fff" stroke="none"><path d="M8 5v14l11-7z"/></svg>';}catch(e){}}}
     function syncGoalInputs(){const v=state.miniGoal||"";[el.lobbyGoalInput,el.roomGoalInput,el.fishingGoalInput].forEach(i=>{if(document.activeElement!==i)i.value=v;});const vis=state.miniGoalPublic?"公開中":"非公開";[el.lobbyGoalVisibility,el.roomGoalVisibility,el.fishingGoalVisibility].forEach(s=>s.textContent=vis);}
     function updateDateSubs(){const now=new Date();const days=['日','月','火','水','木','金','土'];const txt=`${now.getMonth()+1}/${now.getDate()} ${days[now.getDay()]}`;[el.lobbyDateSub,el.roomDateSub,el.fishingDateSub].forEach(s=>{s.textContent=txt;s.classList.toggle('show',clockDateExpanded);});}
 
@@ -3555,7 +3577,7 @@
       el.uBadgeTodo.textContent=String(tc);el.uBadgeTodo.classList.toggle("show",tc>0);
       el.uBadgeRecord.textContent=String(rdc);el.uBadgeRecord.classList.toggle("show",rdc>0);
       // On/off toggles
-      [['reminder',el.uToggleReminder],['todo',el.uToggleTodo],['record',el.uToggleRecord]].forEach(([k,btn])=>{if(btn)btn.classList.toggle('on',state.utilityRoomTab===k);});
+      [['reminder',el.uToggleReminder],['todo',el.uToggleTodo],['record',el.uToggleRecord]].forEach(([k,btn])=>{if(btn)btn.classList.toggle('on',(state.utilityRoomTabs||[]).includes(k));});
       const box=el.utilityFsBody;box.innerHTML="";
       if(tab==="record"){const row=document.createElement("div");row.className="quick-record-row";row.innerHTML=`<button class="quick-record-btn">🎣開始</button><button class="quick-record-btn">☕休憩</button><button class="quick-record-btn">🏁終了</button>`;[...row.querySelectorAll("button")].forEach((b,i)=>{const t=["start","break","end"][i];b.addEventListener("click",()=>{state.productivity.records.unshift({id:makeId(),type:t,title:recLabel(t),time:currentHm(),dayKey:todayKey(),createdAt:Date.now()});saveAll().catch(console.error);renderUtility();});});box.appendChild(row);}
       const items=tab==="todo"?(state.productivity.todos||[]).slice(0,10):tab==="reminder"?(state.productivity.reminders||[]).slice(0,10):(state.productivity.records||[]).filter(r=>r.dayKey===todayKey()).slice(0,12);
@@ -3577,51 +3599,82 @@
     }
 
     function toggleUtilityRoomTab(tabName){
-      if(state.utilityRoomTab===tabName){state.utilityRoomTab=null;}
-      else{state.utilityRoomTab=tabName;}
+      if(!Array.isArray(state.utilityRoomTabs))state.utilityRoomTabs=[];
+      const idx=state.utilityRoomTabs.indexOf(tabName);
+      if(idx>=0)state.utilityRoomTabs.splice(idx,1);
+      else state.utilityRoomTabs.push(tabName);
       renderUtility();renderUtilRoomStrip();saveAll().catch(console.error);
     }
 
     function renderUtilRoomStrip(){
       if(!el.utilRoomStrip||!el.utilRoomCards||!el.utilRoomToggle)return;
-      const activeTab=state.utilityRoomTab;
-      if(!activeTab){el.utilRoomStrip.style.display="none";return;}
+      const tabs=state.utilityRoomTabs||[];
+      if(!tabs.length){el.utilRoomStrip.style.display="none";return;}
       el.utilRoomStrip.style.display="flex";
       const vis=state.utilityRoomVisible;
       el.utilRoomToggle.textContent=vis?"<":">";
       el.utilRoomCards.style.display=vis?"flex":"none";
       el.utilRoomCards.innerHTML="";
-      let items=[];
-      if(activeTab==="todo")items=(state.productivity.todos||[]).filter(t=>!t.completed).slice(0,8);
-      else if(activeTab==="reminder")items=(state.productivity.reminders||[]).filter(r=>r.on!==false).slice(0,8);
-      else items=(state.productivity.records||[]).filter(r=>r.dayKey===todayKey()).slice(0,8);
-      if(!items.length){el.utilRoomStrip.style.display="none";return;}
-      // Auto-scale if too many
+      const catLabel={reminder:"通知",todo:"やること",record:"記録"};
+      let totalCards=0;
+      tabs.forEach(tab=>{
+        let items=[];
+        if(tab==="todo")items=(state.productivity.todos||[]).filter(t=>!t.completed).slice(0,6);
+        else if(tab==="reminder")items=(state.productivity.reminders||[]).filter(r=>r.on!==false).slice(0,6);
+        else items=(state.productivity.records||[]).filter(r=>r.dayKey===todayKey()).slice(0,6);
+        if(!items.length)return;
+        // Category label
+        const lbl=document.createElement("div");lbl.style.cssText="font-size:8px;color:rgba(255,255,255,0.35);padding:0 2px;white-space:nowrap;flex-shrink:0;align-self:center;";lbl.textContent=catLabel[tab]||tab;el.utilRoomCards.appendChild(lbl);
+        items.forEach(item=>{
+          const c=document.createElement("div");c.className="util-room-card";
+          if(item.color)c.style.borderColor=item.color;
+          const timeStr=item.time||"";
+          c.innerHTML=`<span class="urc-icon">${item.icon||"📋"}</span><span class="urc-title">${esc(item.title||"")}</span>${timeStr?`<span style="font-size:9px;color:rgba(255,255,255,0.45);">${timeStr}</span>`:""}`;
+          el.utilRoomCards.appendChild(c);totalCards++;
+        });
+      });
+      if(!totalCards){el.utilRoomStrip.style.display="none";return;}
+      // Auto-scale if too many cards
       const maxW=el.utilRoomStrip.parentElement?.offsetWidth||300;
-      const estW=items.length*90;
-      const sc=estW>maxW*0.8?Math.max(0.6,maxW*0.8/estW):1;
+      const estW=totalCards*100+tabs.length*30;
+      const sc=estW>maxW*0.85?Math.max(0.55,maxW*0.85/estW):1;
       el.utilRoomCards.style.transform=sc<1?`scale(${sc.toFixed(2)})`:"";
       el.utilRoomCards.style.transformOrigin="left center";
-      items.forEach(item=>{const c=document.createElement("div");c.className="util-room-card";if(item.color)c.style.borderColor=item.color;c.innerHTML=`<span class="urc-icon">${item.icon||"📋"}</span><span class="urc-title">${esc(item.title||"")}</span>`;el.utilRoomCards.appendChild(c);});
     }
 
     function renderWeekCalendar(){
       if(!el.weekCalendar)return;
-      const week=getWeekStats();
       const now=new Date();
+      const year=now.getFullYear(),month=now.getMonth();
+      const firstDay=new Date(year,month,1);
+      const lastDay=new Date(year,month+1,0).getDate();
+      // Monday=0 ... Sunday=6
+      let startDow=firstDay.getDay();startDow=startDow===0?6:startDow-1;
       el.weekCalendar.innerHTML="";
-      const monthLabel=document.createElement("div");monthLabel.className="week-cal-month";monthLabel.textContent=`${now.getFullYear()}年${now.getMonth()+1}月`;el.weekCalendar.appendChild(monthLabel);
+      const monthLabel=document.createElement("div");monthLabel.className="week-cal-month";monthLabel.textContent=`${year}年${month+1}月`;el.weekCalendar.appendChild(monthLabel);
       const labels=["月","火","水","木","金","土","日"];
       const labelRow=document.createElement("div");labelRow.className="week-cal-row";labels.forEach(l=>{const d=document.createElement("div");d.className="week-cal-day-label";d.textContent=l;labelRow.appendChild(d);});el.weekCalendar.appendChild(labelRow);
-      const cellRow=document.createElement("div");cellRow.className="week-cal-row";
-      week.days.forEach(day=>{const cell=document.createElement("div");cell.className="week-cal-cell";
-        const dateEl=document.createElement("div");dateEl.className="week-cal-date";dateEl.textContent=day.dateLabel;cell.appendChild(dateEl);
+      let dayNum=1;let weekRow=document.createElement("div");weekRow.className="week-cal-row";
+      // Fill empty cells before 1st
+      for(let i=0;i<startDow;i++){const empty=document.createElement("div");empty.className="week-cal-cell";weekRow.appendChild(empty);}
+      while(dayNum<=lastDay){
+        const dow=(startDow+(dayNum-1))%7;
+        if(dow===0&&dayNum>1){el.weekCalendar.appendChild(weekRow);weekRow=document.createElement("div");weekRow.className="week-cal-row";}
+        const cell=document.createElement("div");cell.className="week-cal-cell";
+        const dateEl=document.createElement("div");dateEl.className="week-cal-date";dateEl.textContent=String(dayNum);cell.appendChild(dateEl);
+        const k=`${year}-${month+1}-${dayNum}`;
+        const dayStat=getDayStat(k);const wm=dayStat.workMin||0;
         const orb=document.createElement("div");orb.className="week-cal-orb";
-        const wm=day.stat.workMin||0;
+        const isToday=k===todayKey();
         if(wm>0){orb.classList.add("active");const hrs=wm/60;orb.textContent=hrs>=1?hrs.toFixed(1):(wm+"m");}
         else{orb.classList.add("empty");orb.textContent="";}
-        cell.appendChild(orb);cellRow.appendChild(cell);});
-      el.weekCalendar.appendChild(cellRow);
+        if(isToday)orb.style.boxShadow="0 0 0 2px var(--green), 0 2px 12px rgba(127,232,156,0.4)";
+        cell.appendChild(orb);weekRow.appendChild(cell);dayNum++;
+      }
+      // Fill remaining cells in last week
+      const remaining=7-weekRow.children.length;
+      for(let i=0;i<remaining;i++){const empty=document.createElement("div");empty.className="week-cal-cell";weekRow.appendChild(empty);}
+      el.weekCalendar.appendChild(weekRow);
     }
 
     // ===== ALL REMAINING CORE FUNCTIONS (condensed but complete) =====
@@ -3663,7 +3716,7 @@
     function finishLoopRun(cancelled){state.loopRun.active=false;state.loopRun.phase=null;state.loopRun.restEndAt=null;state.room.status="idle";syncPresence().catch(console.error);stopIdleTracking();startIdleTracking();renderLoopInfo();if(state.loopRun.results.length>0){state.batchResults=[...state.loopRun.results];openBatchModal();}else if(cancelled)toast("ループを終了しました。");state.loopRun.results=[];saveAll().catch(console.error);switchScreen("room");renderAll();}
     function pauseFishing(){if(!state.fishing.inProgress||state.fishing.paused)return;state.fishing.paused=true;state.fishing.pausedAt=Date.now();state.fishing.remainingMs=Math.max(0,state.fishing.endAt-Date.now());state.room.status="paused";syncPresence().catch(console.error);stopTimerTick();toast("タイマーを一時停止しました。");saveAll().catch(console.error);renderAll();}
     function resumeFishing(){if(!state.fishing.inProgress||!state.fishing.paused)return;state.fishing.paused=false;state.fishing.endAt=Date.now()+(state.fishing.remainingMs||0);state.fishing.pausedAt=null;state.fishing.remainingMs=null;state.room.status="fishing";syncPresence().catch(console.error);toast("タイマーを再開しました。");saveAll().catch(console.error);renderAll();startTimerTick();}
-    function cancelFishingNoReward(){if(state.loopRun.active){stopTimerTick();state.fishing.inProgress=false;state.fishing.paused=false;setFocusMode(false);finishLoopRun(true);return;}if(!state.fishing.inProgress)return;stopTimerTick();state.fishing.inProgress=false;state.fishing.paused=false;state.fishing.remainingMs=null;state.room.status="idle";state.ui.timerMega=false;syncPresence().catch(console.error);setFocusMode(false);toast("報酬なしで終了しました。");saveAll().catch(console.error);switchScreen("room");startIdleTracking();ensureRoomVisual();renderAll();}
+    function cancelFishingNoReward(){if(state.loopRun.active){stopTimerTick();state.fishing.inProgress=false;state.fishing.paused=false;setFocusMode(false);stopBgmOnFishEnd();finishLoopRun(true);return;}if(!state.fishing.inProgress)return;stopTimerTick();stopBgmOnFishEnd();state.fishing.inProgress=false;state.fishing.paused=false;state.fishing.remainingMs=null;state.room.status="idle";state.ui.timerMega=false;syncPresence().catch(console.error);setFocusMode(false);toast("報酬なしで終了しました。");saveAll().catch(console.error);switchScreen("room");startIdleTracking();ensureRoomVisual();renderAll();}
     function cancelFishingOnReload(){stopTimerTick();state.fishing.inProgress=false;state.fishing.paused=false;state.fishing.remainingMs=null;state.room.status="idle";state.ui.focusMode=false;state.ui.timerMega=false;syncPresence().catch(console.error);saveAll().catch(console.error);toast("リロードのため釣りを終了しました。");renderAll();}
     function restoreFishingTimer(){if(!state.fishing.inProgress)return;if(state.fishing.paused)renderFishingStatus();else if(Date.now()>=state.fishing.endAt)finishFishing();else startTimerTick();}
     function startTimerTick(){stopTimerTick();timerTickHandle=setInterval(()=>{if(!state.fishing.inProgress||state.fishing.paused){stopTimerTick();renderFishingStatus();return;}if(Date.now()>=state.fishing.endAt){finishFishing();return;}renderFishingStatus();},300);}
@@ -3671,7 +3724,7 @@
     function setFocusMode(on){state.ui.focusMode=!!on;el.focusOverlay.classList.toggle("show",!!on);if(on)clearFishingUiTimeout();else handleFishingActivity();renderFishingStatus();}
     function toggleTimerMega(){state.ui.timerMega=!state.ui.timerMega;renderFishingStatus();}
     function togglePauseResume(){if(!state.fishing.inProgress)return;if(state.fishing.paused)resumeFishing();else pauseFishing();}
-    function finishFishing(){stopTimerTick();if(!state.fishing.inProgress)return;if(state.settings.catchSound)playAudio("time.mp3","time");maybeNotify();const result=rollCatch(state.fishing);state.lastCatch=result.entry;addWorkSession(state.fishing.durationMin,result);state.fishing.inProgress=false;state.fishing.paused=false;state.ui.timerMega=false;state.room.status="idle";syncPresence().catch(console.error);setFocusMode(false);if(state.loopRun.active){state.loopRun.results.push(result);applyCatchRecord(result);saveAll().catch(console.error);if(state.loopRun.current>=state.loopRun.total)finishLoopRun(false);else startLoopRest();return;}pendingResult=result;saveAll().catch(console.error);renderAll();openResultModal(result);}
+    function finishFishing(){stopTimerTick();if(!state.fishing.inProgress)return;if(state.settings.catchSound)playAudio("time.mp3","time");maybeNotify();stopBgmOnFishEnd();const result=rollCatch(state.fishing);state.lastCatch=result.entry;addWorkSession(state.fishing.durationMin,result);state.fishing.inProgress=false;state.fishing.paused=false;state.ui.timerMega=false;state.room.status="idle";syncPresence().catch(console.error);setFocusMode(false);if(state.loopRun.active){state.loopRun.results.push(result);applyCatchRecord(result);saveAll().catch(console.error);if(state.loopRun.current>=state.loopRun.total)finishLoopRun(false);else startLoopRest();return;}pendingResult=result;saveAll().catch(console.error);renderAll();openResultModal(result);}
     async function recoverAfterResult(){state.ui.fishingUiVisible=true;el.app.classList.remove("fishing-ui-faded");clearFishingUiTimeout();if(state.room.inRoom&&state.room.roomId&&!currentRoomData)startRoomListener(state.room.roomId);startIdleTracking();await saveAll();switchScreen("room");ensureRoomVisual();renderAll();}
     function ensureRoomVisual(){if(!state.room.inRoom||!state.room.roomId)return;el.roomLobby.style.display="none";el.roomActiveUI.style.display="block";el.lobbyVideo.style.display="none";el.roomVideo.style.display="block";state.ui.fishingUiVisible=true;el.app.classList.remove("fishing-ui-faded");if(!state.fishing.inProgress)startIdleTracking();updateRoomVideo();safePlay(el.roomVideo);}
     function applyCatchRecord(result){const{picked,entry,isRecord}=result;const baseId=picked.id;if(!state.encyclopedia[baseId])state.encyclopedia[baseId]={count:0,maxSize:0,recordHolder:null};const rec=state.encyclopedia[baseId];rec.count+=1;if(entry.kind==="fish"&&entry.sizeCm>(rec.maxSize||0)){rec.maxSize=entry.sizeCm;rec.recordHolder=state.user.displayName||"釣り人";}if(isRecord&&firebaseSyncOk&&!state.user.isGuest&&state.user.uid)saveGlobalRecord(baseId,entry.sizeCm,state.user.displayName||"釣り人").catch(console.error);}
