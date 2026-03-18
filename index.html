@@ -1182,9 +1182,11 @@
     .utility-fs-tabs {
       display: flex;
       padding: 12px 20px 0;
-      gap: 20px;
+      gap: 12px;
       border-bottom: 1px solid rgba(0,0,0,0.08);
       position: relative;
+      justify-content: center;
+      align-items: center;
     }
     .utility-fs-tab {
       border: 0;
@@ -2686,6 +2688,8 @@
           </div>
 
           <div class="stamp-rail fade-ui">
+            <button id="roomFishPredictBtn" class="utility-icon-btn" title="近くにいる魚" style="position:relative;">🐟</button>
+            <div id="roomFishPredictPopup" class="fish-predict-popup"></div>
             <button id="roomUtilityIconBtn" class="utility-icon-btn" title="便利機能">📋<span id="roomUtilityBadge" class="utility-icon-badge"></span></button>
             <button id="roomMessageBtn" class="message-trigger" aria-label="メッセージ">📨<span id="roomMessageDot" class="message-dot"></span></button>
             <div class="stamp-buttons">
@@ -2803,6 +2807,8 @@
         </div>
 
         <div class="stamp-rail fade-ui">
+          <button id="fishingFishPredictBtn" class="utility-icon-btn" title="近くにいる魚" style="position:relative;">🐟</button>
+          <div id="fishingFishPredictPopup" class="fish-predict-popup"></div>
           <button id="fishingUtilityBtn" class="utility-icon-btn" title="便利機能">📋</button>
           <button id="fishingMessageBtn" class="message-trigger" aria-label="メッセージ">📨<span id="fishingMessageDot" class="message-dot"></span></button>
           <div class="stamp-buttons">
@@ -3099,7 +3105,7 @@
         <span class="util-tab-onoff"><span id="uToggleReminder" class="util-tab-onoff-btn" data-utab="reminder"></span></span>
         <button class="utility-fs-tab" data-utab="todo">やること<span id="uBadgeTodo" class="tab-badge"></span></button>
         <span class="util-tab-onoff"><span id="uToggleTodo" class="util-tab-onoff-btn" data-utab="todo"></span></span>
-        <button class="utility-fs-tab" data-utab="record">記録<span id="uBadgeRecord" class="tab-badge"></span></button>
+        <button class="utility-fs-tab" data-utab="record">スケジュール<span id="uBadgeRecord" class="tab-badge"></span></button>
         <span class="util-tab-onoff"><span id="uToggleRecord" class="util-tab-onoff-btn" data-utab="record"></span></span>
       </div>
       <div id="utilityFsBody" class="utility-fs-body"></div>
@@ -3442,6 +3448,12 @@
       // Clock date toggle
       [el.lobbyCurrentTime,el.roomCurrentTime,el.fishingCurrentTime].forEach(c=>{c.addEventListener("click",()=>{clockDateExpanded=!clockDateExpanded;updateDateSubs();});});
       el.roomUtilityIconBtn.addEventListener("click",toggleUtility);
+      // Fish prediction buttons
+      const rfpBtn=document.getElementById("roomFishPredictBtn"),rfpPop=document.getElementById("roomFishPredictPopup");
+      if(rfpBtn)rfpBtn.addEventListener("click",()=>toggleFishPredict(rfpBtn,rfpPop));
+      const ffpBtn=document.getElementById("fishingFishPredictBtn"),ffpPop=document.getElementById("fishingFishPredictPopup");
+      if(ffpBtn)ffpBtn.addEventListener("click",()=>toggleFishPredict(ffpBtn,ffpPop));
+      document.addEventListener("click",e=>{if(!e.target.closest(".fish-predict-popup")&&!e.target.closest("[id$=FishPredictBtn]"))document.querySelectorAll(".fish-predict-popup").forEach(p=>p.classList.remove("show"));});
       if(el.fishingUtilityBtn)el.fishingUtilityBtn.addEventListener("click",toggleUtility);
       el.leaveRoomBtnLeft.addEventListener("click",()=>leaveRoom(false).catch(console.error));
       el.roomFishingBtn.addEventListener("click",startFishingFromRoom);
@@ -3504,7 +3516,7 @@
       // Utility
       el.closeUtilityBtn.addEventListener("click",closeUtility);
       el.utilityFsTabs.forEach(b=>b.addEventListener("click",()=>{state.ui.utilityTab=b.dataset.utab;renderUtility();saveAll().catch(console.error);}));
-      el.utilityFsAddBtn.addEventListener("click",()=>toggleUtilityForm(true));
+      el.utilityFsAddBtn.addEventListener("click",()=>{if(state.ui.utilityTab==="record"){addScheduleItem();}else{toggleUtilityForm(true);}});
       el.uFormCancel.addEventListener("click",()=>toggleUtilityForm(false));
       // Utility tab on/off toggles
       [el.uToggleReminder,el.uToggleTodo,el.uToggleRecord].forEach(btn=>{if(btn)btn.addEventListener("click",()=>toggleUtilityRoomTab(btn.dataset.utab));});
@@ -3674,9 +3686,9 @@
       // On/off toggles
       [['reminder',el.uToggleReminder],['todo',el.uToggleTodo],['record',el.uToggleRecord]].forEach(([k,btn])=>{if(btn)btn.classList.toggle('on',(state.utilityRoomTabs||[]).includes(k));});
       const box=el.utilityFsBody;box.innerHTML="";
-      if(tab==="record"){const row=document.createElement("div");row.className="quick-record-row";row.innerHTML=`<button class="quick-record-btn">🎣開始</button><button class="quick-record-btn">☕休憩</button><button class="quick-record-btn">🏁終了</button>`;[...row.querySelectorAll("button")].forEach((b,i)=>{const t=["start","break","end"][i];b.addEventListener("click",()=>{state.productivity.records.unshift({id:makeId(),type:t,title:recLabel(t),time:currentHm(),dayKey:todayKey(),createdAt:Date.now()});saveAll().catch(console.error);renderUtility();});});box.appendChild(row);}
-      const items=tab==="todo"?(state.productivity.todos||[]).slice(0,10):tab==="reminder"?(state.productivity.reminders||[]).slice(0,10):(state.productivity.records||[]).filter(r=>r.dayKey===todayKey()).slice(0,12);
-      if(!items.length){box.innerHTML+=`<div class="utility-empty-msg">${tab==="todo"?"📝 なし":tab==="reminder"?"🔕 なし":"⏱ なし"}</div>`;return;}
+      if(tab==="record"){renderScheduleTab(box);return;}
+      const items=tab==="todo"?(state.productivity.todos||[]).slice(0,10):tab==="reminder"?(state.productivity.reminders||[]).slice(0,10):[];
+      if(!items.length){box.innerHTML+=`<div class="utility-empty-msg">${tab==="todo"?"📝 なし":"🔕 なし"}</div>`;return;}
       items.forEach(item=>{const card=document.createElement("div");card.className="utility-item-card";
         const ic=item.icon||"📋",cl=item.color||"";
         if(cl)card.style.borderLeft=`4px solid ${cl}`;
@@ -3684,6 +3696,105 @@
         else if(tab==="reminder"){card.innerHTML=`<div><div class="utility-item-title">${ic} ${esc(item.title)}</div><div class="utility-item-sub">${item.time||"--:--"} / ${item.repeat||"once"}</div></div><div style="display:flex;gap:4px;"><button class="utility-mini-btn">${item.on===false?"○":"●"}</button><button class="utility-mini-btn">×</button></div>`;const btns=card.querySelectorAll(".utility-mini-btn");btns[0].addEventListener("click",()=>{item.on=item.on===false;saveAll().catch(console.error);renderUtility();});btns[1].addEventListener("click",()=>{state.productivity.reminders=state.productivity.reminders.filter(r=>r.id!==item.id);saveAll().catch(console.error);renderUtility();});}
         else{const nt=item.notifyTime||"";card.innerHTML=`<div><div class="utility-item-title">${ic} ${esc(item.title)}</div><div class="utility-item-sub">${item.time} / ${recLabel(item.type)}${nt?` / 🔔${nt}`:""}</div></div><div style="display:flex;gap:4px;"><button class="utility-mini-btn" title="通知設定">🔔</button><button class="utility-mini-btn">×</button></div>`;const btns=card.querySelectorAll(".utility-mini-btn");btns[0].addEventListener("click",()=>{const t=prompt("通知時間 (HH:MM)",item.notifyTime||"");if(t===null)return;item.notifyTime=t||"";saveAll().catch(console.error);renderUtility();});btns[1].addEventListener("click",()=>{state.productivity.records=state.productivity.records.filter(r=>r.id!==item.id);saveAll().catch(console.error);renderUtility();});}
         box.appendChild(card);});
+    }
+
+    let scheduleDay=0; // -1=yesterday, 0=today, 1=tomorrow
+    function getScheduleKey(offset){const d=new Date();d.setDate(d.getDate()+offset);return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;}
+    function renderScheduleTab(box){
+      if(!state.productivity.schedules)state.productivity.schedules=[];
+      const wrap=document.createElement("div");wrap.className="schedule-wrap";
+      // Day bar
+      const dayBar=document.createElement("div");dayBar.className="schedule-day-bar";
+      ["昨日","今日","明日"].forEach((label,i)=>{
+        const btn=document.createElement("button");btn.className="schedule-day-btn"+(scheduleDay===i-1?" active":"");btn.textContent=label;
+        btn.addEventListener("click",()=>{scheduleDay=i-1;renderUtility();});
+        dayBar.appendChild(btn);
+      });
+      // Preset buttons
+      const presetRow=document.createElement("div");presetRow.style.cssText="position:absolute;right:8px;bottom:2px;display:flex;gap:6px;";
+      const listBtn=document.createElement("button");listBtn.style.cssText="font-size:9px;color:#999;background:transparent;border:1px solid rgba(0,0,0,0.1);border-radius:8px;padding:2px 6px;cursor:pointer;";listBtn.textContent="一覧";
+      listBtn.addEventListener("click",openSchedulePresetList);
+      const saveBtn=document.createElement("button");saveBtn.style.cssText="font-size:9px;color:var(--accent);background:transparent;border:1px solid rgba(123,223,245,0.3);border-radius:8px;padding:2px 6px;cursor:pointer;";saveBtn.textContent="1日プリセット";
+      saveBtn.addEventListener("click",saveSchedulePreset);
+      presetRow.appendChild(listBtn);presetRow.appendChild(saveBtn);
+      dayBar.style.position="relative";dayBar.appendChild(presetRow);
+      wrap.appendChild(dayBar);
+      // Timeline
+      const timeline=document.createElement("div");timeline.className="schedule-timeline";timeline.style.height="400px";
+      const hourH=60; // px per hour
+      timeline.style.position="relative";timeline.style.minHeight=`${24*hourH+20}px`;
+      const nowH=new Date().getHours()+new Date().getMinutes()/60;
+      for(let h=0;h<=24;h++){
+        const mark=document.createElement("div");mark.className="schedule-hour-mark";mark.style.top=`${h*hourH}px`;mark.textContent=`${h}時`;timeline.appendChild(mark);
+        if(h<24){const line=document.createElement("div");line.className="schedule-hour-line";line.style.top=`${h*hourH}px`;timeline.appendChild(line);}
+      }
+      // Now dot (only for today)
+      if(scheduleDay===0){const dot=document.createElement("div");dot.className="schedule-now-dot";dot.style.top=`${nowH*hourH}px`;timeline.appendChild(dot);}
+      // Schedule cards
+      const dk=getScheduleKey(scheduleDay);
+      const daySchedules=(state.productivity.schedules||[]).filter(s=>s.dayKey===dk);
+      daySchedules.forEach(s=>{
+        const card=document.createElement("div");card.className="schedule-card";
+        card.style.background=s.color||"rgba(123,223,245,0.7)";
+        const [sh,sm]=(s.startTime||"0:0").split(":").map(Number);
+        const [eh,em]=(s.endTime||"1:0").split(":").map(Number);
+        const startPx=(sh+sm/60)*hourH;const endPx=(eh+em/60)*hourH;
+        card.style.top=`${startPx}px`;card.style.height=`${Math.max(20,endPx-startPx)}px`;
+        card.innerHTML=`<div class="schedule-card-title">${s.icon||"📋"} ${esc(s.title||"")}</div><div class="schedule-card-time">${s.startTime||""}~${s.endTime||""}</div>`;
+        card.addEventListener("click",()=>{if(confirm(`「${s.title}」を削除しますか？`)){state.productivity.schedules=state.productivity.schedules.filter(x=>x.id!==s.id);saveAll().catch(console.error);renderUtility();}});
+        timeline.appendChild(card);
+      });
+      // Scroll to current time
+      wrap.appendChild(timeline);
+      box.appendChild(wrap);
+      setTimeout(()=>{if(scheduleDay===0)timeline.scrollTop=Math.max(0,nowH*hourH-100);},50);
+      // Add button (override the global + button behavior for schedule)
+      el.utilityFsAddBtn.style.display="flex";
+    }
+    function addScheduleItem(){
+      const title=prompt("タイトル");if(!title)return;
+      const startTime=prompt("開始時間 (HH:MM)","09:00");if(!startTime)return;
+      const endTime=prompt("終了時間 (HH:MM)","10:00");if(!endTime)return;
+      const icon=prompt("絵文字アイコン","📋")||"📋";
+      const color=prompt("色 (#hex)","#7bdff5")||"#7bdff5";
+      const alarmStart=confirm("開始時にアラーム？");
+      const alarmEnd=confirm("終了時にアラーム？");
+      if(!state.productivity.schedules)state.productivity.schedules=[];
+      state.productivity.schedules.push({id:makeId(),title:title.trim().slice(0,20),startTime,endTime,icon,color,alarmStart,alarmEnd,dayKey:getScheduleKey(scheduleDay),createdAt:Date.now()});
+      saveAll().catch(console.error);renderUtility();
+    }
+    function saveSchedulePreset(){
+      const dk=getScheduleKey(scheduleDay);
+      const items=(state.productivity.schedules||[]).filter(s=>s.dayKey===dk);
+      if(!items.length){toast("スケジュールが空です");return;}
+      const title=prompt("プリセット名");if(!title)return;
+      if(!state.schedulePresets)state.schedulePresets=[];
+      state.schedulePresets.push({id:makeId(),title:title.trim().slice(0,20),items:items.map(s=>({title:s.title,startTime:s.startTime,endTime:s.endTime,icon:s.icon,color:s.color,alarmStart:s.alarmStart,alarmEnd:s.alarmEnd})),createdAt:Date.now()});
+      toast("1日プリセットを保存しました");saveAll().catch(console.error);
+    }
+    function openSchedulePresetList(){
+      const presets=state.schedulePresets||[];
+      if(!presets.length){toast("保存されたプリセットなし");return;}
+      const dk=getScheduleKey(scheduleDay);
+      const existing=(state.productivity.schedules||[]).filter(s=>s.dayKey===dk);
+      const modal=document.createElement("div");modal.style.cssText="position:absolute;inset:0;z-index:80;display:grid;place-items:center;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);";
+      const card=document.createElement("div");card.style.cssText="width:min(400px,90%);max-height:70vh;overflow:auto;padding:16px;border-radius:20px;background:rgba(17,33,48,0.95);border:1px solid rgba(255,255,255,0.14);";
+      card.innerHTML=`<div style="display:flex;justify-content:space-between;margin-bottom:10px;"><h3 style="margin:0;font-size:16px;color:#fff;">1日プリセット</h3><button style="border:0;background:transparent;color:#fff;font-size:16px;cursor:pointer;">×</button></div>`;
+      card.querySelector("button").addEventListener("click",()=>modal.remove());
+      presets.forEach(p=>{
+        const c=document.createElement("div");c.style.cssText="padding:10px;border-radius:14px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);margin-bottom:6px;cursor:pointer;";
+        const detail=p.items.map(i=>`${i.startTime}~${i.endTime} ${i.title}`).join(", ");
+        c.innerHTML=`<div style="font-size:13px;font-weight:700;color:#fff;">${esc(p.title)}</div><div style="font-size:9px;color:rgba(255,255,255,0.4);margin-top:3px;">${esc(detail)}</div>`;
+        c.addEventListener("click",()=>{
+          if(existing.length>0){if(!confirm("今のスケジュールに1日プリセットを反映しますか？"))return;
+            state.productivity.schedules=state.productivity.schedules.filter(s=>s.dayKey!==dk);}
+          p.items.forEach(i=>{state.productivity.schedules.push({...i,id:makeId(),dayKey:dk,createdAt:Date.now()});});
+          modal.remove();saveAll().catch(console.error);renderUtility();toast("プリセットを反映しました");
+        });
+        card.appendChild(c);
+      });
+      modal.appendChild(card);modal.addEventListener("click",e=>{if(e.target===modal)modal.remove();});
+      el.app.appendChild(modal);
     }
 
     function populateFormPickers(){
@@ -3737,6 +3848,31 @@
         el.utilRoomCards.style.fontSize=`${Math.round(10*sc)}px`;
         el.utilRoomCards.querySelectorAll('.util-room-card').forEach(c=>{c.style.padding='2px 6px';});
       }else{el.utilRoomCards.style.fontSize="";}
+    }
+
+    function getTopFishPredictions(){
+      const t=state.currentConditions.timeOfDay||"day",w=state.currentConditions.weather||"sunny";
+      const upg=getUpgradeBuffs();const power=upg.power,rareB=upg.rare;
+      const scored=FISHES.map(f=>{const ts=f.timeBonus?.[t]??0,ws=f.weatherBonus?.[w]??0;const sg=power-(f.strength||0);return{fish:f,score:Math.max(0.1,7+sg+ts+ws+rareB*0.28-(f.rarity||0)*0.24)};});
+      scored.sort((a,b)=>b.score-a.score);return scored.slice(0,3).map(s=>s.fish);
+    }
+    function renderFishPredictPopup(popup){
+      if(!popup)return;
+      const fishes=getTopFishPredictions();
+      popup.innerHTML=`<div class="fish-predict-title">近くにいる魚</div><div class="fish-predict-row"></div>`;
+      const row=popup.querySelector(".fish-predict-row");
+      fishes.forEach(f=>{
+        const known=!!state.encyclopedia[f.id];
+        const item=document.createElement("div");item.className="fish-predict-item";
+        item.innerHTML=`<div class="fish-predict-orb">${known?f.icon:"❔"}</div><div class="fish-predict-name">${known?f.name:"？？？"}</div>`;
+        row.appendChild(item);
+      });
+    }
+    function toggleFishPredict(btn,popup){
+      if(!popup)return;
+      const showing=popup.classList.contains("show");
+      document.querySelectorAll(".fish-predict-popup").forEach(p=>p.classList.remove("show"));
+      if(!showing){renderFishPredictPopup(popup);popup.classList.add("show");}
     }
 
     function renderWeekCalendar(){
@@ -4052,10 +4188,58 @@
     async function sellPending(){if(!pendingResult)return;state.money+=pendingResult.entry.sellPrice;addEarnings(pendingResult.entry.sellPrice);applyCatchRecord(pendingResult);toast(`${pendingResult.entry.name} を ${pendingResult.entry.sellPrice} zz で売却しました。`);pendingResult=null;el.resultModal.classList.remove("show");await recoverAfterResult();}
 
     // Batch result
-    function openBatchModal(){renderBatchList();el.batchResultModal.classList.add("show");}
-    function closeBatchModal(){el.batchResultModal.classList.remove("show");renderAll();saveAll().catch(console.error);}
-    function renderBatchList(){el.batchResultList.innerHTML="";(state.batchResults||[]).forEach(r=>{const row=document.createElement("div");row.className="batch-row";row.innerHTML=`<div class="batch-art">${r.entry.icon}</div><div class="batch-meta"><div class="batch-name">${esc(r.entry.name)} ${r.entry.kind==="fish"?`<span class="plus-size">${fmtSize(r.entry.sizeCm)}cm</span>`:""}</div><div class="batch-sub">${r.entry.sellPrice} zz</div></div><div class="batch-actions"></div>`;const acts=row.querySelector(".batch-actions");const sb=document.createElement("button");sb.className="btn soft";sb.textContent="売る";sb.addEventListener("click",()=>processBatch(r.entry.uid,"sell"));const kb=document.createElement("button");kb.className="btn primary";kb.textContent="所持";kb.addEventListener("click",()=>processBatch(r.entry.uid,"keep"));acts.append(sb,kb);el.batchResultList.appendChild(row);});}
-    function processBatch(uid,mode){const i=(state.batchResults||[]).findIndex(x=>x.entry.uid===uid);if(i<0)return;const r=state.batchResults[i];if(mode==="sell"){state.money+=r.entry.sellPrice;addEarnings(r.entry.sellPrice);}else state.inventory.unshift(r.entry);state.batchResults.splice(i,1);if(!state.batchResults.length)closeBatchModal();else renderBatchList();saveAll().catch(console.error);renderAll();}
+    let batchIndex=0;
+    function openBatchModal(){batchIndex=0;renderBatchCard();el.batchResultModal.classList.add("show");}
+    function closeBatchModal(){el.batchResultModal.classList.remove("show");batchIndex=0;renderAll();saveAll().catch(console.error);}
+    function renderBatchCard(){
+      const items=state.batchResults||[];
+      if(!items.length){closeBatchModal();return;}
+      if(batchIndex>=items.length)batchIndex=items.length-1;
+      if(batchIndex<0)batchIndex=0;
+      const r=items[batchIndex];
+      el.batchResultList.innerHTML="";
+      // Nav row
+      const nav=document.createElement("div");nav.className="result-nav";
+      const lb=document.createElement("button");lb.className="result-nav-btn";lb.textContent="❮";lb.disabled=batchIndex<=0;lb.addEventListener("click",()=>{if(batchIndex>0){batchIndex--;renderBatchCard();}});
+      const rb=document.createElement("button");rb.className="result-nav-btn";rb.textContent="❯";rb.disabled=batchIndex>=items.length-1;rb.addEventListener("click",()=>{if(batchIndex<items.length-1){batchIndex++;renderBatchCard();}});
+      const dots=document.createElement("div");dots.className="result-nav-dots";
+      items.forEach((_,i)=>{const d=document.createElement("div");d.className="result-nav-dot"+(i===batchIndex?" active":"");dots.appendChild(d);});
+      nav.appendChild(lb);nav.appendChild(dots);nav.appendChild(rb);
+      el.batchResultList.appendChild(nav);
+      // Card
+      const card=document.createElement("div");card.style.cssText="padding:14px;border-radius:18px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);";
+      const isFish=r.entry.kind==="fish";
+      card.innerHTML=`<div style="display:flex;gap:12px;align-items:center;margin-bottom:10px;">
+        <div style="width:60px;height:60px;border-radius:16px;background:rgba(255,255,255,0.1);display:grid;place-items:center;font-size:30px;">${r.entry.icon}</div>
+        <div style="flex:1;"><div style="font-size:16px;font-weight:800;">${esc(r.entry.name)} ${isFish?`<span class="plus-size">${fmtSize(r.entry.sizeCm)}cm</span>`:""}</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px;">${isFish?`すごさ: ${greatness(r.entry.sizeCm,r.picked.avgSize)}`:"漂流物"}</div>
+        <div style="font-size:18px;font-weight:900;color:var(--gold);margin-top:4px;">${r.entry.sellPrice} zz</div></div></div>
+        <div style="display:flex;gap:6px;margin-bottom:4px;">${r.isRare?'<span class="flag rare">レア</span>':""}${r.isHuge?'<span class="flag huge">超巨大</span>':""}${r.isRecord?'<span class="flag record">最大更新</span>':""}</div>`;
+      el.batchResultList.appendChild(card);
+      // Actions
+      const acts=document.createElement("div");acts.style.cssText="display:flex;gap:8px;justify-content:flex-end;margin-top:10px;";
+      const sb=document.createElement("button");sb.className="btn soft";sb.textContent="売る";
+      sb.addEventListener("click",()=>{processBatchCard(batchIndex,"sell");});
+      const kb=document.createElement("button");kb.className="btn primary";kb.textContent="所持する";
+      kb.addEventListener("click",()=>{processBatchCard(batchIndex,"keep");});
+      acts.appendChild(sb);acts.appendChild(kb);
+      el.batchResultList.appendChild(acts);
+      // Swipe
+      let tx=0;
+      el.batchResultList.ontouchstart=e=>{tx=e.touches[0].clientX;};
+      el.batchResultList.ontouchend=e=>{const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>40){if(dx<0&&batchIndex<items.length-1){batchIndex++;renderBatchCard();}else if(dx>0&&batchIndex>0){batchIndex--;renderBatchCard();}}};
+    }
+    function processBatchCard(idx,mode){
+      const items=state.batchResults||[];if(idx<0||idx>=items.length)return;
+      const r=items[idx];
+      if(mode==="sell"){state.money+=r.entry.sellPrice;addEarnings(r.entry.sellPrice);applyCatchRecord(r);toast(`${r.entry.name}を${r.entry.sellPrice}zzで売却`);}
+      else{state.inventory.unshift(r.entry);applyCatchRecord(r);toast(`${r.entry.name}を所持品に追加`);}
+      items.splice(idx,1);
+      if(!items.length){closeBatchModal();return;}
+      if(batchIndex>=items.length)batchIndex=items.length-1;
+      renderBatchCard();saveAll().catch(console.error);renderAll();
+    }
+    function processBatch(uid,mode){const i=(state.batchResults||[]).findIndex(x=>x.entry.uid===uid);if(i<0)return;processBatchCard(i,mode);}
 
     // ===== RENDER ALL =====
     function renderAll(){applySelectors();applyNavState();renderNavLevels();renderFishingStatus();renderRoom();renderStore();renderResults();renderEncyclopedia();renderSettings();renderUserPill();renderStampFeeds();updateSync();updateRoomVideo();updateFishingVideo();renderMailIndicators();el.storeMoneyChip.textContent=`${state.money} zz`;el.storeBaitChip.textContent=`餌 ${getTotalBait()}`;el.fishingTimer.classList.toggle("mega",!!state.ui.timerMega);if(state.ui.utilityOpen)renderUtility();renderLoopInfo();syncGoalInputs();renderCustomGraphList();fillTaskSelect();renderWeekCalendar();renderUtilRoomStrip();renderLoopRestCenter();renderModeCard();}
