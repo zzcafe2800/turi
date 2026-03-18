@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>αテストト</title>
+  <title>作業連動型 釣りサブサイト</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='50' font-size='48'%3E%F0%9F%8E%A3%3C/text%3E%3C/svg%3E" />
   <style>
     :root {
@@ -63,7 +63,7 @@
       position: absolute;
       inset: 0;
       overflow: hidden;
-      border-radius: 26px;
+      border-radius: 0;
       background: #000;
     }
     .bg-video {
@@ -1398,6 +1398,7 @@
       font-size: 13px;
       background: rgba(255,255,255,0.08);
       border: 1px solid rgba(255,255,255,0.12);
+      color: var(--gold);
     }
     .header-stats {
       display: flex;
@@ -2468,7 +2469,7 @@
     .clock-date-sub { font-size: clamp(16px, 1.8vw, 26px) !important; width: 100% !important; padding: 6px 0 0 0 !important; border-top: 2px dashed rgba(255,255,255,0.25) !important; }
     .message-trigger { border: 0 !important; border-radius: 0 !important; background: transparent !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; box-shadow: none !important; font-size: 24px !important; width: auto !important; height: auto !important; }
     .audio-bgm-title { text-align: center !important; color: rgba(255,255,255,0.92) !important; font-weight: 800 !important; font-size: 14px !important; }
-    .content-shell::before { content: ""; position: absolute; inset: 0; background: rgba(0,0,0,0.5); pointer-events: none; border-radius: 28px; z-index: 0; }
+    .content-shell::before { content: ""; position: sticky; top: 0; left: 0; display: block; width: 100%; height: 0; background: rgba(0,0,0,0.5); pointer-events: none; border-radius: 28px; z-index: 0; box-shadow: 0 0 0 9999px rgba(0,0,0,0.5); }
     .content-shell > * { position: relative; z-index: 1; }
     .bait-card, .item-card, .upgrade-card, .fish-card, .settings-box, .line-item, .store-cat-card, .result-top-card, .week-card, .rod-image-card { background: rgba(0,0,0,0.45) !important; box-shadow: 0 8px 28px rgba(0,0,0,0.45) !important; }
     .results-top-3 { gap: 8px !important; }
@@ -2499,19 +2500,20 @@
     .week-cal-day-label { font-size: 10px; color: rgba(255,255,255,0.35); margin-bottom: 4px; }
     .week-cal-cell { display: flex; flex-direction: column; align-items: center; gap: 3px; }
     .week-cal-date { font-size: 11px; color: rgba(255,255,255,0.5); }
-    .week-cal-orb { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: #fff; }
-    .week-cal-orb.active { background: radial-gradient(circle at 35% 30%, rgba(123,223,245,0.95), rgba(80,190,220,0.85)); box-shadow: 0 2px 12px rgba(123,223,245,0.4); }
-    .week-cal-orb.empty { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.15); }
+    .week-cal-orb { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.5); letter-spacing: -0.5px; }
+    .week-cal-orb.active { background: radial-gradient(circle at 35% 30%, rgba(100,210,240,1), rgba(50,170,210,0.95)); box-shadow: 0 2px 14px rgba(123,223,245,0.5); }
+    .week-cal-orb.empty { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.12); text-shadow: none; }
 
     /* === Utility room display === */
-    .util-room-strip { position: absolute; left: 0; z-index: 7; display: flex; align-items: center; gap: 4px; max-width: 100%; transition: transform 0.2s ease, opacity 0.2s ease; }
+    .util-room-strip { position: absolute; left: 0; z-index: 7; display: flex; flex-direction: column; align-items: flex-start; gap: 3px; max-width: 75%; transition: transform 0.2s ease, opacity 0.2s ease; }
     .util-room-strip.hidden { opacity: 0; pointer-events: none; transform: translateY(-4px); }
-    .util-room-toggle { width: 20px; height: 28px; border: 0; border-radius: 6px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); font-size: 10px; cursor: pointer; flex-shrink: 0; display: grid; place-items: center; }
+    .util-room-toggle { width: 28px; height: 20px; border: 0; border-radius: 6px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); font-size: 10px; cursor: pointer; flex-shrink: 0; display: grid; place-items: center; }
     .util-room-toggle:hover { color: #fff; }
-    .util-room-cards { display: flex; gap: 4px; overflow: hidden; flex-wrap: nowrap; }
-    .util-room-card { display: flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 10px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); font-size: 10px; font-weight: 600; color: #fff; white-space: nowrap; flex-shrink: 0; backdrop-filter: blur(4px); }
+    .util-room-cards { display: flex; flex-direction: column; gap: 3px; overflow: hidden; }
+    .util-room-card { display: flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 10px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); font-size: 10px; font-weight: 600; color: #fff; white-space: nowrap; flex-shrink: 0; backdrop-filter: blur(4px); }
     .util-room-card .urc-icon { font-size: 12px; }
-    .util-room-card .urc-title { max-width: 60px; overflow: hidden; text-overflow: ellipsis; }
+    .util-room-card .urc-title { max-width: 80px; overflow: hidden; text-overflow: ellipsis; }
+    .util-room-cat-label { font-size: 8px; color: rgba(255,255,255,0.3); padding: 1px 4px; margin-top: 2px; }
 
     /* === Utility color/icon picker === */
     .u-color-row { display: flex; gap: 5px; flex-wrap: wrap; align-items: center; }
@@ -2629,24 +2631,27 @@
             <div id="roomLoopInfo" class="room-loop-info"></div>
             <div id="normalFields" class="control-fields">
               <div class="field" title="コース">
+                <span style="font-size:10px;color:rgba(255,255,255,0.35);text-shadow:0 2px 6px rgba(0,0,0,0.4);">コース</span>
                 <select id="roomCourseSelect"></select>
               </div>
               <div class="field" title="餌">
+                <span style="font-size:10px;color:rgba(255,255,255,0.35);text-shadow:0 2px 6px rgba(0,0,0,0.4);">餌</span>
                 <select id="roomBaitSelect"></select>
               </div>
             </div>
             <div id="loopFields" class="control-fields" style="display:none;">
-              <div class="field" title="釣り時間"><select id="loopFishSelect"></select></div>
-              <div class="field" title="休憩時間"><select id="loopRestSelect"></select></div>
-              <div class="field" title="ループ回数"><select id="loopCountSelect"></select></div>
-              <div class="field" title="餌"><select id="loopBaitSelect"></select></div>
+              <div class="field" title="釣り時間"><span style="font-size:10px;color:rgba(255,255,255,0.35);">釣り時間</span><select id="loopFishSelect"></select></div>
+              <div class="field" title="休憩時間"><span style="font-size:10px;color:rgba(255,255,255,0.35);">休憩時間</span><select id="loopRestSelect"></select></div>
+              <div class="field" title="回数"><span style="font-size:10px;color:rgba(255,255,255,0.35);">回数</span><select id="loopCountSelect"></select></div>
+              <div class="field" title="餌"><span style="font-size:10px;color:rgba(255,255,255,0.35);">餌</span><select id="loopBaitSelect"></select></div>
               <div id="loopNeedText" class="loop-need-text"></div>
             </div>
             <div id="taskSelectField" class="field" title="タスク" style="margin-bottom:4px;">
+              <span style="font-size:10px;color:rgba(255,255,255,0.35);">タスク</span>
               <select id="taskCategorySelect"></select>
             </div>
             <div class="room-action-row">
-              <button id="loopModeBtn" class="action-btn loop">ループ</button>
+              <button id="loopModeBtn" class="action-btn loop">連続</button>
               <button id="roomFishingBtn" class="action-btn primary">釣る</button>
             </div>
           </div>
@@ -2669,6 +2674,7 @@
             <circle id="timerProgress" class="progress" cx="110" cy="110" r="88"></circle>
           </svg>
           <div class="timer-core">
+            <button id="timerMegaBtn" style="position:absolute;top:4px;right:4px;width:18px;height:18px;border:0;border-radius:50%;background:transparent;color:rgba(255,255,255,0.4);font-size:10px;cursor:pointer;display:grid;place-items:center;z-index:2;" title="拡大/縮小">▶</button>
             <div id="timerText" class="timer-main-time">--:--</div>
             <div id="timerPlanMini" class="timer-mini-plan">25min</div>
             <div id="timerStatus" class="timer-status"></div>
@@ -3113,7 +3119,7 @@
 
     const LS_KEY = "zz_fishing_subsite_save_v14";
     const ROOM_CAPACITY = 3;
-    const STAMP_TTL = 3000;
+    const STAMP_TTL = 8000;
     const TIMER_R = 88;
     const TIMER_C = 2 * Math.PI * TIMER_R;
     const FISHING_UI_IDLE_MS = 10000;
@@ -3168,14 +3174,7 @@
     const SFX_LIST = [
       { id:'sound01', title:'sound01', url:'sound01.mp3', credit:'Credit: Sample SFX' },
     ];
-    const WELCOME_MAIL_TEXT = `αテスト\n
-スマホは横画面・全画面・ローカル推奨｟※PC推奨｠\n
-【バグ(スマホ)】　1.ログイン　2,UI\n
-【未実装】　      1.背景や魚イラスト       2.リザルト(週間～年間)　3,各アイコンイラスト\n
-
-わかりにくい所、ほしい機能、UI改善、バグなどあれば教えてもらえるとうれしいです。\n
-`;
-
+    const WELCOME_MAIL_TEXT = `αテスト\n\nスマホは横画面・全画面・ローカル推奨｟※PC推奨｠\n\n【バグ(スマホ)】　1.ログイン　2,UI\n【未実装】　      1.背景や魚イラスト       2.リザルト(週間～年間)　3,各アイコンイラスト\n\nわかりにくい所、ほしい機能、UI改善、バグなどあれば教えてもらえるとうれしいです。\n`;
 
     /* ===== The full JavaScript continues below - preserving ALL original functionality ===== */
     /* Due to the extreme size, I'm providing the core structure with all features implemented */
@@ -3381,8 +3380,8 @@
       el.toggleFishingBtn.addEventListener("click",togglePauseResume);
       el.cancelFishingBtn.addEventListener("click",cancelFishingNoReward);
       el.focusModeBtn.addEventListener("click",()=>setFocusMode(true));
+      document.getElementById("timerMegaBtn")?.addEventListener("click",toggleTimerMega);
       el.focusBackBtn.addEventListener("click",()=>setFocusMode(false));
-      el.timerText.addEventListener("click",toggleTimerMega);
       el.focusTime.addEventListener("click",()=>togglePauseResume());
       // Auth
       el.googleLoginBtn.addEventListener("click",()=>openNameStep("google"));
@@ -3523,7 +3522,8 @@
       window.addEventListener("orientationchange",()=>setTimeout(()=>{setAppVh();updateScale();renderAll();},120));
       ["mousemove","mousedown","touchstart","keydown"].forEach(ev=>document.addEventListener(ev,handleFishingActivity,{passive:true}));
       window.addEventListener("beforeunload",()=>{try{leaveRoom(true);}catch{}saveLocalState(state);});
-      document.addEventListener("visibilitychange",()=>{if(!document.hidden){refreshConditions();if(state.fishing.inProgress&&!state.fishing.paused&&Date.now()>=state.fishing.endAt)finishFishing();renderAll();}});
+      window.addEventListener("pagehide",()=>{try{leaveRoom(true);}catch{}saveLocalState(state);});
+      document.addEventListener("visibilitychange",()=>{if(document.hidden){try{if(state.room.inRoom&&!state.fishing.inProgress){leaveRoom(true).catch(()=>{});}saveLocalState(state);}catch{}}else{refreshConditions();if(state.fishing.inProgress&&!state.fishing.paused&&Date.now()>=state.fishing.endAt)finishFishing();renderAll();}});
     }
 
     // ===== ALL CORE FUNCTIONS (preserved from original with modifications) =====
@@ -3537,8 +3537,17 @@
     function renderBgmList(){el.bgmListBody.innerHTML="";
       if(typeof bgmListMode==='undefined')window.bgmListMode='all';
       if(bgmListMode==='sfx'){
-        SFX_LIST.forEach((s,i)=>{const c=document.createElement("div");c.className="bgm-list-card";c.innerHTML=`<span class="bgm-card-drag">🔔</span><div class="bgm-card-info"><div class="bgm-card-name">${esc(s.title)}</div><div class="bgm-card-credit">${esc(s.credit)}</div></div>`;c.querySelector('.bgm-card-info').addEventListener('click',()=>{if(!sfxMuted){try{const a=new Audio(s.url);a.volume=sfxVolume/100;a.play().catch(()=>{});}catch(e){}}});el.bgmListBody.appendChild(c);});
-        if(!SFX_LIST.length)el.bgmListBody.innerHTML=`<div style="padding:20px;text-align:center;color:rgba(255,255,255,0.3);">効果音なし</div>`;
+        const sfxVols=JSON.parse(localStorage.getItem('zz_sfx_vols')||'{}');
+        const sfxOn=JSON.parse(localStorage.getItem('zz_sfx_on')||'{}');
+        if(!SFX_LIST.length){el.bgmListBody.innerHTML=`<div style="padding:20px;text-align:center;color:rgba(255,255,255,0.3);">効果音なし</div>`;return;}
+        SFX_LIST.forEach((s)=>{const isOn=sfxOn[s.id]!==false;const vol=sfxVols[s.id]??80;
+          const c=document.createElement("div");c.className="bgm-list-card";c.style.background=isOn?"rgba(123,223,245,0.12)":"rgba(255,255,255,0.04)";c.style.opacity=isOn?"1":"0.5";
+          c.innerHTML=`<span style="font-size:14px;cursor:pointer;">${isOn?"🔊":"🔇"}</span><div class="bgm-card-info" style="flex:1;"><div class="bgm-card-name">${esc(s.title)}</div><div style="display:flex;align-items:center;gap:6px;margin-top:4px;"><input type="range" min="0" max="100" value="${vol}" style="flex:1;height:4px;accent-color:var(--accent);cursor:pointer;"/><span style="font-size:10px;color:rgba(255,255,255,0.4);min-width:28px;">${vol}%</span></div></div>`;
+          const toggleBtn=c.querySelector('span');toggleBtn.addEventListener('click',(e)=>{e.stopPropagation();sfxOn[s.id]=!isOn;localStorage.setItem('zz_sfx_on',JSON.stringify(sfxOn));renderBgmList();});
+          const slider=c.querySelector('input[type=range]');slider.addEventListener('input',(e)=>{e.stopPropagation();const v=Number(slider.value);sfxVols[s.id]=v;slider.nextElementSibling.textContent=v+'%';localStorage.setItem('zz_sfx_vols',JSON.stringify(sfxVols));});
+          slider.addEventListener('click',e=>e.stopPropagation());
+          c.addEventListener('click',()=>{if(!isOn)return;try{const a=new Audio(s.url);a.volume=vol/100;a.play().catch(()=>{});}catch(e){}});
+          el.bgmListBody.appendChild(c);});
         return;
       }
       const list=bgmListMode==='fav'?BGM_LIST.filter(b=>bgmFavList.includes(b.id)):BGM_LIST;
@@ -3585,9 +3594,9 @@
       items.forEach(item=>{const card=document.createElement("div");card.className="utility-item-card";
         const ic=item.icon||"📋",cl=item.color||"";
         if(cl)card.style.borderLeft=`4px solid ${cl}`;
-        if(tab==="todo"){card.innerHTML=`<div><div class="utility-item-title">${ic} ${item.completed?"☑":"□"} ${esc(item.title)}</div><div class="utility-item-sub">${item.time||""}${item.remind?" / 🔔":""}</div></div><div style="display:flex;gap:6px;"><button class="utility-mini-btn">${item.completed?"↺":"✓"}</button><button class="utility-mini-btn">×</button></div>`;const btns=card.querySelectorAll(".utility-mini-btn");btns[0].addEventListener("click",()=>{item.completed=!item.completed;saveAll().catch(console.error);renderUtility();});btns[1].addEventListener("click",()=>{state.productivity.todos=state.productivity.todos.filter(t=>t.id!==item.id);saveAll().catch(console.error);renderUtility();});}
-        else if(tab==="reminder"){card.innerHTML=`<div><div class="utility-item-title">${ic} ${esc(item.title)}</div><div class="utility-item-sub">${item.time||"--:--"} / ${item.repeat||"once"}</div></div><div style="display:flex;gap:6px;"><button class="utility-mini-btn">${item.on===false?"○":"●"}</button><button class="utility-mini-btn">×</button></div>`;const btns=card.querySelectorAll(".utility-mini-btn");btns[0].addEventListener("click",()=>{item.on=item.on===false;saveAll().catch(console.error);renderUtility();});btns[1].addEventListener("click",()=>{state.productivity.reminders=state.productivity.reminders.filter(r=>r.id!==item.id);saveAll().catch(console.error);renderUtility();});}
-        else{card.innerHTML=`<div><div class="utility-item-title">${ic} ${esc(item.title)}</div><div class="utility-item-sub">${item.time} / ${recLabel(item.type)}</div></div><div style="display:flex;gap:6px;"><button class="utility-mini-btn">×</button></div>`;card.querySelector(".utility-mini-btn").addEventListener("click",()=>{state.productivity.records=state.productivity.records.filter(r=>r.id!==item.id);saveAll().catch(console.error);renderUtility();});}
+        if(tab==="todo"){const nt=item.notifyTime||"";card.innerHTML=`<div><div class="utility-item-title">${ic} ${item.completed?"☑":"□"} ${esc(item.title)}</div><div class="utility-item-sub">${item.time||""}${nt?` / 🔔${nt}`:""}</div></div><div style="display:flex;gap:4px;"><button class="utility-mini-btn" title="通知設定">🔔</button><button class="utility-mini-btn">${item.completed?"↺":"✓"}</button><button class="utility-mini-btn">×</button></div>`;const btns=card.querySelectorAll(".utility-mini-btn");btns[0].addEventListener("click",()=>{const t=prompt("通知時間 (HH:MM)",item.notifyTime||"");if(t===null)return;item.notifyTime=t||"";saveAll().catch(console.error);renderUtility();});btns[1].addEventListener("click",()=>{item.completed=!item.completed;saveAll().catch(console.error);renderUtility();});btns[2].addEventListener("click",()=>{state.productivity.todos=state.productivity.todos.filter(t=>t.id!==item.id);saveAll().catch(console.error);renderUtility();});}
+        else if(tab==="reminder"){card.innerHTML=`<div><div class="utility-item-title">${ic} ${esc(item.title)}</div><div class="utility-item-sub">${item.time||"--:--"} / ${item.repeat||"once"}</div></div><div style="display:flex;gap:4px;"><button class="utility-mini-btn">${item.on===false?"○":"●"}</button><button class="utility-mini-btn">×</button></div>`;const btns=card.querySelectorAll(".utility-mini-btn");btns[0].addEventListener("click",()=>{item.on=item.on===false;saveAll().catch(console.error);renderUtility();});btns[1].addEventListener("click",()=>{state.productivity.reminders=state.productivity.reminders.filter(r=>r.id!==item.id);saveAll().catch(console.error);renderUtility();});}
+        else{const nt=item.notifyTime||"";card.innerHTML=`<div><div class="utility-item-title">${ic} ${esc(item.title)}</div><div class="utility-item-sub">${item.time} / ${recLabel(item.type)}${nt?` / 🔔${nt}`:""}</div></div><div style="display:flex;gap:4px;"><button class="utility-mini-btn" title="通知設定">🔔</button><button class="utility-mini-btn">×</button></div>`;const btns=card.querySelectorAll(".utility-mini-btn");btns[0].addEventListener("click",()=>{const t=prompt("通知時間 (HH:MM)",item.notifyTime||"");if(t===null)return;item.notifyTime=t||"";saveAll().catch(console.error);renderUtility();});btns[1].addEventListener("click",()=>{state.productivity.records=state.productivity.records.filter(r=>r.id!==item.id);saveAll().catch(console.error);renderUtility();});}
         box.appendChild(card);});
     }
 
@@ -3612,34 +3621,36 @@
       if(!tabs.length){el.utilRoomStrip.style.display="none";return;}
       el.utilRoomStrip.style.display="flex";
       const vis=state.utilityRoomVisible;
-      el.utilRoomToggle.textContent=vis?"<":">";
+      el.utilRoomToggle.textContent=vis?"▼":"▶";
       el.utilRoomCards.style.display=vis?"flex":"none";
       el.utilRoomCards.innerHTML="";
       const catLabel={reminder:"通知",todo:"やること",record:"記録"};
       let totalCards=0;
       tabs.forEach(tab=>{
         let items=[];
-        if(tab==="todo")items=(state.productivity.todos||[]).filter(t=>!t.completed).slice(0,6);
-        else if(tab==="reminder")items=(state.productivity.reminders||[]).filter(r=>r.on!==false).slice(0,6);
-        else items=(state.productivity.records||[]).filter(r=>r.dayKey===todayKey()).slice(0,6);
+        if(tab==="todo")items=(state.productivity.todos||[]).filter(t=>!t.completed).slice(0,5);
+        else if(tab==="reminder")items=(state.productivity.reminders||[]).filter(r=>r.on!==false).slice(0,5);
+        else items=(state.productivity.records||[]).filter(r=>r.dayKey===todayKey()).slice(0,5);
         if(!items.length)return;
-        // Category label
-        const lbl=document.createElement("div");lbl.style.cssText="font-size:8px;color:rgba(255,255,255,0.35);padding:0 2px;white-space:nowrap;flex-shrink:0;align-self:center;";lbl.textContent=catLabel[tab]||tab;el.utilRoomCards.appendChild(lbl);
+        const lbl=document.createElement("div");lbl.className="util-room-cat-label";lbl.textContent=catLabel[tab]||tab;el.utilRoomCards.appendChild(lbl);
         items.forEach(item=>{
           const c=document.createElement("div");c.className="util-room-card";
-          if(item.color)c.style.borderColor=item.color;
+          if(item.color)c.style.borderLeftColor=item.color;c.style.borderLeftWidth="3px";
           const timeStr=item.time||"";
-          c.innerHTML=`<span class="urc-icon">${item.icon||"📋"}</span><span class="urc-title">${esc(item.title||"")}</span>${timeStr?`<span style="font-size:9px;color:rgba(255,255,255,0.45);">${timeStr}</span>`:""}`;
+          c.innerHTML=`<span class="urc-icon">${item.icon||"📋"}</span><span class="urc-title">${esc(item.title||"")}</span>${timeStr?`<span style="font-size:9px;color:rgba(255,255,255,0.4);">${timeStr}</span>`:""}`;
           el.utilRoomCards.appendChild(c);totalCards++;
         });
       });
       if(!totalCards){el.utilRoomStrip.style.display="none";return;}
-      // Auto-scale if too many cards
-      const maxW=el.utilRoomStrip.parentElement?.offsetWidth||300;
-      const estW=totalCards*100+tabs.length*30;
-      const sc=estW>maxW*0.85?Math.max(0.55,maxW*0.85/estW):1;
-      el.utilRoomCards.style.transform=sc<1?`scale(${sc.toFixed(2)})`:"";
-      el.utilRoomCards.style.transformOrigin="left center";
+      // Auto-shrink font if overlapping exit button area
+      const parentH=el.utilRoomStrip.parentElement?.offsetHeight||400;
+      const stripH=el.utilRoomCards.scrollHeight||0;
+      const maxH=parentH*0.55;
+      if(stripH>maxH&&totalCards>3){
+        const sc=Math.max(0.7,maxH/stripH);
+        el.utilRoomCards.style.fontSize=`${Math.round(10*sc)}px`;
+        el.utilRoomCards.querySelectorAll('.util-room-card').forEach(c=>{c.style.padding='2px 6px';});
+      }else{el.utilRoomCards.style.fontSize="";}
     }
 
     function renderWeekCalendar(){
@@ -3722,7 +3733,7 @@
     function startTimerTick(){stopTimerTick();timerTickHandle=setInterval(()=>{if(!state.fishing.inProgress||state.fishing.paused){stopTimerTick();renderFishingStatus();return;}if(Date.now()>=state.fishing.endAt){finishFishing();return;}renderFishingStatus();},300);}
     function stopTimerTick(){if(timerTickHandle)clearInterval(timerTickHandle);timerTickHandle=null;}
     function setFocusMode(on){state.ui.focusMode=!!on;el.focusOverlay.classList.toggle("show",!!on);if(on)clearFishingUiTimeout();else handleFishingActivity();renderFishingStatus();}
-    function toggleTimerMega(){state.ui.timerMega=!state.ui.timerMega;renderFishingStatus();}
+    function toggleTimerMega(){state.ui.timerMega=!state.ui.timerMega;const btn=document.getElementById("timerMegaBtn");if(btn)btn.textContent=state.ui.timerMega?"◀":"▶";renderFishingStatus();}
     function togglePauseResume(){if(!state.fishing.inProgress)return;if(state.fishing.paused)resumeFishing();else pauseFishing();}
     function finishFishing(){stopTimerTick();if(!state.fishing.inProgress)return;if(state.settings.catchSound)playAudio("time.mp3","time");maybeNotify();stopBgmOnFishEnd();const result=rollCatch(state.fishing);state.lastCatch=result.entry;addWorkSession(state.fishing.durationMin,result);state.fishing.inProgress=false;state.fishing.paused=false;state.ui.timerMega=false;state.room.status="idle";syncPresence().catch(console.error);setFocusMode(false);if(state.loopRun.active){state.loopRun.results.push(result);applyCatchRecord(result);saveAll().catch(console.error);if(state.loopRun.current>=state.loopRun.total)finishLoopRun(false);else startLoopRest();return;}pendingResult=result;saveAll().catch(console.error);renderAll();openResultModal(result);}
     async function recoverAfterResult(){state.ui.fishingUiVisible=true;el.app.classList.remove("fishing-ui-faded");clearFishingUiTimeout();if(state.room.inRoom&&state.room.roomId&&!currentRoomData)startRoomListener(state.room.roomId);startIdleTracking();await saveAll();switchScreen("room");ensureRoomVisual();renderAll();}
@@ -3739,9 +3750,13 @@
     function startClockTick(){if(clockTickHandle)clearInterval(clockTickHandle);updateClock();clockTickHandle=setInterval(()=>{updateClock();checkLoopRest();checkReminders();},1000);}
     function updateClock(){const n=new Date();const t=`${String(n.getHours()).padStart(2,"0")}:${String(n.getMinutes()).padStart(2,"0")}`;state.currentTimeText=t;[el.lobbyCurrentTime,el.roomCurrentTime,el.fishingCurrentTime].forEach(c=>c.textContent=t);el.fishingTimeMini.textContent=t;updateDateSubs();const pc=getTodoCount()+getReminderCount();el.roomUtilityBadge.textContent=String(pc);el.roomUtilityBadge.classList.toggle("show",pc>0);}
     function checkLoopRest(){if(!state.loopRun.active||state.loopRun.phase!=="rest"||!state.loopRun.restEndAt)return;if(Date.now()>=state.loopRun.restEndAt)startNextLoopFishing();else renderLoopInfo();}
-    function checkReminders(){const hm=currentHm(),today=todayKey();(state.productivity.reminders||[]).forEach(r=>{if(r.on===false||!r.time||r.time!==hm||r.lastFiredDay===today)return;r.lastFiredDay=today;try{const a=new Audio('alarm.mp3');a.volume=sfxVolume/100;a.play().catch(()=>{});}catch(e){}toast(`🔔 ${r.title||"通知"}の時間です`,5000);if(state.settings.browserNotify&&typeof Notification!=="undefined"&&Notification.permission==="granted")new Notification(`${r.title||"通知"}の時間です`);saveAll().catch(console.error);});}
+    function checkReminders(){const hm=currentHm(),today=todayKey();(state.productivity.reminders||[]).forEach(r=>{if(r.on===false||!r.time||r.time!==hm||r.lastFiredDay===today)return;r.lastFiredDay=today;try{const a=new Audio('alarm.mp3');a.volume=sfxVolume/100;a.play().catch(()=>{});}catch(e){}toast(`🔔 ${r.title||"通知"}の時間です`,7500);if(typeof Notification!=="undefined"&&Notification.permission==="granted")new Notification(`${r.title||"通知"}の時間です`);saveAll().catch(console.error);});
+      // Check todo/record notifications too
+      (state.productivity.todos||[]).forEach(t=>{if(!t.notifyTime||t.completed||t.notifyTime!==hm||t.notifyFiredDay===today)return;t.notifyFiredDay=today;try{const a=new Audio('alarm.mp3');a.volume=sfxVolume/100;a.play().catch(()=>{});}catch(e){}toast(`📝 ${t.title||"やること"}の時間です`,7500);saveAll().catch(console.error);});
+      (state.productivity.records||[]).forEach(r=>{if(!r.notifyTime||r.notifyTime!==hm||r.notifyFiredDay===today)return;r.notifyFiredDay=today;try{const a=new Audio('alarm.mp3');a.volume=sfxVolume/100;a.play().catch(()=>{});}catch(e){}toast(`📋 ${r.title||"記録"}の時間です`,7500);saveAll().catch(console.error);});
+    }
 
-    function renderLoopMode(){const on=!!state.loopConfig.enabled;el.loopModeBtn.classList.toggle("active",on);el.loopModeBtn.textContent=on?"ループ":"単体";el.normalFields.style.display=on?"none":"flex";el.loopFields.style.display=on?"flex":"none";const need=Math.max(0,(state.loopConfig.count||1)-(state.baitCounts[state.loopConfig.baitId]||0));el.loopNeedText.textContent=on?(need>0?`残り${need}個必要`:`OK / ${state.loopConfig.count}個使用`):"";el.loopNeedText.classList.toggle("warn",need>0);if(!on)el.roomLoopInfo.classList.remove("show");}
+    function renderLoopMode(){const on=!!state.loopConfig.enabled;el.loopModeBtn.classList.toggle("active",on);el.loopModeBtn.textContent=on?"連続":"単発";el.normalFields.style.display=on?"none":"flex";el.loopFields.style.display=on?"flex":"none";const need=Math.max(0,(state.loopConfig.count||1)-(state.baitCounts[state.loopConfig.baitId]||0));el.loopNeedText.textContent=on?(need>0?`残り${need}個必要`:`OK / ${state.loopConfig.count}個使用`):"";el.loopNeedText.classList.toggle("warn",need>0);if(!on)el.roomLoopInfo.classList.remove("show");}
     function renderLoopInfo(){if(!state.loopRun.active){el.roomLoopInfo.classList.remove("show");return;}let l=`ループ ${state.loopRun.current}/${state.loopRun.total}`;if(state.loopRun.phase==="rest"&&state.loopRun.restEndAt)l+=` / 休憩 ${fmtRemain(Math.max(0,state.loopRun.restEndAt-Date.now()))}`;else if(state.loopRun.phase==="fishing")l+=" / 釣り中";el.roomLoopInfo.textContent=l;el.roomLoopInfo.classList.add("show");}
 
     function renderFishingStatus(){refreshConditions();if(state.fishing.inProgress){const total=state.fishing.durationMin*60000;const remain=state.fishing.paused?(state.fishing.remainingMs||0):Math.max(0,state.fishing.endAt-Date.now());const ratio=Math.min(1,Math.max(0,remain/total));el.timerText.textContent=fmtRemain(remain);el.timerPlanMini.textContent=`${state.fishing.durationMin}min`;el.timerStatus.textContent=state.fishing.paused?"停止中":"";el.fishingTimer.classList.add("active");updateTimerIcon(state.fishing.paused,false);setGauge(ratio);el.toggleFishingBtn.disabled=false;el.cancelFishingBtn.disabled=false;el.focusProgressFill.style.width=`${ratio*100}%`;}else{el.timerText.textContent="--:--";el.timerPlanMini.textContent=`${state.selectedCourseMin}min`;el.timerStatus.textContent="";el.fishingTimer.classList.remove("active");updateTimerIcon(false,true);setGauge(1);el.toggleFishingBtn.disabled=true;el.cancelFishingBtn.disabled=true;}el.focusTime.textContent=el.timerText.textContent;el.focusPlan.textContent=el.timerPlanMini.textContent;el.fishingTimer.classList.toggle("mega",!!state.ui.timerMega);el.fishingTimeMini.style.display=state.fishing.inProgress?"inline-flex":"none";}
@@ -3768,7 +3783,7 @@
     function renderAll(){applySelectors();applyNavState();renderNavLevels();renderFishingStatus();renderRoom();renderStore();renderResults();renderEncyclopedia();renderSettings();renderUserPill();renderStampFeeds();updateSync();updateRoomVideo();updateFishingVideo();renderMailIndicators();el.baitTotalMini.textContent=`餌 ${getTotalBait()}`;el.storeMoneyChip.textContent=`${state.money} zz`;el.storeBaitChip.textContent=`餌 ${getTotalBait()}`;el.fishingTimer.classList.toggle("mega",!!state.ui.timerMega);if(state.ui.utilityOpen)renderUtility();renderLoopInfo();syncGoalInputs();renderCustomGraphList();fillTaskSelect();renderWeekCalendar();renderUtilRoomStrip();}
     function renderNavLevels(){el.navLevelList.innerHTML="";UPGRADE_PARTS.forEach(p=>{const c=document.createElement("div");c.className="part-level-card";c.innerHTML=`<div class="part-level-name">${p.name}</div><div class="part-level-value">${state.upgrades[p.id]||0}</div>`;el.navLevelList.appendChild(c);});}
     function renderRoom(){const inRoom=!!state.room.inRoom&&!!state.room.roomId;el.roomLobby.style.display=inRoom?"none":"flex";el.roomActiveUI.style.display=inRoom?"block":"none";if(!inRoom)return;const ms=currentRoomData?.members?.length?currentRoomData.members:[makeMember()];renderParticipants(el.roomParticipants,ms);renderParticipants(el.fishingParticipants,ms);const loopResting=state.loopRun.active&&state.loopRun.phase==="rest";el.roomFishingBtn.disabled=!!state.fishing.inProgress||loopResting;if(loopResting){el.roomFishingBtn.textContent="休憩中…";}else{el.roomFishingBtn.textContent="釣る";}if(!currentRoomData&&state.room.roomId)startRoomListener(state.room.roomId);ensureRoomVisual();}
-    function renderParticipants(container,members){container.innerHTML="";const card=document.createElement("div");card.className="participants-card";members.forEach(m=>{const slot=document.createElement("div");slot.className="participant-slot";const isSelf=(m.uid||"")===(state.user.uid||state.user.playerToken||"");const statusText=isSelf&&state.ui.selfMoneyOpen?`${state.money} zz`:m.status==="fishing"?"釣り中":m.status==="paused"?"停止中":"待機中";const bubble=getLatestStamp(m.uid);slot.innerHTML=`<div class="participant-avatar" style="position:relative;">🐱${bubble?`<div class="participant-bubble">${bubble.stamp}</div>`:""}</div><div class="participant-name">${esc(m.name)}</div><div class="participant-status">${esc(statusText)}</div>`;slot.style.cursor="pointer";slot.addEventListener("click",()=>{if(isSelf){state.ui.selfMoneyOpen=!state.ui.selfMoneyOpen;renderAll();}else openGiftModalFn(m);});card.appendChild(slot);});container.appendChild(card);}
+    function renderParticipants(container,members){container.innerHTML="";const card=document.createElement("div");card.className="participants-card";members.forEach(m=>{const slot=document.createElement("div");slot.className="participant-slot";const isSelf=(m.uid||"")===(state.user.uid||state.user.playerToken||"");const statusText=isSelf&&state.ui.selfMoneyOpen?`${state.money} zz`:m.status==="fishing"?"釣り中":m.status==="paused"?"停止中":"休憩中";const bubble=getLatestStamp(m.uid);const goalText=state.miniGoalPublic&&state.miniGoal?state.miniGoal:"";const goalHtml=goalText?`<div style="position:absolute;bottom:calc(100% + 2px);left:50%;transform:translateX(-50%);max-width:90px;font-size:${goalText.length>10?'7px':'8px'};color:rgba(255,255,255,0.6);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none;">${esc(goalText)}</div>`:"";slot.innerHTML=`<div class="participant-avatar" style="position:relative;">${goalHtml}🐱${bubble?`<div class="participant-bubble">${bubble.stamp}</div>`:""}</div><div class="participant-name">${esc(m.name)}</div><div class="participant-status">${esc(statusText)}</div>`;slot.style.cursor="pointer";slot.addEventListener("click",()=>{if(isSelf){state.ui.selfMoneyOpen=!state.ui.selfMoneyOpen;renderAll();}else openGiftModalFn(m);});card.appendChild(slot);});container.appendChild(card);}
     function renderStampFeeds(){[el.roomStampFeed,el.fishingStampFeed].forEach(f=>{f.innerHTML="";(currentRoomData?.recentStamps||[]).slice(-4).reverse().forEach(s=>{const d=document.createElement("div");d.className="stamp-feed-item";d.textContent=`${s.stamp} ${s.name}`;f.appendChild(d);});});}
     function renderStore(){if(!storeActiveCategory)return;if(storeActiveCategory==='bait')renderBaitCards();if(storeActiveCategory==='upgrade')renderUpgradeCards();if(storeActiveCategory==='items')renderGiftCards();if(storeActiveCategory==='sell')renderSellCards();}
     function renderBaitCards(){el.baitBuyList.innerHTML="";BAIT_TYPES.forEach(b=>{const o=state.baitCounts[b.id]||0;const fc=b.dailyFree&&state.shop.freeBaitClaimDate===todayKey();const c=document.createElement("div");c.className="bait-card";c.innerHTML=`<div class="bait-art-frame">${b.icon}</div><div class="bait-name">${b.name}<span class="owned-mini">×${o}</span></div><div class="bait-desc">${b.desc}<br/>${b.packQty}個</div><div class="bait-bottom"><div class="bait-price">${b.price} zz</div><button class="buy-btn">${b.dailyFree?(fc?"受取済":"受取る"):"買う"}</button></div>`;const btn=c.querySelector(".buy-btn");btn.disabled=b.dailyFree?fc:state.money<b.price;btn.addEventListener("click",()=>buyBait(b));el.baitBuyList.appendChild(c);});}
