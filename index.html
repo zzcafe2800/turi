@@ -32,7 +32,7 @@
     html, body {
       margin: 0;
       min-height: 100%;
-      background: #02080e;
+      background: #d4eef7;
       color: var(--text);
       font-family: "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
     }
@@ -47,7 +47,7 @@
       height: 100dvh;
       height: calc(var(--appVh) * 100);
       overflow: hidden;
-      background: #02080e;
+      background: #d4eef7;
     }
     #app.nav-collapsed { --navCurrent: var(--navCollapsed); }
     #app.nav-hidden .side-nav,
@@ -331,12 +331,12 @@
       pointer-events: none;
       transform: translateY(8px);
     }
-    #app.room-rest-faded #screen-room.active .fade-ui:not(.mode-card-wrap) {
+    #app.room-rest-faded #screen-room.active .fade-ui:not(.mode-card-wrap):not(.top-left-stack) {
       opacity: 0;
       pointer-events: none;
       transform: translateY(8px);
     }
-    #app.room-rest-faded #screen-room.active .side-nav { opacity: 0; pointer-events: none; }
+    #app.room-rest-faded #screen-room.active .side-nav { opacity: 0; pointer-events: none; transition: opacity 0.35s ease; }
 
     /* ===== Clock ===== */
     .clock-stack {
@@ -518,7 +518,10 @@
       font-size: 10px;
       color: rgba(255,255,255,0.7);
       min-height: 14px;
+      font-weight: 600;
     }
+    .participant-status.st-fishing { color: var(--accent); }
+    .participant-status.st-resting { color: var(--green); }
     .participant-bubble {
       position: absolute;
       top: -8px;
@@ -3120,7 +3123,7 @@
     <!-- ===== UTILITY FULLSCREEN ===== -->
     <div id="utilityFullscreen" class="utility-fullscreen">
       <div class="utility-fs-header">
-        <span class="utility-fs-title">便利機能</span>
+        <span class="utility-fs-title">便利機能 <span id="utilityClockText" style="font-size:12px;color:rgba(0,0,0,0.3);font-weight:600;margin-left:6px;"></span></span>
         <button id="closeUtilityBtn" class="utility-fs-close">×</button>
       </div>
       <div class="utility-fs-tabs">
@@ -3215,7 +3218,7 @@
 
     const LS_KEY = "zz_fishing_subsite_save_v14";
     const ROOM_CAPACITY = 3;
-    const STAMP_TTL = 8000;
+    const STAMP_TTL = 12000;
     const TIMER_R = 88;
     const TIMER_C = 2 * Math.PI * TIMER_R;
     const FISHING_UI_IDLE_MS = 10000;
@@ -3487,10 +3490,10 @@
       let mcTouchX=0;el.modeCard.addEventListener("touchstart",e=>{mcTouchX=e.touches[0].clientX;},{passive:true});
       el.modeCard.addEventListener("touchend",e=>{const dx=e.changedTouches[0].clientX-mcTouchX;if(Math.abs(dx)>40){if(dx<0&&state.ui.modeIndex<2){state.ui.modeIndex++;renderModeCard();saveAll().catch(console.error);}else if(dx>0&&state.ui.modeIndex>0){state.ui.modeIndex--;renderModeCard();saveAll().catch(console.error);}}},{passive:true});
       // Loop rest catch btn
-      if(el.loopRestCatchBtn)el.loopRestCatchBtn.addEventListener("click",()=>{const results=[...(state.loopRun.results||[]),...(state.normaRun.results||[])];if(results.length){state.batchResults=[...results];openBatchModal();}else{toast("まだ釣果なし");}});
+      if(el.loopRestCatchBtn)el.loopRestCatchBtn.addEventListener("click",()=>{const results=[...(state.loopRun.results||[]),...(state.normaRun.results||[])];if(results.length){state.batchResults=[...results];state._batchPreview=true;openBatchModal();}else{toast("まだ釣果なし");}});
       const cancelRestBtn=document.getElementById("loopRestCancelBtn");
       if(cancelRestBtn)cancelRestBtn.addEventListener("click",()=>{if(state.loopRun.active)finishLoopRun(true);else if(state.normaRun.active)finishNormaRun(true);});
-      el.taskCategorySelect.addEventListener("change",()=>{state.selectedTaskCategory=el.taskCategorySelect.value;saveAll().catch(console.error);});
+      el.taskCategorySelect.addEventListener("change",()=>{state.selectedTaskCategory=el.taskCategorySelect.value;updateTaskSelectColor();saveAll().catch(console.error);});
       el.toggleFishingBtn.addEventListener("click",togglePauseResume);
       el.cancelFishingBtn.addEventListener("click",cancelFishingNoReward);
       el.focusModeBtn.addEventListener("click",()=>setFocusMode(true));
@@ -3681,7 +3684,8 @@
     function renderCustomGraphColors(){el.customGraphColors.innerHTML='';const used=(state.customGraphs||[]).map(g=>g.color);CUSTOM_COLORS.forEach(c=>{if(used.includes(c))return;const b=document.createElement('button');b.style.cssText=`width:28px;height:28px;border-radius:50%;border:2px solid transparent;background:${c};cursor:pointer;`;b.addEventListener('click',()=>{el.customGraphColors.querySelectorAll('button').forEach(x=>x.style.borderColor='transparent');b.style.borderColor='#fff';b.dataset.color=c;});el.customGraphColors.appendChild(b);});}
     function saveCustomGraphItem(){const title=el.customGraphTitle.value.trim().slice(0,12);const selBtn=el.customGraphColors.querySelector('button[style*="border-color: rgb(255, 255, 255)"]')||el.customGraphColors.querySelector('button[data-color]');if(!title){toast("タイトルを入力してください");return;}if(!selBtn?.dataset?.color){toast("色を選んでください");return;}state.customGraphs.push({id:makeId(),title,color:selBtn.dataset.color});el.customGraphForm.style.display='none';el.customGraphTitle.value='';fillTaskSelect();saveAll().catch(console.error);renderAll();}
     function renderCustomGraphList(){el.customGraphList.innerHTML='';(state.customGraphs||[]).forEach(g=>{const d=document.createElement('span');d.style.cssText=`display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:999px;background:${g.color}22;border:1px solid ${g.color}44;font-size:12px;color:${g.color};`;d.textContent=g.title;el.customGraphList.appendChild(d);});}
-    function fillTaskSelect(){el.taskCategorySelect.innerHTML='';const opt=document.createElement('option');opt.value='work';opt.textContent='作業';el.taskCategorySelect.appendChild(opt);(state.customGraphs||[]).forEach(g=>{const o=document.createElement('option');o.value=g.id;o.textContent=g.title;el.taskCategorySelect.appendChild(o);});el.taskCategorySelect.value=state.selectedTaskCategory||'work';}
+    function fillTaskSelect(){el.taskCategorySelect.innerHTML='';const opt=document.createElement('option');opt.value='work';opt.textContent='作業';opt.style.background='#1a3a2a';opt.style.color='#7fe89c';el.taskCategorySelect.appendChild(opt);(state.customGraphs||[]).forEach(g=>{const o=document.createElement('option');o.value=g.id;o.textContent=g.title;o.style.background=g.color;o.style.color='#fff';el.taskCategorySelect.appendChild(o);});el.taskCategorySelect.value=state.selectedTaskCategory||'work';updateTaskSelectColor();}
+    function updateTaskSelectColor(){const v=el.taskCategorySelect.value;if(v==='work'){el.taskCategorySelect.style.background='rgba(127,232,156,0.2)';el.taskCategorySelect.style.color='#7fe89c';}else{const g=(state.customGraphs||[]).find(x=>x.id===v);if(g){el.taskCategorySelect.style.background=g.color+'33';el.taskCategorySelect.style.color=g.color;}else{el.taskCategorySelect.style.background='';el.taskCategorySelect.style.color='';}}}
 
     function toggleUtility(){state.ui.utilityOpen=!state.ui.utilityOpen;el.utilityFullscreen.classList.toggle("show",state.ui.utilityOpen);if(state.ui.utilityOpen){toggleUtilityForm(false);renderUtility();}saveAll().catch(console.error);}
     function closeUtility(){state.ui.utilityOpen=false;el.utilityFullscreen.classList.remove("show");toggleUtilityForm(false);saveAll().catch(console.error);}
@@ -3951,7 +3955,7 @@
     // ===== ALL REMAINING CORE FUNCTIONS (condensed but complete) =====
     function applyNavState(){el.app.classList.toggle("nav-collapsed",!!state.ui.navCollapsed);el.app.classList.toggle("nav-hidden",!!state.fishing.inProgress);el.navToggle.textContent=state.ui.navCollapsed?"❯":"❮";updateNavIndicator();}
     function updateNavIndicator(){const a=el.navBtns.find(b=>b.classList.contains("active"))||el.navBtns[0];if(!a)return;const s=a.offsetHeight;el.navActiveBubble.style.top=`${a.offsetTop}px`;el.navActiveBubble.style.left=`${a.offsetLeft+3}px`;el.navActiveBubble.style.width=`${s}px`;el.navActiveBubble.style.height=`${s}px`;}
-    function switchScreen(name){if(name==="fishing"&&!state.fishing.inProgress)return;el.navBtns.forEach(b=>b.classList.toggle("active",b.dataset.screen===name));Object.entries(el.screens).forEach(([k,n])=>n.classList.toggle("active",k===name));if(name!=="fishing"){state.ui.fishingUiVisible=true;el.app.classList.remove("fishing-ui-faded");clearFishingUiTimeout();}applyNavState();handleFishingActivity();renderAll();}
+    function switchScreen(name){if(name==="fishing"&&!state.fishing.inProgress)return;el.navBtns.forEach(b=>b.classList.toggle("active",b.dataset.screen===name));Object.entries(el.screens).forEach(([k,n])=>n.classList.toggle("active",k===name));if(name!=="fishing"){state.ui.fishingUiVisible=true;el.app.classList.remove("fishing-ui-faded");clearFishingUiTimeout();}if(name!=="room"){el.app.classList.remove("room-rest-faded");if(roomRestFadeTimer)clearTimeout(roomRestFadeTimer);}applyNavState();handleFishingActivity();if(name==="room")handleRoomRestActivity();renderAll();}
     function renderNavParts(){const open=!!state.ui.partsPanelOpen;el.navLevelList.classList.toggle("open",open);}
     function fillSelectors(){fillTaskSelect();}
     function fillBaitSelector(){}
@@ -4102,7 +4106,7 @@
     function makeMember(){return{uid:state.user.uid||state.user.playerToken,name:state.user.displayName||"釣り人",status:state.room.status||"idle"};}
     function normalizeRoom(d){return{index:d?.index||1,resetDate:d?.resetDate||todayKey(),members:Array.isArray(d?.members)?d.members:[],recentStamps:pruneStamps(d?.recentStamps||[]),createdAt:d?.createdAt||Date.now(),updatedAt:d?.updatedAt||Date.now()};}
     function pruneStamps(l){const n=Date.now();return[...l].filter(s=>n-Number(s.at||0)<STAMP_TTL).slice(-18);}
-    async function sendStamp(stamp){if(!db||!state.room.inRoom||!state.room.roomId)return;const ref=doc(db,"rooms",state.room.roomId);const obj={id:makeId(),uid:state.user.uid||state.user.playerToken,name:state.user.displayName||"釣り人",stamp,at:Date.now()};try{await runTransaction(db,async tx=>{const s=await tx.get(ref);if(!s.exists())return;const d=normalizeRoom(s.data());const rs=pruneStamps(d.recentStamps);rs.push(obj);tx.set(ref,{members:d.members,recentStamps:pruneStamps(rs),updatedAt:Date.now()},{merge:true});});}catch(e){console.error(e);}}
+    async function sendStamp(stamp){if(!db||!state.room.inRoom||!state.room.roomId)return;const ref=doc(db,"rooms",state.room.roomId);const obj={id:makeId(),uid:state.user.uid||state.user.playerToken,name:state.user.displayName||"釣り人",stamp,at:Date.now()};try{await runTransaction(db,async tx=>{const s=await tx.get(ref);if(!s.exists())return;const d=normalizeRoom(s.data());const rs=pruneStamps(d.recentStamps);rs.push(obj);tx.set(ref,{recentStamps:rs,updatedAt:Date.now()},{merge:true});});processedStampIds.add(obj.id);}catch(e){console.warn("sendStamp retry:",e.message);try{const s=await getDoc(ref);if(!s.exists())return;const d=normalizeRoom(s.data());const rs=pruneStamps(d.recentStamps);rs.push(obj);await updateDoc(ref,{recentStamps:rs,updatedAt:Date.now()});processedStampIds.add(obj.id);}catch(e2){console.error("sendStamp failed:",e2);}}}
     function processStamps(stamps){stamps.forEach(s=>{if(processedStampIds.has(s.id))return;processedStampIds.add(s.id);playAudio("stamp.mp3","stamp");});}
     function getLatestStamp(uid){const n=Date.now();return[...(currentRoomData?.recentStamps||[])].reverse().find(s=>s.uid===uid&&n-s.at<STAMP_TTL)||null;}
     async function resetRoomsIfNeeded(){if(!db)return;const t=todayKey();const ref=doc(db,"system","roomResetMarker");try{await runTransaction(db,async tx=>{const s=await tx.get(ref);if(s.exists()&&s.data().dateKey===t)return;tx.set(ref,{dateKey:t,updatedAt:Date.now()},{merge:true});});}catch(e){console.error(e);}}
@@ -4201,7 +4205,7 @@
     function startMidnightWatcher(){if(midnightTickHandle)clearInterval(midnightTickHandle);midnightTickHandle=setInterval(async()=>{if(currentRoomData&&currentRoomData.resetDate!==todayKey()){await leaveRoom(true);toast("日付変更で部屋をリセットしました。");}// Reset peer messages daily
       const now=Date.now(),oneDay=86400000;state.mailbox.items=(state.mailbox.items||[]).filter(m=>m.type==="welcome"||m.type==="official"||(now-(m.createdAt||0))<oneDay);},10000);}
     function startClockTick(){if(clockTickHandle)clearInterval(clockTickHandle);updateClock();clockTickHandle=setInterval(()=>{updateClock();checkLoopRest();checkReminders();},1000);}
-    function updateClock(){const n=new Date();const t=`${String(n.getHours()).padStart(2,"0")}:${String(n.getMinutes()).padStart(2,"0")}`;state.currentTimeText=t;[el.lobbyCurrentTime,el.roomCurrentTime,el.fishingCurrentTime].forEach(c=>c.textContent=t);el.fishingTimeMini.textContent=t;updateDateSubs();const pc=getTodoCount()+getReminderCount();el.roomUtilityBadge.textContent=String(pc);el.roomUtilityBadge.classList.toggle("show",pc>0);}
+    function updateClock(){const n=new Date();const t=`${String(n.getHours()).padStart(2,"0")}:${String(n.getMinutes()).padStart(2,"0")}`;state.currentTimeText=t;[el.lobbyCurrentTime,el.roomCurrentTime,el.fishingCurrentTime].forEach(c=>c.textContent=t);el.fishingTimeMini.textContent=t;updateDateSubs();const pc=getTodoCount()+getReminderCount();el.roomUtilityBadge.textContent=String(pc);el.roomUtilityBadge.classList.toggle("show",pc>0);const uc=document.getElementById("utilityClockText");if(uc)uc.textContent=t;}
     function checkLoopRest(){
       if(state.loopRun.active&&state.loopRun.phase==="rest"&&state.loopRun.restEndAt){if(Date.now()>=state.loopRun.restEndAt)startNextLoopFishing();else renderLoopRestCenter();}
       if(state.normaRun.active&&state.normaRun.phase==="rest"&&state.normaRun.restEndAt){if(Date.now()>=state.normaRun.restEndAt)startNextNormaRound();else renderLoopRestCenter();}
@@ -4298,11 +4302,17 @@
       }
       // Actions
       const acts=document.createElement("div");acts.className="modal-actions";acts.style.marginTop="10px";
-      const sb=document.createElement("button");sb.className="btn soft";sb.textContent="売る";
-      sb.addEventListener("click",()=>processBatchCard(batchIndex,"sell"));
-      const kb=document.createElement("button");kb.className="btn primary";kb.textContent="所持する";
-      kb.addEventListener("click",()=>processBatchCard(batchIndex,"keep"));
-      acts.appendChild(sb);acts.appendChild(kb);
+      if(state._batchPreview){
+        const cb=document.createElement("button");cb.className="btn soft";cb.textContent="閉じる";
+        cb.addEventListener("click",()=>{state._batchPreview=false;closeBatchModal();});
+        acts.appendChild(cb);
+      } else {
+        const sb=document.createElement("button");sb.className="btn soft";sb.textContent="売る";
+        sb.addEventListener("click",()=>processBatchCard(batchIndex,"sell"));
+        const kb=document.createElement("button");kb.className="btn primary";kb.textContent="所持する";
+        kb.addEventListener("click",()=>processBatchCard(batchIndex,"keep"));
+        acts.appendChild(sb);acts.appendChild(kb);
+      }
       el.batchResultList.appendChild(acts);
       // Swipe
       let tx=0;
@@ -4326,7 +4336,7 @@
     function renderAll(){if(_renderAllRunning)return;_renderAllRunning=true;try{applySelectors();applyNavState();renderNavLevels();renderFishingStatus();renderRoom();renderStore();renderResults();renderEncyclopedia();renderSettings();renderUserPill();renderStampFeeds();updateSync();updateRoomVideo();updateFishingVideo();renderMailIndicators();el.storeMoneyChip.textContent=`${state.money} zz`;el.storeBaitChip.textContent=`餌 ${getTotalBait()}`;el.fishingTimer.classList.toggle("mega",!!state.ui.timerMega);if(state.ui.utilityOpen)renderUtility();renderLoopInfo();renderCustomGraphList();renderWeekCalendar();renderUtilRoomStrip();renderLoopRestCenter();}finally{_renderAllRunning=false;}}
     function renderNavLevels(){el.navLevelList.innerHTML="";UPGRADE_PARTS.forEach(p=>{const c=document.createElement("div");c.className="part-level-card";c.innerHTML=`<div class="part-level-name">${p.name}</div><div class="part-level-value">${state.upgrades[p.id]||0}</div>`;el.navLevelList.appendChild(c);});}
     function renderRoom(){const inRoom=!!state.room.inRoom&&!!state.room.roomId;el.roomLobby.style.display=inRoom?"none":"flex";el.roomActiveUI.style.display=inRoom?"block":"none";if(!inRoom)return;const ms=currentRoomData?.members?.length?currentRoomData.members:[makeMember()];renderParticipants(el.roomParticipants,ms);renderParticipants(el.fishingParticipants,ms);}
-    function renderParticipants(container,members){container.innerHTML="";const wrap=document.createElement("div");wrap.style.cssText="display:inline-flex;gap:0;align-items:center;justify-content:flex-start;";members.forEach(m=>{const slot=document.createElement("div");slot.className="participant-slot";const isSelf=(m.uid||"")===(state.user.uid||state.user.playerToken||"");const statusText=isSelf&&state.ui.selfMoneyOpen?`${state.money} zz`:m.status==="fishing"?"釣り中":m.status==="paused"?"停止中":"休憩中";const bubble=getLatestStamp(m.uid);const goalText=isSelf&&state.miniGoalPublic&&state.miniGoal?state.miniGoal:"";const goalHtml=goalText?`<div style="position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);max-width:100px;font-size:${goalText.length>10?'8px':'9px'};color:var(--gold);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none;background:rgba(30,30,30,0.8);padding:3px 8px;border-radius:8px;backdrop-filter:blur(4px);"><div style='position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid rgba(30,30,30,0.8);'></div>${esc(goalText)}</div>`:"";slot.innerHTML=`<div class="participant-avatar" style="position:relative;">${goalHtml}🐱${bubble?`<div class="participant-bubble">${bubble.stamp}</div>`:""}</div><div class="participant-name">${esc(m.name)}</div><div class="participant-status">${esc(statusText)}</div>`;slot.style.cursor="pointer";slot.addEventListener("click",()=>{if(isSelf){state.ui.selfMoneyOpen=!state.ui.selfMoneyOpen;renderAll();}else openGiftModalFn(m);});wrap.appendChild(slot);});container.appendChild(wrap);}
+    function renderParticipants(container,members){container.innerHTML="";const wrap=document.createElement("div");wrap.style.cssText="display:inline-flex;gap:0;align-items:center;justify-content:flex-start;";members.forEach(m=>{const slot=document.createElement("div");slot.className="participant-slot";const isSelf=(m.uid||"")===(state.user.uid||state.user.playerToken||"");const statusText=isSelf&&state.ui.selfMoneyOpen?`${state.money} zz`:m.status==="fishing"?"釣り中":m.status==="paused"?"停止中":"休憩中";const bubble=getLatestStamp(m.uid);const goalText=isSelf&&state.miniGoalPublic&&state.miniGoal?state.miniGoal:"";const goalHtml=goalText?`<div style="position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);max-width:100px;font-size:${goalText.length>10?'8px':'9px'};color:var(--gold);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none;background:rgba(30,30,30,0.8);padding:3px 8px;border-radius:8px;backdrop-filter:blur(4px);"><div style='position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid rgba(30,30,30,0.8);'></div>${esc(goalText)}</div>`:"";const stCls=m.status==="fishing"?"st-fishing":"st-resting";slot.innerHTML=`<div class="participant-avatar" style="position:relative;">${goalHtml}🐱${bubble?`<div class="participant-bubble">${bubble.stamp}</div>`:""}</div><div class="participant-name">${esc(m.name)}</div><div class="participant-status ${stCls}">${esc(statusText)}</div>`;slot.style.cursor="pointer";slot.addEventListener("click",()=>{if(isSelf){state.ui.selfMoneyOpen=!state.ui.selfMoneyOpen;renderAll();}else openGiftModalFn(m);});wrap.appendChild(slot);});container.appendChild(wrap);}
     function renderStampFeeds(){[el.roomStampFeed,el.fishingStampFeed].forEach(f=>{f.innerHTML="";(currentRoomData?.recentStamps||[]).slice(-4).reverse().forEach(s=>{const d=document.createElement("div");d.className="stamp-feed-item";d.textContent=`${s.stamp} ${s.name}`;f.appendChild(d);});});}
     function renderStore(){if(!storeActiveCategory)return;if(storeActiveCategory==='bait')renderBaitCards();if(storeActiveCategory==='upgrade')renderUpgradeCards();if(storeActiveCategory==='items')renderGiftCards();if(storeActiveCategory==='sell')renderSellCards();}
     function renderBaitCards(){el.baitBuyList.innerHTML="";BAIT_TYPES.forEach(b=>{const o=state.baitCounts[b.id]||0;const fc=b.dailyFree&&state.shop.freeBaitClaimDate===todayKey();const c=document.createElement("div");c.className="bait-card";c.innerHTML=`<div class="bait-art-frame">${b.icon}</div><div class="bait-name">${b.name}<span class="owned-mini">×${o}</span></div><div class="bait-desc">${b.desc}<br/>${b.packQty}個</div><div class="bait-bottom"><div class="bait-price">${b.price} zz</div><button class="buy-btn">${b.dailyFree?(fc?"受取済":"受取る"):"買う"}</button></div>`;const btn=c.querySelector(".buy-btn");btn.disabled=b.dailyFree?fc:state.money<b.price;btn.addEventListener("click",()=>buyBait(b));el.baitBuyList.appendChild(c);});}
@@ -4431,7 +4441,7 @@
     function handleFishingActivity(){if(!state.fishing.inProgress||!el.screens.fishing.classList.contains("active")||state.ui.focusMode)return;state.ui.fishingUiVisible=true;el.app.classList.remove("fishing-ui-faded");clearFishingUiTimeout();fishingUiTimeout=setTimeout(()=>{if(state.fishing.inProgress&&el.screens.fishing.classList.contains("active")&&!state.ui.focusMode){state.ui.fishingUiVisible=false;el.app.classList.add("fishing-ui-faded");}},FISHING_UI_IDLE_MS);}
     function clearFishingUiTimeout(){if(fishingUiTimeout)clearTimeout(fishingUiTimeout);fishingUiTimeout=null;}
     let roomRestFadeTimer=null;
-    function handleRoomRestActivity(){el.app.classList.remove("room-rest-faded");if(roomRestFadeTimer)clearTimeout(roomRestFadeTimer);const isResting=(state.loopRun.active&&state.loopRun.phase==="rest")||(state.normaRun.active&&state.normaRun.phase==="rest");if(!isResting)return;roomRestFadeTimer=setTimeout(()=>{const still=(state.loopRun.active&&state.loopRun.phase==="rest")||(state.normaRun.active&&state.normaRun.phase==="rest");if(still&&el.screens.room.classList.contains("active"))el.app.classList.add("room-rest-faded");},10000);}
+    function handleRoomRestActivity(){el.app.classList.remove("room-rest-faded");if(roomRestFadeTimer)clearTimeout(roomRestFadeTimer);if(!el.screens.room.classList.contains("active"))return;roomRestFadeTimer=setTimeout(()=>{if(el.screens.room.classList.contains("active"))el.app.classList.add("room-rest-faded");},10000);}
     function maybeNotify(){if(state.settings.browserNotify&&typeof Notification!=="undefined"&&Notification.permission==="granted")new Notification("釣りが終わりました",{body:"回収しましょう。"});}
     function playAudio(file,type){if(sfxMuted&&type==='stamp')return;const a=new Audio(file);a.volume=sfxVolume/100;a.play().catch(()=>{});}
     function toast(msg,dur=3800){const n=document.createElement("div");n.className="toast";n.textContent=msg;n.style.animationDuration=`${dur/1000}s`;el.toastWrap.appendChild(n);setTimeout(()=>n.remove(),dur+300);}
