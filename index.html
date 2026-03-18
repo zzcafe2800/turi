@@ -336,7 +336,8 @@
       pointer-events: none;
       transform: translateY(8px);
     }
-    #app.room-rest-faded #screen-room.active .side-nav { opacity: 0; pointer-events: none; transition: opacity 0.35s ease; }
+    #app.room-rest-faded .side-nav,
+    #app.room-rest-faded .nav-toggle { opacity: 0; pointer-events: none; transition: opacity 0.35s ease; }
 
     /* ===== Clock ===== */
     .clock-stack {
@@ -2458,7 +2459,7 @@
       .room-controls { width: min(200px, 56vw); }
       .fishing-timer.active { width: min(38vw, 200px); }
       .fishing-timer:not(.active) { width: min(22vw, 116px); }
-      .fishing-timer.mega { width: min(65vw, 360px); }
+      .fishing-timer.mega { width: min(50vw, 240px); max-height: 50vh; }
       .timer-btn { width: 22px; height: 22px; }
       .current-time-chip { font-size: clamp(16px, 4.5vw, 28px); }
       .result-core { grid-template-columns: 1fr; }
@@ -2733,7 +2734,7 @@
           </div>
 
           <div class="mode-card-wrap fade-ui" id="modeCardWrap">
-            <button id="modeCardToggle" style="display:none;position:absolute;top:-28px;left:0;border:0;background:transparent;color:rgba(255,255,255,0.5);font-size:16px;cursor:pointer;z-index:3;">⇓</button>
+            <button id="modeCardToggle" style="display:none;position:absolute;top:-36px;left:0;border:1px solid rgba(123,223,245,0.3);background:rgba(0,0,0,0.45);color:var(--accent);font-size:18px;font-weight:900;cursor:pointer;z-index:3;width:34px;height:28px;border-radius:10px;backdrop-filter:blur(4px);text-align:center;">⇓</button>
             <div id="roomLoopInfo" class="room-loop-info"></div>
             <div id="modeCardInner" style="position:relative;">
               <button id="modeNavLeft" class="mode-card-nav left" style="display:none;">❮</button>
@@ -3095,21 +3096,21 @@
     <!-- ===== AUTH OVERLAY ===== -->
     <div id="authOverlay" class="auth-overlay">
       <div class="auth-card">
-        <div class="auth-title">海辺に置いておく作業用の釣り場</div>
-        <div class="auth-text">Googleでログインすると、所持品や図鑑記録に加えて、部屋とスタンプもFirebaseで同期されます。</div>
+        <div class="auth-title">参加方法</div>
+        <div class="auth-text">Googleログインで同期できます</div>
         <div id="authChoiceStep" class="auth-step active">
           <div class="name-row">
-            <button id="googleLoginBtn" class="btn primary">Googleでログイン</button>
-            <button id="guestStartBtn" class="btn soft">ローカルだけで始める</button>
+            <button id="googleLoginBtn" class="btn primary">Google</button>
+            <button id="guestStartBtn" class="btn soft">ローカル</button>
           </div>
         </div>
         <div id="authNameStep" class="auth-step">
-          <div class="auth-note">表示名を決めてください。空なら「釣り人」です。</div>
+          <div class="auth-note">名前を決めてね</div>
           <div class="name-row">
             <input id="authDisplayNameInput" type="text" maxlength="16" value="釣り人" />
           </div>
           <div class="name-row">
-            <button id="authConfirmBtn" class="btn primary">この名前で開始</button>
+            <button id="authConfirmBtn" class="btn primary">開始</button>
             <button id="authBackBtn" class="btn soft">戻る</button>
           </div>
         </div>
@@ -3636,8 +3637,8 @@
       if(goalHI){goalHI.addEventListener("blur",()=>{const h=parseInt(goalHI.value)||0;const m=parseInt(goalMI?.value)||0;state.weeklyGoal.targetMin=h*60+m;saveAll().catch(console.error);renderAll();});}
       if(goalMI){goalMI.addEventListener("blur",()=>{const h=parseInt(goalHI?.value)||0;const m=parseInt(goalMI.value)||0;state.weeklyGoal.targetMin=h*60+m;saveAll().catch(console.error);renderAll();});}
       // Window events
-      window.addEventListener("resize",()=>{setAppVh();updateScale();renderAll();});
-      window.addEventListener("orientationchange",()=>setTimeout(()=>{setAppVh();updateScale();renderAll();},120));
+      window.addEventListener("resize",()=>{setAppVh();updateScale();});
+      window.addEventListener("orientationchange",()=>setTimeout(()=>{setAppVh();updateScale();},120));
       ["mousemove","mousedown","touchstart","keydown"].forEach(ev=>document.addEventListener(ev,()=>{handleFishingActivity();handleRoomRestActivity();},{passive:true}));
       window.addEventListener("beforeunload",()=>{try{leaveRoom(true);}catch{}saveLocalState(state);});
       window.addEventListener("pagehide",()=>{try{leaveRoom(true);}catch{}saveLocalState(state);});
@@ -3654,22 +3655,37 @@
     function closeBgmList(){el.bgmListOverlay.classList.remove("show");}
     function renderBgmList(){el.bgmListBody.innerHTML="";
       if(typeof bgmListMode==='undefined')window.bgmListMode='all';
+      // Tab title
+      const titleMap={all:'BGM一覧',fav:'お気に入り一覧',sfx:'効果音一覧'};
+      const titleEl=document.createElement("div");titleEl.style.cssText="padding:8px 12px 4px;font-size:14px;font-weight:800;color:rgba(255,255,255,0.7);";titleEl.textContent=titleMap[bgmListMode]||'BGM一覧';el.bgmListBody.appendChild(titleEl);
       if(bgmListMode==='sfx'){
         const sfxVols=JSON.parse(localStorage.getItem('zz_sfx_vols')||'{}');
         const sfxOn=JSON.parse(localStorage.getItem('zz_sfx_on')||'{}');
-        if(!SFX_LIST.length){el.bgmListBody.innerHTML=`<div style="padding:20px;text-align:center;color:rgba(255,255,255,0.3);">効果音なし</div>`;return;}
+        if(!SFX_LIST.length){el.bgmListBody.innerHTML+=`<div style="padding:20px;text-align:center;color:rgba(255,255,255,0.3);">効果音なし</div>`;return;}
+        let previewAudio=null;
         SFX_LIST.forEach((s)=>{const isOn=sfxOn[s.id]!==false;const vol=sfxVols[s.id]??80;
           const c=document.createElement("div");c.className="bgm-list-card";c.style.background=isOn?"rgba(123,223,245,0.12)":"rgba(255,255,255,0.04)";c.style.opacity=isOn?"1":"0.5";
-          c.innerHTML=`<span style="font-size:14px;cursor:pointer;">${isOn?"🔊":"🔇"}</span><div class="bgm-card-info" style="flex:1;"><div class="bgm-card-name">${esc(s.title)}</div><div style="display:flex;align-items:center;gap:6px;margin-top:4px;"><input type="range" min="0" max="100" value="${vol}" style="flex:1;height:4px;accent-color:var(--accent);cursor:pointer;"/><span style="font-size:10px;color:rgba(255,255,255,0.4);min-width:28px;">${vol}%</span></div></div>`;
+          c.innerHTML=`<span style="font-size:16px;cursor:pointer;flex-shrink:0;">${isOn?"🔊":"🔇"}</span><div class="bgm-card-info" style="flex:1;"><div class="bgm-card-name" style="font-size:13px;">${esc(s.title)}</div><div style="display:flex;align-items:center;gap:6px;margin-top:4px;"><div style="flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,0.1);position:relative;cursor:pointer;"><div class="sfx-fill" style="height:100%;border-radius:3px;background:var(--accent);width:${vol}%;"></div><div class="sfx-thumb" style="position:absolute;top:50%;transform:translate(-50%,-50%);left:${vol}%;width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:grab;"></div></div><span style="font-size:11px;color:rgba(255,255,255,0.5);min-width:32px;text-align:right;">${vol}%</span></div></div>`;
           const toggleBtn=c.querySelector('span');toggleBtn.addEventListener('click',(e)=>{e.stopPropagation();sfxOn[s.id]=!isOn;localStorage.setItem('zz_sfx_on',JSON.stringify(sfxOn));renderBgmList();});
-          const slider=c.querySelector('input[type=range]');slider.addEventListener('input',(e)=>{e.stopPropagation();const v=Number(slider.value);sfxVols[s.id]=v;slider.nextElementSibling.textContent=v+'%';localStorage.setItem('zz_sfx_vols',JSON.stringify(sfxVols));});
-          slider.addEventListener('click',e=>e.stopPropagation());
-          c.addEventListener('click',()=>{if(!isOn)return;try{const a=new Audio(s.url);a.volume=vol/100;a.play().catch(()=>{});}catch(e){}});
+          // Custom slider drag
+          const track=c.querySelector('.sfx-fill').parentElement;const fill=c.querySelector('.sfx-fill');const thumb=c.querySelector('.sfx-thumb');const numSpan=c.querySelector('span:last-child');
+          function setVol(pct){const v=Math.round(Math.max(0,Math.min(100,pct)));sfxVols[s.id]=v;fill.style.width=v+'%';thumb.style.left=v+'%';numSpan.textContent=v+'%';localStorage.setItem('zz_sfx_vols',JSON.stringify(sfxVols));}
+          function startDrag(startX){
+            if(!previewAudio){try{previewAudio=new Audio(s.url);previewAudio.loop=true;}catch(e){}}
+            if(previewAudio){previewAudio.volume=(sfxVols[s.id]||80)/100;previewAudio.play().catch(()=>{});}
+            const rect=track.getBoundingClientRect();
+            function onMove(ex){const x=(ex.touches?ex.touches[0].clientX:ex.clientX)-rect.left;setVol(x/rect.width*100);if(previewAudio)previewAudio.volume=Math.max(0,Math.min(1,(sfxVols[s.id]||80)/100));}
+            function onUp(){document.removeEventListener('mousemove',onMove);document.removeEventListener('mouseup',onUp);document.removeEventListener('touchmove',onMove);document.removeEventListener('touchend',onUp);if(previewAudio){previewAudio.pause();previewAudio.currentTime=0;previewAudio=null;}}
+            document.addEventListener('mousemove',onMove);document.addEventListener('mouseup',onUp);document.addEventListener('touchmove',onMove,{passive:true});document.addEventListener('touchend',onUp);
+          }
+          thumb.addEventListener('mousedown',e=>{e.preventDefault();startDrag(e.clientX);});
+          thumb.addEventListener('touchstart',e=>{startDrag(e.touches[0].clientX);},{passive:true});
+          track.addEventListener('click',e=>{const rect=track.getBoundingClientRect();setVol((e.clientX-rect.left)/rect.width*100);});
           el.bgmListBody.appendChild(c);});
         return;
       }
       const list=bgmListMode==='fav'?BGM_LIST.filter(b=>bgmFavList.includes(b.id)):BGM_LIST;
-      if(!list.length){el.bgmListBody.innerHTML=`<div style="padding:20px;text-align:center;color:rgba(255,255,255,0.3);">${bgmListMode==='fav'?"お気に入りなし":"BGMなし"}</div>`;return;}
+      if(!list.length){el.bgmListBody.innerHTML+=`<div style="padding:20px;text-align:center;color:rgba(255,255,255,0.3);">${bgmListMode==='fav'?"お気に入りなし":"BGMなし"}</div>`;return;}
       list.forEach((b)=>{const origIdx=BGM_LIST.indexOf(b);const c=document.createElement("div");c.className=`bgm-list-card ${origIdx===bgmCurrentIndex&&bgmPlaying?'playing':''}`;const isFav=bgmFavList.includes(b.id);c.innerHTML=`<span class="bgm-card-drag">⠿</span><div class="bgm-card-info"><div class="bgm-card-name">${esc(b.title)}</div><div class="bgm-card-credit">${esc(b.credit)}</div></div><button class="bgm-card-fav ${isFav?'liked':''}">${isFav?'♥':'♡'}</button>`;c.querySelector('.bgm-card-info').addEventListener('click',()=>{bgmCurrentIndex=origIdx;if(!bgmAudio){bgmAudio=new Audio();bgmAudio.volume=bgmVolume/100;bgmAudio.addEventListener('ended',()=>nextBgm());bgmAudio.addEventListener('timeupdate',updateAudioUI);}playCurrentBgm();renderBgmList();});c.querySelector('.bgm-card-fav').addEventListener('click',e=>{e.stopPropagation();if(isFav)bgmFavList=bgmFavList.filter(x=>x!==b.id);else bgmFavList.push(b.id);state.bgmFavList=bgmFavList;saveAll().catch(console.error);renderBgmList();});el.bgmListBody.appendChild(c);});}
     function autoPlayBgmOnFishing(){if(!bgmPlaying){if(!bgmAudio){bgmAudio=new Audio(BGM_LIST[bgmCurrentIndex].url);bgmAudio.volume=bgmVolume/100;bgmAudio.muted=bgmMuted;bgmAudio.addEventListener('ended',()=>{if(bgmLoopMode==='loop')nextBgm();else{bgmCurrentIndex=Math.floor(Math.random()*BGM_LIST.length);playCurrentBgm();}});bgmAudio.addEventListener('timeupdate',updateAudioUI);}playCurrentBgm();}if(!sfxMuted){try{const sfx=new Audio(SFX_LIST[0]?.url||'sound01.mp3');sfx.volume=sfxVolume/100;sfx.play().catch(()=>{});}catch(e){}}}
     function stopBgmOnFishEnd(){if(bgmAudio&&bgmPlaying){bgmAudio.pause();bgmPlaying=false;try{el.audioPlayBtn.innerHTML='<svg viewBox="0 0 24 24" width="16" height="16" fill="#fff" stroke="none"><path d="M8 5v14l11-7z"/></svg>';}catch(e){}}}
@@ -3824,17 +3840,21 @@
       const card=document.createElement("div");card.style.cssText="width:min(400px,90%);max-height:70vh;overflow:auto;padding:16px;border-radius:20px;background:rgba(17,33,48,0.95);border:1px solid rgba(255,255,255,0.14);";
       card.innerHTML=`<div style="display:flex;justify-content:space-between;margin-bottom:10px;"><h3 style="margin:0;font-size:16px;color:#fff;">1日プリセット</h3><button style="border:0;background:transparent;color:#fff;font-size:16px;cursor:pointer;">×</button></div>`;
       card.querySelector("button").addEventListener("click",()=>modal.remove());
-      presets.forEach(p=>{
-        const c=document.createElement("div");c.style.cssText="padding:10px;border-radius:14px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);margin-bottom:6px;cursor:pointer;";
+      presets.forEach((p,pi)=>{
+        const c=document.createElement("div");c.style.cssText="padding:10px;border-radius:14px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);margin-bottom:6px;display:flex;align-items:center;gap:8px;";
+        const info=document.createElement("div");info.style.cssText="flex:1;cursor:pointer;";
         const detail=p.items.map(i=>`${i.startTime}~${i.endTime} ${i.title}`).join(", ");
-        c.innerHTML=`<div style="font-size:13px;font-weight:700;color:#fff;">${esc(p.title)}</div><div style="font-size:9px;color:rgba(255,255,255,0.4);margin-top:3px;">${esc(detail)}</div>`;
-        c.addEventListener("click",()=>{
+        info.innerHTML=`<div style="font-size:13px;font-weight:700;color:#fff;">${esc(p.title)}</div><div style="font-size:9px;color:rgba(255,255,255,0.4);margin-top:3px;">${esc(detail)}</div>`;
+        info.addEventListener("click",()=>{
           if(existing.length>0){if(!confirm("今のスケジュールに1日プリセットを反映しますか？"))return;
             state.productivity.schedules=state.productivity.schedules.filter(s=>s.dayKey!==dk);}
           p.items.forEach(i=>{state.productivity.schedules.push({...i,id:makeId(),dayKey:dk,createdAt:Date.now()});});
           modal.remove();saveAll().catch(console.error);renderUtility();toast("プリセットを反映しました");
         });
-        card.appendChild(c);
+        c.appendChild(info);
+        const del=document.createElement("button");del.style.cssText="border:0;background:rgba(255,80,80,0.15);color:#f88;border-radius:8px;padding:4px 8px;font-size:10px;cursor:pointer;flex-shrink:0;";del.textContent="消去";
+        del.addEventListener("click",e=>{e.stopPropagation();if(!confirm(`「${p.title}」を削除しますか？`))return;state.schedulePresets.splice(pi,1);saveAll().catch(console.error);modal.remove();if(state.schedulePresets.length)openSchedulePresetList();else toast("プリセットなし");});
+        c.appendChild(del);card.appendChild(c);
       });
       modal.appendChild(card);modal.addEventListener("click",e=>{if(e.target===modal)modal.remove();});
       el.app.appendChild(modal);
@@ -3963,6 +3983,9 @@
 
     const MODE_NAMES=["単発","連続","ノルマ"];
     function renderModeCard(){
+      // Skip rebuild if user is typing in card inputs (prevents mobile keyboard closing)
+      const activeEl=document.activeElement;
+      if(activeEl&&el.modeCardBody.contains(activeEl)&&(activeEl.tagName==="TEXTAREA"||activeEl.tagName==="INPUT"||activeEl.tagName==="SELECT"))return;
       const idx=state.ui.modeIndex||0;
       el.modeNavLeft.style.display=idx>0?"grid":"none";
       el.modeNavRight.style.display=idx<2?"grid":"none";
@@ -4077,12 +4100,16 @@
       const card=document.createElement("div");card.style.cssText="width:min(400px,90%);max-height:70vh;overflow:auto;padding:16px;border-radius:20px;background:rgba(17,33,48,0.95);border:1px solid rgba(255,255,255,0.14);";
       card.innerHTML=`<div style="display:flex;justify-content:space-between;margin-bottom:10px;"><h3 style="margin:0;font-size:16px;">作業プリセット</h3><button style="border:0;background:transparent;color:#fff;font-size:16px;cursor:pointer;">×</button></div>`;
       card.querySelector("button").addEventListener("click",()=>modal.remove());
-      presets.forEach(p=>{
-        const c=document.createElement("div");c.style.cssText="padding:10px;border-radius:14px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);margin-bottom:6px;cursor:pointer;";
+      presets.forEach((p,pi)=>{
+        const c=document.createElement("div");c.style.cssText="padding:10px;border-radius:14px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);margin-bottom:6px;display:flex;align-items:center;gap:8px;";
+        const info=document.createElement("div");info.style.cssText="flex:1;cursor:pointer;";
         const detail=p.rounds.map((r,i)=>`${i+1}: ${r.fishMin}分/${r.restMin}分 - ${r.norma}`).join(" → ");
-        c.innerHTML=`<div style="font-size:13px;font-weight:700;">${esc(p.title)}</div><div style="font-size:9px;color:rgba(255,255,255,0.4);margin-top:3px;">${esc(detail)}</div>`;
-        c.addEventListener("click",()=>{state.normaConfig.rounds=[...p.rounds];state.normaConfig.currentEdit=0;modal.remove();renderModeCard();saveAll().catch(console.error);toast("プリセットを読み込みました");});
-        card.appendChild(c);
+        info.innerHTML=`<div style="font-size:13px;font-weight:700;">${esc(p.title)}</div><div style="font-size:9px;color:rgba(255,255,255,0.4);margin-top:3px;">${esc(detail)}</div>`;
+        info.addEventListener("click",()=>{state.normaConfig.rounds=[...p.rounds];state.normaConfig.currentEdit=0;modal.remove();renderModeCard();saveAll().catch(console.error);toast("プリセットを読み込みました");});
+        c.appendChild(info);
+        const del=document.createElement("button");del.style.cssText="border:0;background:rgba(255,80,80,0.15);color:#f88;border-radius:8px;padding:4px 8px;font-size:10px;cursor:pointer;flex-shrink:0;";del.textContent="消去";
+        del.addEventListener("click",e=>{e.stopPropagation();if(!confirm(`「${p.title}」を削除しますか？`))return;state.workPresets.splice(pi,1);saveAll().catch(console.error);modal.remove();if(state.workPresets.length)openWorkPresetList();else toast("プリセットなし");});
+        c.appendChild(del);card.appendChild(c);
       });
       modal.appendChild(card);modal.addEventListener("click",e=>{if(e.target===modal)modal.remove();});
       el.app.appendChild(modal);
