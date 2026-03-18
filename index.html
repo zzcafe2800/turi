@@ -62,6 +62,7 @@
     .bg-screen {
       position: absolute;
       inset: 0;
+      left: -8px;
       overflow: hidden;
       border-radius: 0;
       background: #000;
@@ -2511,11 +2512,13 @@
     .util-room-strip.hidden { opacity: 0; pointer-events: none; transform: translateY(-4px); }
     .util-room-toggle { width: 28px; height: 20px; border: 0; border-radius: 6px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); font-size: 10px; cursor: pointer; flex-shrink: 0; display: grid; place-items: center; }
     .util-room-toggle:hover { color: #fff; }
-    .util-room-cards { display: flex; flex-direction: column; gap: 3px; overflow: hidden; }
-    .util-room-card { display: flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 10px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); font-size: 10px; font-weight: 600; color: #fff; white-space: nowrap; flex-shrink: 0; backdrop-filter: blur(4px); }
-    .util-room-card .urc-icon { font-size: 12px; }
-    .util-room-card .urc-title { max-width: 80px; overflow: hidden; text-overflow: ellipsis; }
-    .util-room-cat-label { font-size: 8px; color: rgba(255,255,255,0.3); padding: 1px 4px; margin-top: 2px; }
+    .util-room-cards { display: flex; flex-direction: column; gap: 4px; overflow: hidden; }
+    .util-room-card { display: flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 12px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); font-size: 14px; font-weight: 600; color: #fff; white-space: nowrap; flex-shrink: 0; backdrop-filter: blur(4px); }
+    .util-room-card .urc-icon { font-size: 16px; }
+    .util-room-card .urc-title { max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
+    .util-room-card .urc-time { font-size: 11px; color: rgba(255,255,255,0.45); }
+    .util-room-card .urc-time.past { text-decoration: line-through; color: rgba(255,255,255,0.25); }
+    .util-room-cat-label { font-size: 10px; color: rgba(255,255,255,0.35); padding: 2px 6px; margin-top: 3px; font-weight: 700; }
 
     /* === Utility color/icon picker === */
     .u-color-row { display: flex; gap: 5px; flex-wrap: wrap; align-items: center; }
@@ -2536,10 +2539,10 @@
     .mode-card-wrap { position: absolute; right: 0; bottom: 0; z-index: 8; width: min(220px, 32vw); display: flex; flex-direction: column; align-items: stretch; }
     .mode-card { background: rgba(255,255,255,0.92); border-radius: 20px; padding: 12px 14px 10px; color: #222; position: relative; min-height: 200px; display: flex; flex-direction: column; box-shadow: 0 8px 30px rgba(0,0,0,0.25); }
     .mode-card-title { font-size: 14px; font-weight: 900; text-align: center; color: #333; margin-bottom: 8px; }
-    .mode-card-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 22px; height: 36px; border: 0; border-radius: 8px; background: rgba(0,0,0,0.06); color: #888; font-size: 14px; display: grid; place-items: center; cursor: pointer; z-index: 2; }
-    .mode-card-nav:hover { background: rgba(0,0,0,0.12); color: #333; }
-    .mode-card-nav.left { left: -28px; }
-    .mode-card-nav.right { right: -28px; }
+    .mode-card-nav { position: absolute; top: 50%; transform: translateY(-50%); border: 0; border-radius: 0; background: transparent; color: rgba(0,0,0,0.3); font-size: 18px; font-weight: 900; display: grid; place-items: center; cursor: pointer; z-index: 2; width: 20px; height: 30px; }
+    .mode-card-nav:hover { color: rgba(0,0,0,0.6); }
+    .mode-card-nav.left { left: -24px; }
+    .mode-card-nav.right { right: -24px; }
     .mode-card-body { flex: 1; display: flex; flex-direction: column; gap: 5px; }
     .mode-card-body .mc-field { display: flex; flex-direction: column; gap: 2px; }
     .mode-card-body .mc-label { font-size: 9px; color: #999; }
@@ -2585,12 +2588,12 @@
     .fish-predict-name { font-size: 10px; color: rgba(255,255,255,0.6); }
     /* Schedule */
     .schedule-wrap { display: flex; flex-direction: column; height: 100%; }
-    .schedule-day-bar { display: flex; justify-content: center; gap: 20px; padding: 10px 0 8px; position: relative; }
+    .schedule-day-bar { display: flex; justify-content: center; gap: 20px; padding: 10px 0 8px; position: sticky; top: 0; z-index: 5; background: rgba(245,250,255,0.97); }
     .schedule-day-btn { border: 0; background: transparent; color: rgba(0,0,0,0.35); font-size: 14px; font-weight: 700; cursor: pointer; padding: 4px 8px; position: relative; }
     .schedule-day-btn.active { color: #333; }
     .schedule-day-btn.active::after { content: ''; position: absolute; bottom: -2px; left: 25%; right: 25%; height: 3px; background: var(--accent); border-radius: 2px; }
-    .schedule-timeline { flex: 1; overflow-y: auto; position: relative; padding-left: 48px; }
-    .schedule-hour-mark { position: absolute; left: 0; width: 44px; font-size: 10px; color: #bbb; text-align: right; padding-right: 6px; }
+    .schedule-timeline { flex: 1; overflow-y: auto; position: relative; padding-left: 52px; }
+    .schedule-hour-mark { position: absolute; left: 0; width: 48px; font-size: 11px; color: #555; font-weight: 600; text-align: right; padding-right: 6px; }
     .schedule-hour-line { position: absolute; left: 48px; right: 0; height: 1px; background: rgba(0,0,0,0.06); }
     .schedule-now-dot { position: absolute; left: 38px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); z-index: 3; transform: translateY(-5px); }
     .schedule-card { position: absolute; left: 52px; right: 8px; border-radius: 10px; padding: 6px 8px; font-size: 11px; font-weight: 600; color: #fff; overflow: hidden; cursor: pointer; z-index: 2; }
@@ -2710,9 +2713,10 @@
             <button id="loopRestCatchBtn" class="loop-rest-catch-btn">現在の釣果 ▶</button>
           </div>
 
-          <div class="mode-card-wrap fade-ui">
+          <div class="mode-card-wrap fade-ui" id="modeCardWrap">
+            <button id="modeCardToggle" style="display:none;position:absolute;top:-28px;left:0;border:0;background:transparent;color:rgba(255,255,255,0.5);font-size:16px;cursor:pointer;z-index:3;">⇓</button>
             <div id="roomLoopInfo" class="room-loop-info"></div>
-            <div style="position:relative;">
+            <div id="modeCardInner" style="position:relative;">
               <button id="modeNavLeft" class="mode-card-nav left" style="display:none;">❮</button>
               <button id="modeNavRight" class="mode-card-nav right">❯</button>
               <div id="modeCard" class="mode-card">
@@ -2961,16 +2965,16 @@
             <div id="weekLabels" class="week-label-row"></div>
           </div>
 
-          <!-- Calendar -->
-          <div id="weekCalendar" class="week-calendar" style="margin-top:16px;"></div>
-
-          <!-- Custom graph list + form (below calendar) -->
+          <!-- Custom graph list + form (below graph, above calendar) -->
           <div id="customGraphList" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;"></div>
           <div id="customGraphForm" style="display:none;margin-top:8px;padding:12px;border-radius:14px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);">
             <input id="customGraphTitle" type="text" maxlength="12" placeholder="タイトル" style="min-height:36px;padding:0 10px;border-radius:10px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.08);color:#fff;margin-bottom:8px;width:100%;" />
             <div id="customGraphColors" style="display:flex;gap:6px;margin-bottom:8px;"></div>
             <button id="saveCustomGraph" class="btn primary" style="min-height:34px;">追加</button>
           </div>
+
+          <!-- Calendar -->
+          <div id="weekCalendar" class="week-calendar" style="margin-top:16px;"></div>
         </div>
       </div>
     </section>
@@ -3250,7 +3254,7 @@
     const SFX_LIST = [
       { id:'sound01', title:'sound01', url:'sound01.mp3', credit:'Credit: Sample SFX' },
     ];
-    const WELCOME_MAIL_TEXT = `αテスト\n\nスマホは横画面・全画面・ローカル推奨｟※PC推奨｠\n\n【バグ(スマホ)】　1.ログイン　2,UI\n【未実装】　      1.背景や魚イラスト       2.リザルト(週間～年間)　3,各アイコンイラスト\n\nわかりにくい所、ほしい機能、UI改善、バグなどあれば教えてもらえるとうれしいです。\n`;
+    const WELCOME_MAIL_TEXT = `αテスト\n\nスマホは横画面・全画面・ローカル推奨｟※PC推奨｠\n\n【バグ(スマホ)】　1.ログイン　2,UI\n【未実装】　      1.背景や魚イラスト       2.リザルト(週間～年間)　3,各アイコンイラスト\n\nわかりにくい所、ほしい機能、UI改善、バグなどあれば教えてもらえるとうれしいです。`;
 
     /* ===== The full JavaScript continues below - preserving ALL original functionality ===== */
     /* Due to the extreme size, I'm providing the core structure with all features implemented */
@@ -3460,6 +3464,9 @@
       // Mode card navigation
       el.modeNavLeft.addEventListener("click",()=>{state.ui.modeIndex=Math.max(0,state.ui.modeIndex-1);renderModeCard();saveAll().catch(console.error);});
       el.modeNavRight.addEventListener("click",()=>{state.ui.modeIndex=Math.min(2,state.ui.modeIndex+1);renderModeCard();saveAll().catch(console.error);});
+      // Mobile mode card hide/show
+      const mcToggle=document.getElementById("modeCardToggle"),mcInner=document.getElementById("modeCardInner");
+      if(mcToggle&&mcInner){if(isMobile())mcToggle.style.display="block";mcToggle.addEventListener("click",()=>{const hidden=mcInner.style.display==="none";mcInner.style.display=hidden?"":"none";mcToggle.textContent=hidden?"⇓":"⇑";});}
       // Swipe support for mode card
       let mcTouchX=0;el.modeCard.addEventListener("touchstart",e=>{mcTouchX=e.touches[0].clientX;},{passive:true});
       el.modeCard.addEventListener("touchend",e=>{const dx=e.changedTouches[0].clientX-mcTouchX;if(Math.abs(dx)>40){if(dx<0&&state.ui.modeIndex<2){state.ui.modeIndex++;renderModeCard();saveAll().catch(console.error);}else if(dx>0&&state.ui.modeIndex>0){state.ui.modeIndex--;renderModeCard();saveAll().catch(console.error);}}},{passive:true});
@@ -3653,7 +3660,7 @@
       list.forEach((b)=>{const origIdx=BGM_LIST.indexOf(b);const c=document.createElement("div");c.className=`bgm-list-card ${origIdx===bgmCurrentIndex&&bgmPlaying?'playing':''}`;const isFav=bgmFavList.includes(b.id);c.innerHTML=`<span class="bgm-card-drag">⠿</span><div class="bgm-card-info"><div class="bgm-card-name">${esc(b.title)}</div><div class="bgm-card-credit">${esc(b.credit)}</div></div><button class="bgm-card-fav ${isFav?'liked':''}">${isFav?'♥':'♡'}</button>`;c.querySelector('.bgm-card-info').addEventListener('click',()=>{bgmCurrentIndex=origIdx;if(!bgmAudio){bgmAudio=new Audio();bgmAudio.volume=bgmVolume/100;bgmAudio.addEventListener('ended',()=>nextBgm());bgmAudio.addEventListener('timeupdate',updateAudioUI);}playCurrentBgm();renderBgmList();});c.querySelector('.bgm-card-fav').addEventListener('click',e=>{e.stopPropagation();if(isFav)bgmFavList=bgmFavList.filter(x=>x!==b.id);else bgmFavList.push(b.id);state.bgmFavList=bgmFavList;saveAll().catch(console.error);renderBgmList();});el.bgmListBody.appendChild(c);});}
     function autoPlayBgmOnFishing(){if(!bgmPlaying){if(!bgmAudio){bgmAudio=new Audio(BGM_LIST[bgmCurrentIndex].url);bgmAudio.volume=bgmVolume/100;bgmAudio.muted=bgmMuted;bgmAudio.addEventListener('ended',()=>{if(bgmLoopMode==='loop')nextBgm();else{bgmCurrentIndex=Math.floor(Math.random()*BGM_LIST.length);playCurrentBgm();}});bgmAudio.addEventListener('timeupdate',updateAudioUI);}playCurrentBgm();}if(!sfxMuted){try{const sfx=new Audio(SFX_LIST[0]?.url||'sound01.mp3');sfx.volume=sfxVolume/100;sfx.play().catch(()=>{});}catch(e){}}}
     function stopBgmOnFishEnd(){if(bgmAudio&&bgmPlaying){bgmAudio.pause();bgmPlaying=false;try{el.audioPlayBtn.innerHTML='<svg viewBox="0 0 24 24" width="16" height="16" fill="#fff" stroke="none"><path d="M8 5v14l11-7z"/></svg>';}catch(e){}}}
-    function syncGoalInputs(){const v=state.miniGoal||"";[el.lobbyGoalInput,el.roomGoalInput,el.fishingGoalInput].forEach(i=>{if(document.activeElement!==i)i.value=v;});const vis=state.miniGoalPublic?"公開中":"非公開";[el.lobbyGoalVisibility,el.roomGoalVisibility,el.fishingGoalVisibility].forEach(s=>s.textContent=vis);}
+    function syncGoalInputs(){const v=state.miniGoal||"";[el.lobbyGoalInput,el.roomGoalInput,el.fishingGoalInput].forEach(i=>{if(document.activeElement!==i)i.value=v;});const isPub=state.miniGoalPublic;const vis=isPub?"公開中":"非公開";[el.lobbyGoalVisibility,el.roomGoalVisibility,el.fishingGoalVisibility].forEach(s=>{s.textContent=vis;s.style.color=isPub?"var(--gold)":"rgba(255,255,255,0.35)";});if(state.room.inRoom)syncPresence().catch(()=>{});}
     function updateDateSubs(){const now=new Date();const days=['日','月','火','水','木','金','土'];const txt=`${now.getMonth()+1}/${now.getDate()} ${days[now.getDay()]}`;[el.lobbyDateSub,el.roomDateSub,el.fishingDateSub].forEach(s=>{s.textContent=txt;s.classList.toggle('show',clockDateExpanded);});}
 
     function openStoreCategory(cat){storeActiveCategory=cat;el.storeCategoryScreen.style.display='none';['bait','upgrade','items','sell'].forEach(k=>{document.getElementById(`storeSub${k.charAt(0).toUpperCase()+k.slice(1)}`).classList.toggle('active',k===cat);});renderStore();}
@@ -3747,21 +3754,43 @@
       // Scroll to current time
       wrap.appendChild(timeline);
       box.appendChild(wrap);
-      setTimeout(()=>{if(scheduleDay===0)timeline.scrollTop=Math.max(0,nowH*hourH-100);},50);
+      setTimeout(()=>{if(scheduleDay===0){const containerH=timeline.clientHeight||300;timeline.scrollTop=Math.max(0,nowH*hourH-containerH/2);}},50);
       // Add button (override the global + button behavior for schedule)
       el.utilityFsAddBtn.style.display="flex";
     }
     function addScheduleItem(){
-      const title=prompt("タイトル");if(!title)return;
-      const startTime=prompt("開始時間 (HH:MM)","09:00");if(!startTime)return;
-      const endTime=prompt("終了時間 (HH:MM)","10:00");if(!endTime)return;
-      const icon=prompt("絵文字アイコン","📋")||"📋";
-      const color=prompt("色 (#hex)","#7bdff5")||"#7bdff5";
-      const alarmStart=confirm("開始時にアラーム？");
-      const alarmEnd=confirm("終了時にアラーム？");
-      if(!state.productivity.schedules)state.productivity.schedules=[];
-      state.productivity.schedules.push({id:makeId(),title:title.trim().slice(0,20),startTime,endTime,icon,color,alarmStart,alarmEnd,dayKey:getScheduleKey(scheduleDay),createdAt:Date.now()});
-      saveAll().catch(console.error);renderUtility();
+      const overlay=document.createElement("div");overlay.style.cssText="position:absolute;inset:0;z-index:80;display:grid;place-items:center;background:rgba(0,0,0,0.4);";
+      const card=document.createElement("div");card.style.cssText="width:min(360px,88%);padding:20px;border-radius:22px;background:#fff;color:#333;box-shadow:0 12px 40px rgba(0,0,0,0.3);";
+      card.innerHTML=`<div style="font-size:18px;font-weight:800;margin-bottom:14px;text-align:center;">スケジュール追加</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div><div style="font-size:12px;color:#999;margin-bottom:3px;">タイトル</div><input id="schTitle" type="text" maxlength="20" placeholder="タイトル" style="width:100%;height:38px;padding:0 12px;border-radius:10px;border:1px solid rgba(0,0,0,0.12);font-size:14px;"/></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div><div style="font-size:12px;color:#999;margin-bottom:3px;">開始時間</div><input id="schStart" type="time" value="09:00" style="width:100%;height:38px;padding:0 8px;border-radius:10px;border:1px solid rgba(0,0,0,0.12);font-size:14px;"/></div>
+            <div><div style="font-size:12px;color:#999;margin-bottom:3px;">終了時間</div><input id="schEnd" type="time" value="10:00" style="width:100%;height:38px;padding:0 8px;border-radius:10px;border:1px solid rgba(0,0,0,0.12);font-size:14px;"/></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div><div style="font-size:12px;color:#999;margin-bottom:3px;">アイコン</div><input id="schIcon" type="text" value="📋" maxlength="2" style="width:100%;height:38px;padding:0 8px;border-radius:10px;border:1px solid rgba(0,0,0,0.12);font-size:18px;text-align:center;"/></div>
+            <div><div style="font-size:12px;color:#999;margin-bottom:3px;">色</div><input id="schColor" type="color" value="#7bdff5" style="width:100%;height:38px;border-radius:10px;border:1px solid rgba(0,0,0,0.12);cursor:pointer;"/></div>
+          </div>
+          <div style="display:flex;gap:16px;align-items:center;">
+            <label style="font-size:13px;display:flex;align-items:center;gap:4px;"><input id="schAlarmStart" type="checkbox" style="width:16px;height:16px;"/>開始通知</label>
+            <label style="font-size:13px;display:flex;align-items:center;gap:4px;"><input id="schAlarmEnd" type="checkbox" style="width:16px;height:16px;"/>終了通知</label>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px;">
+            <button id="schCancel" style="min-height:36px;padding:0 16px;border:1px solid rgba(0,0,0,0.1);border-radius:999px;background:#fff;color:#666;font-weight:700;cursor:pointer;">キャンセル</button>
+            <button id="schSave" style="min-height:36px;padding:0 16px;border:0;border-radius:999px;background:linear-gradient(135deg,#b8f8f1,#78e9d3);color:#0d2131;font-weight:800;cursor:pointer;">追加</button>
+          </div>
+        </div>`;
+      overlay.appendChild(card);
+      card.querySelector("#schCancel").addEventListener("click",()=>overlay.remove());
+      card.querySelector("#schSave").addEventListener("click",()=>{
+        const t=card.querySelector("#schTitle").value.trim();if(!t){toast("タイトルを入力");return;}
+        if(!state.productivity.schedules)state.productivity.schedules=[];
+        state.productivity.schedules.push({id:makeId(),title:t.slice(0,20),startTime:card.querySelector("#schStart").value,endTime:card.querySelector("#schEnd").value,icon:card.querySelector("#schIcon").value||"📋",color:card.querySelector("#schColor").value||"#7bdff5",alarmStart:card.querySelector("#schAlarmStart").checked,alarmEnd:card.querySelector("#schAlarmEnd").checked,dayKey:getScheduleKey(scheduleDay),createdAt:Date.now()});
+        overlay.remove();saveAll().catch(console.error);renderUtility();
+      });
+      overlay.addEventListener("click",e=>{if(e.target===overlay)overlay.remove();});
+      el.app.appendChild(overlay);
     }
     function saveSchedulePreset(){
       const dk=getScheduleKey(scheduleDay);
@@ -3821,32 +3850,31 @@
       el.utilRoomToggle.textContent=vis?"▼":"▶";
       el.utilRoomCards.style.display=vis?"flex":"none";
       el.utilRoomCards.innerHTML="";
-      const catLabel={reminder:"通知",todo:"やること",record:"記録"};
-      let totalCards=0;
+      const catLabel={reminder:"通知",todo:"やること",record:"スケジュール"};
+      const nowHm=currentHm();let totalCards=0;
       tabs.forEach(tab=>{
         let items=[];
         if(tab==="todo")items=(state.productivity.todos||[]).filter(t=>!t.completed).slice(0,5);
         else if(tab==="reminder")items=(state.productivity.reminders||[]).filter(r=>r.on!==false).slice(0,5);
-        else items=(state.productivity.records||[]).filter(r=>r.dayKey===todayKey()).slice(0,5);
+        else{const dk=getScheduleKey(0);items=(state.productivity.schedules||[]).filter(s=>s.dayKey===dk).slice(0,5);}
         if(!items.length)return;
         const lbl=document.createElement("div");lbl.className="util-room-cat-label";lbl.textContent=catLabel[tab]||tab;el.utilRoomCards.appendChild(lbl);
         items.forEach(item=>{
           const c=document.createElement("div");c.className="util-room-card";
-          if(item.color)c.style.borderLeftColor=item.color;c.style.borderLeftWidth="3px";
-          const timeStr=item.time||"";
-          c.innerHTML=`<span class="urc-icon">${item.icon||"📋"}</span><span class="urc-title">${esc(item.title||"")}</span>${timeStr?`<span style="font-size:9px;color:rgba(255,255,255,0.4);">${timeStr}</span>`:""}`;
+          if(item.color){c.style.borderLeftColor=item.color;c.style.borderLeftWidth="3px";}
+          const timeStr=tab==="record"?`${item.startTime||""}~${item.endTime||""}`:(item.time||"");
+          const isPast=timeStr&&timeStr.replace(/[^0-9:]/g,"").slice(0,5)<nowHm;
+          c.innerHTML=`<span class="urc-icon">${item.icon||"📋"}</span><span class="urc-title">${esc(item.title||"")}</span>${timeStr?`<span class="urc-time${isPast?" past":""}">${timeStr}</span>`:""}`;
           el.utilRoomCards.appendChild(c);totalCards++;
         });
       });
       if(!totalCards){el.utilRoomStrip.style.display="none";return;}
-      // Auto-shrink font if overlapping exit button area
       const parentH=el.utilRoomStrip.parentElement?.offsetHeight||400;
       const stripH=el.utilRoomCards.scrollHeight||0;
       const maxH=parentH*0.55;
       if(stripH>maxH&&totalCards>3){
-        const sc=Math.max(0.7,maxH/stripH);
-        el.utilRoomCards.style.fontSize=`${Math.round(10*sc)}px`;
-        el.utilRoomCards.querySelectorAll('.util-room-card').forEach(c=>{c.style.padding='2px 6px';});
+        const sc=Math.max(0.75,maxH/stripH);
+        el.utilRoomCards.style.fontSize=`${Math.round(14*sc)}px`;
       }else{el.utilRoomCards.style.fontSize="";}
     }
 
@@ -4137,7 +4165,8 @@
     function startIdleTracking(){if(!state.room.inRoom||state.fishing.inProgress||state.room.idleStartedAt)return;state.room.idleStartedAt=Date.now();}
     function stopIdleTracking(){if(!state.room.idleStartedAt)return;const ms=Date.now()-state.room.idleStartedAt;state.room.idleStartedAt=null;const addMin=Math.max(0,Math.round(ms/60000));if(addMin>0)ensureDay(todayKey()).restMin+=addMin;}
 
-    function startMidnightWatcher(){if(midnightTickHandle)clearInterval(midnightTickHandle);midnightTickHandle=setInterval(async()=>{if(currentRoomData&&currentRoomData.resetDate!==todayKey()){await leaveRoom(true);toast("日付変更で部屋をリセットしました。");}},10000);}
+    function startMidnightWatcher(){if(midnightTickHandle)clearInterval(midnightTickHandle);midnightTickHandle=setInterval(async()=>{if(currentRoomData&&currentRoomData.resetDate!==todayKey()){await leaveRoom(true);toast("日付変更で部屋をリセットしました。");}// Reset peer messages daily
+      const now=Date.now(),oneDay=86400000;state.mailbox.items=(state.mailbox.items||[]).filter(m=>m.type==="welcome"||m.type==="official"||(now-(m.createdAt||0))<oneDay);},10000);}
     function startClockTick(){if(clockTickHandle)clearInterval(clockTickHandle);updateClock();clockTickHandle=setInterval(()=>{updateClock();checkLoopRest();checkReminders();},1000);}
     function updateClock(){const n=new Date();const t=`${String(n.getHours()).padStart(2,"0")}:${String(n.getMinutes()).padStart(2,"0")}`;state.currentTimeText=t;[el.lobbyCurrentTime,el.roomCurrentTime,el.fishingCurrentTime].forEach(c=>c.textContent=t);el.fishingTimeMini.textContent=t;updateDateSubs();const pc=getTodoCount()+getReminderCount();el.roomUtilityBadge.textContent=String(pc);el.roomUtilityBadge.classList.toggle("show",pc>0);}
     function checkLoopRest(){
@@ -4267,11 +4296,13 @@
       const cGraphs=state.customGraphs||[];
       week.days.forEach(day=>{const wm=day.stat.workMin||0,rm=day.stat.restMin||0;const wp=Math.max(0,Math.min(100,wm/1440*100)),rp=Math.max(0,Math.min(100,rm/1440*100));const isToday=day.key===todayKey();
         const col=document.createElement("div");col.className="day-col";const wIn=wp>=16,rIn=rp>=14;const wt=minToHr(wm),rt=minToHr(rm);
-        // Build custom segments
+        // Build custom segments with tooltip bubbles for short bars
         const cm=day.stat.customMin||{};
-        let customHtml="";
-        cGraphs.forEach(g=>{const mins=cm[g.id]||0;if(mins>0){const cp=Math.max(0,Math.min(100,mins/1440*100));const cIn=cp>=10;customHtml+=`<div class="day-segment custom" style="height:${cp}%;background:${g.color};color:#fff;">${cIn?minToHr(mins):""}</div>`;}});
-        col.innerHTML=`<div class="day-bar-wrap"><div class="day-stack">${rm>0?`<div class="day-segment rest" style="height:${rp}%">${rIn?rt:"" }</div>`:""}${customHtml}${wm>0?`<div class="day-segment work" style="height:${wp}%">${wIn?wt:""}</div>`:""}</div></div>`;
+        let customHtml="";let bubbleOffset=0;
+        cGraphs.forEach(g=>{const mins=cm[g.id]||0;if(mins>0){const cp=Math.max(0,Math.min(100,mins/1440*100));const cIn=cp>=10;customHtml+=`<div class="day-segment custom" style="height:${cp}%;background:${g.color};color:#fff;position:relative;">${cIn?minToHr(mins):""}${!cIn?`<div class="day-seg-note" style="background:${g.color};color:#fff;top:${bubbleOffset}px;">${minToHr(mins)}</div>`:""}</div>`;if(!cIn)bubbleOffset+=18;}});
+        const workBubble=(!wIn&&wm>0)?`<div class="day-seg-note work-note" style="top:${bubbleOffset}px;">${wt}</div>`:"";
+        const restBubble=(!rIn&&rm>0)?`<div class="day-seg-note rest-note" style="top:${bubbleOffset+((!wIn&&wm>0)?18:0)}px;">${rt}</div>`:"";
+        col.innerHTML=`<div class="day-bar-wrap"><div class="day-stack">${rm>0?`<div class="day-segment rest" style="height:${rp}%;position:relative;">${rIn?rt:""}${restBubble}</div>`:""}${customHtml}${wm>0?`<div class="day-segment work" style="height:${wp}%;position:relative;">${wIn?wt:""}${workBubble}</div>`:""}</div></div>`;
         col.title=`作業: ${wt}\n休憩: ${rt}`;
         el.weekBars.appendChild(col);
         const label=document.createElement("div");label.className="day-label-item";label.innerHTML=`<div class="day-label-main"><span class="today-dot ${isToday?"active":""}"></span><span>${day.dateLabel}</span><span>${day.label}</span></div>`;li.appendChild(label);});
