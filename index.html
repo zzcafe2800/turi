@@ -2724,7 +2724,6 @@
           </div>
 
           <div class="stamp-rail fade-ui">
-            <button id="roomMessageBtn" class="message-trigger" aria-label="メッセージ">📨<span id="roomMessageDot" class="message-dot"></span></button>
             <div id="roomStampFeed" class="stamp-feed"></div>
           </div>
 
@@ -2742,6 +2741,7 @@
 
           <div class="mode-card-wrap fade-ui" id="modeCardWrap">
             <button id="modeCardToggle" style="display:none;position:absolute;top:-36px;left:0;border:1px solid rgba(123,223,245,0.3);background:rgba(0,0,0,0.45);color:var(--accent);font-size:18px;font-weight:900;cursor:pointer;z-index:3;width:34px;height:28px;border-radius:10px;backdrop-filter:blur(4px);text-align:center;">⇓</button>
+            <button id="roomMessageBtn" class="message-trigger" style="position:absolute;left:-78px;bottom:10px;width:32px;height:32px;border:1px solid rgba(255,255,255,0.2);border-radius:10px;background:rgba(0,0,0,0.4);color:#fff;font-size:14px;cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);z-index:3;" aria-label="メッセージ">📨<span id="roomMessageDot" class="message-dot"></span></button>
             <button id="roomFishPredictBtn" style="position:absolute;left:-40px;bottom:10px;width:32px;height:32px;border:1px solid rgba(255,255,255,0.2);border-radius:10px;background:rgba(0,0,0,0.4);color:#fff;font-size:16px;cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);z-index:3;" title="近くにいる魚">🐟</button>
             <div id="roomFishPredictPopup" class="fish-predict-popup" style="left:-220px;bottom:0;right:auto;"></div>
             <div id="roomLoopInfo" class="room-loop-info"></div>
@@ -2785,6 +2785,7 @@
               <button id="toggleFishingBtn" class="timer-btn" aria-label="停止または再開"><svg id="toggleFishingIcon" viewBox="0 0 24 24"></svg></button>
               <button id="cancelFishingBtn" class="timer-btn danger" aria-label="報酬なし終了"><svg viewBox="0 0 24 24"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg></button>
               <button id="focusModeBtn" class="timer-btn" aria-label="フォーカスモード"><svg viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              <button id="pipBtn" class="timer-btn" aria-label="ピクチャーインピクチャー" title="PiP"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><rect x="11" y="9" width="9" height="7" rx="1" fill="currentColor" opacity="0.3"/></svg></button>
             </div>
           </div>
         </div>
@@ -2819,7 +2820,12 @@
           <button id="timerExtendBtn" class="timer-extend-btn" style="display:none;">+30s</button>
         </div>
 
-        <div class="bottom-right-stack fade-ui">
+        <div class="bottom-right-stack fade-ui" style="position:relative;">
+          <div style="display:flex;gap:6px;align-items:flex-end;margin-bottom:4px;">
+            <button id="fishingMessageBtn" class="message-trigger" style="width:28px;height:28px;border:1px solid rgba(255,255,255,0.2);border-radius:8px;background:rgba(0,0,0,0.4);color:#fff;font-size:12px;cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);" aria-label="メッセージ">📨<span id="fishingMessageDot" class="message-dot"></span></button>
+            <button id="fishingFishPredictBtn" style="width:28px;height:28px;border:1px solid rgba(255,255,255,0.2);border-radius:8px;background:rgba(0,0,0,0.4);color:#fff;font-size:14px;cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);" title="近くにいる魚">🐟</button>
+            <div id="fishingFishPredictPopup" class="fish-predict-popup"></div>
+          </div>
           <div id="fishingParticipants"></div>
         </div>
 
@@ -2842,10 +2848,7 @@
           </div>
         </div>
 
-        <div class="stamp-rail fade-ui">
-          <button id="fishingMessageBtn" class="message-trigger" aria-label="メッセージ">📨<span id="fishingMessageDot" class="message-dot"></span></button>
-          <div id="fishingStampFeed" class="stamp-feed"></div>
-        </div>
+        <div id="fishingStampFeed" class="stamp-feed" style="display:none;"></div>
 
         <div id="focusOverlay" class="focus-overlay">
           <div class="focus-wrap">
@@ -3125,11 +3128,12 @@
       <video id="mobileIntroVideo" muted playsinline preload="auto" src="load1.mp4"></video>
     </div>
 
-    <!-- ===== UTILITY FULLSCREEN ===== -->
-    <div id="utilityFullscreen" class="utility-fullscreen">
+    <!-- ===== UTILITY SCREEN ===== -->
+    <section id="screen-utility" class="screen">
+      <div class="screen-shell">
+        <div class="content-shell">
       <div class="utility-fs-header">
         <span class="utility-fs-title">便利機能 <span id="utilityClockText" style="font-size:12px;color:rgba(0,0,0,0.3);font-weight:600;margin-left:6px;"></span></span>
-        <button id="closeUtilityBtn" class="utility-fs-close">×</button>
       </div>
       <div class="utility-fs-tabs">
         <button class="utility-fs-tab active" data-utab="reminder">通知<span id="uBadgeReminder" class="tab-badge"></span></button>
@@ -3158,7 +3162,9 @@
         </div>
       </div>
       <button id="utilityFsAddBtn" class="utility-fs-add">＋</button>
-    </div>
+        </div>
+      </div>
+    </section>
 
     <!-- ===== OTHER MODALS ===== -->
     <div id="mailboxModal" class="modal">
@@ -3488,7 +3494,7 @@
       mailboxNavBtn:document.getElementById("mailboxNavBtn"),
       mailNavDot:document.getElementById("mailNavDot"),
       userPill:document.getElementById("userPill"),
-      screens:{room:document.getElementById("screen-room"),fishing:document.getElementById("screen-fishing"),store:document.getElementById("screen-store"),results:document.getElementById("screen-results"),encyclopedia:document.getElementById("screen-encyclopedia"),settings:document.getElementById("screen-settings")},
+      screens:{room:document.getElementById("screen-room"),fishing:document.getElementById("screen-fishing"),store:document.getElementById("screen-store"),results:document.getElementById("screen-results"),encyclopedia:document.getElementById("screen-encyclopedia"),settings:document.getElementById("screen-settings"),utility:document.getElementById("screen-utility")},
       lobbyVideo:document.getElementById("lobbyVideo"),roomVideo:document.getElementById("roomVideo"),fishingVideo:document.getElementById("fishingVideo"),
       roomLobby:document.getElementById("roomLobby"),roomActiveUI:document.getElementById("roomActiveUI"),
       lobbyCurrentTime:document.getElementById("lobbyCurrentTime"),lobbyDateSub:document.getElementById("lobbyDateSub"),lobbyGoalInput:document.getElementById("lobbyGoalInput"),lobbyGoalVisibility:document.getElementById("lobbyGoalVisibility"),
@@ -3653,6 +3659,31 @@
       el.toggleFishingBtn.addEventListener("click",togglePauseResume);
       el.cancelFishingBtn.addEventListener("click",cancelFishingNoReward);
       el.focusModeBtn.addEventListener("click",()=>setFocusMode(true));
+      // PiP
+      const pipBtn=document.getElementById("pipBtn");
+      let pipCanvas=null,pipVideo=null,pipStream=null,pipInterval=null;
+      if(pipBtn)pipBtn.addEventListener("click",async()=>{
+        try{
+          if(!pipCanvas){pipCanvas=document.createElement("canvas");pipCanvas.width=320;pipCanvas.height=180;}
+          const ctx=pipCanvas.getContext("2d");
+          function drawPip(){
+            ctx.fillStyle="#0a1628";ctx.fillRect(0,0,320,180);
+            ctx.fillStyle="#7bdff5";ctx.font="bold 48px sans-serif";ctx.textAlign="center";
+            ctx.fillText(el.timerText.textContent||"--:--",160,100);
+            ctx.fillStyle="rgba(255,255,255,0.4)";ctx.font="16px sans-serif";
+            ctx.fillText(`${state.fishing.durationMin||0}min`,160,130);
+            if(state.fishing.normaText&&state.normaRun.active){ctx.fillStyle="#7bdff5";ctx.font="14px sans-serif";ctx.fillText(state.fishing.normaText,160,155);}
+          }
+          drawPip();
+          if(!pipStream)pipStream=pipCanvas.captureStream(2);
+          if(!pipVideo){pipVideo=document.createElement("video");pipVideo.srcObject=pipStream;pipVideo.muted=true;pipVideo.autoplay=true;pipVideo.playsInline=true;await pipVideo.play();}
+          await pipVideo.requestPictureInPicture();
+          if(pipInterval)clearInterval(pipInterval);
+          pipInterval=setInterval(drawPip,500);
+          pipVideo.addEventListener("leavepictureinpicture",()=>{if(pipInterval){clearInterval(pipInterval);pipInterval=null;}},{once:true});
+          toast("PiPモードを開始しました");
+        }catch(e){console.warn("PiP failed:",e);toast("PiPに対応していません");}
+      });
       document.getElementById("timerMegaBtn")?.addEventListener("click",toggleTimerMega);
       document.getElementById("timerExtendBtn")?.addEventListener("click",()=>{
         if(!state.fishing.inProgress)return;
@@ -3686,8 +3717,8 @@
       el.storeSubBacks.forEach(b=>b.addEventListener("click",()=>closeStoreCategory()));
       // Stamps
       el.stampButtons.forEach(b=>b.addEventListener("click",()=>sendStamp(b.dataset.stamp).catch(console.error)));
-      el.roomMessageBtn.addEventListener("click",()=>openNextGiftMessage());
-      el.fishingMessageBtn.addEventListener("click",()=>openNextGiftMessage());
+      if(el.roomMessageBtn)el.roomMessageBtn.addEventListener("click",()=>openNextGiftMessage());
+      if(el.fishingMessageBtn)el.fishingMessageBtn.addEventListener("click",()=>openNextGiftMessage());
       // Result
       el.sellResultBtn.addEventListener("click",()=>sellPending().catch(console.error));
       el.keepResultBtn.addEventListener("click",()=>keepPending().catch(console.error));
@@ -3698,7 +3729,7 @@
       el.closeGiftBtn.addEventListener("click",closeGiftModal);
       el.sendShellBtn.addEventListener("click",()=>sendShell().catch(console.error));
       // Utility
-      el.closeUtilityBtn.addEventListener("click",closeUtility);
+      
       el.utilityFsTabs.forEach(b=>b.addEventListener("click",()=>{state.ui.utilityTab=b.dataset.utab;renderUtility();saveAll().catch(console.error);}));
       el.utilityFsAddBtn.addEventListener("click",()=>{if(state.ui.utilityTab==="record"){addScheduleItem();}else{toggleUtilityForm(true);}});
       el.uFormCancel.addEventListener("click",()=>toggleUtilityForm(false));
@@ -3863,8 +3894,8 @@
     function fillTaskSelect(){el.taskCategorySelect.innerHTML='';const opt=document.createElement('option');opt.value='work';opt.textContent='作業';opt.style.background='#1a3a2a';opt.style.color='#7fe89c';el.taskCategorySelect.appendChild(opt);(state.customGraphs||[]).forEach(g=>{const o=document.createElement('option');o.value=g.id;o.textContent=g.title;o.style.background=g.color;o.style.color='#fff';el.taskCategorySelect.appendChild(o);});el.taskCategorySelect.value=state.selectedTaskCategory||'work';updateTaskSelectColor();}
     function updateTaskSelectColor(){const v=el.taskCategorySelect.value;if(v==='work'){el.taskCategorySelect.style.background='rgba(127,232,156,0.2)';el.taskCategorySelect.style.color='#7fe89c';}else{const g=(state.customGraphs||[]).find(x=>x.id===v);if(g){el.taskCategorySelect.style.background=g.color+'33';el.taskCategorySelect.style.color=g.color;}else{el.taskCategorySelect.style.background='';el.taskCategorySelect.style.color='';}}}
 
-    function toggleUtility(){state.ui.utilityOpen=!state.ui.utilityOpen;el.utilityFullscreen.classList.toggle("show",state.ui.utilityOpen);if(state.ui.utilityOpen){toggleUtilityForm(false);renderUtility();}saveAll().catch(console.error);}
-    function closeUtility(){state.ui.utilityOpen=false;el.utilityFullscreen.classList.remove("show");toggleUtilityForm(false);saveAll().catch(console.error);}
+    function toggleUtility(){switchScreen("utility");renderUtility();}
+    function closeUtility(){switchScreen("room");}
     function toggleUtilityForm(show){el.utilityAddForm.classList.toggle("show",!!show);el.utilityFsAddBtn.style.display=show?"none":"flex";if(!show){el.uFormText.value="";el.uFormTime.value="";}const tab=state.ui.utilityTab;el.uFormSelect.style.display=tab==="record"||tab==="reminder"?"block":"none";if(tab==="record")el.uFormSelect.innerHTML=`<option value="start">🎣開始</option><option value="break">☕休憩</option><option value="end">🏁終了</option><option value="memo">📝メモ</option>`;else if(tab==="reminder")el.uFormSelect.innerHTML=`<option value="once">1回</option><option value="daily">毎日</option><option value="weekly">毎週</option>`;else el.uFormSelect.innerHTML="";populateFormPickers();}
     function saveUtilityItem(){const tab=state.ui.utilityTab,title=String(el.uFormText.value||"").trim().slice(0,32),time=el.uFormTime.value||"";if(tab!=="record"&&!title){toast("タイトルを入力");return;}const selIcon=el.uFormIcons?.querySelector(".u-icon-opt.sel")?.textContent||"📋";const selColor=el.uFormColors?.querySelector(".u-color-swatch.sel")?.dataset?.color||"#7bdff5";if(tab==="todo"){state.productivity.todos.unshift({id:makeId(),title,time,completed:false,createdAt:Date.now(),dayKey:todayKey(),icon:selIcon,color:selColor});}else if(tab==="reminder"){state.productivity.reminders.unshift({id:makeId(),title,time,repeat:el.uFormSelect.value||"once",on:true,lastFiredDay:null,icon:selIcon,color:selColor});}else{state.productivity.records.unshift({id:makeId(),type:el.uFormSelect.value||"memo",title:title||recLabel(el.uFormSelect.value||"memo"),time:time||currentHm(),dayKey:todayKey(),createdAt:Date.now(),icon:selIcon,color:selColor});}toggleUtilityForm(false);renderUtility();saveAll().catch(console.error);}
     function recLabel(t){return({start:"🎣開始",break:"☕休憩",end:"🏁終了",memo:"📝メモ",todo:"✅Todo完了"})[t]||t;}
@@ -4561,11 +4592,11 @@
 
     // ===== RENDER ALL =====
     let _renderAllRunning=false;
-    function renderAll(){if(_renderAllRunning)return;_renderAllRunning=true;try{applySelectors();applyNavState();renderNavLevels();renderFishingStatus();renderRoom();renderStore();renderResults();renderEncyclopedia();renderSettings();renderUserPill();renderStampFeeds();updateSync();updateRoomVideo();updateFishingVideo();renderMailIndicators();el.storeMoneyChip.textContent=`${state.money} zz`;el.storeBaitChip.textContent=`餌 ${getTotalBait()}`;el.fishingTimer.classList.toggle("mega",!!state.ui.timerMega);if(state.ui.utilityOpen)renderUtility();renderLoopInfo();renderCustomGraphList();renderWeekCalendar();renderUtilRoomStrip();renderLoopRestCenter();}finally{_renderAllRunning=false;}}
+    function renderAll(){if(_renderAllRunning)return;_renderAllRunning=true;try{applySelectors();applyNavState();renderNavLevels();renderFishingStatus();renderRoom();renderStore();renderResults();renderEncyclopedia();renderSettings();renderUserPill();renderStampFeeds();updateSync();updateRoomVideo();updateFishingVideo();renderMailIndicators();el.storeMoneyChip.textContent=`${state.money} zz`;el.storeBaitChip.textContent=`餌 ${getTotalBait()}`;el.fishingTimer.classList.toggle("mega",!!state.ui.timerMega);if(el.screens.utility?.classList.contains("active"))renderUtility();renderLoopInfo();renderCustomGraphList();renderWeekCalendar();renderUtilRoomStrip();renderLoopRestCenter();}finally{_renderAllRunning=false;}}
     function renderNavLevels(){el.navLevelList.innerHTML="";UPGRADE_PARTS.forEach(p=>{const c=document.createElement("div");c.className="part-level-card";c.innerHTML=`<div class="part-level-name">${p.name}</div><div class="part-level-value">${state.upgrades[p.id]||0}</div>`;el.navLevelList.appendChild(c);});}
     function renderRoom(){const inRoom=!!state.room.inRoom&&!!state.room.roomId;el.roomLobby.style.display=inRoom?"none":"flex";el.roomActiveUI.style.display=inRoom?"block":"none";if(!inRoom)return;const ms=currentRoomData?.members?.length?currentRoomData.members:[makeMember()];renderParticipants(el.roomParticipants,ms);renderParticipants(el.fishingParticipants,ms);}
     function renderParticipants(container,members){container.innerHTML="";const wrap=document.createElement("div");wrap.style.cssText="display:inline-flex;gap:0;align-items:center;justify-content:flex-start;";members.forEach(m=>{const slot=document.createElement("div");slot.className="participant-slot";const isSelf=(m.uid||"")===(state.user.uid||state.user.playerToken||"");const statusText=isSelf&&state.ui.selfMoneyOpen?`${state.money} zz`:m.status==="fishing"?"釣り中":m.status==="paused"?"停止中":"休憩中";const bubble=getLatestStamp(m.uid);const goalText=isSelf&&state.miniGoalPublic&&state.miniGoal?state.miniGoal:"";const goalHtml=goalText?`<div style="position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);max-width:100px;font-size:${goalText.length>10?'8px':'9px'};color:var(--gold);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none;background:rgba(30,30,30,0.8);padding:3px 8px;border-radius:8px;backdrop-filter:blur(4px);"><div style='position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid rgba(30,30,30,0.8);'></div>${esc(goalText)}</div>`:"";const stCls=m.status==="fishing"?"st-fishing":"st-resting";slot.innerHTML=`<div class="participant-avatar" style="position:relative;">${goalHtml}🐱${bubble?`<div class="participant-bubble">${bubble.stamp}</div>`:""}</div><div class="participant-name">${esc(m.name)}</div><div class="participant-status ${stCls}">${esc(statusText)}</div>`;slot.style.cursor="pointer";slot.addEventListener("click",()=>{if(isSelf){state.ui.selfMoneyOpen=!state.ui.selfMoneyOpen;renderAll();}else openGiftModalFn(m);});wrap.appendChild(slot);});container.appendChild(wrap);}
-    function renderStampFeeds(){[el.roomStampFeed,el.fishingStampFeed].forEach(f=>{f.innerHTML="";(currentRoomData?.recentStamps||[]).slice(-4).reverse().forEach(s=>{const d=document.createElement("div");d.className="stamp-feed-item";d.textContent=`${s.stamp} ${s.name}`;f.appendChild(d);});});}
+    function renderStampFeeds(){[el.roomStampFeed,el.fishingStampFeed].forEach(f=>{if(!f)return;f.innerHTML="";(currentRoomData?.recentStamps||[]).slice(-4).reverse().forEach(s=>{const d=document.createElement("div");d.className="stamp-feed-item";d.textContent=`${s.stamp} ${s.name}`;f.appendChild(d);});});}
     function renderStore(){if(!storeActiveCategory)return;if(storeActiveCategory==='bait')renderBaitCards();if(storeActiveCategory==='upgrade')renderUpgradeCards();if(storeActiveCategory==='items')renderGiftCards();if(storeActiveCategory==='sell')renderSellCards();}
     function renderBaitCards(){el.baitBuyList.innerHTML="";BAIT_TYPES.forEach(b=>{const o=state.baitCounts[b.id]||0;const fc=b.dailyFree&&state.shop.freeBaitClaimDate===todayKey();const c=document.createElement("div");c.className="bait-card";c.innerHTML=`<div class="bait-art-frame">${b.icon}</div><div class="bait-name">${b.name}<span class="owned-mini">×${o}</span></div><div class="bait-desc">${b.desc}<br/>${b.packQty}個</div><div class="bait-bottom"><div class="bait-price">${b.price} zz</div><button class="buy-btn">${b.dailyFree?(fc?"受取済":"受取る"):"買う"}</button></div>`;const btn=c.querySelector(".buy-btn");btn.disabled=b.dailyFree?fc:state.money<b.price;btn.addEventListener("click",()=>buyBait(b));el.baitBuyList.appendChild(c);});
       // Rotating numbered baits section
@@ -4628,7 +4659,7 @@
     function renderSettings(){el.settingsDisplayName.textContent=state.user.displayName||"釣り人";el.displayNameInput.value=state.user.displayName||"釣り人";el.lastSavedAt.textContent=state.lastSavedAt?fmtDateTime(state.lastSavedAt):"-";}
     function renderUserPill(){el.userPill.innerHTML=`${esc(state.user.displayName||"釣り人")}<br/>${state.user.isGuest?"ローカル":"Google"}`;}
     function updateSync(){if(firebaseReady&&firebaseSyncOk&&!state.user.isGuest)el.syncStatus.textContent="Firebase同期中";else if(firebaseReady&&auth?.currentUser?.isAnonymous)el.syncStatus.textContent="匿名接続中";else el.syncStatus.textContent="ローカルのみ";}
-    function renderMailIndicators(){const uo=getUnreadMail("official").length,up=getUnreadMail("peer").length,pp=getPeerMail();el.mailNavDot.classList.toggle("show",uo>0);[el.roomMessageBtn,el.fishingMessageBtn].forEach(b=>b.classList.toggle("show",pp.length>0));[el.roomMessageDot,el.fishingMessageDot].forEach(d=>d.classList.toggle("show",up>0));}
+    function renderMailIndicators(){const uo=getUnreadMail("official").length,up=getUnreadMail("peer").length,pp=getPeerMail();el.mailNavDot.classList.toggle("show",uo>0);[el.roomMessageBtn,el.fishingMessageBtn].forEach(b=>{if(b)b.classList.toggle("show",pp.length>0);});[el.roomMessageDot,el.fishingMessageDot].forEach(d=>{if(d)d.classList.toggle("show",up>0);});}
     function safePlay(v){if(!v)return;try{v.play()?.catch(()=>{});}catch{}}
     function setVideoSrc(v,src){if(!v||!src)return;if(v.getAttribute("data-src")===src){safePlay(v);return;}v.setAttribute("data-src",src);v.src=src;v.load();safePlay(v);}
     function updateRoomVideo(){const inRoom=!!state.room.inRoom;el.lobbyVideo.style.display=inRoom?"none":"block";el.roomVideo.style.display=inRoom?"block":"none";if(!inRoom){safePlay(el.lobbyVideo);return;}setVideoSrc(el.roomVideo,`boat${Math.max(1,Math.min(3,currentRoomData?.members?.length||1))}.mp4`);}
