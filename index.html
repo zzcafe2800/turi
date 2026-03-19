@@ -2638,6 +2638,10 @@
         <svg viewBox="0 0 24 24"><path d="M8 6v12l10-6z"/></svg>
         <span class="tip">プレイ</span>
       </button>
+      <button class="nav-btn" data-screen="utility" aria-label="便利機能" id="navUtilityBtn">
+        <svg viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4z"/><path d="M14 14h6v6h-6z"/></svg>
+        <span class="tip">便利</span>
+      </button>
       <button class="nav-btn" data-screen="store" aria-label="ストア">
         <svg viewBox="0 0 24 24"><path d="M4 10h16"/><path d="M6 10v8h12v-8"/><path d="M7 10l1-4h8l1 4"/><path d="M9 18v-4h6v4"/></svg>
         <span class="tip">ストア</span>
@@ -2673,16 +2677,26 @@
         </div>
 
         <div id="roomLobby" class="lobby-center">
-          <div class="clock-wrap" style="margin-bottom:12px;">
-            <div id="lobbyCurrentTime" class="current-time-chip" style="font-size:clamp(48px,8vw,100px);">00:00</div>
-            <div id="lobbyDateSub" class="clock-date-sub"></div>
+          <div style="position:absolute;top:12px;right:16px;font-size:14px;color:rgba(255,255,255,0.5);font-weight:600;">
+            <span id="lobbyCurrentTime">00:00</span>
+            <div id="lobbyDateSub" class="clock-date-sub" style="font-size:10px;"></div>
           </div>
-          <div class="mini-goal-wrap" style="position:relative;top:auto;left:auto;transform:none;margin-bottom:16px;">
-            <span class="mini-goal-label">今日の目標</span>
-            <input id="lobbyGoalInput" class="mini-goal-input" type="text" maxlength="28" placeholder="目標..." />
-            <span id="lobbyGoalVisibility" class="mini-goal-visibility">公開中</span>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+            <div id="lobbyModeTitle" style="font-size:clamp(16px,3vw,22px);font-weight:900;color:#fff;text-shadow:0 4px 16px rgba(0,0,0,0.4);display:flex;align-items:center;gap:10px;">
+              <button id="lobbyModeLeft" style="border:0;background:transparent;color:var(--accent);font-size:20px;font-weight:900;cursor:pointer;">❮</button>
+              <span id="lobbyModeText">釣り×ポモドーロタイマー</span>
+              <button id="lobbyModeRight" style="border:0;background:transparent;color:var(--accent);font-size:20px;font-weight:900;cursor:pointer;">❯</button>
+            </div>
+            <div id="lobbyPlayRow" style="display:flex;align-items:center;gap:14px;">
+              <button id="playRoomBtn" class="play-btn">プレイ</button>
+              <div id="soloToggleWrap" style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+                <span style="font-size:10px;color:rgba(255,255,255,0.5);font-weight:700;">ソロ</span>
+                <div id="soloToggle" style="width:40px;height:22px;border-radius:11px;background:rgba(255,255,255,0.15);position:relative;cursor:pointer;transition:background 0.2s;">
+                  <div id="soloToggleKnob" style="width:18px;height:18px;border-radius:50%;background:#999;position:absolute;top:2px;left:2px;transition:left 0.2s,background 0.2s;"></div>
+                </div>
+              </div>
+            </div>
           </div>
-          <button id="playRoomBtn" class="play-btn">プレイ</button>
         </div>
 
         <div id="roomActiveUI" style="display:none; position:absolute; inset:0; z-index:4;">
@@ -2710,14 +2724,7 @@
           </div>
 
           <div class="stamp-rail fade-ui">
-            <button id="roomFishPredictBtn" class="utility-icon-btn" title="近くにいる魚" style="position:relative;">🐟</button>
-            <div id="roomFishPredictPopup" class="fish-predict-popup"></div>
-            <button id="roomUtilityIconBtn" class="utility-icon-btn" title="便利機能">📋<span id="roomUtilityBadge" class="utility-icon-badge"></span></button>
             <button id="roomMessageBtn" class="message-trigger" aria-label="メッセージ">📨<span id="roomMessageDot" class="message-dot"></span></button>
-            <div class="stamp-buttons">
-              <button class="stamp-btn" data-stamp="❤">❤</button>
-              <button class="stamp-btn" data-stamp="✨">✨</button>
-            </div>
             <div id="roomStampFeed" class="stamp-feed"></div>
           </div>
 
@@ -2735,6 +2742,8 @@
 
           <div class="mode-card-wrap fade-ui" id="modeCardWrap">
             <button id="modeCardToggle" style="display:none;position:absolute;top:-36px;left:0;border:1px solid rgba(123,223,245,0.3);background:rgba(0,0,0,0.45);color:var(--accent);font-size:18px;font-weight:900;cursor:pointer;z-index:3;width:34px;height:28px;border-radius:10px;backdrop-filter:blur(4px);text-align:center;">⇓</button>
+            <button id="roomFishPredictBtn" style="position:absolute;left:-40px;bottom:10px;width:32px;height:32px;border:1px solid rgba(255,255,255,0.2);border-radius:10px;background:rgba(0,0,0,0.4);color:#fff;font-size:16px;cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);z-index:3;" title="近くにいる魚">🐟</button>
+            <div id="roomFishPredictPopup" class="fish-predict-popup" style="left:-220px;bottom:0;right:auto;"></div>
             <div id="roomLoopInfo" class="room-loop-info"></div>
             <div id="modeCardInner" style="position:relative;">
               <button id="modeNavLeft" class="mode-card-nav left" style="display:none;">❮</button>
@@ -2834,14 +2843,7 @@
         </div>
 
         <div class="stamp-rail fade-ui">
-          <button id="fishingFishPredictBtn" class="utility-icon-btn" title="近くにいる魚" style="position:relative;">🐟</button>
-          <div id="fishingFishPredictPopup" class="fish-predict-popup"></div>
-          <button id="fishingUtilityBtn" class="utility-icon-btn" title="便利機能">📋</button>
           <button id="fishingMessageBtn" class="message-trigger" aria-label="メッセージ">📨<span id="fishingMessageDot" class="message-dot"></span></button>
-          <div class="stamp-buttons">
-            <button class="stamp-btn" data-stamp="❤">❤</button>
-            <button class="stamp-btn" data-stamp="✨">✨</button>
-          </div>
           <div id="fishingStampFeed" class="stamp-feed"></div>
         </div>
 
@@ -2926,6 +2928,8 @@
             <div class="result-top-card">
               <div class="result-top-label">合計金額（今日）</div>
               <div id="todayEarnedValue" class="result-top-value">0 zz</div>
+              <div class="result-top-label" style="margin-top:6px;">合計金額（今週）</div>
+              <div id="weekEarnedValue" class="result-top-value" style="font-size:16px;">0 zz</div>
             </div>
             <div class="result-top-card">
               <div class="result-top-label">目標作業時間（今週）</div>
@@ -3402,12 +3406,7 @@
       { id:"item_008_star_sand",kind:"item",name:"星の砂",icon:"⭐",basePrice:150,rarity:9,rarityStars:3,strength:11,timeBonus:{day:-1,evening:2,night:3},weatherBonus:{sunny:0,cloudy:1,rainy:0},description:"夜空から落ちた砂粒。" },
     ];
     const BGM_LIST = [
-     { id:'bgm01', title:'bgm01', url:'bgm01.mp3', credit:'Credit: Sample BGM' },
-      { id:'bgm02', title:'深い夜に浮かぶ', url:'bgm02.mp3', credit:'Credit:@NyalpacaBGM' },
-        { id:'bgm03', title:'人狼の為の子守唄 ', url:'bgm03.mp3', credit:'Credit:しゃろう' },
-       { id:'bgm04', title:'サカナだった頃 ', url:'bgm04.mp3', credit:'Credit:MATSU' },
-        { id:'bgm05', title:'ねこと暖炉でまどろむ', url:'bgm05.mp3', credit:'Credit:@NyalpacaBGM' },
-
+      { id:'bgm01', title:'bgm01', url:'bgm01.mp3', credit:'Credit: Sample BGM' },
     ];
     const SFX_LIST = [
       { id:'sound01', title:'sound01', url:'sound01.mp3', credit:'Credit: Sample SFX' },
@@ -3604,12 +3603,30 @@
       el.partsPanelToggle.addEventListener("click",()=>{state.ui.partsPanelOpen=!state.ui.partsPanelOpen;renderNavParts();saveAll().catch(console.error);});
       el.mailboxNavBtn.addEventListener("click",()=>openOfficialMailbox());
       el.playRoomBtn.addEventListener("click",()=>joinBestRoom().catch(console.error));
+      // Lobby mode selector
+      const LOBBY_MODES=["釣り×ポモドーロタイマー","網漁×集中特化","リアル×息抜き"];
+      let lobbyModeIdx=0;
+      const lmText=document.getElementById("lobbyModeText");
+      const lmLeft=document.getElementById("lobbyModeLeft");
+      const lmRight=document.getElementById("lobbyModeRight");
+      const soloToggle=document.getElementById("soloToggle");
+      const soloKnob=document.getElementById("soloToggleKnob");
+      const soloWrap=document.getElementById("soloToggleWrap");
+      if(!state.soloMode)state.soloMode=false;
+      function updateLobbyMode(){if(lmText)lmText.textContent=LOBBY_MODES[lobbyModeIdx];if(soloWrap)soloWrap.style.display=lobbyModeIdx===0?"flex":"none";}
+      function updateSoloUI(){if(soloToggle)soloToggle.style.background=state.soloMode?"var(--accent)":"rgba(255,255,255,0.15)";if(soloKnob){soloKnob.style.left=state.soloMode?"20px":"2px";soloKnob.style.background=state.soloMode?"#fff":"#999";}}
+      if(lmLeft)lmLeft.addEventListener("click",()=>{lobbyModeIdx=(lobbyModeIdx+LOBBY_MODES.length-1)%LOBBY_MODES.length;updateLobbyMode();});
+      if(lmRight)lmRight.addEventListener("click",()=>{lobbyModeIdx=(lobbyModeIdx+1)%LOBBY_MODES.length;updateLobbyMode();});
+      if(soloToggle)soloToggle.addEventListener("click",()=>{state.soloMode=!state.soloMode;updateSoloUI();saveAll().catch(console.error);});
+      updateLobbyMode();updateSoloUI();
       // Goal inputs
-      [el.lobbyGoalInput,el.roomGoalInput].forEach(inp=>{inp.addEventListener("input",()=>{state.miniGoal=String(inp.value).trim().slice(0,28);syncGoalInputs();});inp.addEventListener("blur",()=>saveAll().catch(console.error));});
-      [el.lobbyGoalVisibility,el.roomGoalVisibility,el.fishingGoalVisibility].forEach(sp=>{sp.addEventListener("click",()=>{state.miniGoalPublic=!state.miniGoalPublic;syncGoalInputs();saveAll().catch(console.error);});});
+      [el.lobbyGoalInput,el.roomGoalInput].forEach(inp=>{if(!inp)return;inp.addEventListener("input",()=>{state.miniGoal=String(inp.value).trim().slice(0,28);syncGoalInputs();});inp.addEventListener("blur",()=>saveAll().catch(console.error));});
+      [el.lobbyGoalVisibility,el.roomGoalVisibility,el.fishingGoalVisibility].forEach(sp=>{if(!sp)return;sp.addEventListener("click",()=>{state.miniGoalPublic=!state.miniGoalPublic;syncGoalInputs();saveAll().catch(console.error);});});
       // Clock date toggle
       [el.lobbyCurrentTime,el.roomCurrentTime,el.fishingCurrentTime].forEach(c=>{c.addEventListener("click",()=>{clockDateExpanded=!clockDateExpanded;updateDateSubs();});});
-      el.roomUtilityIconBtn.addEventListener("click",toggleUtility);
+      if(el.roomUtilityIconBtn)el.roomUtilityIconBtn.addEventListener("click",toggleUtility);
+      const navUtilBtn=document.getElementById("navUtilityBtn");
+      if(navUtilBtn)navUtilBtn.addEventListener("click",e=>{e.stopPropagation();toggleUtility();});
       // Fish prediction buttons
       const rfpBtn=document.getElementById("roomFishPredictBtn"),rfpPop=document.getElementById("roomFishPredictPopup");
       if(rfpBtn)rfpBtn.addEventListener("click",()=>toggleFishPredict(rfpBtn,rfpPop));
@@ -3620,8 +3637,8 @@
       el.leaveRoomBtnLeft.addEventListener("click",()=>leaveRoom(false).catch(console.error));
       el.roomFishingBtn.addEventListener("click",startFishingFromRoom);
       // Mode card navigation
-      el.modeNavLeft.addEventListener("click",()=>{state.ui.modeIndex=Math.max(0,state.ui.modeIndex-1);renderModeCard();saveAll().catch(console.error);});
-      el.modeNavRight.addEventListener("click",()=>{state.ui.modeIndex=Math.min(2,state.ui.modeIndex+1);renderModeCard();saveAll().catch(console.error);});
+      el.modeNavLeft.addEventListener("click",()=>{state.ui.modeIndex=(state.ui.modeIndex+2)%3;renderModeCard();saveAll().catch(console.error);});
+      el.modeNavRight.addEventListener("click",()=>{state.ui.modeIndex=(state.ui.modeIndex+1)%3;renderModeCard();saveAll().catch(console.error);});
       // Mobile mode card hide/show
       const mcToggle=document.getElementById("modeCardToggle"),mcInner=document.getElementById("modeCardInner");
       if(mcToggle&&mcInner){if(isMobile())mcToggle.style.display="block";mcToggle.addEventListener("click",()=>{const hidden=mcInner.style.display==="none";mcInner.style.display=hidden?"":"none";mcToggle.textContent=hidden?"⇓":"⇑";});}
@@ -3832,7 +3849,7 @@
       list.forEach((b)=>{const origIdx=BGM_LIST.indexOf(b);const c=document.createElement("div");c.className=`bgm-list-card ${origIdx===bgmCurrentIndex&&bgmPlaying?'playing':''}`;const isFav=bgmFavList.includes(b.id);c.innerHTML=`<span class="bgm-card-drag">⠿</span><div class="bgm-card-info"><div class="bgm-card-name">${esc(b.title)}</div><div class="bgm-card-credit">${esc(b.credit)}</div></div><button class="bgm-card-fav ${isFav?'liked':''}">${isFav?'♥':'♡'}</button>`;c.querySelector('.bgm-card-info').addEventListener('click',()=>{bgmCurrentIndex=origIdx;if(!bgmAudio){bgmAudio=new Audio();bgmAudio.volume=bgmVolume/100;bgmAudio.addEventListener('ended',()=>nextBgm());bgmAudio.addEventListener('timeupdate',updateAudioUI);}playCurrentBgm();renderBgmList();});c.querySelector('.bgm-card-fav').addEventListener('click',e=>{e.stopPropagation();if(isFav)bgmFavList=bgmFavList.filter(x=>x!==b.id);else bgmFavList.push(b.id);state.bgmFavList=bgmFavList;saveAll().catch(console.error);renderBgmList();});el.bgmListBody.appendChild(c);});}
     function autoPlayBgmOnFishing(){if(!bgmPlaying){if(!bgmAudio){bgmAudio=new Audio(BGM_LIST[bgmCurrentIndex].url);bgmAudio.volume=bgmVolume/100;bgmAudio.muted=bgmMuted;bgmAudio.addEventListener('ended',()=>nextBgm());bgmAudio.addEventListener('timeupdate',updateAudioUI);}playCurrentBgm();}if(!sfxMuted){try{const sfx=new Audio(SFX_LIST[0]?.url||'sound01.mp3');sfx.volume=sfxVolume/100;sfx.play().catch(()=>{});}catch(e){}}}
     function stopBgmOnFishEnd(){if(bgmAudio&&bgmPlaying){bgmAudio.pause();bgmPlaying=false;try{el.audioPlayBtn.innerHTML='<svg viewBox="0 0 24 24" width="16" height="16" fill="#fff" stroke="none"><path d="M8 5v14l11-7z"/></svg>';}catch(e){}}}
-    function syncGoalInputs(){const v=state.miniGoal||"";[el.lobbyGoalInput,el.roomGoalInput,el.fishingGoalInput].forEach(i=>{if(document.activeElement!==i)i.value=v;});const isPub=state.miniGoalPublic;const vis=isPub?"公開中":"非公開";[el.lobbyGoalVisibility,el.roomGoalVisibility,el.fishingGoalVisibility].forEach(s=>{s.textContent=vis;s.style.color=isPub?"var(--gold)":"rgba(255,255,255,0.35)";});}
+    function syncGoalInputs(){const v=state.miniGoal||"";[el.lobbyGoalInput,el.roomGoalInput,el.fishingGoalInput].forEach(i=>{if(!i)return;if(document.activeElement!==i)i.value=v;});const isPub=state.miniGoalPublic;const vis=isPub?"公開中":"非公開";[el.lobbyGoalVisibility,el.roomGoalVisibility,el.fishingGoalVisibility].forEach(s=>{if(!s)return;s.textContent=vis;s.style.color=isPub?"var(--gold)":"rgba(255,255,255,0.35)";});}
     function updateDateSubs(){const now=new Date();const days=['日','月','火','水','木','金','土'];const txt=`${now.getMonth()+1}/${now.getDate()} ${days[now.getDay()]}`;[el.lobbyDateSub,el.roomDateSub,el.fishingDateSub].forEach(s=>{s.textContent=txt;s.classList.toggle('show',clockDateExpanded);});}
 
     function openStoreCategory(cat){storeActiveCategory=cat;el.storeCategoryScreen.style.display='none';['bait','upgrade','items','sell'].forEach(k=>{document.getElementById(`storeSub${k.charAt(0).toUpperCase()+k.slice(1)}`).classList.toggle('active',k===cat);});renderStore();}
@@ -4104,7 +4121,8 @@
         const dayStat=getDayStat(k);const wm=dayStat.workMin||0;
         const orb=document.createElement("div");orb.className="week-cal-orb";
         const isToday=k===todayKey();
-        if(wm>0){orb.classList.add("active");const hrs=wm/60;orb.textContent=hrs>=1?hrs.toFixed(1):(wm+"m");}
+        const totalWm=getTotalWorkMin(dayStat);
+        if(totalWm>0){orb.classList.add("active");orb.textContent=(totalWm/60).toFixed(totalWm<60?2:1)+"h";}
         else{orb.classList.add("empty");orb.textContent="";}
         if(isToday)orb.style.boxShadow="0 0 0 2px var(--green), 0 2px 12px rgba(127,232,156,0.4)";
         cell.appendChild(orb);weekRow.appendChild(cell);dayNum++;
@@ -4124,14 +4142,14 @@
     function fillBaitSelector(){}
     function applySelectors(){el.displayNameInput.value=state.user.displayName||"釣り人";el.settingsDisplayName.textContent=state.user.displayName||"釣り人";el.toggleWave.checked=!!state.settings.waveSound;el.toggleCatch.checked=!!state.settings.catchSound;el.toggleNotify.checked=!!state.settings.browserNotify;el.toggleShake.checked=!!state.settings.shakeOnFinish;el.taskCategorySelect.value=state.selectedTaskCategory||'work';syncGoalInputs();renderModeCard();}
 
-    const MODE_NAMES=["単発","連続","ノルマ"];
+    const MODE_NAMES=["単発作業","連続作業","ノルマ作業"];
     function renderModeCard(){
       // Skip rebuild if user is typing in card inputs (prevents mobile keyboard closing)
       const activeEl=document.activeElement;
       if(activeEl&&el.modeCardBody.contains(activeEl)&&(activeEl.tagName==="TEXTAREA"||activeEl.tagName==="INPUT"||activeEl.tagName==="SELECT"))return;
       const idx=state.ui.modeIndex||0;
-      el.modeNavLeft.style.display=idx>0?"grid":"none";
-      el.modeNavRight.style.display=idx<2?"grid":"none";
+      el.modeNavLeft.style.display="grid";
+      el.modeNavRight.style.display="grid";
       el.modeCardTitle.textContent=MODE_NAMES[idx];
       el.modeCardTitle.style.cursor="pointer";
       el.modeCardTitle.onclick=()=>{
@@ -4155,7 +4173,7 @@
       };
       const body=el.modeCardBody;body.innerHTML="";
       el.modeCard.className="mode-card "+["mode-single","mode-loop","mode-norma"][idx];
-      const mkSel=(opts,val,cls)=>{const s=document.createElement("select");s.className=cls||"";opts.forEach(o=>{const op=document.createElement("option");op.value=typeof o==='object'?o.v:String(o);op.textContent=typeof o==='object'?o.t:`${o}分`;s.appendChild(op);});s.value=String(val);return s;};
+      const mkSel=(opts,val,cls)=>{const s=document.createElement("select");s.className=cls||"";opts.forEach(o=>{const op=document.createElement("option");op.value=typeof o==='object'?o.v:String(o);const label=typeof o==='object'?o.t:`${o}分`;op.textContent=o===10||o==='10'?`${label}(オススメ)`:label;s.appendChild(op);});s.value=String(val);return s;};
       const mkBaitSel=(val)=>{const s=document.createElement("select");BAIT_TYPES.forEach(b=>{const o=document.createElement("option");o.value=b.id;o.textContent=`${b.icon}${b.name} ×${state.baitCounts[b.id]||0}`;s.appendChild(o);});NUMBERED_BAITS.forEach(nb=>{const cnt=state.baitCounts[nb.id]||0;if(cnt>0){const o=document.createElement("option");o.value=nb.id;o.textContent=`${nb.icon}#${nb.num}${nb.name} ×${cnt}`;s.appendChild(o);}});s.value=val;return s;};
       const mkField=(label,child)=>{const d=document.createElement("div");d.className="mc-field";const l=document.createElement("div");l.className="mc-label";l.textContent=label;d.appendChild(l);d.appendChild(child);return d;};
 
@@ -4221,7 +4239,9 @@
         body.appendChild(dotsWrap);
         // Preset buttons
         const prow=document.createElement("div");prow.className="norma-preset-row";
-        const listBtn=document.createElement("button");listBtn.className="norma-preset-btn";listBtn.textContent="一覧";
+        const baitSel=mkBaitSel(state.selectedBaitId);baitSel.style.cssText="flex:1;height:28px;font-size:10px;";baitSel.addEventListener("change",()=>{state.selectedBaitId=baitSel.value;saveAll().catch(console.error);});
+        prow.appendChild(baitSel);
+        const listBtn=document.createElement("button");listBtn.className="norma-preset-btn";listBtn.textContent="作業プリセット";
         listBtn.addEventListener("click",openWorkPresetList);
         const saveBtn=document.createElement("button");saveBtn.className="norma-preset-btn";saveBtn.textContent="＋保存";
         saveBtn.addEventListener("click",saveWorkPreset);
@@ -4563,10 +4583,16 @@
     function renderGiftCards(){el.giftItemList.innerHTML="";GIFT_ITEMS.forEach(g=>{const o=state.giftCounts[g.id]||0;const c=document.createElement("div");c.className="item-card";c.innerHTML=`<div class="item-art-frame">${g.icon}</div><div class="item-name">${g.name}<span class="owned-mini">×${o}</span></div><div class="item-desc">${g.comment}</div><div class="item-bottom"><div class="item-price">${g.price} zz</div><button class="buy-btn">買う</button></div>`;c.querySelector(".buy-btn").addEventListener("click",()=>buyGift(g));el.giftItemList.appendChild(c);});}
     function renderUpgradeCards(){el.upgradeList.innerHTML="";UPGRADE_PARTS.forEach(p=>{const lv=state.upgrades[p.id]||0,cost=getUpgradeCost(p.id,lv);const c=document.createElement("div");c.className="upgrade-card";c.innerHTML=`<div class="upgrade-title-line"><div class="upgrade-name">${p.name}</div><div class="upgrade-price">${cost}</div></div><div class="upgrade-desc">${p.desc}</div><div class="upgrade-level">Lv.${lv}</div><button class="upgrade-btn">強化</button>`;const btn=c.querySelector(".upgrade-btn");btn.disabled=state.money<cost;btn.addEventListener("click",()=>buyUpgrade(p.id));el.upgradeList.appendChild(c);});}
     function renderSellCards(){el.shopSellList.innerHTML="";if(!state.inventory.length){el.shopSellList.innerHTML=`<div class="line-item"><div class="meta"><div class="name">売れるものがありません</div></div></div>`;return;}state.inventory.forEach(e=>{const sp=e.kind==="item"?Math.max(1,Math.floor(e.sellPrice*SELL_RATE_ITEM)):e.sellPrice;const n=document.createElement("div");n.className="line-item";n.innerHTML=`<div class="thumb">${e.icon}</div><div class="meta"><div class="name">${e.name}</div><div class="desc">${e.kind==="fish"?`${fmtSize(e.sizeCm)}cm`:"漂流物"}</div></div><div class="price">${sp} zz</div><div class="actions"></div>`;const btn=document.createElement("button");btn.className="btn soft";btn.textContent="売る";btn.addEventListener("click",()=>sellInv(e.uid,sp));n.querySelector(".actions").appendChild(btn);el.shopSellList.appendChild(n);});}
-    function renderResults(){const week=getWeekStats();const twMin=week.days.reduce((s,d)=>s+d.stat.workMin,0);const trMin=week.days.reduce((s,d)=>s+d.stat.restMin,0);const today=getDayStat(todayKey());
-      el.todayWorkNum.textContent=String(today.workMin||0);
+    function getTotalWorkMin(stat){return(stat.workMin||0)+Object.values(stat.customMin||{}).reduce((s,v)=>s+(v||0),0);}
+    function renderResults(){const week=getWeekStats();const twMin=week.days.reduce((s,d)=>s+getTotalWorkMin(d.stat),0);const trMin=week.days.reduce((s,d)=>s+d.stat.restMin,0);const today=getDayStat(todayKey());
+      const todayTotal=getTotalWorkMin(today);
+      el.todayWorkNum.textContent=String(todayTotal);
       el.todayRestNum.textContent=String(today.restMin||0);
-      // Weekly goal
+      // Update hour display
+      const twEl=el.todayWorkNum.parentElement?.querySelector('.summary-text-unit');
+      if(twEl)twEl.textContent=`分（${(todayTotal/60).toFixed(1)}時間）`;
+      const trEl=el.todayRestNum.parentElement?.querySelector('.summary-text-unit');
+      if(trEl)trEl.textContent=`分（${((today.restMin||0)/60).toFixed(1)}時間）`;
       const goalTarget=state.weeklyGoal.targetMin||0;const goalCurrent=twMin;
       if(goalTarget>0){const pct=Math.min(Math.round(goalCurrent/goalTarget*100),999);el.goalPercent.textContent=`${pct}%`;el.goalPercent.style.color=pct>=100?'var(--green)':'var(--accent)';const offset=GOAL_CIRCLE_C*(1-Math.min(1,goalCurrent/goalTarget));el.goalProgress.style.strokeDasharray=String(GOAL_CIRCLE_C);el.goalProgress.style.strokeDashoffset=String(offset);}else{el.goalPercent.textContent="0%";el.goalProgress.style.strokeDasharray=String(GOAL_CIRCLE_C);el.goalProgress.style.strokeDashoffset=String(GOAL_CIRCLE_C);}
       const ghi=document.getElementById("goalHourInput"),gmi=document.getElementById("goalMinInput");
@@ -4590,7 +4616,9 @@
         const label=document.createElement("div");label.className="day-label-item";label.innerHTML=`<div class="day-label-main"><span class="today-dot ${isToday?"active":""}"></span><span>${day.dateLabel}</span><span>${day.label}</span></div>`;li.appendChild(label);});
       // Best fish
       const best=[...(today.catches||[])].sort((a,b)=>(b.sizeCm-b.avgSize)-(a.sizeCm-a.avgSize))[0];el.todayBestFish.textContent=best?`${best.icon} ${best.name}`:"まだなし";el.todayBestFishSub.textContent=best?`${fmtSize(best.avgSize)}cm平均 → ${fmtSize(best.sizeCm)}cm / ${best.price}zz`:"";
-      el.todayEarnedValue.textContent=`${today.earnings||0} zz`;}
+      el.todayEarnedValue.textContent=`${today.earnings||0} zz`;
+      const weekEarn=week.days.reduce((s,d)=>s+(d.stat.earnings||0),0);
+      const wev=document.getElementById("weekEarnedValue");if(wev)wev.textContent=`${weekEarn} zz`;}
     function getWeekStats(){const n=new Date();const d=n.getDay();const diff=d===0?-6:1-d;const mon=new Date(n);mon.setHours(0,0,0,0);mon.setDate(n.getDate()+diff);const labels=["月","火","水","木","金","土","日"];const days=[];for(let i=0;i<7;i++){const x=new Date(mon);x.setDate(mon.getDate()+i);const k=`${x.getFullYear()}-${x.getMonth()+1}-${x.getDate()}`;days.push({key:k,stat:getDayStat(k),label:labels[i],dateLabel:`${x.getMonth()+1}/${x.getDate()}`});}return{days};}
     function renderEncyclopedia(){
       // Fix: count displayed fish that have been caught
@@ -4661,7 +4689,7 @@
     function handleFishingActivity(){if(!state.fishing.inProgress||!el.screens.fishing.classList.contains("active")||state.ui.focusMode)return;state.ui.fishingUiVisible=true;el.app.classList.remove("fishing-ui-faded");clearFishingUiTimeout();fishingUiTimeout=setTimeout(()=>{if(state.fishing.inProgress&&el.screens.fishing.classList.contains("active")&&!state.ui.focusMode){state.ui.fishingUiVisible=false;el.app.classList.add("fishing-ui-faded");}},FISHING_UI_IDLE_MS);}
     function clearFishingUiTimeout(){if(fishingUiTimeout)clearTimeout(fishingUiTimeout);fishingUiTimeout=null;}
     let roomRestFadeTimer=null;
-    function handleRoomRestActivity(){el.app.classList.remove("room-rest-faded");if(roomRestFadeTimer)clearTimeout(roomRestFadeTimer);if(!el.screens.room.classList.contains("active"))return;roomRestFadeTimer=setTimeout(()=>{if(el.screens.room.classList.contains("active"))el.app.classList.add("room-rest-faded");},10000);}
+    function handleRoomRestActivity(){if(roomRestFadeTimer)clearTimeout(roomRestFadeTimer);if(state.ui.navCollapsed){state.ui.navCollapsed=false;applyNavState();}el.app.classList.remove("room-rest-faded");if(!el.screens.room.classList.contains("active"))return;roomRestFadeTimer=setTimeout(()=>{if(el.screens.room.classList.contains("active")){state.ui.navCollapsed=true;applyNavState();el.app.classList.add("room-rest-faded");}},10000);}
     function maybeNotify(){if(state.settings.browserNotify&&typeof Notification!=="undefined"&&Notification.permission==="granted")new Notification("釣りが終わりました",{body:"回収しましょう。"});}
     function playAudio(file,type){if(sfxMuted&&type==='stamp')return;const a=new Audio(file);a.volume=sfxVolume/100;a.play().catch(()=>{});}
     function toast(msg,dur=3800){const n=document.createElement("div");n.className="toast";n.textContent=msg;n.style.animationDuration=`${dur/1000}s`;el.toastWrap.appendChild(n);setTimeout(()=>n.remove(),dur+300);}
