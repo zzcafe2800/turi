@@ -3,7 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>作業連動型 釣りサブサイト</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#0a1628" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22%E9%87%A3%E3%82%8A%E4%BD%9C%E6%A5%AD%22%2C%22short_name%22%3A%22%E9%87%A3%E3%82%8A%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230a1628%22%2C%22theme_color%22%3A%22%230a1628%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%2520viewBox%3D'0%25200%252064%252064'%253E%253Ctext%2520y%3D'50'%2520font-size%3D'48'%253E%25F0%259F%258E%25A3%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22any%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230a1628' rx='12'/%3E%3Ctext y='50' x='8' font-size='48'%3E%F0%9F%8E%A3%3C/text%3E%3C/svg%3E" />
+  <title>釣り作業</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='50' font-size='48'%3E%F0%9F%8E%A3%3C/text%3E%3C/svg%3E" />
   <style>
     :root {
@@ -2486,6 +2492,8 @@
     .message-trigger { border: 0 !important; border-radius: 0 !important; background: transparent !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; box-shadow: none !important; font-size: 24px !important; width: auto !important; height: auto !important; }
     .audio-bgm-title { text-align: center !important; color: rgba(255,255,255,0.92) !important; font-weight: 800 !important; font-size: 14px !important; }
     .content-shell::before { content: ""; position: sticky; top: 0; left: 0; display: block; width: 100%; height: 0; background: rgba(0,0,0,0.5); pointer-events: none; border-radius: 28px; z-index: 0; box-shadow: 0 0 0 9999px rgba(0,0,0,0.5); }
+    #screen-utility .content-shell::before { display: none; }
+    #screen-utility .content-shell { background: #fff !important; border-radius: 28px; }
     .content-shell > * { position: relative; z-index: 1; }
     .bait-card, .item-card, .upgrade-card, .fish-card, .settings-box, .line-item, .store-cat-card, .result-top-card, .week-card, .rod-image-card { background: rgba(0,0,0,0.45) !important; box-shadow: 0 8px 28px rgba(0,0,0,0.45) !important; }
     .results-top-3 { gap: 8px !important; }
@@ -2778,6 +2786,7 @@
           </svg>
           <div class="timer-core">
             <button id="timerMegaBtn" style="position:absolute;top:6px;right:6px;width:28px;height:28px;border:1px solid rgba(255,255,255,0.2);border-radius:8px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);font-size:14px;cursor:pointer;display:grid;place-items:center;z-index:2;backdrop-filter:blur(4px);" title="拡大/縮小">▶</button>
+            <button id="pipBtn" style="position:absolute;top:6px;left:6px;width:28px;height:28px;border:1px solid rgba(255,255,255,0.2);border-radius:8px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);font-size:11px;cursor:pointer;display:grid;place-items:center;z-index:2;backdrop-filter:blur(4px);" title="PiP" aria-label="ピクチャーインピクチャー"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><rect x="11" y="9" width="9" height="7" rx="1" fill="currentColor" opacity="0.3"/></svg></button>
             <div id="timerText" class="timer-main-time">--:--</div>
             <div id="timerPlanMini" class="timer-mini-plan">25min</div>
             <div id="timerStatus" class="timer-status"></div>
@@ -2785,7 +2794,6 @@
               <button id="toggleFishingBtn" class="timer-btn" aria-label="停止または再開"><svg id="toggleFishingIcon" viewBox="0 0 24 24"></svg></button>
               <button id="cancelFishingBtn" class="timer-btn danger" aria-label="報酬なし終了"><svg viewBox="0 0 24 24"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg></button>
               <button id="focusModeBtn" class="timer-btn" aria-label="フォーカスモード"><svg viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
-              <button id="pipBtn" class="timer-btn" aria-label="ピクチャーインピクチャー" title="PiP"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><rect x="11" y="9" width="9" height="7" rx="1" fill="currentColor" opacity="0.3"/></svg></button>
             </div>
           </div>
         </div>
@@ -2820,12 +2828,8 @@
           <button id="timerExtendBtn" class="timer-extend-btn" style="display:none;">+30s</button>
         </div>
 
-        <div class="bottom-right-stack fade-ui" style="position:relative;">
-          <div style="display:flex;gap:6px;align-items:flex-end;margin-bottom:4px;">
-            <button id="fishingMessageBtn" class="message-trigger" style="width:28px;height:28px;border:1px solid rgba(255,255,255,0.2);border-radius:8px;background:rgba(0,0,0,0.4);color:#fff;font-size:12px;cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);" aria-label="メッセージ">📨<span id="fishingMessageDot" class="message-dot"></span></button>
-            <button id="fishingFishPredictBtn" style="width:28px;height:28px;border:1px solid rgba(255,255,255,0.2);border-radius:8px;background:rgba(0,0,0,0.4);color:#fff;font-size:14px;cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);" title="近くにいる魚">🐟</button>
-            <div id="fishingFishPredictPopup" class="fish-predict-popup"></div>
-          </div>
+        <div class="bottom-right-stack fade-ui" style="display:flex;flex-direction:row;align-items:flex-end;gap:6px;">
+          <button id="fishingMessageBtn" class="message-trigger" style="width:28px;height:28px;border:1px solid rgba(255,255,255,0.2);border-radius:8px;background:rgba(0,0,0,0.4);color:#fff;font-size:12px;cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);flex-shrink:0;" aria-label="メッセージ">📨<span id="fishingMessageDot" class="message-dot"></span></button>
           <div id="fishingParticipants"></div>
         </div>
 
@@ -2993,6 +2997,7 @@
               </div>
             </div>
             <div id="weekLabels" class="week-label-row"></div>
+            <div id="customTaskSummary" style="display:flex;flex-wrap:wrap;gap:2px;margin-top:6px;padding:0 4px;"></div>
           </div>
 
           <!-- Custom graph list + form (below graph, above calendar) -->
@@ -3131,7 +3136,7 @@
     <!-- ===== UTILITY SCREEN ===== -->
     <section id="screen-utility" class="screen">
       <div class="screen-shell">
-        <div class="content-shell">
+        <div class="content-shell" style="background:#fff;position:relative;">
       <div class="utility-fs-header">
         <span class="utility-fs-title">便利機能 <span id="utilityClockText" style="font-size:12px;color:rgba(0,0,0,0.3);font-weight:600;margin-left:6px;"></span></span>
       </div>
@@ -3161,7 +3166,7 @@
           <button id="uFormSave" class="btn primary" style="min-height:36px;">保存</button>
         </div>
       </div>
-      <button id="utilityFsAddBtn" class="utility-fs-add">＋</button>
+      <button id="utilityFsAddBtn" style="position:fixed;bottom:24px;right:24px;width:48px;height:48px;border:none;border-radius:50%;background:var(--accent);color:#fff;font-size:24px;font-weight:900;box-shadow:0 4px 16px rgba(123,223,245,0.4);cursor:pointer;display:grid;place-items:center;z-index:20;">＋</button>
         </div>
       </div>
     </section>
@@ -4645,6 +4650,10 @@
         col.title=`作業: ${wt}\n休憩: ${rt}`;
         el.weekBars.appendChild(col);
         const label=document.createElement("div");label.className="day-label-item";label.innerHTML=`<div class="day-label-main"><span class="today-dot ${isToday?"active":""}"></span><span>${day.dateLabel}</span><span>${day.label}</span></div>`;li.appendChild(label);});
+      // Custom task time summary
+      if(cGraphs.length){const sumWrap=document.getElementById("customTaskSummary");if(sumWrap){sumWrap.innerHTML="";const todayStat=getDayStat(todayKey());cGraphs.forEach(g=>{const mins=(todayStat.customMin||{})[g.id]||0;if(mins>0){const d=document.createElement("div");d.style.cssText=`display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:8px;background:${g.color}22;margin:2px;font-size:11px;font-weight:700;`;d.innerHTML=`<span style="width:8px;height:8px;border-radius:50%;background:${g.color};"></span>${esc(g.title)}: ${(mins/60).toFixed(1)}h`;sumWrap.appendChild(d);}});
+        const workM=todayStat.workMin||0;if(workM>0){const d=document.createElement("div");d.style.cssText="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:8px;background:rgba(127,232,156,0.12);margin:2px;font-size:11px;font-weight:700;";d.innerHTML=`<span style="width:8px;height:8px;border-radius:50%;background:var(--green);"></span>作業: ${(workM/60).toFixed(1)}h`;sumWrap.appendChild(d);}
+      }}
       // Best fish
       const best=[...(today.catches||[])].sort((a,b)=>(b.sizeCm-b.avgSize)-(a.sizeCm-a.avgSize))[0];el.todayBestFish.textContent=best?`${best.icon} ${best.name}`:"まだなし";el.todayBestFishSub.textContent=best?`${fmtSize(best.avgSize)}cm平均 → ${fmtSize(best.sizeCm)}cm / ${best.price}zz`:"";
       el.todayEarnedValue.textContent=`${today.earnings||0} zz`;
