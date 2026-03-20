@@ -1864,14 +1864,14 @@
       width: 100%;
       position: relative;
       display: flex;
-      align-items: flex-end;
+      align-items: center;
       justify-content: center;
-      padding-bottom: 6px;
       font-size: 10px;
       font-weight: 700;
-      border-radius: 12px 12px 8px 8px;
+      border-radius: 0;
       overflow: hidden;
       text-align: center;
+      line-height: 1;
     }
     .day-segment.work {
       background: linear-gradient(180deg, #88f6a4, #48d36d);
@@ -1880,12 +1880,12 @@
     .day-segment.rest {
       background: linear-gradient(180deg, rgba(180,180,180,0.5), rgba(140,140,140,0.4));
       color: rgba(255,255,255,0.7);
-      border-radius: 12px 12px 6px 6px;
-      margin-bottom: 3px;
+      border-radius: 0;
+      margin-bottom: 0;
     }
     .day-segment.custom {
-      border-radius: 12px 12px 6px 6px;
-      margin-bottom: 2px;
+      border-radius: 0;
+      margin-bottom: 0;
     }
     .day-seg-note {
       position: absolute;
@@ -2615,7 +2615,7 @@
     .fish-predict-orb { width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); display: grid; place-items: center; font-size: 24px; }
     .fish-predict-name { font-size: 10px; color: rgba(255,255,255,0.6); }
     /* Schedule */
-    .schedule-wrap { display: flex; flex-direction: column; height: 100%; }
+    .schedule-wrap { display: flex; flex-direction: column; height: 100%; min-height: 300px; }
     .schedule-day-bar { display: flex; justify-content: center; gap: 20px; padding: 10px 0 8px; position: sticky; top: 0; z-index: 5; background: rgba(245,250,255,0.97); }
     .schedule-day-btn { border: 0; background: transparent; color: rgba(0,0,0,0.35); font-size: 14px; font-weight: 700; cursor: pointer; padding: 4px 8px; position: relative; }
     .schedule-day-btn.active { color: #333; }
@@ -3147,7 +3147,7 @@
       <div class="utility-fs-tabs">
         <button class="utility-fs-tab active" data-utab="reminder">通知<span id="uBadgeReminder" class="tab-badge"></span></button>
         <span class="util-tab-onoff"><span id="uToggleReminder" class="util-tab-onoff-btn" data-utab="reminder"></span></span>
-        <button class="utility-fs-tab" data-utab="todo">やること<span id="uBadgeTodo" class="tab-badge"></span></button>
+        <button class="utility-fs-tab" data-utab="todo">メモ<span id="uBadgeTodo" class="tab-badge"></span></button>
         <span class="util-tab-onoff"><span id="uToggleTodo" class="util-tab-onoff-btn" data-utab="todo"></span></span>
         <button class="utility-fs-tab" data-utab="record">スケジュール<span id="uBadgeRecord" class="tab-badge"></span></button>
         <span class="util-tab-onoff"><span id="uToggleRecord" class="util-tab-onoff-btn" data-utab="record"></span></span>
@@ -3645,7 +3645,7 @@
       [el.lobbyGoalInput,el.roomGoalInput].forEach(inp=>{if(!inp)return;inp.addEventListener("input",()=>{state.miniGoal=String(inp.value).trim().slice(0,28);syncGoalInputs();});inp.addEventListener("blur",()=>saveAll().catch(console.error));});
       [el.lobbyGoalVisibility,el.roomGoalVisibility,el.fishingGoalVisibility].forEach(sp=>{if(!sp)return;sp.addEventListener("click",()=>{state.miniGoalPublic=!state.miniGoalPublic;syncGoalInputs();saveAll().catch(console.error);});});
       // Clock date toggle
-      [el.lobbyCurrentTime,el.roomCurrentTime,el.fishingCurrentTime].forEach(c=>{c.addEventListener("click",()=>{clockDateExpanded=!clockDateExpanded;updateDateSubs();});});
+      [el.lobbyCurrentTime,el.roomCurrentTime,el.fishingCurrentTime].forEach(c=>{if(c)c.addEventListener("click",()=>{clockDateExpanded=!clockDateExpanded;updateDateSubs();});});
       if(el.roomUtilityIconBtn)el.roomUtilityIconBtn.addEventListener("click",toggleUtility);
       const navUtilBtn=document.getElementById("navUtilityBtn");
       if(navUtilBtn)navUtilBtn.addEventListener("click",e=>{e.stopPropagation();toggleUtility();});
@@ -3758,7 +3758,7 @@
       // Utility
       
       el.utilityFsTabs.forEach(b=>b.addEventListener("click",()=>{state.ui.utilityTab=b.dataset.utab;renderUtility();saveAll().catch(console.error);}));
-      el.utilityFsAddBtn.addEventListener("click",()=>{if(state.ui.utilityTab==="record"){addScheduleItem();}else{toggleUtilityForm(true);}});
+      el.utilityFsAddBtn.addEventListener("click",()=>{if(state.ui.utilityTab==="record"){addScheduleItem();}else if(state.ui.utilityTab==="todo"){addNewMemo();}else{toggleUtilityForm(true);}});
       el.uFormCancel.addEventListener("click",()=>toggleUtilityForm(false));
       // Utility tab on/off toggles
       [el.uToggleReminder,el.uToggleTodo,el.uToggleRecord].forEach(btn=>{if(btn)btn.addEventListener("click",()=>toggleUtilityRoomTab(btn.dataset.utab));});
@@ -3908,7 +3908,7 @@
     function autoPlayBgmOnFishing(){if(!bgmPlaying){if(!bgmAudio){bgmAudio=new Audio(BGM_LIST[bgmCurrentIndex].url);bgmAudio.volume=bgmVolume/100;bgmAudio.muted=bgmMuted;bgmAudio.addEventListener('ended',()=>nextBgm());bgmAudio.addEventListener('timeupdate',updateAudioUI);}playCurrentBgm();}if(!sfxMuted){try{const sfx=new Audio(SFX_LIST[0]?.url||'sound01.mp3');sfx.volume=sfxVolume/100;sfx.play().catch(()=>{});}catch(e){}}}
     function stopBgmOnFishEnd(){if(bgmAudio&&bgmPlaying){bgmAudio.pause();bgmPlaying=false;try{el.audioPlayBtn.innerHTML='<svg viewBox="0 0 24 24" width="16" height="16" fill="#fff" stroke="none"><path d="M8 5v14l11-7z"/></svg>';}catch(e){}}}
     function syncGoalInputs(){const v=state.miniGoal||"";[el.lobbyGoalInput,el.roomGoalInput,el.fishingGoalInput].forEach(i=>{if(!i)return;if(document.activeElement!==i)i.value=v;});const isPub=state.miniGoalPublic;const vis=isPub?"公開中":"非公開";[el.lobbyGoalVisibility,el.roomGoalVisibility,el.fishingGoalVisibility].forEach(s=>{if(!s)return;s.textContent=vis;s.style.color=isPub?"var(--gold)":"rgba(255,255,255,0.35)";});}
-    function updateDateSubs(){const now=new Date();const days=['日','月','火','水','木','金','土'];const txt=`${now.getMonth()+1}/${now.getDate()} ${days[now.getDay()]}`;[el.lobbyDateSub,el.roomDateSub,el.fishingDateSub].forEach(s=>{s.textContent=txt;s.classList.toggle('show',clockDateExpanded);});}
+    function updateDateSubs(){const now=new Date();const days=['日','月','火','水','木','金','土'];const txt=`${now.getMonth()+1}/${now.getDate()} ${days[now.getDay()]}`;[el.lobbyDateSub,el.roomDateSub,el.fishingDateSub].forEach(s=>{if(!s)return;s.textContent=txt;s.classList.toggle('show',clockDateExpanded);});}
 
     function openStoreCategory(cat){storeActiveCategory=cat;el.storeCategoryScreen.style.display='none';['bait','upgrade','items','sell'].forEach(k=>{document.getElementById(`storeSub${k.charAt(0).toUpperCase()+k.slice(1)}`).classList.toggle('active',k===cat);});renderStore();}
     function closeStoreCategory(){storeActiveCategory=null;el.storeCategoryScreen.style.display='flex';document.querySelectorAll('.store-sub-screen').forEach(s=>s.classList.remove('active'));}
@@ -3931,6 +3931,7 @@
     function getReminderCount(){return(state.productivity.reminders||[]).filter(r=>r.on!==false).length;}
     function getRecordCount(){return(state.productivity.records||[]).filter(r=>r.dayKey===todayKey()).length;}
 
+    let memoFilterCat="all";
     function renderUtility(){
       const tab=state.ui.utilityTab;
       el.utilityFsTabs.forEach(b=>{b.classList.toggle("active",b.dataset.utab===tab);});
@@ -3938,19 +3939,89 @@
       el.uBadgeReminder.textContent=String(rc);el.uBadgeReminder.classList.toggle("show",rc>0);
       el.uBadgeTodo.textContent=String(tc);el.uBadgeTodo.classList.toggle("show",tc>0);
       el.uBadgeRecord.textContent=String(rdc);el.uBadgeRecord.classList.toggle("show",rdc>0);
-      // On/off toggles
       [['reminder',el.uToggleReminder],['todo',el.uToggleTodo],['record',el.uToggleRecord]].forEach(([k,btn])=>{if(btn)btn.classList.toggle('on',(state.utilityRoomTabs||[]).includes(k));});
       const box=el.utilityFsBody;box.innerHTML="";
       if(tab==="record"){renderScheduleTab(box);return;}
-      const items=tab==="todo"?(state.productivity.todos||[]).slice(0,10):tab==="reminder"?(state.productivity.reminders||[]).slice(0,10):[];
-      if(!items.length){box.innerHTML+=`<div class="utility-empty-msg">${tab==="todo"?"📝 なし":"🔕 なし"}</div>`;return;}
+      if(tab==="todo"){renderMemoTab(box);return;}
+      // Reminder tab
+      const items=(state.productivity.reminders||[]).slice(0,10);
+      if(!items.length){box.innerHTML+=`<div class="utility-empty-msg">🔕 なし</div>`;return;}
       items.forEach(item=>{const card=document.createElement("div");card.className="utility-item-card";
         const ic=item.icon||"📋",cl=item.color||"";
         if(cl)card.style.borderLeft=`4px solid ${cl}`;
-        if(tab==="todo"){const nt=item.notifyTime||"";card.innerHTML=`<div><div class="utility-item-title">${ic} ${item.completed?"☑":"□"} ${esc(item.title)}</div><div class="utility-item-sub">${item.time||""}${nt?` / 🔔${nt}`:""}</div></div><div style="display:flex;gap:4px;"><button class="utility-mini-btn" title="通知設定">🔔</button><button class="utility-mini-btn">${item.completed?"↺":"✓"}</button><button class="utility-mini-btn">×</button></div>`;const btns=card.querySelectorAll(".utility-mini-btn");btns[0].addEventListener("click",()=>{const t=prompt("通知時間 (HH:MM)",item.notifyTime||"");if(t===null)return;item.notifyTime=t||"";saveAll().catch(console.error);renderUtility();});btns[1].addEventListener("click",()=>{item.completed=!item.completed;saveAll().catch(console.error);renderUtility();});btns[2].addEventListener("click",()=>{state.productivity.todos=state.productivity.todos.filter(t=>t.id!==item.id);saveAll().catch(console.error);renderUtility();});}
-        else if(tab==="reminder"){card.innerHTML=`<div><div class="utility-item-title">${ic} ${esc(item.title)}</div><div class="utility-item-sub">${item.time||"--:--"} / ${item.repeat||"once"}</div></div><div style="display:flex;gap:4px;"><button class="utility-mini-btn">${item.on===false?"○":"●"}</button><button class="utility-mini-btn">×</button></div>`;const btns=card.querySelectorAll(".utility-mini-btn");btns[0].addEventListener("click",()=>{item.on=item.on===false;saveAll().catch(console.error);renderUtility();});btns[1].addEventListener("click",()=>{state.productivity.reminders=state.productivity.reminders.filter(r=>r.id!==item.id);saveAll().catch(console.error);renderUtility();});}
-        else{const nt=item.notifyTime||"";card.innerHTML=`<div><div class="utility-item-title">${ic} ${esc(item.title)}</div><div class="utility-item-sub">${item.time} / ${recLabel(item.type)}${nt?` / 🔔${nt}`:""}</div></div><div style="display:flex;gap:4px;"><button class="utility-mini-btn" title="通知設定">🔔</button><button class="utility-mini-btn">×</button></div>`;const btns=card.querySelectorAll(".utility-mini-btn");btns[0].addEventListener("click",()=>{const t=prompt("通知時間 (HH:MM)",item.notifyTime||"");if(t===null)return;item.notifyTime=t||"";saveAll().catch(console.error);renderUtility();});btns[1].addEventListener("click",()=>{state.productivity.records=state.productivity.records.filter(r=>r.id!==item.id);saveAll().catch(console.error);renderUtility();});}
+        card.innerHTML=`<div><div class="utility-item-title">${ic} ${esc(item.title)}</div><div class="utility-item-sub">${item.time||"--:--"} / ${item.repeat||"once"}</div></div><div style="display:flex;gap:4px;"><button class="utility-mini-btn">${item.on===false?"○":"●"}</button><button class="utility-mini-btn">×</button></div>`;const btns=card.querySelectorAll(".utility-mini-btn");btns[0].addEventListener("click",()=>{item.on=item.on===false;saveAll().catch(console.error);renderUtility();});btns[1].addEventListener("click",()=>{state.productivity.reminders=state.productivity.reminders.filter(r=>r.id!==item.id);saveAll().catch(console.error);renderUtility();});
         box.appendChild(card);});
+    }
+
+    function renderMemoTab(box){
+      if(!state.productivity.memos)state.productivity.memos=[];
+      if(!state.productivity.memoCategories)state.productivity.memoCategories=["全般","アイデア","作業"];
+      const memos=state.productivity.memos;
+      const cats=state.productivity.memoCategories;
+      // Category filter bar
+      const filterBar=document.createElement("div");filterBar.style.cssText="display:flex;gap:4px;padding:6px 0;flex-wrap:wrap;";
+      ["all",...cats].forEach(c=>{
+        const btn=document.createElement("button");btn.style.cssText=`padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid rgba(0,0,0,0.1);background:${memoFilterCat===c?"var(--accent)":"#f0f0f0"};color:${memoFilterCat===c?"#fff":"#555"};`;
+        btn.textContent=c==="all"?"すべて":c;
+        btn.addEventListener("click",()=>{memoFilterCat=c;renderUtility();});
+        filterBar.appendChild(btn);
+      });
+      // Add category button
+      const addCatBtn=document.createElement("button");addCatBtn.style.cssText="padding:3px 8px;border-radius:999px;font-size:11px;border:1px dashed rgba(0,0,0,0.2);background:transparent;color:#999;cursor:pointer;";addCatBtn.textContent="+";
+      addCatBtn.addEventListener("click",()=>{const name=prompt("カテゴリー名");if(!name)return;cats.push(name.trim().slice(0,12));saveAll().catch(console.error);renderUtility();});
+      filterBar.appendChild(addCatBtn);
+      box.appendChild(filterBar);
+      // Filtered memos
+      const filtered=memoFilterCat==="all"?memos:memos.filter(m=>m.category===memoFilterCat);
+      if(!filtered.length){box.innerHTML+=`<div class="utility-empty-msg">📝 メモなし</div>`;return;}
+      const grid=document.createElement("div");grid.style.cssText="display:flex;flex-direction:column;gap:4px;";
+      filtered.forEach(m=>{
+        const card=document.createElement("div");card.style.cssText=`padding:8px 12px;border-radius:10px;background:${m.color||"#f5f5f5"};border:1px solid rgba(0,0,0,0.06);cursor:pointer;display:flex;align-items:center;gap:8px;`;
+        card.innerHTML=`<span style="font-size:14px;">${m.icon||"📝"}</span><span style="flex:1;font-size:12px;font-weight:700;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(m.title||"無題")}</span><span style="font-size:9px;color:rgba(0,0,0,0.3);">${m.category||""}</span>`;
+        card.addEventListener("click",()=>openMemoDetail(m));
+        grid.appendChild(card);
+      });
+      box.appendChild(grid);
+    }
+
+    function addNewMemo(){
+      if(!state.productivity.memos)state.productivity.memos=[];
+      if(!state.productivity.memoCategories)state.productivity.memoCategories=["全般","アイデア","作業"];
+      const newMemo={id:makeId(),title:"",body:"",category:state.productivity.memoCategories[0]||"全般",color:"#f5f5f5",icon:"📝",createdAt:Date.now()};
+      state.productivity.memos.unshift(newMemo);
+      saveAll().catch(console.error);
+      openMemoDetail(newMemo);
+    }
+
+    function openMemoDetail(memo){
+      const overlay=document.createElement("div");overlay.style.cssText="position:fixed;inset:0;z-index:80;display:grid;place-items:center;background:rgba(0,0,0,0.5);";
+      const card=document.createElement("div");card.style.cssText="width:min(500px,92%);max-height:80vh;overflow:auto;padding:20px;border-radius:20px;background:#fff;color:#333;box-shadow:0 12px 40px rgba(0,0,0,0.3);";
+      const cats=state.productivity.memoCategories||["全般"];
+      card.innerHTML=`<div style="font-size:18px;font-weight:800;margin-bottom:12px;">メモ編集</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <input id="memoEditTitle" type="text" value="${esc(memo.title||"")}" placeholder="タイトル" style="height:36px;padding:0 10px;border-radius:10px;border:1px solid rgba(0,0,0,0.1);font-size:14px;"/>
+          <textarea id="memoEditBody" placeholder="メモ内容..." style="min-height:120px;padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.1);font-size:13px;resize:vertical;">${esc(memo.body||"")}</textarea>
+          <div style="display:flex;gap:8px;">
+            <select id="memoEditCat" style="flex:1;height:34px;border-radius:10px;border:1px solid rgba(0,0,0,0.1);">${cats.map(c=>`<option value="${esc(c)}"${c===memo.category?' selected':''}>${esc(c)}</option>`).join("")}</select>
+            <input id="memoEditColor" type="color" value="${memo.color||"#f5f5f5"}" style="width:40px;height:34px;border-radius:10px;border:1px solid rgba(0,0,0,0.1);cursor:pointer;"/>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end;">
+            <button id="memoDelBtn" style="min-height:34px;padding:0 14px;border:1px solid rgba(255,80,80,0.3);border-radius:999px;background:transparent;color:#e55;cursor:pointer;">削除</button>
+            <button id="memoCancelBtn" style="min-height:34px;padding:0 14px;border:1px solid rgba(0,0,0,0.1);border-radius:999px;background:#f5f5f5;cursor:pointer;">閉じる</button>
+            <button id="memoSaveBtn" style="min-height:34px;padding:0 14px;border:none;border-radius:999px;background:var(--accent);color:#fff;font-weight:700;cursor:pointer;">保存</button>
+          </div>
+        </div>`;
+      card.querySelector("#memoSaveBtn").addEventListener("click",()=>{
+        memo.title=card.querySelector("#memoEditTitle").value.trim().slice(0,40);
+        memo.body=card.querySelector("#memoEditBody").value.slice(0,1000);
+        memo.category=card.querySelector("#memoEditCat").value;
+        memo.color=card.querySelector("#memoEditColor").value;
+        overlay.remove();saveAll().catch(console.error);renderUtility();
+      });
+      card.querySelector("#memoCancelBtn").addEventListener("click",()=>overlay.remove());
+      card.querySelector("#memoDelBtn").addEventListener("click",()=>{if(!confirm("このメモを削除しますか？"))return;state.productivity.memos=state.productivity.memos.filter(m=>m.id!==memo.id);overlay.remove();saveAll().catch(console.error);renderUtility();});
+      overlay.appendChild(card);overlay.addEventListener("click",e=>{if(e.target===overlay)overlay.remove();});
+      document.getElementById("app").appendChild(overlay);
     }
 
     let scheduleDay=0; // -1=yesterday, 0=today, 1=tomorrow
@@ -3975,7 +4046,7 @@
       dayBar.style.position="relative";dayBar.appendChild(presetRow);
       wrap.appendChild(dayBar);
       // Timeline
-      const timeline=document.createElement("div");timeline.className="schedule-timeline";timeline.style.height="400px";
+      const timeline=document.createElement("div");timeline.className="schedule-timeline";timeline.style.cssText="height:calc(100% - 60px);overflow-y:auto;-webkit-overflow-scrolling:touch;";
       const hourH=60; // px per hour
       timeline.style.position="relative";timeline.style.minHeight=`${24*hourH+20}px`;
       const nowH=new Date().getHours()+new Date().getMinutes()/60;
@@ -4438,7 +4509,7 @@
       state.normaRun.phase="rest";
       state.normaRun.restEndAt=Date.now()+(r?.restMin||5)*60000;
       state.room.status="idle";syncPresence().catch(console.error);
-      switchScreen("room");startIdleTracking();saveAll().catch(console.error);renderAll();handleRoomRestActivity();
+      switchScreen("room");startIdleTracking();renderLoopRestCenter();saveAll().catch(console.error);renderAll();handleRoomRestActivity();
     }
     function finishNormaRun(cancelled){
       state.normaRun.active=false;state.normaRun.phase=null;state.normaRun.restEndAt=null;
@@ -4451,7 +4522,7 @@
     function startSingleFishing(cm,bid,fromLoop=false){state.selectedCourseMin=cm;state.selectedBaitId=bid;state.baitCounts[bid]=Math.max(0,(state.baitCounts[bid]||0)-1);stopIdleTracking();refreshConditions(true);const n=Date.now();state.fishing={inProgress:true,paused:false,startAt:n,endAt:n+cm*60000,pausedAt:null,remainingMs:null,durationMin:cm,baitId:bid,weather:state.currentConditions.weather,timeOfDay:state.currentConditions.timeOfDay,normaText:state.fishing.normaText||"",taskCategory:state.selectedTaskCategory||"work",extraSec:0};state.room.status="fishing";if(fromLoop){if(state.loopRun.active)state.loopRun.phase="fishing";if(state.normaRun.active)state.normaRun.phase="fishing";}syncPresence().catch(console.error);if(state.settings.catchSound)playAudio("time.mp3","time");tryVibrate([100,50,100]);toast(`${cm}分コースを開始しました。`);saveAll().catch(console.error);switchScreen("fishing");startTimerTick();handleFishingActivity();renderAll();autoPlayBgmOnFishing();}
     function startLoopRun(){const bid=state.loopConfig.baitId||state.selectedBaitId,total=state.loopConfig.count||3,owned=state.baitCounts[bid]||0;if(owned<total){toast(`餌が${total-owned}個足りません。`);return;}state.loopConfig.enabled=true;state.loopRun={active:true,phase:"idle",current:0,total,fishMin:state.loopConfig.fishMin||25,restMin:state.loopConfig.restMin||5,baitId:bid,restEndAt:null,results:[]};startNextLoopFishing();}
     function startNextLoopFishing(){if(!state.loopRun.active)return;if(state.loopRun.current>=state.loopRun.total){finishLoopRun(false);return;}const bid=state.loopRun.baitId;if((state.baitCounts[bid]||0)<=0){finishLoopRun(true);toast("ループ中に餌が足りなくなりました。");return;}state.loopRun.current+=1;state.loopRun.restEndAt=null;startSingleFishing(state.loopRun.fishMin,bid,true);}
-    function startLoopRest(){if(!state.loopRun.active)return;state.loopRun.phase="rest";state.loopRun.restEndAt=Date.now()+state.loopRun.restMin*60000;state.room.status="idle";syncPresence().catch(console.error);switchScreen("room");startIdleTracking();renderLoopInfo();saveAll().catch(console.error);renderAll();handleRoomRestActivity();}
+    function startLoopRest(){if(!state.loopRun.active)return;state.loopRun.phase="rest";state.loopRun.restEndAt=Date.now()+state.loopRun.restMin*60000;state.room.status="idle";syncPresence().catch(console.error);switchScreen("room");startIdleTracking();renderLoopInfo();renderLoopRestCenter();saveAll().catch(console.error);renderAll();handleRoomRestActivity();}
     function finishLoopRun(cancelled){state.loopRun.active=false;state.loopRun.phase=null;state.loopRun.restEndAt=null;state.room.status="idle";syncPresence().catch(console.error);stopIdleTracking();startIdleTracking();renderLoopInfo();if(state.loopRun.results.length>0){state.batchResults=[...state.loopRun.results];openBatchModal();}else if(cancelled)toast("ループを終了しました。");state.loopRun.results=[];saveAll().catch(console.error);switchScreen("room");renderAll();}
     function pauseFishing(){if(!state.fishing.inProgress||state.fishing.paused)return;state.fishing.paused=true;state.fishing.pausedAt=Date.now();state.fishing.remainingMs=Math.max(0,state.fishing.endAt-Date.now());state.room.status="paused";syncPresence().catch(console.error);stopTimerTick();toast("タイマーを一時停止しました。");saveAll().catch(console.error);renderAll();}
     function resumeFishing(){if(!state.fishing.inProgress||!state.fishing.paused)return;state.fishing.paused=false;state.fishing.endAt=Date.now()+(state.fishing.remainingMs||0);state.fishing.pausedAt=null;state.fishing.remainingMs=null;state.room.status="fishing";syncPresence().catch(console.error);toast("タイマーを再開しました。");saveAll().catch(console.error);renderAll();startTimerTick();}
@@ -4490,7 +4561,7 @@
     function startMidnightWatcher(){if(midnightTickHandle)clearInterval(midnightTickHandle);midnightTickHandle=setInterval(async()=>{if(currentRoomData&&currentRoomData.resetDate!==todayKey()){await leaveRoom(true);toast("日付変更で部屋をリセットしました。");}// Reset peer messages daily
       const now=Date.now(),oneDay=86400000;state.mailbox.items=(state.mailbox.items||[]).filter(m=>m.type==="welcome"||m.type==="official"||(now-(m.createdAt||0))<oneDay);},10000);}
     function startClockTick(){if(clockTickHandle)clearInterval(clockTickHandle);updateClock();clockTickHandle=setInterval(()=>{updateClock();checkLoopRest();checkReminders();},1000);}
-    function updateClock(){const n=new Date();const t=`${String(n.getHours()).padStart(2,"0")}:${String(n.getMinutes()).padStart(2,"0")}`;state.currentTimeText=t;[el.lobbyCurrentTime,el.roomCurrentTime,el.fishingCurrentTime].forEach(c=>c.textContent=t);el.fishingTimeMini.textContent=t;updateDateSubs();const pc=getTodoCount()+getReminderCount();el.roomUtilityBadge.textContent=String(pc);el.roomUtilityBadge.classList.toggle("show",pc>0);const uc=document.getElementById("utilityClockText");if(uc)uc.textContent=t;const fc=document.getElementById("focusClock");if(fc)fc.textContent=t;}
+    function updateClock(){const n=new Date();const t=`${String(n.getHours()).padStart(2,"0")}:${String(n.getMinutes()).padStart(2,"0")}`;state.currentTimeText=t;[el.lobbyCurrentTime,el.roomCurrentTime,el.fishingCurrentTime].forEach(c=>{if(c)c.textContent=t;});if(el.fishingTimeMini)el.fishingTimeMini.textContent=t;updateDateSubs();const pc=getTodoCount()+getReminderCount();if(el.roomUtilityBadge){el.roomUtilityBadge.textContent=String(pc);el.roomUtilityBadge.classList.toggle("show",pc>0);}const uc=document.getElementById("utilityClockText");if(uc)uc.textContent=t;const fc=document.getElementById("focusClock");if(fc)fc.textContent=t;}
     function checkLoopRest(){
       if(state.loopRun.active&&state.loopRun.phase==="rest"&&state.loopRun.restEndAt){if(Date.now()>=state.loopRun.restEndAt)startNextLoopFishing();else renderLoopRestCenter();}
       if(state.normaRun.active&&state.normaRun.phase==="rest"&&state.normaRun.restEndAt){if(Date.now()>=state.normaRun.restEndAt)startNextNormaRound();else renderLoopRestCenter();}
@@ -4517,16 +4588,16 @@
     function renderLoopMode(){/* Now handled by renderModeCard */}
     function renderLoopInfo(){if(!state.loopRun.active){el.roomLoopInfo.classList.remove("show");return;}let l=`ループ ${state.loopRun.current}/${state.loopRun.total}`;if(state.loopRun.phase==="rest"&&state.loopRun.restEndAt)l+=` / 休憩 ${fmtRemain(Math.max(0,state.loopRun.restEndAt-Date.now()))}`;else if(state.loopRun.phase==="fishing")l+=" / 釣り中";el.roomLoopInfo.textContent=l;el.roomLoopInfo.classList.add("show");}
 
-    function renderFishingStatus(){refreshConditions();if(state.fishing.inProgress){const total=state.fishing.durationMin*60000+(state.fishing.extraSec||0)*1000;const remain=state.fishing.paused?(state.fishing.remainingMs||0):Math.max(0,state.fishing.endAt-Date.now());const ratio=Math.min(1,Math.max(0,remain/total));el.timerText.textContent=fmtRemain(remain);el.timerPlanMini.textContent=`${state.fishing.durationMin}min`;el.timerStatus.textContent=state.fishing.paused?"停止中":"";el.fishingTimer.classList.add("active");updateTimerIcon(state.fishing.paused,false);setGauge(ratio);el.toggleFishingBtn.disabled=false;el.cancelFishingBtn.disabled=false;el.focusProgressFill.style.width=`${ratio*100}%`;
+    function renderFishingStatus(){refreshConditions();if(state.fishing.inProgress){const total=state.fishing.durationMin*60000+(state.fishing.extraSec||0)*1000;const remain=state.fishing.paused?(state.fishing.remainingMs||0):Math.max(0,state.fishing.endAt-Date.now());const ratio=Math.min(1,Math.max(0,remain/total));if(el.timerText)el.timerText.textContent=fmtRemain(remain);if(el.timerPlanMini)el.timerPlanMini.textContent=`${state.fishing.durationMin}min`;if(el.timerStatus)el.timerStatus.textContent=state.fishing.paused?"停止中":"";if(el.fishingTimer)el.fishingTimer.classList.add("active");updateTimerIcon(state.fishing.paused,false);setGauge(ratio);if(el.toggleFishingBtn)el.toggleFishingBtn.disabled=false;if(el.cancelFishingBtn)el.cancelFishingBtn.disabled=false;if(el.focusProgressFill)el.focusProgressFill.style.width=`${ratio*100}%`;
       // Norma display (only in norma mode)
       const isNormaMode=state.normaRun.active;
       const normaEl=document.getElementById("fishingNormaText");if(normaEl){normaEl.textContent=isNormaMode?(state.fishing.normaText||""):"";normaEl.style.display=isNormaMode?"block":"none";}
       const focusNorma=document.getElementById("focusNormaText");if(focusNorma){focusNorma.textContent=isNormaMode?(state.fishing.normaText||""):"";focusNorma.style.display=isNormaMode?"block":"none";}
       // Extend button (norma mode only)
       const extBtn=document.getElementById("timerExtendBtn");if(extBtn)extBtn.style.display=isNormaMode?"inline-block":"none";
-    }else{el.timerText.textContent="--:--";el.timerPlanMini.textContent=`${state.selectedCourseMin}min`;el.timerStatus.textContent="";el.fishingTimer.classList.remove("active");updateTimerIcon(false,true);setGauge(1);el.toggleFishingBtn.disabled=true;el.cancelFishingBtn.disabled=true;const normaEl=document.getElementById("fishingNormaText");if(normaEl)normaEl.textContent="";}el.focusTime.textContent=el.timerText.textContent;el.focusPlan.textContent=el.timerPlanMini.textContent;el.fishingTimer.classList.toggle("mega",!!state.ui.timerMega);el.fishingTimeMini.style.display=state.fishing.inProgress?"inline-flex":"none";}
-    function updateTimerIcon(paused,noActive){el.toggleFishingIcon.innerHTML=(noActive||paused)?'<path d="M8 6v12l10-6z"/>':'<path d="M8 6v12"/><path d="M16 6v12"/>';}
-    function setGauge(ratio){const o=-TIMER_C*(1-Math.min(1,Math.max(0,ratio)));el.timerProgress.style.strokeDashoffset=String(o);el.timerGlow.style.strokeDashoffset=String(o);}
+    }else{if(el.timerText)el.timerText.textContent="--:--";if(el.timerPlanMini)el.timerPlanMini.textContent=`${state.selectedCourseMin}min`;if(el.timerStatus)el.timerStatus.textContent="";if(el.fishingTimer)el.fishingTimer.classList.remove("active");updateTimerIcon(false,true);setGauge(1);if(el.toggleFishingBtn)el.toggleFishingBtn.disabled=true;if(el.cancelFishingBtn)el.cancelFishingBtn.disabled=true;const normaEl=document.getElementById("fishingNormaText");if(normaEl)normaEl.textContent="";}if(el.focusTime)el.focusTime.textContent=el.timerText?.textContent||"";if(el.focusPlan)el.focusPlan.textContent=el.timerPlanMini?.textContent||"";if(el.fishingTimer)el.fishingTimer.classList.toggle("mega",!!state.ui.timerMega);if(el.fishingTimeMini)el.fishingTimeMini.style.display=state.fishing.inProgress?"inline-flex":"none";}
+    function updateTimerIcon(paused,noActive){if(el.toggleFishingIcon)el.toggleFishingIcon.innerHTML=(noActive||paused)?'<path d="M8 6v12l10-6z"/>':'<path d="M8 6v12"/><path d="M16 6v12"/>';}
+    function setGauge(ratio){const o=-TIMER_C*(1-Math.min(1,Math.max(0,ratio)));if(el.timerProgress)el.timerProgress.style.strokeDashoffset=String(o);if(el.timerGlow)el.timerGlow.style.strokeDashoffset=String(o);}
 
     // Catch rolling (preserved exactly)
     function getCourseBonus(dm){const b={rare:0,size:0,power:0,hugeChance:0,junkReduction:0,label:""};if(dm>=25){b.rare+=3;b.label="集中ボーナス";}if(dm>=40){b.size+=4;b.power+=1;}if(dm>=60){b.size+=6;b.power+=2;b.hugeChance+=0.005;b.label="深海ボーナス";}return b;}
