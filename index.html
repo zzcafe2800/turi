@@ -332,12 +332,12 @@
     }
 
     .fade-ui { transition: opacity 0.35s ease, transform 0.35s ease; }
-    #app.fishing-ui-faded #screen-fishing.active .fade-ui {
+    #app.fishing-ui-faded #screen-fishing.active .fade-ui:not(.top-left-meta) {
       opacity: 0;
       pointer-events: none;
       transform: translateY(8px);
     }
-    #app.room-rest-faded #screen-room.active .fade-ui:not(.mode-card-wrap):not(.top-left-stack) {
+    #app.room-rest-faded #screen-room.active .fade-ui:not(.mode-card-wrap):not(.top-left-stack):not(.loop-rest-center) {
       opacity: 0;
       pointer-events: none;
       transform: translateY(8px);
@@ -390,7 +390,7 @@
     }
     .clock-date-sub.show { display: block; }
     /* Hide clock on fishing screen */
-    #screen-fishing .top-left-meta .current-time-chip { display: none !important; }
+    #screen-fishing .top-left-meta .current-time-chip { font-size: 12px !important; opacity: 0.5; }
     #screen-fishing .top-left-meta .clock-date-sub { display: none !important; }
 
     /* ===== Top positions ===== */
@@ -919,7 +919,7 @@
       max-width: 500px;
       height: 12px;
       border-radius: 999px;
-      background: rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.25);
       overflow: hidden;
       margin-top: 12px;
     }
@@ -937,9 +937,10 @@
       display: none;
       align-items: center;
       justify-content: center;
-      background: rgba(0,0,0,0.94);
+      background: #000;
     }
     .focus-overlay.show { display: flex; }
+    .focus-clock { position: absolute; top: 12px; right: 16px; font-size: 13px; color: rgba(255,255,255,0.35); font-weight: 600; }
     .focus-wrap {
       display: flex;
       flex-direction: column;
@@ -2487,7 +2488,7 @@
     }
 
     /* === v2 UI OVERRIDES === */
-    #screen-fishing .top-left-meta { display: none !important; }
+    #screen-fishing .top-left-meta { opacity: 0.5; }
     .clock-date-sub { font-size: clamp(16px, 1.8vw, 26px) !important; width: 100% !important; padding: 6px 0 0 0 !important; border-top: 2px dashed rgba(255,255,255,0.25) !important; }
     .message-trigger { border: 0 !important; border-radius: 0 !important; background: transparent !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; box-shadow: none !important; font-size: 24px !important; width: auto !important; height: auto !important; }
     .audio-bgm-title { text-align: center !important; color: rgba(255,255,255,0.92) !important; font-weight: 800 !important; font-size: 14px !important; }
@@ -2855,6 +2856,7 @@
         <div id="fishingStampFeed" class="stamp-feed" style="display:none;"></div>
 
         <div id="focusOverlay" class="focus-overlay">
+          <div id="focusClock" class="focus-clock"></div>
           <div class="focus-wrap">
             <div id="focusTime" class="focus-time">00:00</div>
             <div id="focusPlan" class="focus-plan">25min</div>
@@ -3044,6 +3046,8 @@
               <h3>音と通知</h3>
               <div class="row"><span>波音</span><input id="toggleWave" class="toggle" type="checkbox" /></div>
               <div class="row"><span>バイブ</span><input id="toggleVibrate" class="toggle" type="checkbox" /></div>
+              <div class="row"><span>PiP画面切替</span><input id="togglePipMinimize" class="toggle" type="checkbox" /></div>
+              <div class="row"><span>節電モード</span><input id="togglePowerSave" class="toggle" type="checkbox" /></div>
               <div class="row"><span>開始・終了音</span><input id="toggleCatch" class="toggle" type="checkbox" /></div>
               <div class="row"><span>ブラウザ通知</span><input id="toggleNotify" class="toggle" type="checkbox" /></div>
               <div class="row"><span>終了時に軽く揺らす</span><input id="toggleShake" class="toggle" type="checkbox" /></div>
@@ -3294,7 +3298,14 @@
       {id:"nb_39",num:39,name:"創世の餌",icon:"✨",price:30000,power:13,rareBonus:13,sizeBonus:11,valueBonus:0.15,desc:"世界が生まれた時の力。"},
       {id:"nb_40",num:40,name:"全知の餌",icon:"👑",price:100000,power:15,rareBonus:15,sizeBonus:12,valueBonus:0.2,desc:"すべてを引き寄せる究極の餌。"},
     ];
-    function getRotatingBaits(){const now=Date.now();const slot=Math.floor(now/1800000);const seed=slot*7919;const shuffled=[...NUMBERED_BAITS].sort((a,b)=>((a.num*seed)%997)-((b.num*seed)%997));return shuffled.slice(0,3);}
+    function getRotatingBaits(){const now=Date.now();const slot=Math.floor(now/1800000);const seed=slot*7919;const money=state.money||0;
+      // 1 slot: cheapest bait you can't quite afford
+      const cantAfford=NUMBERED_BAITS.filter(b=>b.price>money).sort((a,b)=>a.price-b.price);
+      const guaranteed=cantAfford[0]||NUMBERED_BAITS[NUMBERED_BAITS.length-1];
+      // 2 random slots
+      const rest=NUMBERED_BAITS.filter(b=>b.id!==guaranteed.id).sort((a,b)=>((a.num*seed)%997)-((b.num*seed)%997));
+      return [guaranteed,...rest.slice(0,2)];
+    }
     function getBaitByNum(num){return NUMBERED_BAITS.find(b=>b.num===num)||null;}
     const UPGRADE_PARTS = [
       { id:"rod",name:"竿",icon:"🎣",baseCost:90,desc:"珍しい魚の候補に触れやすくなる。" },
@@ -3456,7 +3467,7 @@
       history:{daily:{}},
       mailbox:{items:[],activeIndex:0,seededWelcome:false},
       productivity:{todos:[],reminders:[],schedules:[]},
-      settings:{waveSound:false,catchSound:true,browserNotify:false,shakeOnFinish:true,vibrate:true},
+      settings:{waveSound:false,catchSound:true,browserNotify:false,shakeOnFinish:true,vibrate:true,pipMinimize:false,powerSave:false},
       fishing:{inProgress:false,paused:false,startAt:null,endAt:null,pausedAt:null,remainingMs:null,durationMin:25,baitId:"bait_trial",weather:null,timeOfDay:null,normaText:"",taskCategory:"work",extraSec:0},
       loopConfig:{enabled:false,fishMin:25,restMin:5,count:3,baitId:"bait_basic"},
       loopRun:{active:false,phase:null,current:0,total:0,fishMin:25,restMin:5,baitId:"bait_basic",restEndAt:null,results:[]},
@@ -3673,11 +3684,17 @@
           const ctx=pipCanvas.getContext("2d");
           function drawPip(){
             ctx.fillStyle="#0a1628";ctx.fillRect(0,0,320,180);
+            const timerVal=el.timerText.textContent||"--:--";
+            const isFinished=!state.fishing.inProgress||timerVal==="--:--";
             ctx.fillStyle="#7bdff5";ctx.font="bold 48px sans-serif";ctx.textAlign="center";
-            ctx.fillText(el.timerText.textContent||"--:--",160,100);
-            ctx.fillStyle="rgba(255,255,255,0.4)";ctx.font="16px sans-serif";
-            ctx.fillText(`${state.fishing.durationMin||0}min`,160,130);
-            if(state.fishing.normaText&&state.normaRun.active){ctx.fillStyle="#7bdff5";ctx.font="14px sans-serif";ctx.fillText(state.fishing.normaText,160,155);}
+            ctx.fillText(isFinished?"終了":timerVal,160,100);
+            if(!isFinished){ctx.fillStyle="rgba(255,255,255,0.4)";ctx.font="16px sans-serif";ctx.fillText(`${state.fishing.durationMin||0}min`,160,130);}
+            if(state.fishing.normaText&&state.normaRun.active&&!isFinished){ctx.fillStyle="#7bdff5";ctx.font="14px sans-serif";ctx.fillText(state.fishing.normaText,160,155);}
+            // Auto exit PiP when finished
+            if(isFinished&&pipVideo&&document.pictureInPictureElement){
+              try{document.exitPictureInPicture().catch(()=>{});}catch(e){}
+              if(pipInterval){clearInterval(pipInterval);pipInterval=null;}
+            }
           }
           drawPip();
           if(!pipStream)pipStream=pipCanvas.captureStream(2);
@@ -3686,6 +3703,8 @@
           if(pipInterval)clearInterval(pipInterval);
           pipInterval=setInterval(drawPip,500);
           pipVideo.addEventListener("leavepictureinpicture",()=>{if(pipInterval){clearInterval(pipInterval);pipInterval=null;}},{once:true});
+          // Minimize browser if setting enabled
+          if(state.settings.pipMinimize){try{window.blur();}catch(e){}}
           toast("PiPモードを開始しました");
         }catch(e){console.warn("PiP failed:",e);toast("PiPに対応していません");}
       });
@@ -3712,6 +3731,9 @@
       el.toggleNotify.addEventListener("change",async()=>{if(el.toggleNotify.checked&&typeof Notification!=="undefined"&&Notification.permission==="default")try{await Notification.requestPermission();}catch{}updateSetting("browserNotify",el.toggleNotify.checked&&typeof Notification!=="undefined"&&Notification.permission==="granted");});
       el.toggleShake.addEventListener("change",()=>updateSetting("shakeOnFinish",el.toggleShake.checked));
       const toggleVib=document.getElementById("toggleVibrate");if(toggleVib){toggleVib.checked=!!state.settings.vibrate;toggleVib.addEventListener("change",()=>updateSetting("vibrate",toggleVib.checked));}
+      const togglePipMin=document.getElementById("togglePipMinimize");if(togglePipMin){togglePipMin.checked=!!state.settings.pipMinimize;togglePipMin.addEventListener("change",()=>updateSetting("pipMinimize",togglePipMin.checked));}
+      const togglePower=document.getElementById("togglePowerSave");if(togglePower){togglePower.checked=!!state.settings.powerSave;togglePower.addEventListener("change",()=>{updateSetting("powerSave",togglePower.checked);applyPowerSave();});}
+      function applyPowerSave(){if(state.settings.powerSave){document.querySelectorAll(".bg-video").forEach(v=>{v.pause();v.style.display="none";});document.querySelectorAll(".bg-shade").forEach(s=>s.style.background="rgba(0,0,0,0.3)");}else{document.querySelectorAll(".bg-video").forEach(v=>{v.style.display="";v.play().catch(()=>{});});document.querySelectorAll(".bg-shade").forEach(s=>s.style.background="");}}
       el.forceSaveBtn.addEventListener("click",async()=>{await saveAll(true);toast("保存しました。");});
       el.exportBtn.addEventListener("click",exportSave);
       el.importBtn.addEventListener("click",()=>el.importFile.click());
@@ -4468,7 +4490,7 @@
     function startMidnightWatcher(){if(midnightTickHandle)clearInterval(midnightTickHandle);midnightTickHandle=setInterval(async()=>{if(currentRoomData&&currentRoomData.resetDate!==todayKey()){await leaveRoom(true);toast("日付変更で部屋をリセットしました。");}// Reset peer messages daily
       const now=Date.now(),oneDay=86400000;state.mailbox.items=(state.mailbox.items||[]).filter(m=>m.type==="welcome"||m.type==="official"||(now-(m.createdAt||0))<oneDay);},10000);}
     function startClockTick(){if(clockTickHandle)clearInterval(clockTickHandle);updateClock();clockTickHandle=setInterval(()=>{updateClock();checkLoopRest();checkReminders();},1000);}
-    function updateClock(){const n=new Date();const t=`${String(n.getHours()).padStart(2,"0")}:${String(n.getMinutes()).padStart(2,"0")}`;state.currentTimeText=t;[el.lobbyCurrentTime,el.roomCurrentTime,el.fishingCurrentTime].forEach(c=>c.textContent=t);el.fishingTimeMini.textContent=t;updateDateSubs();const pc=getTodoCount()+getReminderCount();el.roomUtilityBadge.textContent=String(pc);el.roomUtilityBadge.classList.toggle("show",pc>0);const uc=document.getElementById("utilityClockText");if(uc)uc.textContent=t;}
+    function updateClock(){const n=new Date();const t=`${String(n.getHours()).padStart(2,"0")}:${String(n.getMinutes()).padStart(2,"0")}`;state.currentTimeText=t;[el.lobbyCurrentTime,el.roomCurrentTime,el.fishingCurrentTime].forEach(c=>c.textContent=t);el.fishingTimeMini.textContent=t;updateDateSubs();const pc=getTodoCount()+getReminderCount();el.roomUtilityBadge.textContent=String(pc);el.roomUtilityBadge.classList.toggle("show",pc>0);const uc=document.getElementById("utilityClockText");if(uc)uc.textContent=t;const fc=document.getElementById("focusClock");if(fc)fc.textContent=t;}
     function checkLoopRest(){
       if(state.loopRun.active&&state.loopRun.phase==="rest"&&state.loopRun.restEndAt){if(Date.now()>=state.loopRun.restEndAt)startNextLoopFishing();else renderLoopRestCenter();}
       if(state.normaRun.active&&state.normaRun.phase==="rest"&&state.normaRun.restEndAt){if(Date.now()>=state.normaRun.restEndAt)startNextNormaRound();else renderLoopRestCenter();}
@@ -4487,10 +4509,9 @@
       el.loopRestSub.textContent="休憩中";
     }
     function tryVibrate(pattern){if(state.settings.vibrate&&isMobile()&&navigator.vibrate)try{navigator.vibrate(pattern);}catch(e){}}
-    function checkReminders(){const hm=currentHm(),today=todayKey();(state.productivity.reminders||[]).forEach(r=>{if(r.on===false||!r.time||r.time!==hm||r.lastFiredDay===today)return;r.lastFiredDay=today;try{const a=new Audio('alarm.mp3');a.volume=sfxVolume/100;a.play().catch(()=>{});}catch(e){}toast(`🔔 ${r.title||"通知"}の時間です`,7500);if(typeof Notification!=="undefined"&&Notification.permission==="granted")new Notification(`${r.title||"通知"}の時間です`);saveAll().catch(console.error);});
-      // Check todo/record notifications too
-      (state.productivity.todos||[]).forEach(t=>{if(!t.notifyTime||t.completed||t.notifyTime!==hm||t.notifyFiredDay===today)return;t.notifyFiredDay=today;try{const a=new Audio('alarm.mp3');a.volume=sfxVolume/100;a.play().catch(()=>{});}catch(e){}toast(`📝 ${t.title||"やること"}の時間です`,7500);saveAll().catch(console.error);});
-      (state.productivity.records||[]).forEach(r=>{if(!r.notifyTime||r.notifyTime!==hm||r.notifyFiredDay===today)return;r.notifyFiredDay=today;try{const a=new Audio('alarm.mp3');a.volume=sfxVolume/100;a.play().catch(()=>{});}catch(e){}toast(`📋 ${r.title||"記録"}の時間です`,7500);saveAll().catch(console.error);});
+    function checkReminders(){const hm=currentHm(),today=todayKey();(state.productivity.reminders||[]).forEach(r=>{if(r.on===false||!r.time||r.time!==hm||r.lastFiredDay===today)return;r.lastFiredDay=today;try{const a=new Audio('alarm.mp3');a.volume=sfxVolume/100;a.play().catch(()=>{});}catch(e){}persistentNotify(`🔔 ${r.title||"通知"}の時間です`,`rem_${r.id}_${today}`);if(typeof Notification!=="undefined"&&Notification.permission==="granted")new Notification(`${r.title||"通知"}の時間です`);saveAll().catch(console.error);});
+      (state.productivity.todos||[]).forEach(t=>{if(!t.notifyTime||t.completed||t.notifyTime!==hm||t.notifyFiredDay===today)return;t.notifyFiredDay=today;try{const a=new Audio('alarm.mp3');a.volume=sfxVolume/100;a.play().catch(()=>{});}catch(e){}persistentNotify(`📝 ${t.title||"やること"}の時間です`,`todo_${t.id}_${today}`);saveAll().catch(console.error);});
+      (state.productivity.records||[]).forEach(r=>{if(!r.notifyTime||r.notifyTime!==hm||r.notifyFiredDay===today)return;r.notifyFiredDay=today;try{const a=new Audio('alarm.mp3');a.volume=sfxVolume/100;a.play().catch(()=>{});}catch(e){}persistentNotify(`📋 ${r.title||"記録"}の時間です`,`rec_${r.id}_${today}`);saveAll().catch(console.error);});
     }
 
     function renderLoopMode(){/* Now handled by renderModeCard */}
@@ -4611,7 +4632,7 @@
       divider.textContent=`🎯 特選餌（${remMin}分で入替）`;el.baitBuyList.appendChild(divider);
       const rotating=getRotatingBaits();
       rotating.forEach(nb=>{const o=state.baitCounts[nb.id]||0;const c=document.createElement("div");c.className="bait-card";c.style.borderLeft=`3px solid var(--accent)`;
-        c.innerHTML=`<div class="bait-art-frame">${nb.icon}</div><div class="bait-name">#${nb.num} ${nb.name}<span class="owned-mini">×${o}</span></div><div class="bait-desc">${nb.desc}</div><div class="bait-bottom"><div class="bait-price" style="color:var(--gold);">${nb.price>=1000?`${(nb.price/1000).toFixed(1)}k`:nb.price} zz</div><button class="buy-btn">買う</button></div>`;
+        c.innerHTML=`<div class="bait-art-frame">${nb.icon}</div><div class="bait-name">#${nb.num} ${nb.name}<span class="owned-mini">×${o}</span></div><div class="bait-desc">${nb.desc}</div><div class="bait-bottom"><div class="bait-price" style="color:var(--gold);">${nb.price} zz</div><button class="buy-btn">買う</button></div>`;
         const btn=c.querySelector(".buy-btn");btn.disabled=state.money<nb.price;
         btn.addEventListener("click",()=>{if(state.money<nb.price){toast("お金が足りません");return;}state.money-=nb.price;state.baitCounts[nb.id]=(state.baitCounts[nb.id]||0)+1;toast(`${nb.name}を購入しました`);saveAll().catch(console.error);renderAll();});
         el.baitBuyList.appendChild(c);});
@@ -4643,10 +4664,9 @@
         // Build custom segments with tooltip bubbles for short bars
         const cm=day.stat.customMin||{};
         let customHtml="";let bubbleOffset=0;
-        cGraphs.forEach(g=>{const mins=cm[g.id]||0;if(mins>0){const cp=Math.max(0,Math.min(100,mins/1440*100));const cIn=cp>=10;customHtml+=`<div class="day-segment custom" style="height:${cp}%;background:${g.color};color:#fff;position:relative;">${cIn?minToHr(mins):""}${!cIn?`<div class="day-seg-note" style="background:${g.color};color:#fff;top:${bubbleOffset}px;">${minToHr(mins)}</div>`:""}</div>`;if(!cIn)bubbleOffset+=18;}});
-        const workBubble=(!wIn&&wm>0)?`<div class="day-seg-note work-note" style="top:${bubbleOffset}px;">${wt}</div>`:"";
-        const restBubble=(!rIn&&rm>0)?`<div class="day-seg-note rest-note" style="top:${bubbleOffset+((!wIn&&wm>0)?18:0)}px;">${rt}</div>`:"";
-        col.innerHTML=`<div class="day-bar-wrap"><div class="day-stack">${rm>0?`<div class="day-segment rest" style="height:${rp}%;position:relative;">${rIn?rt:""}${restBubble}</div>`:""}${customHtml}${wm>0?`<div class="day-segment work" style="height:${wp}%;position:relative;">${wIn?wt:""}${workBubble}</div>`:""}</div></div>`;
+        cGraphs.forEach(g=>{const mins=cm[g.id]||0;if(mins>0){const cp=Math.max(0,Math.min(100,mins/1440*100));const fs=cp<6?'7px':cp<12?'8px':'10px';customHtml+=`<div class="day-segment custom" style="height:${cp}%;background:${g.color};color:#000;position:relative;font-size:${fs};font-weight:800;overflow:visible;">${minToHr(mins)}</div>`;}});
+        const wFs=wp<6?'7px':wp<12?'8px':'10px';const rFs=rp<6?'7px':rp<12?'8px':'10px';
+        col.innerHTML=`<div class="day-bar-wrap"><div class="day-stack">${rm>0?`<div class="day-segment rest" style="height:${rp}%;position:relative;font-size:${rFs};color:#000;font-weight:800;">${rt}</div>`:""}${customHtml}${wm>0?`<div class="day-segment work" style="height:${wp}%;position:relative;font-size:${wFs};color:#000;font-weight:800;">${wt}</div>`:""}</div></div>`;
         col.title=`作業: ${wt}\n休憩: ${rt}`;
         el.weekBars.appendChild(col);
         const label=document.createElement("div");label.className="day-label-item";label.innerHTML=`<div class="day-label-main"><span class="today-dot ${isToday?"active":""}"></span><span>${day.dateLabel}</span><span>${day.label}</span></div>`;li.appendChild(label);});
@@ -4733,6 +4753,15 @@
     function maybeNotify(){if(state.settings.browserNotify&&typeof Notification!=="undefined"&&Notification.permission==="granted")new Notification("釣りが終わりました",{body:"回収しましょう。"});}
     function playAudio(file,type){if(sfxMuted&&type==='stamp')return;const a=new Audio(file);a.volume=sfxVolume/100;a.play().catch(()=>{});}
     function toast(msg,dur=3800){const n=document.createElement("div");n.className="toast";n.textContent=msg;n.style.animationDuration=`${dur/1000}s`;el.toastWrap.appendChild(n);setTimeout(()=>n.remove(),dur+300);}
+    function persistentNotify(msg,id){
+      if(!id)id=makeId();const key="zz_notif_"+id;if(localStorage.getItem(key)==="done")return;
+      const existing=el.toastWrap.querySelector(`[data-nid="${id}"]`);if(existing)return;
+      const n=document.createElement("div");n.className="toast";n.dataset.nid=id;
+      n.style.cssText="animation:none;opacity:1;display:flex;align-items:center;gap:8px;padding:8px 14px;position:relative;";
+      n.innerHTML=`<span style="flex:1;">${esc(msg)}</span><button style="border:0;background:var(--green);color:#fff;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:14px;cursor:pointer;flex-shrink:0;">✓</button>`;
+      n.querySelector("button").addEventListener("click",()=>{localStorage.setItem(key,"done");n.remove();});
+      el.toastWrap.appendChild(n);
+    }
 
     // Helpers
     function deepMerge(base,patch){if(patch==null||typeof patch!=="object")return base;Object.keys(patch).forEach(k=>{const pv=patch[k];if(Array.isArray(pv))base[k]=pv;else if(pv&&typeof pv==="object"){if(!base[k]||typeof base[k]!=="object"||Array.isArray(base[k]))base[k]={};base[k]=deepMerge(base[k],pv);}else base[k]=pv;});return base;}
