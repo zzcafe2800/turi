@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -1808,7 +1807,7 @@
     .daily-chart { display:grid;grid-template-columns:40px 1fr;gap:6px;height:220px;padding:0 4px; }
     .daily-y-axis { display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;font-size:10px;color:var(--muted); }
     .daily-bars-area { display:flex;gap:12px;justify-content:center;height:100%;align-items:flex-end;position:relative; }
-    .daily-bar-col { position:relative;height:100%;width:25%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center; }
+    .daily-bar-col { position:relative;height:100%;flex:1;max-width:40%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center; }
     .daily-bar { width:100%;border-radius:0;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:visible;position:relative; }
     .daily-brace-left { position:absolute;left:-54px;top:50%;transform:translateY(-50%);display:flex;align-items:center;z-index:2;pointer-events:none; }
     .daily-brace-right { position:absolute;right:-54px;top:50%;transform:translateY(-50%);display:flex;align-items:center;z-index:2;pointer-events:none; }
@@ -2572,14 +2571,14 @@
 
     /* === Mode Card UI === */
     .mode-card-wrap { position: absolute; right: 0; bottom: 0; z-index: 8; width: min(320px, 48vw); display: flex; flex-direction: column; align-items: stretch; gap: 4px; }
-    .mode-card { background: rgba(255,255,255,0.95); border-radius: 20px; padding: 10px 12px; color: #222; position: relative; aspect-ratio: 1/1; display: flex; flex-direction: column; box-shadow: 0 8px 30px rgba(0,0,0,0.25); overflow: visible; }
+    .mode-card { background: rgba(255,255,255,0.95); border-radius: 20px; padding: 10px 12px; color: #222; position: relative; aspect-ratio: 1/1; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 8px 30px rgba(0,0,0,0.25); overflow: visible; }
     .mc-outside { display: flex; flex-direction: column; gap: 3px; }
     .mc-bottom-row { display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 4px; }
     .mc-bottom-row select { height: 28px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.4); color: #fff; font-size: 9px; font-weight: 700; outline: none; padding: 0 4px; backdrop-filter: blur(4px); }
     .mc-bottom-row .mc-fish-btn { height: 28px; }
-    .mode-card-title { font-size: 13px; font-weight: 900; text-align: center; color: #333; display: flex; align-items: center; justify-content: center; gap: 4px; }
+    .mode-card-title { font-size: 22px; font-weight: 900; text-align: center; color: #333; display: flex; align-items: center; justify-content: center; gap: 4px; }
     .mode-card-title .mc-need { font-size: 8px; color: #e88; font-weight: 600; }
-    .mode-card-nav { position: absolute; top: 8px; border: 0; border-radius: 0; background: transparent; color: var(--accent); font-size: 18px; font-weight: 900; display: grid; place-items: center; cursor: pointer; z-index: 2; width: 22px; height: 22px; }
+    .mode-card-nav { position: absolute; top: 8px; border: 0; border-radius: 0; background: transparent; color: var(--accent); font-size: 24px; font-weight: 900; display: grid; place-items: center; cursor: pointer; z-index: 2; width: 30px; height: 30px; }
     .mode-card-nav.left { left: 6px; }
     .mode-card-nav.right { right: 6px; }
     .mode-card-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
@@ -2591,7 +2590,7 @@
     .mc-time-row .mc-sep { font-size: clamp(14px,2.5vw,18px); color: #bbb; }
     .mc-time-row .mc-unit { font-size: 9px; color: #999; font-weight: 700; }
     .mc-time-row .mc-bracket { font-size: clamp(14px,2.5vw,18px); color: #bbb; }
-    .mc-bottom-row { display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 4px; margin-top: auto; }
+    .mc-bottom-row { display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 4px; margin-top: auto; padding-top: 4px; }
     .mc-bottom-row select { height: 30px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.08); background: #e8edf2; color: #1a2a3a; font-size: 10px; font-weight: 700; outline: none; padding: 0 4px; }
     .mc-fish-btn { height: 30px; border: 0; border-radius: 999px; background: linear-gradient(135deg, #b8f8f1, #78e9d3); color: #0d2131; font-weight: 800; font-size: 13px; box-shadow: 0 4px 16px rgba(0,0,0,0.15); cursor: pointer; }
     .mc-fish-btn:disabled { opacity: 0.4; cursor: default; }
@@ -2773,8 +2772,8 @@
 
           <div class="mode-card-wrap fade-ui" id="modeCardWrap">
             <button id="modeCardToggle" style="display:none;position:absolute;top:-36px;left:0;border:1px solid rgba(123,223,245,0.3);background:rgba(0,0,0,0.45);color:var(--accent);font-size:18px;font-weight:900;cursor:pointer;z-index:3;width:34px;height:28px;border-radius:10px;backdrop-filter:blur(4px);text-align:center;">⇓</button>
-            <button id="roomMessageBtn" class="message-trigger" style="position:absolute;left:-78px;bottom:50px;width:32px;height:32px;border:1px solid rgba(255,255,255,0.2);border-radius:10px;background:rgba(0,0,0,0.4);color:#fff;font-size:14px;cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);z-index:3;" aria-label="メッセージ">📨<span id="roomMessageDot" class="message-dot"></span></button>
-            <button id="roomFishPredictBtn" style="position:absolute;left:-40px;bottom:50px;width:32px;height:32px;border:1px solid rgba(255,255,255,0.2);border-radius:10px;background:rgba(0,0,0,0.4);color:#fff;font-size:16px;cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);z-index:3;" title="近くにいる魚">🐟</button>
+            <button id="roomMessageBtn" class="message-trigger" style="position:absolute;left:-78px;bottom:4px;width:32px;height:32px;border:1px solid rgba(255,255,255,0.2);border-radius:10px;background:rgba(0,0,0,0.4);color:#fff;font-size:14px;cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);z-index:3;" aria-label="メッセージ">📨<span id="roomMessageDot" class="message-dot"></span></button>
+            <button id="roomFishPredictBtn" style="position:absolute;left:-40px;bottom:4px;width:32px;height:32px;border:1px solid rgba(255,255,255,0.2);border-radius:10px;background:rgba(0,0,0,0.4);color:#fff;font-size:16px;cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);z-index:3;" title="近くにいる魚">🐟</button>
             <div id="roomFishPredictPopup" class="fish-predict-popup" style="left:-220px;bottom:0;right:auto;"></div>
             <div id="roomLoopInfo" class="room-loop-info"></div>
             <div id="modeCardInner" style="position:relative;">
@@ -3008,10 +3007,7 @@
           </div>
 
           <div class="week-card" style="position:relative;">
-            <div style="display:flex;gap:6px;margin-bottom:8px;">
-              <button id="graphTabDaily" class="graph-tab active" onclick="setGraphTab('daily')">日間</button>
-              <button id="graphTabWeekly" class="graph-tab" onclick="setGraphTab('weekly')">週間</button>
-              <div style="flex:1;"></div>
+            <div style="display:flex;gap:6px;margin-bottom:8px;justify-content:flex-end;">
               <span style="font-size:11px;color:var(--muted);">カスタム</span>
               <button id="addCustomGraphBtn" style="width:24px;height:24px;border:1px solid rgba(255,255,255,0.14);border-radius:50%;background:transparent;color:var(--accent);font-size:14px;cursor:pointer;display:grid;place-items:center;">+</button>
             </div>
@@ -3021,30 +3017,17 @@
                 <div class="daily-y-axis" id="dailyYAxis"></div>
                 <div class="daily-bars-area">
                   <div class="daily-bar-col">
-                    <div class="daily-brace-left" id="dailyBraceLeft"></div>
                     <div class="daily-bar" id="dailyBarYesterday"></div>
                   </div>
                   <div class="daily-bar-col">
                     <div class="daily-bar" id="dailyBarToday"></div>
-                    <div class="daily-brace-right" id="dailyBraceRight"></div>
                   </div>
                 </div>
               </div>
-              <div style="display:flex;justify-content:space-around;font-size:11px;color:rgba(255,255,255,0.5);margin-top:4px;">
-                <span id="dailyLabelYesterday">昨日</span>
-                <span id="dailyLabelToday">今日</span>
+              <div style="display:flex;justify-content:space-around;text-align:center;margin-top:6px;">
+                <div><div id="dailyLabelYesterday" style="font-size:11px;color:rgba(255,255,255,0.5);">昨日</div><div id="dailyTotalYesterday" style="font-size:13px;color:var(--accent);font-weight:800;"></div></div>
+                <div><div id="dailyLabelToday" style="font-size:11px;color:rgba(255,255,255,0.5);">今日</div><div id="dailyTotalToday" style="font-size:13px;color:var(--green);font-weight:800;"></div></div>
               </div>
-            </div>
-            <!-- Weekly graph -->
-            <div id="weeklyGraphWrap" style="display:none;">
-              <div class="week-chart">
-                <div class="y-axis"><span>24h</span><span>18h</span><span>12h</span><span>6h</span><span>0h</span></div>
-                <div class="chart-area">
-                  <div class="chart-grid-lines"></div>
-                  <div id="weekBars" class="chart-bars"></div>
-                </div>
-              </div>
-              <div id="weekLabels" class="week-label-row"></div>
             </div>
             <div id="customTaskSummary" style="display:flex;flex-wrap:wrap;gap:2px;margin-top:6px;padding:0 4px;"></div>
           </div>
@@ -3516,7 +3499,7 @@
       productivity:{todos:[],reminders:[],schedules:[]},
       settings:{waveSound:false,catchSound:true,browserNotify:false,shakeOnFinish:true,vibrate:true,pipMinimize:false,powerSave:false},
       fishing:{inProgress:false,paused:false,startAt:null,endAt:null,pausedAt:null,remainingMs:null,durationMin:25,baitId:"bait_trial",weather:null,timeOfDay:null,normaText:"",taskCategory:"work",extraSec:0},
-      loopConfig:{enabled:false,fishMin:25,restMin:5,count:3,baitId:"bait_basic"},
+      loopConfig:{enabled:false,fishMin:25,restMin:5,count:2,baitId:"bait_basic"},
       loopRun:{active:false,phase:null,current:0,total:0,fishMin:25,restMin:5,baitId:"bait_basic",restEndAt:null,results:[]},
       normaConfig:{rounds:[],currentEdit:0,baitId:"bait_basic"},
       normaRun:{active:false,current:0,total:0,restEndAt:null,results:[]},
@@ -4027,23 +4010,25 @@
       const cats=state.productivity.memoCategories;
       const filterBar=document.createElement("div");filterBar.style.cssText="display:flex;gap:4px;padding:6px 0;flex-wrap:wrap;";
       ["all",...cats].forEach(c=>{
-        const btn=document.createElement("button");btn.style.cssText=`padding:4px 12px;border-radius:999px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid rgba(0,0,0,0.1);background:${memoFilterCat===c?"var(--accent)":"#f0f0f0"};color:${memoFilterCat===c?"#fff":"#555"};`;
+        const btn=document.createElement("button");btn.style.cssText="padding:4px 12px;border-radius:999px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid rgba(0,0,0,0.1);background:"+(memoFilterCat===c?"var(--accent)":"#f0f0f0")+";color:"+(memoFilterCat===c?"#fff":"#555")+";";
         btn.textContent=c==="all"?"すべて":c;
-        btn.addEventListener("click",e=>{e.stopPropagation();memoFilterCat=c;box.innerHTML="";renderMemoTab(box);});
+        btn.addEventListener("click",function(e){e.stopPropagation();e.preventDefault();memoFilterCat=c;box.innerHTML="";renderMemoTab(box);});
         filterBar.appendChild(btn);
       });
       const addCatBtn=document.createElement("button");addCatBtn.style.cssText="padding:4px 10px;border-radius:999px;font-size:11px;border:1px dashed rgba(0,0,0,0.2);background:transparent;color:#999;cursor:pointer;";addCatBtn.textContent="+カテゴリ";
-      addCatBtn.addEventListener("click",e=>{e.stopPropagation();const name=prompt("カテゴリー名");if(!name)return;cats.push(name.trim().slice(0,12));saveAll().catch(console.error);box.innerHTML="";renderMemoTab(box);});
+      addCatBtn.addEventListener("click",function(e){e.stopPropagation();e.preventDefault();const name=prompt("カテゴリー名");if(!name)return;cats.push(name.trim().slice(0,12));saveAll().catch(console.error);box.innerHTML="";renderMemoTab(box);});
       filterBar.appendChild(addCatBtn);
       box.appendChild(filterBar);
-      // Filtered memos
       const filtered=memoFilterCat==="all"?memos:memos.filter(m=>m.category===memoFilterCat);
-      if(!filtered.length){box.innerHTML+=`<div class="utility-empty-msg">📝 メモなし</div>`;return;}
+      if(!filtered.length){const empty=document.createElement("div");empty.className="utility-empty-msg";empty.textContent="📝 メモなし";box.appendChild(empty);return;}
       const grid=document.createElement("div");grid.style.cssText="display:flex;flex-direction:column;gap:4px;";
       filtered.forEach(m=>{
-        const card=document.createElement("div");card.style.cssText=`padding:8px 12px;border-radius:10px;background:${m.color||"#f5f5f5"};border:1px solid rgba(0,0,0,0.06);cursor:pointer;display:flex;align-items:center;gap:8px;`;
-        card.innerHTML=`<span style="font-size:14px;">${m.icon||"📝"}</span><span style="flex:1;font-size:12px;font-weight:700;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(m.title||"無題")}</span><span style="font-size:9px;color:rgba(0,0,0,0.3);">${m.category||""}</span>`;
-        card.addEventListener("click",()=>openMemoDetail(m));
+        const card=document.createElement("div");card.style.cssText="padding:8px 12px;border-radius:10px;background:"+(m.color||"#f5f5f5")+";border:1px solid rgba(0,0,0,0.06);cursor:pointer;display:flex;align-items:center;gap:8px;";
+        const ic=document.createElement("span");ic.style.fontSize="14px";ic.textContent=m.icon||"📝";
+        const ti=document.createElement("span");ti.style.cssText="flex:1;font-size:12px;font-weight:700;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;";ti.textContent=m.title||"無題";
+        const ca=document.createElement("span");ca.style.cssText="font-size:9px;color:rgba(0,0,0,0.3);";ca.textContent=m.category||"";
+        card.append(ic,ti,ca);
+        card.addEventListener("click",function(){openMemoDetail(m);});
         grid.appendChild(card);
       });
       box.appendChild(grid);
@@ -4111,7 +4096,7 @@
       dayBar.style.position="relative";dayBar.appendChild(presetRow);
       wrap.appendChild(dayBar);
       // Timeline
-      const timelineWrap=document.createElement("div");timelineWrap.style.cssText="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;position:relative;";
+      const timelineWrap=document.createElement("div");timelineWrap.style.cssText="height:350px;max-height:60vh;overflow-y:auto;-webkit-overflow-scrolling:touch;position:relative;border:1px solid rgba(0,0,0,0.05);border-radius:12px;";
       const timeline=document.createElement("div");timeline.className="schedule-timeline";timeline.style.cssText="position:relative;padding-left:52px;";
       const hourH=60;
       timeline.style.minHeight=`${24*hourH+20}px`;
@@ -4292,12 +4277,7 @@
       if(!showing){renderFishPredictPopup(popup);popup.classList.add("show");}
     }
 
-    function setGraphTab(tab){
-      const dw=document.getElementById("dailyGraphWrap"),ww=document.getElementById("weeklyGraphWrap");
-      const dt=document.getElementById("graphTabDaily"),wt=document.getElementById("graphTabWeekly");
-      if(tab==="daily"){if(dw)dw.style.display="";if(ww)ww.style.display="none";if(dt)dt.classList.add("active");if(wt)wt.classList.remove("active");renderDailyGraph();}
-      else{if(dw)dw.style.display="none";if(ww)ww.style.display="";if(dt)dt.classList.remove("active");if(wt)wt.classList.add("active");}
-    }
+    function setGraphTab(tab){/* tabs removed - always show daily */}
     window.setGraphTab=setGraphTab;
     function fmtHM(min){const h=Math.floor(min/60),m=Math.round(min%60);return h>0?`${h}時間${m>0?m+"分":""}`:m+"分";}
     function renderDailyGraph(){
@@ -4312,15 +4292,13 @@
         const bar=document.getElementById(elId);if(!bar)return;bar.innerHTML="";bar.style.height="0";
         const total=getTotalWorkMin(stat);if(total<=0)return;
         const h=Math.max(8,total/maxMin*chartH);bar.style.height=h+"px";
-        const wm=stat.workMin||0;if(wm>0){const seg=document.createElement("div");const wp=wm/total*100;seg.style.cssText="height:"+wp+"%;background:linear-gradient(180deg,#88f6a4,#48d36d);display:flex;align-items:center;justify-content:center;font-size:clamp(12px,2.5vw,18px);font-weight:800;color:#000;";seg.textContent=(wm/60).toFixed(1)+"h";bar.appendChild(seg);}
-        cGraphs.forEach(function(g){const cm=(stat.customMin||{})[g.id]||0;if(cm>0){const seg=document.createElement("div");const cp=cm/total*100;seg.style.cssText="height:"+cp+"%;background:"+g.color+";display:flex;align-items:center;justify-content:center;font-size:clamp(11px,2vw,16px);font-weight:800;color:#000;";seg.textContent=(cm/60).toFixed(1)+"h";bar.appendChild(seg);}});
+        const wm=stat.workMin||0;if(wm>0){const seg=document.createElement("div");const wp=wm/total*100;seg.style.cssText="height:"+wp+"%;background:linear-gradient(180deg,#88f6a4,#48d36d);display:flex;align-items:center;justify-content:center;font-size:clamp(13px,3vw,20px);font-weight:800;color:#000;";seg.textContent=(wm/60).toFixed(1)+"h";bar.appendChild(seg);}
+        cGraphs.forEach(function(g){const cm=(stat.customMin||{})[g.id]||0;if(cm>0){const seg=document.createElement("div");const cp=cm/total*100;seg.style.cssText="height:"+cp+"%;background:"+g.color+";display:flex;align-items:center;justify-content:center;font-size:clamp(12px,2.5vw,18px);font-weight:800;color:#000;";seg.textContent=(cm/60).toFixed(1)+"h";bar.appendChild(seg);}});
       }
       buildBar(yestSt,"dailyBarYesterday");buildBar(todaySt,"dailyBarToday");
-      // Total labels (horizontal, beside bars)
-      const bl=document.getElementById("dailyBraceLeft");
-      if(bl)bl.innerHTML='<span class="daily-total-label">'+fmtHM(yestW)+'</span>';
-      const br=document.getElementById("dailyBraceRight");
-      if(br)br.innerHTML='<span class="daily-total-label">'+fmtHM(todayW)+'</span>';
+      // Total labels below day labels
+      const ty=document.getElementById("dailyTotalYesterday");if(ty)ty.textContent=fmtHM(yestW);
+      const tt=document.getElementById("dailyTotalToday");if(tt)tt.textContent=fmtHM(todayW);
       const now=new Date(),yd=new Date(now);yd.setDate(yd.getDate()-1);
       const ly=document.getElementById("dailyLabelYesterday");if(ly)ly.textContent="昨日("+(yd.getMonth()+1)+"/"+yd.getDate()+")";
       const lt=document.getElementById("dailyLabelToday");if(lt)lt.textContent="今日("+(now.getMonth()+1)+"/"+now.getDate()+")";
@@ -4400,7 +4378,7 @@
         row.innerHTML+='<span style="font-size:0.28em;color:#999">分</span><span style="font-size:0.4em;color:#bbb;margin:0 1px">/</span>';
         row.appendChild(mkNum(state.loopConfig.restMin||5,v=>{state.loopConfig.restMin=v;},60));
         row.innerHTML+='<span style="font-size:0.28em;color:#999">分</span><span style="font-size:0.35em;color:#bbb">【</span>';
-        row.appendChild(mkNum(state.loopConfig.count||3,v=>{state.loopConfig.count=v;},20));
+        row.appendChild(mkNum(state.loopConfig.count||2,v=>{state.loopConfig.count=v;},20));
         row.innerHTML+='<span style="font-size:0.22em;color:#999">セット</span><span style="font-size:0.35em;color:#bbb">】</span>';
         center.appendChild(row);
       } else {
@@ -4574,7 +4552,7 @@
       state.normaRun.results=[];saveAll().catch(console.error);switchScreen("room");renderAll();
     }
     function startSingleFishing(cm,bid,fromLoop=false){state.selectedCourseMin=cm;state.selectedBaitId=bid;state.baitCounts[bid]=Math.max(0,(state.baitCounts[bid]||0)-1);stopIdleTracking();refreshConditions(true);const n=Date.now();state.fishing={inProgress:true,paused:false,startAt:n,endAt:n+cm*60000,pausedAt:null,remainingMs:null,durationMin:cm,baitId:bid,weather:state.currentConditions.weather,timeOfDay:state.currentConditions.timeOfDay,normaText:state.fishing.normaText||"",taskCategory:state.selectedTaskCategory||"work",extraSec:0};state.room.status="fishing";if(fromLoop){if(state.loopRun.active)state.loopRun.phase="fishing";if(state.normaRun.active)state.normaRun.phase="fishing";}syncPresence().catch(console.error);if(state.settings.catchSound)playAudio("time.mp3","time");tryVibrate([100,50,100]);toast(`${cm}分コースを開始しました。`);saveAll().catch(console.error);switchScreen("fishing");startTimerTick();handleFishingActivity();renderAll();autoPlayBgmOnFishing();}
-    function startLoopRun(){const bid=state.loopConfig.baitId||state.selectedBaitId,total=state.loopConfig.count||3,owned=state.baitCounts[bid]||0;if(owned<total){toast(`餌が${total-owned}個足りません。`);return;}state.loopConfig.enabled=true;state.loopRun={active:true,phase:"idle",current:0,total,fishMin:state.loopConfig.fishMin||25,restMin:state.loopConfig.restMin||5,baitId:bid,restEndAt:null,results:[]};startNextLoopFishing();}
+    function startLoopRun(){const bid=state.loopConfig.baitId||state.selectedBaitId,total=state.loopConfig.count||2,owned=state.baitCounts[bid]||0;if(owned<total){toast(`餌が${total-owned}個足りません。`);return;}state.loopConfig.enabled=true;state.loopRun={active:true,phase:"idle",current:0,total,fishMin:state.loopConfig.fishMin||25,restMin:state.loopConfig.restMin||5,baitId:bid,restEndAt:null,results:[]};startNextLoopFishing();}
     function startNextLoopFishing(){if(!state.loopRun.active)return;if(state.loopRun.current>=state.loopRun.total){finishLoopRun(false);return;}const bid=state.loopRun.baitId;if((state.baitCounts[bid]||0)<=0){finishLoopRun(true);toast("ループ中に餌が足りなくなりました。");return;}state.loopRun.current+=1;state.loopRun.restEndAt=null;startSingleFishing(state.loopRun.fishMin,bid,true);}
     function startLoopRest(){if(!state.loopRun.active)return;state.loopRun.phase="rest";state.loopRun.restEndAt=Date.now()+state.loopRun.restMin*60000;state.room.status="idle";syncPresence().catch(console.error);switchScreen("room");startIdleTracking();renderLoopInfo();renderLoopRestCenter();saveAll().catch(console.error);renderAll();handleRoomRestActivity();}
     function finishLoopRun(cancelled){state.loopRun.active=false;state.loopRun.phase=null;state.loopRun.restEndAt=null;state.room.status="idle";syncPresence().catch(console.error);stopIdleTracking();startIdleTracking();renderLoopInfo();if(state.loopRun.results.length>0){state.batchResults=[...state.loopRun.results];openBatchModal();}else if(cancelled)toast("ループを終了しました。");state.loopRun.results=[];saveAll().catch(console.error);switchScreen("room");renderAll();}
@@ -4822,7 +4800,7 @@
       renderDailyGraph();}
     function getWeekStats(){const n=new Date();const d=n.getDay();const diff=d===0?-6:1-d;const mon=new Date(n);mon.setHours(0,0,0,0);mon.setDate(n.getDate()+diff);const labels=["月","火","水","木","金","土","日"];const days=[];for(let i=0;i<7;i++){const x=new Date(mon);x.setDate(mon.getDate()+i);const k=`${x.getFullYear()}-${x.getMonth()+1}-${x.getDate()}`;days.push({key:k,stat:getDayStat(k),label:labels[i],dateLabel:`${x.getMonth()+1}/${x.getDate()}`});}return{days};}
     function getStarStyle(stars){
-      if(stars>=3)return{bg:"linear-gradient(135deg,#c8a600,#ffd700,#c8a600)",text:"#fff",star:"#fff"};
+      if(stars>=3)return{bg:"linear-gradient(135deg,#c8a600,#ffd700,#c8a600)",text:"#fff",star:"#ffe033"};
       if(stars>=2)return{bg:"linear-gradient(135deg,#1a5276,#2e86c1,#1a5276)",text:"#e0f0ff",star:"#7bdff5"};
       return{bg:"linear-gradient(135deg,#1a1a1a,#333,#1a1a1a)",text:"#ddd",star:"#999"};
     }
