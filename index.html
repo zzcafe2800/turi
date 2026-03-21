@@ -4774,12 +4774,12 @@
       if(ghi&&document.activeElement!==ghi)ghi.value=goalTarget>0?String(Math.floor(goalTarget/60)):"";
       if(gmi&&document.activeElement!==gmi)gmi.value=goalTarget>0?String(goalTarget%60):"";
       el.goalCurrentText.textContent=`${Math.floor(goalCurrent/60)}時間${goalCurrent%60}分`;
-      // Chart bars with custom task colors
+      // Chart bars with custom task colors (only if weekly graph exists)
+      if(el.weekBars&&el.weekLabels){
       el.weekBars.innerHTML="";el.weekLabels.innerHTML=`<div class="week-label-spacer"></div><div class="week-labels-inner"></div>`;const li=el.weekLabels.querySelector(".week-labels-inner");
       const cGraphs=state.customGraphs||[];
       week.days.forEach(day=>{const wm=day.stat.workMin||0,rm=day.stat.restMin||0;const wp=Math.max(0,Math.min(100,wm/1440*100)),rp=Math.max(0,Math.min(100,rm/1440*100));const isToday=day.key===todayKey();
         const col=document.createElement("div");col.className="day-col";const wIn=wp>=16,rIn=rp>=14;const wt=minToHr(wm),rt=minToHr(rm);
-        // Build custom segments with tooltip bubbles for short bars
         const cm=day.stat.customMin||{};
         let customHtml="";let bubbleOffset=0;
         cGraphs.forEach(g=>{const mins=cm[g.id]||0;if(mins>0){const cp=Math.max(0,Math.min(100,mins/1440*100));const fs=cp<6?'7px':cp<12?'8px':'10px';customHtml+=`<div class="day-segment custom" style="height:${cp}%;background:${g.color};color:#000;position:relative;font-size:${fs};font-weight:800;overflow:visible;">${minToHr(mins)}</div>`;}});
@@ -4787,9 +4787,11 @@
         col.innerHTML=`<div class="day-bar-wrap"><div class="day-stack">${rm>0?`<div class="day-segment rest" style="height:${rp}%;position:relative;font-size:${rFs};color:#000;font-weight:800;">${rt}</div>`:""}${customHtml}${wm>0?`<div class="day-segment work" style="height:${wp}%;position:relative;font-size:${wFs};color:#000;font-weight:800;">${wt}</div>`:""}</div></div>`;
         col.title=`作業: ${wt}\n休憩: ${rt}`;
         el.weekBars.appendChild(col);
-        const label=document.createElement("div");label.className="day-label-item";label.innerHTML=`<div class="day-label-main"><span class="today-dot ${isToday?"active":""}"></span><span>${day.dateLabel}</span><span>${day.label}</span></div>`;li.appendChild(label);});
+        const label=document.createElement("div");label.className="day-label-item";label.innerHTML=`<div class="day-label-main"><span class="today-dot ${isToday?"active":""}"></span><span>${day.dateLabel}</span><span>${day.label}</span></div>`;if(li)li.appendChild(label);});
+      }
       // Custom task time summary
-      if(cGraphs.length){const sumWrap=document.getElementById("customTaskSummary");if(sumWrap){sumWrap.innerHTML="";const todayStat=getDayStat(todayKey());cGraphs.forEach(g=>{const mins=(todayStat.customMin||{})[g.id]||0;if(mins>0){const d=document.createElement("div");d.style.cssText=`display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:8px;background:${g.color}22;margin:2px;font-size:11px;font-weight:700;`;d.innerHTML=`<span style="width:8px;height:8px;border-radius:50%;background:${g.color};"></span>${esc(g.title)}: ${(mins/60).toFixed(1)}h`;sumWrap.appendChild(d);}});
+      const cGraphs2=state.customGraphs||[];
+      if(cGraphs2.length){const sumWrap=document.getElementById("customTaskSummary");if(sumWrap){sumWrap.innerHTML="";const todayStat=getDayStat(todayKey());cGraphs2.forEach(g=>{const mins=(todayStat.customMin||{})[g.id]||0;if(mins>0){const d=document.createElement("div");d.style.cssText=`display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:8px;background:${g.color}22;margin:2px;font-size:11px;font-weight:700;`;d.innerHTML=`<span style="width:8px;height:8px;border-radius:50%;background:${g.color};"></span>${esc(g.title)}: ${(mins/60).toFixed(1)}h`;sumWrap.appendChild(d);}});
         const workM=todayStat.workMin||0;if(workM>0){const d=document.createElement("div");d.style.cssText="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:8px;background:rgba(127,232,156,0.12);margin:2px;font-size:11px;font-weight:700;";d.innerHTML=`<span style="width:8px;height:8px;border-radius:50%;background:var(--green);"></span>作業: ${(workM/60).toFixed(1)}h`;sumWrap.appendChild(d);}
       }}
       // Best fish
