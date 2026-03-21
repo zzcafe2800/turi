@@ -2466,7 +2466,7 @@
       .room-controls { width: min(200px, 56vw); }
       .fishing-timer.active { width: min(38vw, 200px); }
       .fishing-timer:not(.active) { width: min(22vw, 116px); }
-      .fishing-timer.mega { width: min(50vw, 240px); max-height: 50vh; }
+      .fishing-timer.mega { width: min(40vw, 200px); max-height: min(50vh, 200px); }
       .timer-btn { width: 22px; height: 22px; }
       .current-time-chip { font-size: clamp(16px, 4.5vw, 28px); }
       .result-core { grid-template-columns: 1fr; }
@@ -2583,8 +2583,8 @@
     .norma-dot { width: 14px; height: 14px; border-radius: 50%; background: rgba(0,0,0,0.08); border: 1px solid rgba(0,0,0,0.12); font-size: 7px; display: grid; place-items: center; color: #999; }
     .norma-dot.filled { background: var(--accent); border-color: rgba(123,223,245,0.5); color: #fff; }
     .norma-dot.current { box-shadow: 0 0 0 2px var(--accent); }
-    .norma-preset-row { display: flex; gap: 6px; align-items: center; margin-top: 3px; }
-    .norma-preset-btn { font-size: 11px; color: #fff; background: var(--accent); border: none; border-radius: 10px; padding: 4px 10px; cursor: pointer; font-weight: 700; }
+    .norma-preset-row { display: flex; gap: 4px; align-items: stretch; margin-top: 3px; }
+    .norma-preset-btn { font-size: 9px; color: #fff; background: var(--accent); border: none; border-radius: 8px; padding: 2px 6px; cursor: pointer; font-weight: 700; white-space: nowrap; height: 28px; display: grid; place-items: center; }
     /* Norma text in fishing/focus */
     .norma-display { font-size: clamp(18px, 3vw, 28px); color: var(--accent); font-weight: 800; text-align: center; margin-top: 4px; text-shadow: 0 2px 12px rgba(0,0,0,0.5); }
     .norma-display::before { content: "今やること："; font-size: 0.55em; color: rgba(255,255,255,0.4); font-weight: 600; }
@@ -2971,18 +2971,20 @@
             <button class="chart-period-btn" data-period="year">年間</button>
           </div>
 
-          <div class="results-summary-text">
-            <div class="summary-text-block">
-              <span class="summary-text-label">今日</span>
-              <span id="todayWorkNum" class="summary-text-num">0</span>
-              <span class="summary-text-unit">分（0.0時間）</span>
-              <span class="summary-text-label">の作業</span>
+          <div class="results-summary-text" style="display:flex;gap:8px;flex-wrap:wrap;">
+            <div style="flex:1;min-width:140px;padding:12px 16px;border-radius:16px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);">
+              <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:4px;">今日の作業</div>
+              <div style="display:flex;align-items:baseline;gap:4px;">
+                <span id="todayWorkNum" style="font-size:24px;font-weight:900;color:var(--accent);">0</span>
+                <span class="summary-text-unit" style="font-size:11px;color:rgba(255,255,255,0.5);">分（0.0時間）</span>
+              </div>
             </div>
-            <div class="summary-text-block">
-              <span class="summary-text-label">今日</span>
-              <span id="todayRestNum" class="summary-text-num" style="color:rgba(180,180,180,0.8);">0</span>
-              <span class="summary-text-unit">分（0.0時間）</span>
-              <span class="summary-text-label">の休憩</span>
+            <div style="flex:1;min-width:140px;padding:12px 16px;border-radius:16px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);">
+              <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:4px;">今週の作業</div>
+              <div style="display:flex;align-items:baseline;gap:4px;">
+                <span id="weekWorkNum" style="font-size:24px;font-weight:900;color:var(--green);">0</span>
+                <span id="weekWorkUnit" style="font-size:11px;color:rgba(255,255,255,0.5);">分（0.0時間）</span>
+              </div>
             </div>
           </div>
 
@@ -3958,17 +3960,15 @@
       if(!state.productivity.memoCategories)state.productivity.memoCategories=["全般","アイデア","作業"];
       const memos=state.productivity.memos;
       const cats=state.productivity.memoCategories;
-      // Category filter bar
       const filterBar=document.createElement("div");filterBar.style.cssText="display:flex;gap:4px;padding:6px 0;flex-wrap:wrap;";
       ["all",...cats].forEach(c=>{
-        const btn=document.createElement("button");btn.style.cssText=`padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid rgba(0,0,0,0.1);background:${memoFilterCat===c?"var(--accent)":"#f0f0f0"};color:${memoFilterCat===c?"#fff":"#555"};`;
+        const btn=document.createElement("button");btn.style.cssText=`padding:4px 12px;border-radius:999px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid rgba(0,0,0,0.1);background:${memoFilterCat===c?"var(--accent)":"#f0f0f0"};color:${memoFilterCat===c?"#fff":"#555"};`;
         btn.textContent=c==="all"?"すべて":c;
-        btn.addEventListener("click",()=>{memoFilterCat=c;renderUtility();});
+        btn.addEventListener("click",e=>{e.stopPropagation();memoFilterCat=c;box.innerHTML="";renderMemoTab(box);});
         filterBar.appendChild(btn);
       });
-      // Add category button
-      const addCatBtn=document.createElement("button");addCatBtn.style.cssText="padding:3px 8px;border-radius:999px;font-size:11px;border:1px dashed rgba(0,0,0,0.2);background:transparent;color:#999;cursor:pointer;";addCatBtn.textContent="+";
-      addCatBtn.addEventListener("click",()=>{const name=prompt("カテゴリー名");if(!name)return;cats.push(name.trim().slice(0,12));saveAll().catch(console.error);renderUtility();});
+      const addCatBtn=document.createElement("button");addCatBtn.style.cssText="padding:4px 10px;border-radius:999px;font-size:11px;border:1px dashed rgba(0,0,0,0.2);background:transparent;color:#999;cursor:pointer;";addCatBtn.textContent="+カテゴリ";
+      addCatBtn.addEventListener("click",e=>{e.stopPropagation();const name=prompt("カテゴリー名");if(!name)return;cats.push(name.trim().slice(0,12));saveAll().catch(console.error);box.innerHTML="";renderMemoTab(box);});
       filterBar.appendChild(addCatBtn);
       box.appendChild(filterBar);
       // Filtered memos
@@ -4370,9 +4370,9 @@
         const prow=document.createElement("div");prow.className="norma-preset-row";
         const baitSel=mkBaitSel(state.selectedBaitId);baitSel.style.cssText="flex:1;height:28px;font-size:10px;";baitSel.addEventListener("change",()=>{state.selectedBaitId=baitSel.value;saveAll().catch(console.error);});
         prow.appendChild(baitSel);
-        const listBtn=document.createElement("button");listBtn.className="norma-preset-btn";listBtn.textContent="作業プリセット";
+        const listBtn=document.createElement("button");listBtn.className="norma-preset-btn";listBtn.innerHTML="作業<br>プリセット";listBtn.style.lineHeight="1.1";
         listBtn.addEventListener("click",openWorkPresetList);
-        const saveBtn=document.createElement("button");saveBtn.className="norma-preset-btn";saveBtn.textContent="＋保存";
+        const saveBtn=document.createElement("button");saveBtn.className="norma-preset-btn";saveBtn.textContent="保存";
         saveBtn.addEventListener("click",saveWorkPreset);
         prow.appendChild(listBtn);prow.appendChild(saveBtn);body.appendChild(prow);
       }
@@ -4580,9 +4580,13 @@
       el.loopRestSub.textContent="休憩中";
     }
     function tryVibrate(pattern){if(state.settings.vibrate&&isMobile()&&navigator.vibrate)try{navigator.vibrate(pattern);}catch(e){}}
-    function checkReminders(){const hm=currentHm(),today=todayKey();(state.productivity.reminders||[]).forEach(r=>{if(r.on===false||!r.time||r.time!==hm||r.lastFiredDay===today)return;r.lastFiredDay=today;try{const a=new Audio('alarm.mp3');a.volume=sfxVolume/100;a.play().catch(()=>{});}catch(e){}persistentNotify(`🔔 ${r.title||"通知"}の時間です`,`rem_${r.id}_${today}`);if(typeof Notification!=="undefined"&&Notification.permission==="granted")new Notification(`${r.title||"通知"}の時間です`);saveAll().catch(console.error);});
-      (state.productivity.todos||[]).forEach(t=>{if(!t.notifyTime||t.completed||t.notifyTime!==hm||t.notifyFiredDay===today)return;t.notifyFiredDay=today;try{const a=new Audio('alarm.mp3');a.volume=sfxVolume/100;a.play().catch(()=>{});}catch(e){}persistentNotify(`📝 ${t.title||"やること"}の時間です`,`todo_${t.id}_${today}`);saveAll().catch(console.error);});
-      (state.productivity.records||[]).forEach(r=>{if(!r.notifyTime||r.notifyTime!==hm||r.notifyFiredDay===today)return;r.notifyFiredDay=today;try{const a=new Audio('alarm.mp3');a.volume=sfxVolume/100;a.play().catch(()=>{});}catch(e){}persistentNotify(`📋 ${r.title||"記録"}の時間です`,`rec_${r.id}_${today}`);saveAll().catch(console.error);});
+    function checkReminders(){const hm=currentHm(),today=todayKey();(state.productivity.reminders||[]).forEach(r=>{if(r.on===false||!r.time||r.time!==hm||r.lastFiredDay===today)return;r.lastFiredDay=today;try{const a=new Audio('alarm.mp3');a.volume=sfxVolume/100;a.play().catch(()=>{});}catch(e){}persistentNotify(`🔔 ${r.title||"通知"}の時間です`,`rem_${r.id}_${today}`,r.time);if(typeof Notification!=="undefined"&&Notification.permission==="granted")new Notification(`${r.title||"通知"}の時間です`);saveAll().catch(console.error);});
+      (state.productivity.todos||[]).forEach(t=>{if(!t.notifyTime||t.completed||t.notifyTime!==hm||t.notifyFiredDay===today)return;t.notifyFiredDay=today;try{const a=new Audio('alarm.mp3');a.volume=sfxVolume/100;a.play().catch(()=>{});}catch(e){}persistentNotify(`📝 ${t.title||"メモ"}の時間です`,`todo_${t.id}_${today}`,t.notifyTime);saveAll().catch(console.error);});
+      // Schedule alarms
+      const dk=getScheduleKey(0);(state.productivity.schedules||[]).filter(s=>s.dayKey===dk).forEach(s=>{
+        if(s.alarmStart&&s.startTime===hm&&!s._startFired){s._startFired=true;try{const a=new Audio('alarm.mp3');a.volume=sfxVolume/100;a.play().catch(()=>{});}catch(e){}persistentNotify(`📅 ${s.title||"スケジュール"} 開始`,`sch_s_${s.id}_${today}`,s.startTime);}
+        if(s.alarmEnd&&s.endTime===hm&&!s._endFired){s._endFired=true;try{const a=new Audio('alarm.mp3');a.volume=sfxVolume/100;a.play().catch(()=>{});}catch(e){}persistentNotify(`📅 ${s.title||"スケジュール"} 終了`,`sch_e_${s.id}_${today}`,s.endTime);}
+      });
     }
 
     function renderLoopMode(){/* Now handled by renderModeCard */}
@@ -4714,13 +4718,13 @@
     function getTotalWorkMin(stat){return(stat.workMin||0)+Object.values(stat.customMin||{}).reduce((s,v)=>s+(v||0),0);}
     function renderResults(){const week=getWeekStats();const twMin=week.days.reduce((s,d)=>s+getTotalWorkMin(d.stat),0);const trMin=week.days.reduce((s,d)=>s+d.stat.restMin,0);const today=getDayStat(todayKey());
       const todayTotal=getTotalWorkMin(today);
-      el.todayWorkNum.textContent=String(todayTotal);
-      el.todayRestNum.textContent=String(today.restMin||0);
-      // Update hour display
-      const twEl=el.todayWorkNum.parentElement?.querySelector('.summary-text-unit');
+      if(el.todayWorkNum)el.todayWorkNum.textContent=String(todayTotal);
+      const twEl=el.todayWorkNum?.parentElement?.querySelector('.summary-text-unit');
       if(twEl)twEl.textContent=`分（${(todayTotal/60).toFixed(1)}時間）`;
-      const trEl=el.todayRestNum.parentElement?.querySelector('.summary-text-unit');
-      if(trEl)trEl.textContent=`分（${((today.restMin||0)/60).toFixed(1)}時間）`;
+      // Week work total
+      const wwn=document.getElementById("weekWorkNum"),wwu=document.getElementById("weekWorkUnit");
+      if(wwn)wwn.textContent=String(twMin);
+      if(wwu)wwu.textContent=`分（${(twMin/60).toFixed(1)}時間）`;
       const goalTarget=state.weeklyGoal.targetMin||0;const goalCurrent=twMin;
       if(goalTarget>0){const pct=Math.min(Math.round(goalCurrent/goalTarget*100),999);el.goalPercent.textContent=`${pct}%`;el.goalPercent.style.color=pct>=100?'var(--green)':'var(--accent)';const offset=GOAL_CIRCLE_C*(1-Math.min(1,goalCurrent/goalTarget));el.goalProgress.style.strokeDasharray=String(GOAL_CIRCLE_C);el.goalProgress.style.strokeDashoffset=String(offset);}else{el.goalPercent.textContent="0%";el.goalProgress.style.strokeDasharray=String(GOAL_CIRCLE_C);el.goalProgress.style.strokeDashoffset=String(GOAL_CIRCLE_C);}
       const ghi=document.getElementById("goalHourInput"),gmi=document.getElementById("goalMinInput");
@@ -4824,12 +4828,13 @@
     function maybeNotify(){if(state.settings.browserNotify&&typeof Notification!=="undefined"&&Notification.permission==="granted")new Notification("釣りが終わりました",{body:"回収しましょう。"});}
     function playAudio(file,type){if(sfxMuted&&type==='stamp')return;const a=new Audio(file);a.volume=sfxVolume/100;a.play().catch(()=>{});}
     function toast(msg,dur=3800){const n=document.createElement("div");n.className="toast";n.textContent=msg;n.style.animationDuration=`${dur/1000}s`;el.toastWrap.appendChild(n);setTimeout(()=>n.remove(),dur+300);}
-    function persistentNotify(msg,id){
+    function persistentNotify(msg,id,time){
       if(!id)id=makeId();const key="zz_notif_"+id;if(localStorage.getItem(key)==="done")return;
       const existing=el.toastWrap.querySelector(`[data-nid="${id}"]`);if(existing)return;
       const n=document.createElement("div");n.className="toast";n.dataset.nid=id;
       n.style.cssText="animation:none;opacity:1;display:flex;align-items:center;gap:8px;padding:8px 14px;position:relative;";
-      n.innerHTML=`<span style="flex:1;">${esc(msg)}</span><button style="border:0;background:var(--green);color:#fff;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:14px;cursor:pointer;flex-shrink:0;">✓</button>`;
+      const timeHtml=time?`<span style="font-size:10px;color:rgba(255,255,255,0.35);">${time}</span>`:"";
+      n.innerHTML=`<span style="flex:1;">${esc(msg)}${timeHtml}</span><button style="border:0;background:var(--green);color:#fff;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:14px;cursor:pointer;flex-shrink:0;">✓</button>`;
       n.querySelector("button").addEventListener("click",()=>{localStorage.setItem(key,"done");n.remove();});
       el.toastWrap.appendChild(n);
     }
