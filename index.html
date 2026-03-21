@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -1805,6 +1806,13 @@
     .graph-tab { padding:4px 14px;border-radius:999px;font-size:12px;font-weight:700;border:1px solid rgba(255,255,255,0.14);background:transparent;color:var(--muted);cursor:pointer; }
     .graph-tab.active { background:var(--accent);color:#fff;border-color:var(--accent); }
     .daily-chart { display:grid;grid-template-columns:30px 1fr;gap:6px;height:220px; }
+    .daily-y-axis { display:flex;flex-direction:column;justify-content:space-between;font-size:9px;color:rgba(255,255,255,0.35);text-align:right;padding:0 2px; }
+    .daily-bars-area { display:grid;grid-template-columns:1fr 1fr;gap:12px;height:100%;align-items:flex-end; }
+    .daily-bar-col { position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%; }
+    .daily-bar { width:100%;border-radius:0;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:visible;position:relative; }
+    .daily-brace-left { position:absolute;left:-20px;top:0;bottom:0;width:16px;display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(255,255,255,0.3); }
+    .daily-brace-right { position:absolute;right:-20px;top:0;bottom:0;width:16px;display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(255,255,255,0.3); }
+    .daily-total-label { font-size:10px;color:rgba(255,255,255,0.5);font-weight:700;white-space:nowrap; }
     .daily-y-axis { display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;font-size:10px;color:var(--muted); }
     .daily-bars-area { display:grid;grid-template-columns:1fr 1fr;gap:16px;height:100%;align-items:flex-end;position:relative; }
     .daily-bar-col { position:relative;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center; }
@@ -2773,12 +2781,8 @@
               <button id="modeNavLeft" class="mode-card-nav left" style="display:none;">❮</button>
               <button id="modeNavRight" class="mode-card-nav right">❯</button>
               <div id="modeCard" class="mode-card">
-                <div id="modeCardTitle" class="mode-card-title">単発</div>
+                <div id="modeCardTitle" class="mode-card-title">単発作業</div>
                 <div id="modeCardBody" class="mode-card-body"></div>
-                <div class="mc-bottom">
-                  <select id="taskCategorySelect" style="font-size:10px;"></select>
-                  <button id="roomFishingBtn" class="mc-fish-btn">釣る</button>
-                </div>
               </div>
             </div>
           </div>
@@ -2793,6 +2797,7 @@
           <video id="fishingVideo" class="bg-video" autoplay muted loop playsinline preload="auto"></video>
           <div class="bg-shade"></div>
         </div>
+        <canvas id="waterSurface" style="position:absolute;inset:0;z-index:1;display:none;width:100%;height:100%;"></canvas>
 
         <div id="fishingTimer" class="fishing-timer">
           <svg class="timer-gauge" viewBox="0 0 220 220" aria-hidden="true">
@@ -3732,6 +3737,12 @@
         ov.appendChild(cd);document.body.appendChild(ov);
       });
       el.focusModeBtn.addEventListener("click",()=>setFocusMode(true));
+      // Water surface toggle on background click
+      el.screens.fishing.addEventListener("click",e=>{
+        if(!state.fishing.inProgress||!state.ui.fishingUiVisible)return;
+        const t=e.target;if(t.closest("button")||t.closest("select")||t.closest("input")||t.closest(".timer-actions")||t.closest(".fishing-timer")||t.closest(".audio-player-wrap")||t.closest(".bottom-right-stack")||t.closest(".stamp-rail")||t.closest(".focus-overlay")||t.closest(".top-left-meta")||t.closest(".top-right-stack")||t.closest(".mini-goal-wrap"))return;
+        toggleWaterSurface();
+      });
       // PiP
       const pipBtn=document.getElementById("pipBtn");
       let pipCanvas=null,pipVideo=null,pipStream=null,pipInterval=null;
@@ -4101,9 +4112,10 @@
       dayBar.style.position="relative";dayBar.appendChild(presetRow);
       wrap.appendChild(dayBar);
       // Timeline
-      const timeline=document.createElement("div");timeline.className="schedule-timeline";timeline.style.cssText="height:calc(100% - 60px);overflow-y:auto;-webkit-overflow-scrolling:touch;";
-      const hourH=60; // px per hour
-      timeline.style.position="relative";timeline.style.minHeight=`${24*hourH+20}px`;
+      const timelineWrap=document.createElement("div");timelineWrap.style.cssText="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;position:relative;";
+      const timeline=document.createElement("div");timeline.className="schedule-timeline";timeline.style.cssText="position:relative;padding-left:52px;";
+      const hourH=60;
+      timeline.style.minHeight=`${24*hourH+20}px`;
       const nowH=new Date().getHours()+new Date().getMinutes()/60;
       for(let h=0;h<=24;h++){
         const mark=document.createElement("div");mark.className="schedule-hour-mark";mark.style.top=`${h*hourH}px`;mark.textContent=`${h}時`;timeline.appendChild(mark);
@@ -4126,9 +4138,9 @@
         timeline.appendChild(card);
       });
       // Scroll to current time
-      wrap.appendChild(timeline);
+      timelineWrap.appendChild(timeline);wrap.appendChild(timelineWrap);
       box.appendChild(wrap);
-      setTimeout(()=>{if(scheduleDay===0){const containerH=timeline.clientHeight||300;timeline.scrollTop=Math.max(0,nowH*hourH-containerH/2);}},50);
+      setTimeout(()=>{if(scheduleDay===0){const containerH=timelineWrap.clientHeight||300;timelineWrap.scrollTop=Math.max(0,nowH*hourH-containerH/2);}},50);
       // Add button (override the global + button behavior for schedule)
       el.utilityFsAddBtn.style.display="flex";
     }
@@ -4228,11 +4240,11 @@
       el.utilRoomToggle.textContent=vis?"▼":"▶";
       el.utilRoomCards.style.display=vis?"flex":"none";
       el.utilRoomCards.innerHTML="";
-      const catLabel={reminder:"通知",todo:"やること",record:"スケジュール"};
+      const catLabel={reminder:"通知",todo:"メモ",record:"スケジュール"};
       const nowHm=currentHm();let totalCards=0;
       tabs.forEach(tab=>{
         let items=[];
-        if(tab==="todo")items=(state.productivity.todos||[]).filter(t=>!t.completed).slice(0,5);
+        if(tab==="todo")items=(state.productivity.memos||[]).slice(0,5);
         else if(tab==="reminder")items=(state.productivity.reminders||[]).filter(r=>r.on!==false).slice(0,5);
         else{const dk=getScheduleKey(0);items=(state.productivity.schedules||[]).filter(s=>s.dayKey===dk).slice(0,5);}
         if(!items.length)return;
@@ -4241,8 +4253,8 @@
           const c=document.createElement("div");c.className="util-room-card";
           if(item.color){c.style.borderLeftColor=item.color;c.style.borderLeftWidth="3px";}
           const timeStr=tab==="record"?`${item.startTime||""}~${item.endTime||""}`:(item.time||"");
-          const isPast=timeStr&&timeStr.replace(/[^0-9:]/g,"").slice(0,5)<nowHm;
-          c.innerHTML=`<span class="urc-icon">${item.icon||"📋"}</span><span class="urc-title">${esc(item.title||"")}</span>${timeStr?`<span class="urc-time${isPast?" past":""}">${timeStr}</span>`:""}`;
+          const titleText=tab==="todo"?(item.title||"無題"):(item.title||"");
+          c.innerHTML=`<span class="urc-icon">${item.icon||"📋"}</span><span class="urc-title">${esc(titleText)}</span>${timeStr?`<span class="urc-time">${timeStr}</span>`:""}`;
           el.utilRoomCards.appendChild(c);totalCards++;
         });
       });
@@ -4281,6 +4293,43 @@
       if(!showing){renderFishPredictPopup(popup);popup.classList.add("show");}
     }
 
+    function setGraphTab(tab){
+      const dw=document.getElementById("dailyGraphWrap"),ww=document.getElementById("weeklyGraphWrap");
+      const dt=document.getElementById("graphTabDaily"),wt=document.getElementById("graphTabWeekly");
+      if(tab==="daily"){if(dw)dw.style.display="";if(ww)ww.style.display="none";if(dt)dt.classList.add("active");if(wt)wt.classList.remove("active");renderDailyGraph();}
+      else{if(dw)dw.style.display="none";if(ww)ww.style.display="";if(dt)dt.classList.remove("active");if(wt)wt.classList.add("active");}
+    }
+    window.setGraphTab=setGraphTab;
+    function fmtHM(min){const h=Math.floor(min/60),m=Math.round(min%60);return h>0?`${h}時間${m>0?m+"分":""}`:m+"分";}
+    function renderDailyGraph(){
+      const todaySt=getDayStat(todayKey());const yKey=getYesterdayKey();const yestSt=getDayStat(yKey);
+      const cGraphs=state.customGraphs||[];
+      const todayW=getTotalWorkMin(todaySt),yestW=getTotalWorkMin(yestSt);
+      const maxMin=Math.max(todayW,yestW,1);
+      // Y axis
+      const yAxis=document.getElementById("dailyYAxis");if(yAxis){yAxis.innerHTML="";
+        const steps=5;for(let i=steps;i>=0;i--){const s=document.createElement("span");s.textContent=((maxMin/steps*i)/60).toFixed(1)+"h";yAxis.appendChild(s);}}
+      // Bars
+      const chartH=200;
+      function buildBar(stat,elId){
+        const bar=document.getElementById(elId);if(!bar)return;bar.innerHTML="";bar.style.height="0";
+        const total=getTotalWorkMin(stat);if(total<=0)return;
+        const h=Math.max(8,total/maxMin*chartH);bar.style.height=h+"px";
+        // Work segment
+        const wm=stat.workMin||0;if(wm>0){const seg=document.createElement("div");const wp=wm/total*100;seg.style.cssText=`height:${wp}%;background:linear-gradient(180deg,#88f6a4,#48d36d);display:flex;align-items:center;justify-content:center;font-size:${wp<20?"7px":"9px"};font-weight:800;color:#000;`;seg.textContent=(wm/60).toFixed(1)+"h";bar.appendChild(seg);}
+        // Custom segments
+        cGraphs.forEach(g=>{const cm=(stat.customMin||{})[g.id]||0;if(cm>0){const seg=document.createElement("div");const cp=cm/total*100;seg.style.cssText=`height:${cp}%;background:${g.color};display:flex;align-items:center;justify-content:center;font-size:${cp<20?"7px":"9px"};font-weight:800;color:#000;`;seg.textContent=(cm/60).toFixed(1)+"h";bar.appendChild(seg);}});
+      }
+      buildBar(yestSt,"dailyBarYesterday");buildBar(todaySt,"dailyBarToday");
+      // Braces + totals
+      const bl=document.getElementById("dailyBraceLeft");if(bl)bl.innerHTML=`<span style="font-size:24px;color:rgba(255,255,255,0.15);">｛</span><span class="daily-total-label" style="position:absolute;left:-60px;white-space:nowrap;">${fmtHM(yestW)}</span>`;
+      const br=document.getElementById("dailyBraceRight");if(br)br.innerHTML=`<span style="font-size:24px;color:rgba(255,255,255,0.15);">｝</span><span class="daily-total-label" style="position:absolute;right:-60px;white-space:nowrap;">${fmtHM(todayW)}</span>`;
+      // Labels
+      const now=new Date(),yd=new Date(now);yd.setDate(yd.getDate()-1);
+      const ly=document.getElementById("dailyLabelYesterday");if(ly)ly.textContent=`昨日(${yd.getMonth()+1}/${yd.getDate()})`;
+      const lt=document.getElementById("dailyLabelToday");if(lt)lt.textContent=`今日(${now.getMonth()+1}/${now.getDate()})`;
+    }
+    function getYesterdayKey(){const d=new Date();d.setDate(d.getDate()-1);return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;}
     function renderWeekCalendar(){
       if(!el.weekCalendar)return;
       const now=new Date();
@@ -4329,19 +4378,84 @@
     const MODE_NAMES=["単発作業","連続作業","ノルマ作業"];
     function renderModeCard(){
       const activeEl=document.activeElement;
-      if(activeEl&&el.modeCardBody.contains(activeEl)&&(activeEl.tagName==="TEXTAREA"||activeEl.tagName==="INPUT"))return;
+      if(activeEl&&el.modeCardBody.contains(activeEl)&&(activeEl.tagName==="INPUT"))return;
       const idx=state.ui.modeIndex||0;
       el.modeNavLeft.style.display="grid";el.modeNavRight.style.display="grid";
       const body=el.modeCardBody;body.innerHTML="";
       el.modeCard.className="mode-card "+["mode-single","mode-loop","mode-norma"][idx];
-      // Title with need indicator
       const loopResting=state.loopRun.active&&state.loopRun.phase==="rest";
       let needText="";
-      if(idx===1){const need=Math.max(0,(state.loopConfig.count||1)-(state.baitCounts[state.loopConfig.baitId||state.selectedBaitId]||0));if(need>0)needText=`餌${need}個不足`;}
-      if(idx===2){const rounds=state.normaConfig.rounds||[];const bid=state.selectedBaitId;const owned=state.baitCounts[bid]||0;if(rounds.length>owned)needText=`餌${rounds.length-owned}個不足`;}
-      el.modeCardTitle.innerHTML=`${MODE_NAMES[idx]}${needText?`<span class="mc-need">${needText}</span>`:""}`;
-      // Tappable value helper
-      let _activeVal=null;
+      if(idx===1){const need=Math.max(0,(state.loopConfig.count||1)-(state.baitCounts[state.loopConfig.baitId||state.selectedBaitId]||0));if(need>0)needText="餌不足";}
+      if(idx===2){const rounds=state.normaConfig.rounds||[];if(rounds.length>(state.baitCounts[state.selectedBaitId]||0))needText="餌不足";}
+      el.modeCardTitle.innerHTML=`${MODE_NAMES[idx]}${needText?'<span class="mc-need">'+needText+"</span>":""}`;
+      function makeNum(val,onChange,max=180){
+        const inp=document.createElement("input");inp.type="number";inp.inputMode="numeric";inp.min="1";inp.max=String(max);
+        inp.value=val>0?String(val):"";inp.placeholder="--";
+        inp.style.cssText="width:2.5em;border:0;background:transparent;text-align:center;font-weight:900;color:#1a2a3a;outline:none;font-size:inherit;padding:0;-moz-appearance:textfield;";
+        inp.addEventListener("change",()=>{const n=Math.max(1,Math.min(max,parseInt(inp.value)||0));if(n>0){onChange(n);saveAll().catch(console.error);}});
+        inp.addEventListener("click",e=>e.stopPropagation());return inp;
+      }
+      const mkBaitSel=(val)=>{const s=document.createElement("select");BAIT_TYPES.forEach(b=>{const o=document.createElement("option");o.value=b.id;o.textContent=b.icon+"\u00d7"+(state.baitCounts[b.id]||0);s.appendChild(o);});NUMBERED_BAITS.forEach(nb=>{const cnt=state.baitCounts[nb.id]||0;if(cnt>0){const o=document.createElement("option");o.value=nb.id;o.textContent="#"+nb.num+"\u00d7"+cnt;s.appendChild(o);}});s.value=val;return s;};
+      function makeBot(baitVal,baitCb){
+        const bot=document.createElement("div");bot.className="mc-bottom-row";
+        const bs=mkBaitSel(baitVal);bs.addEventListener("change",()=>{baitCb(bs.value);saveAll().catch(console.error);});bot.appendChild(bs);
+        const ts=document.createElement("select");ts.id="taskCategorySelect";bot.appendChild(ts);
+        const fb=document.createElement("button");fb.className="mc-fish-btn";fb.id="roomFishingBtn";
+        fb.textContent=loopResting?"休憩中\u2026":"釣る";fb.disabled=!!state.fishing.inProgress||loopResting;
+        bot.appendChild(fb);return bot;
+      }
+      if(idx===0){
+        const c=document.createElement("div");c.className="mode-card-center";
+        const big=document.createElement("div");big.style.cssText="display:flex;align-items:baseline;justify-content:center;font-size:clamp(38px,9vw,56px);";
+        big.appendChild(makeNum(state.selectedCourseMin||25,v=>{state.selectedCourseMin=v;}));
+        const u=document.createElement("span");u.style.cssText="font-size:0.28em;color:#999;font-weight:700;margin-left:2px;";u.textContent="分";big.appendChild(u);
+        c.appendChild(big);body.appendChild(c);
+        body.appendChild(makeBot(state.selectedBaitId,v=>{state.selectedBaitId=v;}));
+      } else if(idx===1){
+        const c=document.createElement("div");c.className="mode-card-center";
+        const row=document.createElement("div");row.style.cssText="display:flex;align-items:baseline;justify-content:center;gap:0;font-size:clamp(26px,6vw,38px);flex-wrap:wrap;";
+        row.appendChild(makeNum(state.loopConfig.fishMin||25,v=>{state.loopConfig.fishMin=v;}));
+        const u1=document.createElement("span");u1.style.cssText="font-size:0.3em;color:#999;";u1.textContent="分";row.appendChild(u1);
+        const sep=document.createElement("span");sep.style.cssText="font-size:0.45em;color:#bbb;margin:0 1px;";sep.textContent="/";row.appendChild(sep);
+        row.appendChild(makeNum(state.loopConfig.restMin||5,v=>{state.loopConfig.restMin=v;},60));
+        const u2=document.createElement("span");u2.style.cssText="font-size:0.3em;color:#999;";u2.textContent="分";row.appendChild(u2);
+        const br1=document.createElement("span");br1.style.cssText="font-size:0.4em;color:#bbb;";br1.textContent="【";row.appendChild(br1);
+        row.appendChild(makeNum(state.loopConfig.count||3,v=>{state.loopConfig.count=v;},20));
+        const u3=document.createElement("span");u3.style.cssText="font-size:0.25em;color:#999;";u3.textContent="セット";row.appendChild(u3);
+        const br2=document.createElement("span");br2.style.cssText="font-size:0.4em;color:#bbb;";br2.textContent="】";row.appendChild(br2);
+        c.appendChild(row);body.appendChild(c);
+        body.appendChild(makeBot(state.loopConfig.baitId||"bait_basic",v=>{state.loopConfig.baitId=v;}));
+      } else {
+        if(!state.normaConfig.rounds)state.normaConfig.rounds=[];
+        const rounds=state.normaConfig.rounds,cur=state.normaConfig.currentEdit||0,isEd=cur<rounds.length;
+        const c=document.createElement("div");c.className="mode-card-center";c.style.gap="3px";
+        const dr=document.createElement("div");dr.style.cssText="display:flex;align-items:center;gap:2px;width:100%;";
+        const rb=document.createElement("span");rb.style.cssText="font-size:14px;cursor:pointer;color:#f88;";rb.textContent="\u21b6";
+        rb.addEventListener("click",e=>{e.stopPropagation();state.normaConfig.rounds=[];state.normaConfig.currentEdit=0;saveAll().catch(console.error);renderModeCard();toast("リセット");});dr.appendChild(rb);
+        const dc=document.createElement("div");dc.className="mc-norma-dots";dc.style.flex="1";
+        for(let i=0;i<rounds.length;i++){const d=document.createElement("span");d.className="done";d.textContent=String(i+1);if(i===cur&&isEd)d.style.boxShadow="0 0 0 2px var(--green)";d.addEventListener("click",ev=>{ev.stopPropagation();state.normaConfig.currentEdit=i;renderModeCard();});dc.appendChild(d);}
+        if(rounds.length<9){const ad=document.createElement("span");ad.className="add";ad.textContent="+";ad.addEventListener("click",e=>{e.stopPropagation();state.normaConfig.currentEdit=rounds.length;renderModeCard();});dc.appendChild(ad);}
+        dr.appendChild(dc);
+        const sl=document.createElement("span");sl.style.cssText="font-size:9px;color:#999;white-space:nowrap;";sl.textContent=rounds.length+"セット";dr.appendChild(sl);c.appendChild(dr);
+        const tr=document.createElement("div");tr.style.cssText="display:flex;align-items:baseline;justify-content:center;gap:0;font-size:clamp(22px,5vw,32px);";
+        const fv=makeNum(isEd?rounds[cur].fishMin:25,v=>{if(isEd)rounds[cur].fishMin=v;});tr.appendChild(fv);
+        const fu=document.createElement("span");fu.style.cssText="font-size:0.3em;color:#999;";fu.textContent="分";tr.appendChild(fu);
+        const sp=document.createElement("span");sp.style.cssText="font-size:0.45em;color:#bbb;margin:0 1px;";sp.textContent="/";tr.appendChild(sp);
+        const rv=makeNum(isEd?rounds[cur].restMin:5,v=>{if(isEd)rounds[cur].restMin=v;},60);tr.appendChild(rv);
+        const ru=document.createElement("span");ru.style.cssText="font-size:0.3em;color:#999;";ru.textContent="分";tr.appendChild(ru);
+        c.appendChild(tr);
+        const nw=document.createElement("div");nw.style.cssText="display:flex;gap:3px;align-items:center;width:100%;";
+        const sb=document.createElement("button");sb.className="norma-preset-btn";sb.textContent="保存";sb.addEventListener("click",e=>{e.stopPropagation();saveWorkPreset();});
+        const nt=document.createElement("input");nt.className="mc-norma-input";nt.placeholder="このセットのノルマ";nt.type="text";nt.value=isEd?(rounds[cur].norma||""):"";
+        nt.addEventListener("click",e=>e.stopPropagation());
+        nt.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();const nv=nt.value.trim();if(!nv){toast("ノルマを入力");return;}const fvN=parseInt(fv.value)||25,rvN=parseInt(rv.value)||5;if(isEd)rounds[cur]={fishMin:fvN,restMin:rvN,norma:nv,baitId:state.selectedBaitId};else if(rounds.length<9)rounds.push({fishMin:fvN,restMin:rvN,norma:nv,baitId:state.selectedBaitId});state.normaConfig.currentEdit=rounds.length;saveAll().catch(console.error);renderModeCard();}});
+        const lb=document.createElement("button");lb.className="norma-preset-btn";lb.textContent="プリセット";lb.addEventListener("click",e=>{e.stopPropagation();openWorkPresetList();});
+        nw.append(sb,nt,lb);c.appendChild(nw);body.appendChild(c);
+        body.appendChild(makeBot(state.selectedBaitId,v=>{state.selectedBaitId=v;}));
+      }
+      fillTaskSelect();const tsel=document.getElementById("taskCategorySelect");if(tsel)tsel.value=state.selectedTaskCategory||"work";
+      const fishBtn=document.getElementById("roomFishingBtn");if(fishBtn)fishBtn.addEventListener("click",startFishingFromRoom);
+    }
       function makeTapVal(initVal,onChange,max=120){
         const wrap=document.createElement("span");wrap.className="mc-val";wrap.textContent=initVal>0?String(initVal):"--";wrap.style.cursor="pointer";
         wrap.addEventListener("click",e=>{e.stopPropagation();const v=prompt("数字を入力",String(initVal||""));if(v===null)return;const n=Math.max(1,Math.min(max,parseInt(v)||0));onChange(n);renderModeCard();});
@@ -4607,6 +4721,8 @@
     function togglePauseResume(){if(!state.fishing.inProgress)return;if(state.fishing.paused)resumeFishing();else pauseFishing();}
     function getCatchCount(min){if(min>=50)return 7;if(min>=25)return 5;if(min>=10)return 3;return 1;}
     function finishFishing(){stopTimerTick();if(!state.fishing.inProgress)return;if(state.settings.catchSound)playAudio("time.mp3","time");maybeNotify();stopBgmOnFishEnd();tryVibrate([200,100,200]);
+      // Clean up water surface
+      if(waterActive){waterActive=false;const wc=document.getElementById("waterSurface");if(wc)wc.style.display="none";const bg=wc?.previousElementSibling;if(bg)bg.style.opacity="1";if(waterAnim){cancelAnimationFrame(waterAnim);waterAnim=null;}}
       const dm=state.fishing.durationMin;const count=getCatchCount(dm);
       const results=[];for(let i=0;i<count;i++){const r=rollCatch(state.fishing);if(dm>=50&&i===0)r.isRare=true;results.push(r);}
       // Rare upgrade bonus for 50+ min
@@ -4833,7 +4949,8 @@
       const best=[...(today.catches||[])].sort((a,b)=>(b.sizeCm-b.avgSize)-(a.sizeCm-a.avgSize))[0];el.todayBestFish.textContent=best?`${best.icon} ${best.name}`:"まだなし";el.todayBestFishSub.textContent=best?`${fmtSize(best.avgSize)}cm平均 → ${fmtSize(best.sizeCm)}cm / ${best.price}zz`:"";
       el.todayEarnedValue.textContent=`${today.earnings||0} zz`;
       const weekEarn=week.days.reduce((s,d)=>s+(d.stat.earnings||0),0);
-      const wev=document.getElementById("weekEarnedValue");if(wev)wev.textContent=`${weekEarn} zz`;}
+      const wev=document.getElementById("weekEarnedValue");if(wev)wev.textContent=`${weekEarn} zz`;
+      renderDailyGraph();}
     function getWeekStats(){const n=new Date();const d=n.getDay();const diff=d===0?-6:1-d;const mon=new Date(n);mon.setHours(0,0,0,0);mon.setDate(n.getDate()+diff);const labels=["月","火","水","木","金","土","日"];const days=[];for(let i=0;i<7;i++){const x=new Date(mon);x.setDate(mon.getDate()+i);const k=`${x.getFullYear()}-${x.getMonth()+1}-${x.getDate()}`;days.push({key:k,stat:getDayStat(k),label:labels[i],dateLabel:`${x.getMonth()+1}/${x.getDate()}`});}return{days};}
     function getStarStyle(stars){
       if(stars>=3)return{bg:"linear-gradient(135deg,#c8a600,#ffd700,#c8a600)",text:"#fff",star:"#fff"};
@@ -4907,6 +5024,69 @@
 
     // Misc
     function handleFishingActivity(){if(!state.fishing.inProgress||!el.screens.fishing.classList.contains("active")||state.ui.focusMode)return;state.ui.fishingUiVisible=true;el.app.classList.remove("fishing-ui-faded");clearFishingUiTimeout();fishingUiTimeout=setTimeout(()=>{if(state.fishing.inProgress&&el.screens.fishing.classList.contains("active")&&!state.ui.focusMode){state.ui.fishingUiVisible=false;el.app.classList.add("fishing-ui-faded");}},FISHING_UI_IDLE_MS);}
+    // === Water Surface Background ===
+    let waterActive=false,waterAnim=null,waterFishes=[],waterDecoys=[];
+    function toggleWaterSurface(){
+      const canvas=document.getElementById("waterSurface");if(!canvas)return;
+      waterActive=!waterActive;
+      if(waterActive){
+        canvas.style.display="block";const bgScreen=canvas.previousElementSibling;if(bgScreen)bgScreen.style.opacity="0";
+        canvas.width=canvas.offsetWidth;canvas.height=canvas.offsetHeight;
+        initWaterFishes();startWaterAnim(canvas);
+      }else{
+        canvas.style.display="none";const bgScreen=canvas.previousElementSibling;if(bgScreen)bgScreen.style.opacity="1";
+        if(waterAnim){cancelAnimationFrame(waterAnim);waterAnim=null;}
+      }
+    }
+    function initWaterFishes(){
+      waterFishes=[];waterDecoys=[];
+      if(!state.fishing.inProgress)return;
+      const dm=state.fishing.durationMin||25;const count=getCatchCount(dm);
+      // Pre-roll catches for shadow display
+      for(let i=0;i<count;i++){
+        const r=rollCatch(state.fishing);const stars=r.picked.rarityStars||1;
+        const appearTime=Math.random()*dm*60000*0.8;
+        waterFishes.push({stars,x:0.3+Math.random()*0.4,y:0.4+Math.random()*0.3,vx:(Math.random()-0.5)*0.0003,vy:(Math.random()-0.5)*0.0002,appeared:false,appearAt:appearTime,tunkAt:appearTime+Math.random()*(dm*60000*0.15),tunked:false,size:12+Math.random()*8});
+      }
+      // Decoys
+      for(let i=0;i<8+Math.floor(Math.random()*6);i++){
+        waterDecoys.push({x:Math.random(),y:0.3+Math.random()*0.5,vx:(Math.random()-0.5)*0.0004,vy:(Math.random()-0.5)*0.0002,size:8+Math.random()*6,alpha:0.15+Math.random()*0.1});
+      }
+    }
+    function startWaterAnim(canvas){
+      const ctx=canvas.getContext("2d");const W=canvas.width,H=canvas.height;
+      const startTime=state.fishing.startAt||Date.now();
+      let floatPhase=0;
+      function draw(){
+        waterAnim=requestAnimationFrame(draw);
+        const elapsed=Date.now()-startTime;floatPhase+=0.02;
+        // Water background
+        ctx.fillStyle="#0a3d5c";ctx.fillRect(0,0,W,H);
+        // Ripples
+        for(let i=0;i<5;i++){ctx.beginPath();ctx.strokeStyle=`rgba(120,200,240,${0.04+Math.sin(floatPhase+i)*0.02})`;ctx.lineWidth=1;const y=H*0.3+i*H*0.12+Math.sin(floatPhase*0.5+i)*4;ctx.moveTo(0,y);for(let x=0;x<W;x+=20)ctx.lineTo(x,y+Math.sin(x*0.02+floatPhase+i)*3);ctx.stroke();}
+        // Decoys
+        waterDecoys.forEach(d=>{d.x+=d.vx;d.y+=d.vy;if(d.x<-0.05)d.x=1.05;if(d.x>1.05)d.x=-0.05;if(d.y<0.25||d.y>0.85)d.vy*=-1;
+          ctx.beginPath();ctx.fillStyle=`rgba(0,0,0,${d.alpha})`;ctx.ellipse(d.x*W,d.y*H,d.size,d.size*0.5,0,0,Math.PI*2);ctx.fill();});
+        // Float (bobber)
+        const fx=W*0.5,fy=H*0.35+Math.sin(floatPhase*1.5)*4;
+        let floatShake=0;waterFishes.forEach(f=>{if(f.tunked&&!f.tunkDone&&elapsed>=f.tunkAt&&elapsed<f.tunkAt+800){floatShake=Math.sin((elapsed-f.tunkAt)*0.05)*3;f.tunkDone=elapsed>=f.tunkAt+800;}});
+        ctx.beginPath();ctx.fillStyle="#e44";ctx.arc(fx+floatShake,fy-6,5,0,Math.PI*2);ctx.fill();
+        ctx.beginPath();ctx.fillStyle="#fff";ctx.fillRect(fx-1+floatShake,fy-1,2,10);
+        // Fish shadows
+        waterFishes.forEach(f=>{
+          if(elapsed<f.appearAt){f.appeared=false;return;}f.appeared=true;
+          f.x+=f.vx;f.y+=f.vy;
+          // Tend toward float
+          const dfx=(0.5-f.x)*0.00005,dfy=(0.35-f.y)*0.00003;f.vx+=dfx;f.vy+=dfy;
+          if(f.x<0.05||f.x>0.95)f.vx*=-1;if(f.y<0.25||f.y>0.85)f.vy*=-1;
+          const color=f.stars>=3?"rgba(200,166,0,0.35)":f.stars>=2?"rgba(100,180,220,0.3)":"rgba(0,0,0,0.25)";
+          ctx.beginPath();ctx.fillStyle=color;ctx.ellipse(f.x*W,f.y*H,f.size,f.size*0.5,0,0,Math.PI*2);ctx.fill();
+          // Tail
+          ctx.beginPath();ctx.fillStyle=color;ctx.moveTo(f.x*W+f.size,f.y*H);ctx.lineTo(f.x*W+f.size+6,f.y*H-4);ctx.lineTo(f.x*W+f.size+6,f.y*H+4);ctx.fill();
+        });
+      }
+      draw();
+    }
     function clearFishingUiTimeout(){if(fishingUiTimeout)clearTimeout(fishingUiTimeout);fishingUiTimeout=null;}
     let roomRestFadeTimer=null;
     function handleRoomRestActivity(){if(roomRestFadeTimer)clearTimeout(roomRestFadeTimer);if(state.ui.navCollapsed){state.ui.navCollapsed=false;applyNavState();}el.app.classList.remove("room-rest-faded");if(!el.screens.room.classList.contains("active"))return;roomRestFadeTimer=setTimeout(()=>{if(el.screens.room.classList.contains("active")){state.ui.navCollapsed=true;applyNavState();el.app.classList.add("room-rest-faded");}},10000);}
