@@ -4400,7 +4400,7 @@
         var u3=document.createElement("span");u3.style.cssText="font-size:0.18em;color:#999;";u3.textContent="\u30bb\u30c3\u30c8";row.appendChild(u3);
         var br2=document.createElement("span");br2.style.cssText="font-size:0.3em;color:#bbb;";br2.textContent="\u3011";row.appendChild(br2);
         center.appendChild(row);
-      } else {
+      } else if(idx===2){
         if(!state.normaConfig.rounds)state.normaConfig.rounds=[];
         var rounds=state.normaConfig.rounds,cur=state.normaConfig.currentEdit||0,isEd=cur<rounds.length;
         var dr=document.createElement("div");dr.style.cssText="display:flex;align-items:center;gap:3px;width:100%;justify-content:center;";
