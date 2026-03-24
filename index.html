@@ -1806,8 +1806,8 @@
     .graph-tab.active { background:var(--accent);color:#fff;border-color:var(--accent); }
     .daily-chart { display:grid;grid-template-columns:40px 1fr;gap:6px;height:220px;padding:0 4px; }
     .daily-y-axis { display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;font-size:10px;color:var(--muted); }
-    .daily-bars-area { display:flex;gap:12px;justify-content:center;height:100%;align-items:flex-end;position:relative; }
-    .daily-bar-col { position:relative;height:100%;flex:1;max-width:40%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center; }
+    .daily-bars-area { display:flex;gap:16px;justify-content:center;padding:0 10%;height:100%;align-items:flex-end;position:relative; }
+    .daily-bar-col { position:relative;height:100%;flex:0 0 30%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center; }
     .daily-bar { width:100%;border-radius:0;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:visible;position:relative; }
     .daily-brace-left { position:absolute;left:-54px;top:50%;transform:translateY(-50%);display:flex;align-items:center;z-index:2;pointer-events:none; }
     .daily-brace-right { position:absolute;right:-54px;top:50%;transform:translateY(-50%);display:flex;align-items:center;z-index:2;pointer-events:none; }
@@ -2571,17 +2571,17 @@
 
     /* === Mode Card UI === */
     .mode-card-wrap { position: absolute; right: 0; bottom: 0; z-index: 8; width: min(320px, 48vw); display: flex; flex-direction: column; align-items: stretch; gap: 4px; }
-    .mode-card { background: rgba(255,255,255,0.95); border-radius: 20px; padding: 10px 12px; color: #222; position: relative; aspect-ratio: 1/1; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 8px 30px rgba(0,0,0,0.25); overflow: visible; }
+    .mode-card { background: rgba(255,255,255,0.95); border-radius: 20px; padding: 10px 12px; color: #222; position: relative; aspect-ratio: 1/1; display: flex; flex-direction: column; box-shadow: 0 8px 30px rgba(0,0,0,0.25); overflow: visible; }
     .mc-outside { display: flex; flex-direction: column; gap: 3px; }
     .mc-bottom-row { display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 4px; }
     .mc-bottom-row select { height: 28px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.4); color: #fff; font-size: 9px; font-weight: 700; outline: none; padding: 0 4px; backdrop-filter: blur(4px); }
     .mc-bottom-row .mc-fish-btn { height: 28px; }
-    .mode-card-title { font-size: 22px; font-weight: 900; text-align: center; color: #333; display: flex; align-items: center; justify-content: center; gap: 4px; }
+    .mode-card-title { font-size: clamp(18px,4vw,28px); font-weight: 900; text-align: center; color: #333; display: flex; align-items: center; justify-content: center; gap: 4px; }
     .mode-card-title .mc-need { font-size: 8px; color: #e88; font-weight: 600; }
     .mode-card-nav { position: absolute; top: 8px; border: 0; border-radius: 0; background: transparent; color: var(--accent); font-size: 24px; font-weight: 900; display: grid; place-items: center; cursor: pointer; z-index: 2; width: 30px; height: 30px; }
     .mode-card-nav.left { left: 6px; }
     .mode-card-nav.right { right: 6px; }
-    .mode-card-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
+    .mode-card-center { flex: 1; display: flex; min-height: 0; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
     .mc-time-big { font-size: clamp(28px,5vw,36px); font-weight: 900; color: #1a2a3a; cursor: pointer; text-align: center; line-height: 1; }
     .mc-time-big .mc-val { font-size: 1em; }
     .mc-time-big .mc-unit { font-size: 0.35em; color: #999; font-weight: 700; }
@@ -2597,6 +2597,7 @@
     .mode-card.mode-single { background: rgba(255,230,230,0.95); }
     .mode-card.mode-loop { background: rgba(230,245,255,0.95); }
     .mode-card.mode-norma { background: rgba(255,245,230,0.95); }
+    .mode-card.mode-countup { background: rgba(240,230,255,0.95); }
     /* Norma round dots */
     .mc-norma-dots { display: flex; gap: 2px; align-items: center; justify-content: center; }
     .mc-norma-dots span { width: 16px; height: 16px; border-radius: 50%; font-size: 8px; display: grid; place-items: center; cursor: pointer; border: 1px solid rgba(0,0,0,0.1); }
@@ -2873,6 +2874,11 @@
         </div>
 
         <div id="fishingStampFeed" class="stamp-feed" style="display:none;"></div>
+        <!-- Sub timer widget -->
+        <div id="subTimerWrap" class="fade-ui" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);z-index:10;width:56px;background:rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:6px;backdrop-filter:blur(6px);display:flex;flex-direction:column;align-items:center;gap:4px;">
+          <input id="subTimerInput" type="text" value="--:--" style="width:100%;text-align:center;font-size:14px;font-weight:900;color:#fff;background:transparent;border:0;outline:none;font-family:monospace;" placeholder="--:--"/>
+          <button id="subTimerBtn" style="width:100%;height:24px;border:0;border-radius:8px;background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.6);font-size:10px;font-weight:700;cursor:pointer;">START</button>
+        </div>
 
         <div id="focusOverlay" class="focus-overlay">
           <div id="focusClock" class="focus-clock"></div>
@@ -3175,7 +3181,7 @@
         <span class="utility-fs-title">便利機能 <span id="utilityClockText" style="font-size:12px;color:rgba(0,0,0,0.3);font-weight:600;margin-left:6px;"></span></span>
       </div>
       <div class="utility-fs-tabs">
-        <button class="utility-fs-tab active" data-utab="reminder">通知<span id="uBadgeReminder" class="tab-badge"></span></button>
+        <button class="utility-fs-tab active" data-utab="reminder">予定<span id="uBadgeReminder" class="tab-badge"></span></button>
         <span class="util-tab-onoff"><span id="uToggleReminder" class="util-tab-onoff-btn" data-utab="reminder"></span></span>
         <button class="utility-fs-tab" data-utab="todo">メモ<span id="uBadgeTodo" class="tab-badge"></span></button>
         <span class="util-tab-onoff"><span id="uToggleTodo" class="util-tab-onoff-btn" data-utab="todo"></span></span>
@@ -3457,13 +3463,8 @@
       { id:"item_007_ancient_shell",kind:"item",name:"古代の貝殻",icon:"🐚",basePrice:90,rarity:6,rarityStars:2,strength:7,timeBonus:{day:0,evening:0,night:2},weatherBonus:{sunny:0,cloudy:1,rainy:1},description:"何千年も前の化石のような貝。" },
       { id:"item_008_star_sand",kind:"item",name:"星の砂",icon:"⭐",basePrice:150,rarity:9,rarityStars:3,strength:11,timeBonus:{day:-1,evening:2,night:3},weatherBonus:{sunny:0,cloudy:1,rainy:0},description:"夜空から落ちた砂粒。" },
     ];
-     const BGM_LIST = [
-     { id:'bgm01', title:'bgm01', url:'bgm01.mp3', credit:'Credit: Sample BGM' },
-      { id:'bgm02', title:'深い夜に浮かぶ', url:'bgm02.mp3', credit:'Credit:@NyalpacaBGM' },
-        { id:'bgm03', title:'人狼の為の子守唄 ', url:'bgm03.mp3', credit:'Credit:しゃろう' },
-       { id:'bgm04', title:'サカナだった頃 ', url:'bgm04.mp3', credit:'Credit:MATSU' },
-        { id:'bgm05', title:'ねこと暖炉でまどろむ', url:'bgm05.mp3', credit:'Credit:@NyalpacaBGM' },
-
+    const BGM_LIST = [
+      { id:'bgm01', title:'bgm01', url:'bgm01.mp3', credit:'Credit: Sample BGM' },
     ];
     const SFX_LIST = [
       { id:'sound01', title:'sound01', url:'sound01.mp3', credit:'Credit: Sample SFX' },
@@ -3483,7 +3484,7 @@
     let pendingAuthMode=null,pendingDisplayName=null,pendingGuestMobileIntro=false,mobileHintShown=false;
     let selectedGiftTarget=null,reloadNavigation=false,activeMailboxMode="official";
     let clockDateExpanded=false,storeActiveCategory=null;
-    let bgmAudio=null,bgmPlaying=false,bgmMuted=false,bgmVolume=70,sfxMuted=false,sfxVolume=70;
+    let bgmAudio=null,bgmPlaying=false,bgmMuted=false,bgmVolume=5,sfxMuted=false,sfxVolume=70;
     let bgmCurrentIndex=0,bgmLoopMode='loop',bgmFavOnly=false,bgmFavList=[];
 
     const DEFAULT_STATE = {
@@ -3702,8 +3703,8 @@
       el.leaveRoomBtnLeft.addEventListener("click",()=>leaveRoom(false).catch(console.error));
       // roomFishingBtn is now dynamically created in renderModeCard
       // Mode card navigation
-      el.modeNavLeft.addEventListener("click",()=>{state.ui.modeIndex=(state.ui.modeIndex+2)%3;renderModeCard();saveAll().catch(console.error);});
-      el.modeNavRight.addEventListener("click",()=>{state.ui.modeIndex=(state.ui.modeIndex+1)%3;renderModeCard();saveAll().catch(console.error);});
+      el.modeNavLeft.addEventListener("click",()=>{state.ui.modeIndex=(state.ui.modeIndex+MODE_NAMES.length-1)%MODE_NAMES.length;renderModeCard();saveAll().catch(console.error);});
+      el.modeNavRight.addEventListener("click",()=>{state.ui.modeIndex=(state.ui.modeIndex+1)%MODE_NAMES.length;renderModeCard();saveAll().catch(console.error);});
       // Mobile mode card hide/show
       const mcToggle=document.getElementById("modeCardToggle"),mcInner=document.getElementById("modeCardInner");
       if(mcToggle&&mcInner){if(isMobile())mcToggle.style.display="block";mcToggle.addEventListener("click",()=>{const hidden=mcInner.style.display==="none";mcInner.style.display=hidden?"":"none";mcToggle.textContent=hidden?"⇓":"⇑";});}
@@ -3764,6 +3765,17 @@
         }catch(e){console.warn("PiP failed:",e);toast("PiPに対応していません");}
       });
       document.getElementById("timerMegaBtn")?.addEventListener("click",toggleTimerMega);
+      // Sub timer
+      let subTimerRunning=false,subTimerEnd=0,subTimerInterval=null;
+      const stBtn=document.getElementById("subTimerBtn"),stInp=document.getElementById("subTimerInput"),stWrap=document.getElementById("subTimerWrap");
+      if(stBtn)stBtn.addEventListener("click",()=>{
+        if(subTimerRunning){clearInterval(subTimerInterval);subTimerRunning=false;stBtn.textContent="START";stBtn.style.background="rgba(255,255,255,0.12)";stInp.style.color="#fff";if(stWrap)stWrap.style.borderColor="rgba(255,255,255,0.12)";return;}
+        const parts=(stInp.value||"").split(":");const mins=parseInt(parts[0])||0;const secs=parseInt(parts[1])||0;
+        const totalMs=(mins*60+secs)*1000;if(totalMs<=0){toast("時間を入力");return;}
+        subTimerEnd=Date.now()+totalMs;subTimerRunning=true;
+        stBtn.textContent="STOP";stBtn.style.background="rgba(128,0,192,0.4)";stInp.style.color="#c084fc";if(stWrap)stWrap.style.borderColor="rgba(128,0,192,0.4)";
+        subTimerInterval=setInterval(()=>{const r=Math.max(0,subTimerEnd-Date.now());stInp.value=fmtRemain(r);if(r<=0){clearInterval(subTimerInterval);subTimerRunning=false;stBtn.textContent="START";stBtn.style.background="rgba(255,255,255,0.12)";stInp.style.color="#fff";if(stWrap)stWrap.style.borderColor="rgba(255,255,255,0.12)";try{const a=new Audio('alarm.mp3');a.volume=0.3;a.play().catch(()=>{});}catch(e){}tryVibrate([200,100,200]);}},200);
+      });
       document.getElementById("timerExtendBtn")?.addEventListener("click",()=>{
         if(!state.fishing.inProgress)return;
         const maxExtra=state.fishing.durationMin*60;
@@ -4229,7 +4241,7 @@
       el.utilRoomToggle.textContent=vis?"▼":"▶";
       el.utilRoomCards.style.display=vis?"flex":"none";
       el.utilRoomCards.innerHTML="";
-      const catLabel={reminder:"通知",todo:"メモ",record:"スケジュール"};
+      const catLabel={reminder:"予定",todo:"メモ",record:"スケジュール"};
       const nowHm=currentHm();let totalCards=0;
       tabs.forEach(tab=>{
         let items=[];
@@ -4354,72 +4366,88 @@
     function fillBaitSelector(){}
     function applySelectors(){el.displayNameInput.value=state.user.displayName||"釣り人";el.settingsDisplayName.textContent=state.user.displayName||"釣り人";el.toggleWave.checked=!!state.settings.waveSound;el.toggleCatch.checked=!!state.settings.catchSound;el.toggleNotify.checked=!!state.settings.browserNotify;el.toggleShake.checked=!!state.settings.shakeOnFinish;const tsel=document.getElementById('taskCategorySelect');if(tsel)tsel.value=state.selectedTaskCategory||'work';syncGoalInputs();renderModeCard();}
 
-    const MODE_NAMES=["単発作業","連続作業","ノルマ作業"];
+    const MODE_NAMES=["単発作業","連続作業","ノルマ作業","カウントアップ"];
     function renderModeCard(){
       const activeEl=document.activeElement;
       if(activeEl&&el.modeCardBody.contains(activeEl)&&(activeEl.tagName==="INPUT"))return;
       const idx=state.ui.modeIndex||0;
       el.modeNavLeft.style.display="grid";el.modeNavRight.style.display="grid";
       const body=el.modeCardBody;body.innerHTML="";
-      el.modeCard.className="mode-card "+["mode-single","mode-loop","mode-norma"][idx];
+      el.modeCard.className="mode-card "+["mode-single","mode-loop","mode-norma","mode-countup"][idx]||"mode-single";
       const lr=state.loopRun.active&&state.loopRun.phase==="rest";
       let need="";
-      if(idx===1){const n=Math.max(0,(state.loopConfig.count||1)-(state.baitCounts[state.loopConfig.baitId||state.selectedBaitId]||0));if(n>0)need="餌不足";}
-      if(idx===2){const r=state.normaConfig.rounds||[];if(r.length>(state.baitCounts[state.selectedBaitId]||0))need="餌不足";}
+      if(idx===1){const n=Math.max(0,(state.loopConfig.count||2)-(state.baitCounts[state.loopConfig.baitId||state.selectedBaitId]||0));if(n>0)need="\u9909\u4e0d\u8db3";}
+      if(idx===2){const r=state.normaConfig.rounds||[];if(r.length>(state.baitCounts[state.selectedBaitId]||0))need="\u9909\u4e0d\u8db3";}
       el.modeCardTitle.innerHTML=MODE_NAMES[idx]+(need?'<span class="mc-need">'+need+"</span>":"");
-      function mkNum(v,cb,mx){const i=document.createElement("input");i.type="number";i.inputMode="numeric";i.min="1";i.max=String(mx||180);i.value=v>0?String(v):"";i.placeholder="--";i.style.cssText="width:2em;border:0;background:transparent;text-align:center;font-weight:900;color:#1a2a3a;outline:none;font-size:inherit;padding:0;-moz-appearance:textfield;";i.addEventListener("change",()=>{const n=Math.max(1,Math.min(mx||180,parseInt(i.value)||0));if(n>0){cb(n);saveAll().catch(console.error);}});i.addEventListener("click",e=>e.stopPropagation());return i;}
-      function mkBait(v){const s=document.createElement("select");BAIT_TYPES.forEach(b=>{const o=document.createElement("option");o.value=b.id;o.textContent=b.icon+"\u00d7"+(state.baitCounts[b.id]||0);s.appendChild(o);});NUMBERED_BAITS.forEach(nb=>{const c=state.baitCounts[nb.id]||0;if(c>0){const o=document.createElement("option");o.value=nb.id;o.textContent="#"+nb.num+"\u00d7"+c;s.appendChild(o);}});s.value=v;return s;}
-      function mkBot(bv,bcb){const b=document.createElement("div");b.className="mc-bottom-row";const bs=mkBait(bv);bs.addEventListener("change",()=>{bcb(bs.value);saveAll().catch(console.error);});b.appendChild(bs);const ts=document.createElement("select");ts.id="taskCategorySelect";b.appendChild(ts);const fb=document.createElement("button");fb.className="mc-fish-btn";fb.id="roomFishingBtn";fb.textContent=lr?"休憩中\u2026":"釣る";fb.disabled=!!state.fishing.inProgress||lr;b.appendChild(fb);return b;}
-      // Center area
-      const center=document.createElement("div");center.className="mode-card-center";
+      function mkN(v,cb,mx){const i=document.createElement("input");i.type="number";i.inputMode="numeric";i.min="1";i.max=String(mx||180);i.value=v>0?String(v):"";i.placeholder="--";i.style.cssText="width:1.8em;border:0;background:transparent;text-align:center;font-weight:900;color:#1a2a3a;outline:none;font-size:inherit;padding:0;-moz-appearance:textfield;";i.addEventListener("change",function(){var n=Math.max(1,Math.min(mx||180,parseInt(i.value)||0));if(n>0){cb(n);saveAll().catch(console.error);}});i.addEventListener("click",function(e){e.stopPropagation();});return i;}
+      function mkBait(v){var s=document.createElement("select");BAIT_TYPES.forEach(function(b){var o=document.createElement("option");o.value=b.id;o.textContent=b.icon+"\u00d7"+(state.baitCounts[b.id]||0);s.appendChild(o);});NUMBERED_BAITS.forEach(function(nb){var c=state.baitCounts[nb.id]||0;if(c>0){var o=document.createElement("option");o.value=nb.id;o.textContent="#"+nb.num+"\u00d7"+c;s.appendChild(o);}});s.value=v;return s;}
+      function mkBot(bv,bcb){var b=document.createElement("div");b.className="mc-bottom-row";b.style.marginTop="auto";var bs=mkBait(bv);bs.addEventListener("change",function(){bcb(bs.value);saveAll().catch(console.error);});b.appendChild(bs);var ts=document.createElement("select");ts.id="taskCategorySelect";b.appendChild(ts);var fb=document.createElement("button");fb.className="mc-fish-btn";fb.id="roomFishingBtn";fb.textContent=lr?"\u4f11\u61a9\u4e2d\u2026":"\u91e3\u308b";fb.disabled=!!state.fishing.inProgress||lr;b.appendChild(fb);return b;}
+      var center=document.createElement("div");center.className="mode-card-center";
       if(idx===0){
-        const row=document.createElement("div");row.style.cssText="display:flex;align-items:baseline;justify-content:center;font-size:clamp(42px,10vw,60px);line-height:1;";
-        row.appendChild(mkNum(state.selectedCourseMin||25,v=>{state.selectedCourseMin=v;}));
-        const u=document.createElement("span");u.style.cssText="font-size:0.25em;color:#999;font-weight:700;";u.textContent="分";row.appendChild(u);
+        var row=document.createElement("div");row.style.cssText="display:flex;align-items:baseline;justify-content:center;font-size:clamp(48px,12vw,68px);line-height:1;gap:0;";
+        row.appendChild(mkN(state.selectedCourseMin||25,function(v){state.selectedCourseMin=v;}));
+        var u=document.createElement("span");u.style.cssText="font-size:0.25em;color:#999;font-weight:700;";u.textContent="\u5206";row.appendChild(u);
         center.appendChild(row);
       } else if(idx===1){
-        const row=document.createElement("div");row.style.cssText="display:flex;align-items:baseline;justify-content:center;flex-wrap:nowrap;font-size:clamp(28px,6.5vw,42px);line-height:1;gap:0;";
-        row.appendChild(mkNum(state.loopConfig.fishMin||25,v=>{state.loopConfig.fishMin=v;}));
-        row.innerHTML+='<span style="font-size:0.28em;color:#999">分</span><span style="font-size:0.4em;color:#bbb;margin:0 1px">/</span>';
-        row.appendChild(mkNum(state.loopConfig.restMin||5,v=>{state.loopConfig.restMin=v;},60));
-        row.innerHTML+='<span style="font-size:0.28em;color:#999">分</span><span style="font-size:0.35em;color:#bbb">【</span>';
-        row.appendChild(mkNum(state.loopConfig.count||2,v=>{state.loopConfig.count=v;},20));
-        row.innerHTML+='<span style="font-size:0.22em;color:#999">セット</span><span style="font-size:0.35em;color:#bbb">】</span>';
+        var row=document.createElement("div");row.style.cssText="display:flex;align-items:baseline;justify-content:center;flex-wrap:nowrap;font-size:clamp(32px,8vw,48px);line-height:1;gap:0;";
+        row.appendChild(mkN(state.loopConfig.fishMin||25,function(v){state.loopConfig.fishMin=v;}));
+        var u1=document.createElement("span");u1.style.cssText="font-size:0.22em;color:#999;";u1.textContent="\u5206";row.appendChild(u1);
+        var sep=document.createElement("span");sep.style.cssText="font-size:0.35em;color:#bbb;";sep.textContent="/";row.appendChild(sep);
+        row.appendChild(mkN(state.loopConfig.restMin||5,function(v){state.loopConfig.restMin=v;},60));
+        var u2=document.createElement("span");u2.style.cssText="font-size:0.22em;color:#999;";u2.textContent="\u5206";row.appendChild(u2);
+        var br1=document.createElement("span");br1.style.cssText="font-size:0.3em;color:#bbb;margin-left:2px;";br1.textContent="\u3010";row.appendChild(br1);
+        row.appendChild(mkN(state.loopConfig.count||2,function(v){state.loopConfig.count=v;},20));
+        var u3=document.createElement("span");u3.style.cssText="font-size:0.18em;color:#999;";u3.textContent="\u30bb\u30c3\u30c8";row.appendChild(u3);
+        var br2=document.createElement("span");br2.style.cssText="font-size:0.3em;color:#bbb;";br2.textContent="\u3011";row.appendChild(br2);
         center.appendChild(row);
       } else {
         if(!state.normaConfig.rounds)state.normaConfig.rounds=[];
-        const rounds=state.normaConfig.rounds,cur=state.normaConfig.currentEdit||0,isEd=cur<rounds.length;
-        // Dots
-        const dr=document.createElement("div");dr.style.cssText="display:flex;align-items:center;gap:2px;width:100%;";
-        const rb=document.createElement("span");rb.style.cssText="font-size:14px;cursor:pointer;color:#f88;";rb.textContent="\u21b6";
-        rb.addEventListener("click",e=>{e.stopPropagation();state.normaConfig.rounds=[];state.normaConfig.currentEdit=0;saveAll().catch(console.error);renderModeCard();toast("リセット");});dr.appendChild(rb);
-        const dc=document.createElement("div");dc.className="mc-norma-dots";dc.style.flex="1";
-        for(let i=0;i<rounds.length;i++){const d=document.createElement("span");d.className="done";d.textContent=String(i+1);if(i===cur&&isEd)d.style.boxShadow="0 0 0 2px var(--green)";d.addEventListener("click",ev=>{ev.stopPropagation();state.normaConfig.currentEdit=i;renderModeCard();});dc.appendChild(d);}
-        if(rounds.length<9){const ad=document.createElement("span");ad.className="add";ad.textContent="+";ad.addEventListener("click",e=>{e.stopPropagation();state.normaConfig.currentEdit=rounds.length;renderModeCard();});dc.appendChild(ad);}
+        var rounds=state.normaConfig.rounds,cur=state.normaConfig.currentEdit||0,isEd=cur<rounds.length;
+        var dr=document.createElement("div");dr.style.cssText="display:flex;align-items:center;gap:3px;width:100%;justify-content:center;";
+        var rb=document.createElement("span");rb.style.cssText="font-size:16px;cursor:pointer;color:#f88;";rb.textContent="\u21b6";
+        rb.addEventListener("click",function(e){e.stopPropagation();state.normaConfig.rounds=[];state.normaConfig.currentEdit=0;saveAll().catch(console.error);renderModeCard();toast("\u30ea\u30bb\u30c3\u30c8");});dr.appendChild(rb);
+        var dc=document.createElement("div");dc.className="mc-norma-dots";
+        for(var i=0;i<rounds.length;i++){(function(ii){var d=document.createElement("span");d.className="done";d.textContent=String(ii+1);if(ii===cur&&isEd)d.style.boxShadow="0 0 0 2px var(--green)";d.addEventListener("click",function(ev){ev.stopPropagation();state.normaConfig.currentEdit=ii;renderModeCard();});dc.appendChild(d);})(i);}
+        if(rounds.length<9){var ad=document.createElement("span");ad.className="add";ad.textContent="+";ad.addEventListener("click",function(e){e.stopPropagation();
+          var fvN=25,rvN=5;
+          try{var fi=center.querySelector('input[type=number]');if(fi)fvN=parseInt(fi.value)||25;var inputs=center.querySelectorAll('input[type=number]');if(inputs[1])rvN=parseInt(inputs[1].value)||5;}catch(ex){}
+          rounds.push({fishMin:fvN,restMin:rvN,norma:"",baitId:state.selectedBaitId});
+          state.normaConfig.currentEdit=rounds.length-1;saveAll().catch(console.error);renderModeCard();
+        });dc.appendChild(ad);}
         dr.appendChild(dc);
-        const sl=document.createElement("span");sl.style.cssText="font-size:9px;color:#999;white-space:nowrap;";sl.textContent=rounds.length+"セット";dr.appendChild(sl);center.appendChild(dr);
-        // Time
-        const tr=document.createElement("div");tr.style.cssText="display:flex;align-items:baseline;justify-content:center;flex-wrap:nowrap;font-size:clamp(24px,5.5vw,36px);line-height:1;gap:0;";
-        tr.appendChild(mkNum(isEd?rounds[cur].fishMin:25,v=>{if(isEd)rounds[cur].fishMin=v;}));
-        tr.innerHTML+='<span style="font-size:0.28em;color:#999">分</span><span style="font-size:0.4em;color:#bbb;margin:0 1px">/</span>';
-        tr.appendChild(mkNum(isEd?rounds[cur].restMin:5,v=>{if(isEd)rounds[cur].restMin=v;},60));
-        tr.innerHTML+='<span style="font-size:0.28em;color:#999">分</span>';
+        var sl=document.createElement("span");sl.style.cssText="font-size:10px;color:#999;white-space:nowrap;";sl.textContent=rounds.length+"\u30bb\u30c3\u30c8";dr.appendChild(sl);
+        body.appendChild(dr);
+        var tr=document.createElement("div");tr.style.cssText="display:flex;align-items:baseline;justify-content:center;flex-wrap:nowrap;font-size:clamp(30px,7vw,44px);line-height:1;gap:0;";
+        var fvI=mkN(isEd?rounds[cur].fishMin:25,function(v){if(isEd)rounds[cur].fishMin=v;});tr.appendChild(fvI);
+        var fu=document.createElement("span");fu.style.cssText="font-size:0.22em;color:#999;";fu.textContent="\u5206";tr.appendChild(fu);
+        var sp=document.createElement("span");sp.style.cssText="font-size:0.35em;color:#bbb;";sp.textContent="/";tr.appendChild(sp);
+        var rvI=mkN(isEd?rounds[cur].restMin:5,function(v){if(isEd)rounds[cur].restMin=v;},60);tr.appendChild(rvI);
+        var ru=document.createElement("span");ru.style.cssText="font-size:0.22em;color:#999;";ru.textContent="\u5206";tr.appendChild(ru);
         center.appendChild(tr);
-        // Norma input row
-        const nw=document.createElement("div");nw.style.cssText="display:flex;gap:3px;align-items:center;width:100%;margin-top:2px;";
-        const sb=document.createElement("button");sb.className="norma-preset-btn";sb.textContent="保存";sb.addEventListener("click",e=>{e.stopPropagation();saveWorkPreset();});
-        const nt=document.createElement("input");nt.className="mc-norma-input";nt.placeholder="このセットのノルマ";nt.type="text";nt.value=isEd?(rounds[cur].norma||""):"";
-        nt.addEventListener("click",e=>e.stopPropagation());
-        nt.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();const nv=nt.value.trim();if(!nv){toast("ノルマを入力");return;}const fvN=parseInt(tr.querySelector("input")?.value)||25,rvN=parseInt(tr.querySelectorAll("input")[1]?.value)||5;if(isEd)rounds[cur]={fishMin:fvN,restMin:rvN,norma:nv,baitId:state.selectedBaitId};else if(rounds.length<9)rounds.push({fishMin:fvN,restMin:rvN,norma:nv,baitId:state.selectedBaitId});state.normaConfig.currentEdit=rounds.length;saveAll().catch(console.error);renderModeCard();}});
-        const lb=document.createElement("button");lb.className="norma-preset-btn";lb.textContent="プリセット";lb.addEventListener("click",e=>{e.stopPropagation();openWorkPresetList();});
-        nw.append(sb,nt,lb);center.appendChild(nw);
+        var nw=document.createElement("div");nw.style.cssText="display:flex;gap:3px;align-items:center;width:100%;";
+        var sb=document.createElement("button");sb.className="norma-preset-btn";sb.textContent="\u4fdd\u5b58";sb.addEventListener("click",function(e){e.stopPropagation();saveWorkPreset();});
+        var nt=document.createElement("input");nt.className="mc-norma-input";nt.placeholder="\u3053\u306e\u30bb\u30c3\u30c8\u306e\u30ce\u30eb\u30de";nt.type="text";nt.value=isEd?(rounds[cur].norma||""):"";
+        nt.addEventListener("click",function(e){e.stopPropagation();});
+        nt.addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();var nv=nt.value.trim();if(!nv){toast("\u30ce\u30eb\u30de\u3092\u5165\u529b");return;}var fvN=parseInt(fvI.value)||25,rvN=parseInt(rvI.value)||5;if(isEd)rounds[cur]={fishMin:fvN,restMin:rvN,norma:nv,baitId:state.selectedBaitId};else if(rounds.length<9)rounds.push({fishMin:fvN,restMin:rvN,norma:nv,baitId:state.selectedBaitId});state.normaConfig.currentEdit=rounds.length;saveAll().catch(console.error);renderModeCard();}});
+        var lb=document.createElement("button");lb.className="norma-preset-btn";lb.textContent="\u30d7\u30ea\u30bb\u30c3\u30c8";lb.addEventListener("click",function(e){e.stopPropagation();openWorkPresetList();});
+        nw.append(sb,nt,lb);
+      } else if(idx===3){
+        // === カウントアップ ===
+        var cuLabel=document.createElement("div");cuLabel.style.cssText="font-size:clamp(32px,8vw,48px);font-weight:900;color:#1a2a3a;text-align:center;font-family:monospace;";cuLabel.textContent="00:00";cuLabel.id="countupDisplay";
+        var cuSub=document.createElement("div");cuSub.style.cssText="font-size:11px;color:#999;text-align:center;";cuSub.textContent="作業時間を自由に記録";
+        center.appendChild(cuLabel);center.appendChild(cuSub);
       }
       body.appendChild(center);
-      const baitId=idx===1?(state.loopConfig.baitId||"bait_basic"):state.selectedBaitId;
-      const baitCb=idx===1?(v=>{state.loopConfig.baitId=v;}):(v=>{state.selectedBaitId=v;});
+      if(idx===2&&typeof nw!=="undefined")body.appendChild(nw);
+      var baitId=idx===1?(state.loopConfig.baitId||"bait_basic"):state.selectedBaitId;
+      var baitCb=idx===1?function(v){state.loopConfig.baitId=v;}:function(v){state.selectedBaitId=v;};
       body.appendChild(mkBot(baitId,baitCb));
-      fillTaskSelect();const tsel=document.getElementById("taskCategorySelect");if(tsel)tsel.value=state.selectedTaskCategory||"work";
-      const fishBtn=document.getElementById("roomFishingBtn");if(fishBtn)fishBtn.addEventListener("click",startFishingFromRoom);
+      fillTaskSelect();var tsel=document.getElementById("taskCategorySelect");if(tsel)tsel.value=state.selectedTaskCategory||"work";
+      var fishBtn=document.getElementById("roomFishingBtn");
+      if(fishBtn){
+        if(idx===3){fishBtn.textContent="開始";fishBtn.addEventListener("click",startCountupFishing);}
+        else{fishBtn.addEventListener("click",startFishingFromRoom);}
+      }
     }
     function saveWorkPreset(){
       const rounds=state.normaConfig.rounds||[];
@@ -4563,7 +4591,53 @@
     function finishLoopRun(cancelled){state.loopRun.active=false;state.loopRun.phase=null;state.loopRun.restEndAt=null;state.room.status="idle";syncPresence().catch(console.error);stopIdleTracking();startIdleTracking();renderLoopInfo();if(state.loopRun.results.length>0){state.batchResults=[...state.loopRun.results];openBatchModal();}else if(cancelled)toast("ループを終了しました。");state.loopRun.results=[];saveAll().catch(console.error);switchScreen("room");renderAll();}
     function pauseFishing(){if(!state.fishing.inProgress||state.fishing.paused)return;state.fishing.paused=true;state.fishing.pausedAt=Date.now();state.fishing.remainingMs=Math.max(0,state.fishing.endAt-Date.now());state.room.status="paused";syncPresence().catch(console.error);stopTimerTick();toast("タイマーを一時停止しました。");saveAll().catch(console.error);renderAll();}
     function resumeFishing(){if(!state.fishing.inProgress||!state.fishing.paused)return;state.fishing.paused=false;state.fishing.endAt=Date.now()+(state.fishing.remainingMs||0);state.fishing.pausedAt=null;state.fishing.remainingMs=null;state.room.status="fishing";syncPresence().catch(console.error);toast("タイマーを再開しました。");saveAll().catch(console.error);renderAll();startTimerTick();}
-    function cancelFishingNoReward(){if(state.loopRun.active){stopTimerTick();state.fishing.inProgress=false;state.fishing.paused=false;setFocusMode(false);stopBgmOnFishEnd();finishLoopRun(true);return;}if(!state.fishing.inProgress)return;stopTimerTick();stopBgmOnFishEnd();state.fishing.inProgress=false;state.fishing.paused=false;state.fishing.remainingMs=null;state.room.status="idle";state.ui.timerMega=false;syncPresence().catch(console.error);setFocusMode(false);toast("報酬なしで終了しました。");saveAll().catch(console.error);switchScreen("room");startIdleTracking();ensureRoomVisual();renderAll();}
+    function cancelFishingNoReward(){if(state.countupRun?.active){finishCountupFishing();return;}if(state.loopRun.active){stopTimerTick();state.fishing.inProgress=false;state.fishing.paused=false;setFocusMode(false);stopBgmOnFishEnd();finishLoopRun(true);return;}if(!state.fishing.inProgress)return;stopTimerTick();stopBgmOnFishEnd();state.fishing.inProgress=false;state.fishing.paused=false;state.fishing.remainingMs=null;state.room.status="idle";state.ui.timerMega=false;syncPresence().catch(console.error);setFocusMode(false);toast("報酬なしで終了しました。");saveAll().catch(console.error);switchScreen("room");startIdleTracking();ensureRoomVisual();renderAll();}
+    // === Countup Mode ===
+    let countupTimer=null;
+    if(!state.countupRun)state.countupRun={active:false,startAt:null};
+    function startCountupFishing(){
+      if(!state.room.inRoom){toast("先に部屋に入ってください。");return;}
+      const bid=state.selectedBaitId;if((state.baitCounts[bid]||0)<=0){toast("餌が足りません。");return;}
+      state.baitCounts[bid]=Math.max(0,(state.baitCounts[bid]||0)-1);
+      state.countupRun={active:true,startAt:Date.now()};
+      state.fishing.taskCategory=state.selectedTaskCategory||'work';
+      state.fishing.inProgress=true;state.fishing.paused=false;state.fishing.startAt=Date.now();
+      state.fishing.endAt=Date.now()+999999999;state.fishing.durationMin=0;state.fishing.baitId=bid;
+      state.fishing.normaText="";state.fishing.extraSec=0;
+      refreshConditions(true);state.fishing.weather=state.currentConditions.weather;state.fishing.timeOfDay=state.currentConditions.timeOfDay;
+      state.room.status="fishing";syncPresence().catch(console.error);
+      switchScreen("fishing");autoPlayBgmOnFishing();saveAll().catch(console.error);
+      // Start countup display
+      if(countupTimer)clearInterval(countupTimer);
+      countupTimer=setInterval(()=>{
+        if(!state.countupRun.active){clearInterval(countupTimer);return;}
+        const elapsed=Date.now()-state.countupRun.startAt;
+        const timerEl=document.getElementById("timerText");if(timerEl)timerEl.textContent=fmtRemain(elapsed);
+        const planEl=document.getElementById("timerPlanMini");if(planEl)planEl.textContent="カウントアップ";
+        // Realtime results update
+        const elapsedMin=Math.max(1,Math.round(elapsed/60000));
+        addWorkSession(0,null,state.fishing.taskCategory);
+      },1000);
+      renderAll();handleFishingActivity();
+    }
+    function finishCountupFishing(){
+      if(countupTimer){clearInterval(countupTimer);countupTimer=null;}
+      const elapsed=Date.now()-(state.countupRun.startAt||Date.now());
+      const elapsedMin=Math.max(1,Math.round(elapsed/60000));
+      state.fishing.durationMin=elapsedMin;state.countupRun.active=false;
+      // Clean up water surface
+      waterActive=false;waterInited=false;const wc=document.getElementById("waterSurface");if(wc)wc.style.display="none";const wbg=wc?.previousElementSibling;if(wbg)wbg.style.visibility="visible";if(waterAnim){cancelAnimationFrame(waterAnim);waterAnim=null;}
+      stopBgmOnFishEnd();
+      const count=getCatchCount(elapsedMin);const results=[];
+      for(let i=0;i<count;i++){const r=rollCatch(state.fishing);results.push(r);}
+      const tc=state.fishing.taskCategory||'work';
+      results.forEach(r=>{r.isNew=!state.encyclopedia[r.picked.id]||state.encyclopedia[r.picked.id].count===0;});
+      results.forEach(r=>{addWorkSession(Math.round(elapsedMin/count),r,tc);applyCatchRecord(r);});
+      state.fishing.inProgress=false;state.fishing.paused=false;state.room.status="idle";
+      syncPresence().catch(console.error);setFocusMode(false);
+      if(results.length===1){pendingResult=results[0];saveAll().catch(console.error);renderAll();openResultModal(results[0]);}
+      else{state.batchResults=[...results];saveAll().catch(console.error);renderAll();openBatchModal();}
+    }
     function cancelFishingOnReload(){stopTimerTick();state.fishing.inProgress=false;state.fishing.paused=false;state.fishing.remainingMs=null;state.room.status="idle";state.ui.focusMode=false;state.ui.timerMega=false;syncPresence().catch(console.error);saveAll().catch(console.error);toast("リロードのため釣りを終了しました。");renderAll();}
     function restoreFishingTimer(){if(!state.fishing.inProgress)return;if(state.fishing.paused)renderFishingStatus();else if(Date.now()>=state.fishing.endAt)finishFishing();else startTimerTick();}
     function startTimerTick(){stopTimerTick();timerTickHandle=setInterval(()=>{if(!state.fishing.inProgress||state.fishing.paused){stopTimerTick();renderFishingStatus();return;}if(Date.now()>=state.fishing.endAt){finishFishing();return;}renderFishingStatus();},300);}
@@ -4574,12 +4648,14 @@
     function getCatchCount(min){if(min>=50)return 7;if(min>=25)return 5;if(min>=10)return 3;return 1;}
     function finishFishing(){stopTimerTick();if(!state.fishing.inProgress)return;if(state.settings.catchSound)playAudio("time.mp3","time");maybeNotify();stopBgmOnFishEnd();tryVibrate([200,100,200]);
       // Clean up water surface
-      if(waterActive){waterActive=false;const wc=document.getElementById("waterSurface");if(wc)wc.style.display="none";const bg=wc?.previousElementSibling;if(bg)bg.style.opacity="1";if(waterAnim){cancelAnimationFrame(waterAnim);waterAnim=null;}}
+      waterActive=false;waterInited=false;const wc=document.getElementById("waterSurface");if(wc)wc.style.display="none";const wbg=wc?.previousElementSibling;if(wbg)wbg.style.visibility="visible";if(waterAnim){cancelAnimationFrame(waterAnim);waterAnim=null;}
       const dm=state.fishing.durationMin;const count=getCatchCount(dm);
       const results=[];for(let i=0;i<count;i++){const r=rollCatch(state.fishing);if(dm>=50&&i===0)r.isRare=true;results.push(r);}
       // Rare upgrade bonus for 50+ min
       if(dm>=50){const parts=Object.keys(state.upgrades);const rp=parts[Math.floor(Math.random()*parts.length)];state.upgrades[rp]=(state.upgrades[rp]||0)+1;toast(`🎣 ${UPGRADE_PARTS.find(p=>p.id===rp)?.name||rp} が自動強化されました！`);}
       const tc=state.fishing.taskCategory||'work';
+      // Mark NEW before applying records
+      results.forEach(r=>{r.isNew=!state.encyclopedia[r.picked.id]||state.encyclopedia[r.picked.id].count===0;});
       results.forEach(r=>{addWorkSession(Math.round(dm/count),r,tc);applyCatchRecord(r);});
       state.lastCatch=results[0]?.entry||null;state.fishing.inProgress=false;state.fishing.paused=false;state.ui.timerMega=false;state.room.status="idle";state.fishing.normaText="";state.fishing.extraSec=0;syncPresence().catch(console.error);setFocusMode(false);
       if(state.loopRun.active){results.forEach(r=>state.loopRun.results.push(r));saveAll().catch(console.error);if(state.loopRun.current>=state.loopRun.total)finishLoopRun(false);else startLoopRest();return;}
@@ -4619,7 +4695,7 @@
       el.loopRestSub.textContent="休憩中";
     }
     function tryVibrate(pattern){if(state.settings.vibrate&&isMobile()&&navigator.vibrate)try{navigator.vibrate(pattern);}catch(e){}}
-    function checkReminders(){const hm=currentHm(),today=todayKey();(state.productivity.reminders||[]).forEach(r=>{if(r.on===false||!r.time||r.time!==hm||r.lastFiredDay===today)return;r.lastFiredDay=today;try{const a=new Audio('alarm.mp3');a.volume=sfxVolume/100;a.play().catch(()=>{});}catch(e){}persistentNotify(`🔔 ${r.title||"通知"}の時間です`,`rem_${r.id}_${today}`,r.time);if(typeof Notification!=="undefined"&&Notification.permission==="granted")new Notification(`${r.title||"通知"}の時間です`);saveAll().catch(console.error);});
+    function checkReminders(){const hm=currentHm(),today=todayKey();(state.productivity.reminders||[]).forEach(r=>{if(r.on===false||!r.time||r.time!==hm||r.lastFiredDay===today)return;r.lastFiredDay=today;try{const a=new Audio('alarm.mp3');a.volume=sfxVolume/100;a.play().catch(()=>{});}catch(e){}persistentNotify(`🔔 ${r.title||"予定"}の時間です`,`rem_${r.id}_${today}`,r.time);if(typeof Notification!=="undefined"&&Notification.permission==="granted")new Notification(`${r.title||"予定"}の時間です`);saveAll().catch(console.error);});
       (state.productivity.todos||[]).forEach(t=>{if(!t.notifyTime||t.completed||t.notifyTime!==hm||t.notifyFiredDay===today)return;t.notifyFiredDay=today;try{const a=new Audio('alarm.mp3');a.volume=sfxVolume/100;a.play().catch(()=>{});}catch(e){}persistentNotify(`📝 ${t.title||"メモ"}の時間です`,`todo_${t.id}_${today}`,t.notifyTime);saveAll().catch(console.error);});
       // Schedule alarms
       const dk=getScheduleKey(0);(state.productivity.schedules||[]).filter(s=>s.dayKey===dk).forEach(s=>{
@@ -4629,7 +4705,7 @@
     }
 
     function renderLoopMode(){/* Now handled by renderModeCard */}
-    function renderLoopInfo(){if(!state.loopRun.active){el.roomLoopInfo.classList.remove("show");return;}let l=`ループ ${state.loopRun.current}/${state.loopRun.total}`;if(state.loopRun.phase==="rest"&&state.loopRun.restEndAt)l+=` / 休憩 ${fmtRemain(Math.max(0,state.loopRun.restEndAt-Date.now()))}`;else if(state.loopRun.phase==="fishing")l+=" / 釣り中";el.roomLoopInfo.textContent=l;el.roomLoopInfo.classList.add("show");}
+    function renderLoopInfo(){if(!state.loopRun.active){el.roomLoopInfo.classList.remove("show");return;}if(state.loopRun.phase==="rest"||state.normaRun.phase==="rest"){el.roomLoopInfo.classList.remove("show");return;}let l=`ループ ${state.loopRun.current}/${state.loopRun.total}`;if(state.loopRun.phase==="fishing")l+=" / 釣り中";el.roomLoopInfo.textContent=l;el.roomLoopInfo.classList.add("show");}
 
     function renderFishingStatus(){refreshConditions();if(state.fishing.inProgress){const total=state.fishing.durationMin*60000+(state.fishing.extraSec||0)*1000;const remain=state.fishing.paused?(state.fishing.remainingMs||0):Math.max(0,state.fishing.endAt-Date.now());const ratio=Math.min(1,Math.max(0,remain/total));if(el.timerText)el.timerText.textContent=fmtRemain(remain);if(el.timerPlanMini)el.timerPlanMini.textContent=`${state.fishing.durationMin}min`;if(el.timerStatus)el.timerStatus.textContent=state.fishing.paused?"停止中":"";if(el.fishingTimer)el.fishingTimer.classList.add("active");updateTimerIcon(state.fishing.paused,false);setGauge(ratio);if(el.toggleFishingBtn)el.toggleFishingBtn.disabled=false;if(el.cancelFishingBtn)el.cancelFishingBtn.disabled=false;if(el.focusProgressFill)el.focusProgressFill.style.width=`${ratio*100}%`;
       // Norma display (only in norma mode)
@@ -4652,14 +4728,13 @@
       el.resultLines.innerHTML=r.entry.kind==="fish"?`すごさ：${greatness(r.entry.sizeCm,r.picked.avgSize)}<br/>条件：${trTime(r.source.timeOfDay)} / ${trWeather(r.source.weather)}`:`漂流物<br/>条件：${trTime(r.source.timeOfDay)} / ${trWeather(r.source.weather)}`;
       el.sizeMeterLabel.textContent=r.entry.kind==="fish"?"サイズバー":"サイズなし";renderSizeMeter(r);
       el.resultFlags.innerHTML="";
-      // NEW badge for first catch
-      const isNew=!state.encyclopedia[r.picked.id]||state.encyclopedia[r.picked.id].count===0;
-      if(isNew)el.resultFlags.appendChild(makeFlag("NEW","rare"));
+      // NEW badge
+      if(r.isNew)el.resultFlags.appendChild(makeFlag("NEW","rare"));
       if(r.isRare)el.resultFlags.appendChild(makeFlag("レア","rare"));if(r.isRecord)el.resultFlags.appendChild(makeFlag("最大更新","record"));if(r.isHuge)el.resultFlags.appendChild(makeFlag("超巨大","huge"));if(r.bonusText)el.resultFlags.appendChild(makeFlag(r.bonusText,""));el.resultModal.classList.add("show");}
     function renderSizeMeter(r){el.sizeOverflowBadge.textContent="";el.sizeDeltaLabel.textContent="";el.sizeAvgBelow.textContent="";if(r.entry.kind!=="fish"){el.sizeFill.style.width="0%";return;}const avg=r.picked.avgSize,sz=r.entry.sizeCm,ratio=sz/avg;const norm=ratio<=1?Math.max(0,ratio*0.5):0.5+(ratio-1)*0.5;const cap=Math.min(norm,1);el.sizeFill.style.width=`${cap*100}%`;const d=sizeDelta(sz,avg);el.sizeDeltaLabel.innerHTML=d.html;el.sizeDeltaLabel.style.left=`calc(${cap*100}% + 6px)`;el.sizeAvgBelow.textContent=`${fmtSize(avg)}cm`;if(norm>1){el.sizeOverflowBadge.style.left="calc(100% + 8px)";el.sizeOverflowBadge.textContent="★";}}
     function makeFlag(text,cls){const d=document.createElement("div");d.className=`flag ${cls}`;d.textContent=text;return d;}
-    async function keepPending(){if(!pendingResult)return;state.inventory.unshift(pendingResult.entry);applyCatchRecord(pendingResult);toast(`${pendingResult.entry.name} を所持品に入れました。`);pendingResult=null;el.resultModal.classList.remove("show");await recoverAfterResult();}
-    async function sellPending(){if(!pendingResult)return;state.money+=pendingResult.entry.sellPrice;addEarnings(pendingResult.entry.sellPrice);applyCatchRecord(pendingResult);toast(`${pendingResult.entry.name} を ${pendingResult.entry.sellPrice} zz で売却しました。`);pendingResult=null;el.resultModal.classList.remove("show");await recoverAfterResult();}
+    async function keepPending(){if(!pendingResult)return;state.inventory.unshift(pendingResult.entry);toast(`${pendingResult.entry.name} を所持品に入れました。`);pendingResult=null;el.resultModal.classList.remove("show");await recoverAfterResult();}
+    async function sellPending(){if(!pendingResult)return;state.money+=pendingResult.entry.sellPrice;addEarnings(pendingResult.entry.sellPrice);toast(`${pendingResult.entry.name} を ${pendingResult.entry.sellPrice} zz で売却しました。`);pendingResult=null;el.resultModal.classList.remove("show");await recoverAfterResult();}
 
     // Batch result
     let batchIndex=0;
@@ -4807,7 +4882,7 @@
       renderDailyGraph();}
     function getWeekStats(){const n=new Date();const d=n.getDay();const diff=d===0?-6:1-d;const mon=new Date(n);mon.setHours(0,0,0,0);mon.setDate(n.getDate()+diff);const labels=["月","火","水","木","金","土","日"];const days=[];for(let i=0;i<7;i++){const x=new Date(mon);x.setDate(mon.getDate()+i);const k=`${x.getFullYear()}-${x.getMonth()+1}-${x.getDate()}`;days.push({key:k,stat:getDayStat(k),label:labels[i],dateLabel:`${x.getMonth()+1}/${x.getDate()}`});}return{days};}
     function getStarStyle(stars){
-      if(stars>=3)return{bg:"linear-gradient(135deg,#c8a600,#ffd700,#c8a600)",text:"#fff",star:"#ffe033"};
+      if(stars>=3)return{bg:"linear-gradient(135deg,#c8a600,#ffd700,#c8a600)",text:"#fff",star:"#ffd700"};
       if(stars>=2)return{bg:"linear-gradient(135deg,#1a5276,#2e86c1,#1a5276)",text:"#e0f0ff",star:"#7bdff5"};
       return{bg:"linear-gradient(135deg,#1a1a1a,#333,#1a1a1a)",text:"#ddd",star:"#999"};
     }
@@ -4879,16 +4954,19 @@
     // Misc
     function handleFishingActivity(){if(!state.fishing.inProgress||!el.screens.fishing.classList.contains("active")||state.ui.focusMode)return;state.ui.fishingUiVisible=true;el.app.classList.remove("fishing-ui-faded");clearFishingUiTimeout();fishingUiTimeout=setTimeout(()=>{if(state.fishing.inProgress&&el.screens.fishing.classList.contains("active")&&!state.ui.focusMode){state.ui.fishingUiVisible=false;el.app.classList.add("fishing-ui-faded");}},FISHING_UI_IDLE_MS);}
     // === Water Surface Background ===
-    let waterActive=false,waterAnim=null,waterFishes=[],waterDecoys=[];
+    let waterActive=false,waterAnim=null,waterFishes=[],waterDecoys=[],waterInited=false;
     function toggleWaterSurface(){
       const canvas=document.getElementById("waterSurface");if(!canvas)return;
       waterActive=!waterActive;
       if(waterActive){
-        canvas.style.display="block";const bgScreen=canvas.previousElementSibling;if(bgScreen)bgScreen.style.opacity="0";
-        canvas.width=canvas.offsetWidth;canvas.height=canvas.offsetHeight;
-        initWaterFishes();startWaterAnim(canvas);
+        canvas.style.display="block";canvas.style.zIndex="1";
+        const bg=canvas.previousElementSibling;if(bg)bg.style.visibility="hidden";
+        canvas.width=canvas.offsetWidth||360;canvas.height=canvas.offsetHeight||640;
+        if(!waterInited){initWaterFishes();waterInited=true;}
+        startWaterAnim(canvas);
       }else{
-        canvas.style.display="none";const bgScreen=canvas.previousElementSibling;if(bgScreen)bgScreen.style.opacity="1";
+        canvas.style.display="none";
+        const bg=canvas.previousElementSibling;if(bg)bg.style.visibility="visible";
         if(waterAnim){cancelAnimationFrame(waterAnim);waterAnim=null;}
       }
     }
