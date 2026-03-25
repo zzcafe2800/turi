@@ -4748,7 +4748,6 @@
       el.sizeMeterLabel.textContent=r.entry.kind==="fish"?"サイズバー":"サイズなし";renderSizeMeter(r);
       el.resultFlags.innerHTML="";
       // NEW badge - top right, large
-      const artCard=el.resultArtEmoji.parentElement;
       const existingNew=artCard?.querySelector(".new-badge");if(existingNew)existingNew.remove();
       if(r.isNew){const nb=document.createElement("div");nb.className="new-badge";nb.style.cssText="position:absolute;top:8px;right:8px;background:#ff3366;color:#fff;font-size:16px;font-weight:900;padding:3px 10px;border-radius:8px;z-index:5;letter-spacing:1px;text-shadow:0 1px 4px rgba(0,0,0,0.3);";nb.textContent="NEW";if(artCard)artCard.appendChild(nb);}
       if(r.isRare)el.resultFlags.appendChild(makeFlag("レア","rare"));if(r.isRecord)el.resultFlags.appendChild(makeFlag("最大更新","record"));if(r.isHuge)el.resultFlags.appendChild(makeFlag("超巨大","huge"));if(r.bonusText)el.resultFlags.appendChild(makeFlag(r.bonusText,""));el.resultModal.classList.add("show");}
