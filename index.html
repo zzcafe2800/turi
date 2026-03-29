@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -816,6 +817,8 @@
     .fishing-timer.mega .timer-main-time { font-size: clamp(36px, 5vw, 64px); }
     .fishing-timer.mega .timer-mini-plan { font-size: clamp(16px, 2vw, 24px); }
     .fishing-timer.mega .timer-status { font-size: clamp(14px, 1.5vw, 20px); }
+    .fishing-timer.mega .timer-btn { width: 44px; height: 44px; }
+    .fishing-timer.mega .timer-btn svg { width: 22px; height: 22px; }
     .timer-gauge {
       width: 100%;
       height: 100%;
@@ -2420,6 +2423,7 @@
     .toast button { pointer-events: auto !important; touch-action: manipulation; }
 
     /* ===== Animations ===== */
+    @keyframes catchSparkle { 0%{transform:scale(0);opacity:0} 50%{transform:scale(1.3);opacity:1} 100%{transform:scale(1);opacity:0.6} }
     @keyframes toastInOut {
       0% { opacity: 0; transform: translateY(-6px); }
       10%, 82% { opacity: 1; transform: translateY(0); }
@@ -2692,9 +2696,9 @@
       </button>
 
       <div class="nav-level-wrap">
-        <button id="partsPanelToggle" class="nav-emoji-btn" aria-label="パーツ詳細">🎣<span class="tip">パーツ詳細</span></button>
-        <div id="navLevelList" class="nav-level-list"></div>
-        <button id="mailboxNavBtn" class="nav-emoji-btn" aria-label="お便り">💌<span class="tip">お便り</span><span id="mailNavDot" class="mail-nav-dot"></span></button>
+        
+        
+        
         <div id="userPill" class="user-pill">未ログイン</div>
       </div>
     </nav>
@@ -2875,9 +2879,9 @@
 
         <div id="fishingStampFeed" class="stamp-feed" style="display:none;"></div>
         <!-- Sub timer widget -->
-        <div id="subTimerWrap" class="fade-ui" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);z-index:10;width:56px;background:rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:6px;backdrop-filter:blur(6px);display:flex;flex-direction:column;align-items:center;gap:4px;">
-          <input id="subTimerInput" type="text" value="--:--" style="width:100%;text-align:center;font-size:14px;font-weight:900;color:#fff;background:transparent;border:0;outline:none;font-family:monospace;" placeholder="--:--"/>
-          <button id="subTimerBtn" style="width:100%;height:24px;border:0;border-radius:8px;background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.6);font-size:10px;font-weight:700;cursor:pointer;">START</button>
+        <div id="subTimerWrap" class="fade-ui" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);z-index:10;width:160px;background:rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:6px;backdrop-filter:blur(6px);display:flex;flex-direction:column;align-items:center;gap:4px;">
+          <input id="subTimerInput" type="text" value="00:00" style="width:100%;text-align:center;font-size:28px;font-weight:900;color:#fff;background:transparent;border:0;outline:none;font-family:monospace;" placeholder="--:--"/>
+          <button id="subTimerBtn" style="width:100%;height:36px;border:0;border-radius:8px;background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.6);font-size:10px;font-weight:700;cursor:pointer;">START</button>
         </div>
 
         <div id="focusOverlay" class="focus-overlay">
@@ -3225,6 +3229,18 @@
       </div>
     </section>
 
+    <!-- ===== CATCH ANIMATION ===== -->
+    <div id="catchAnimOverlay" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.7);display:none;flex-direction:column;align-items:center;justify-content:center;">
+      <div id="catchAnimCard" style="width:min(400px,88vw);min-height:220px;border-radius:24px;background:#222;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;box-shadow:0 16px 60px rgba(0,0,0,0.5);">
+        <div id="catchAnimStars" style="position:absolute;top:12px;left:16px;font-size:20px;"></div>
+        <div id="catchAnimNew" style="position:absolute;top:10px;right:14px;font-size:18px;font-weight:900;color:#ff3366;display:none;">NEW</div>
+        <div id="catchAnimName" style="position:absolute;bottom:14px;left:16px;font-size:16px;font-weight:800;color:#fff;"></div>
+        <div id="catchAnimIcon" style="font-size:64px;transition:transform 0.3s;">❔</div>
+        <div id="catchAnimEffect" style="position:absolute;inset:0;pointer-events:none;"></div>
+        <div id="catchAnimRunImg" style="position:absolute;inset:0;display:none;align-items:center;justify-content:center;font-size:48px;font-weight:900;color:#ff4444;background:rgba(0,0,0,0.4);">逃げられた！</div>
+      </div>
+      <button id="catchAnimTapBtn" style="margin-top:16px;padding:10px 32px;border:0;border-radius:999px;background:var(--accent);color:#fff;font-size:16px;font-weight:800;cursor:pointer;display:none;">受け取る</button>
+    </div>
     <!-- ===== OTHER MODALS ===== -->
     <div id="mailboxModal" class="modal">
       <div class="mailbox-modal-card">
@@ -3477,13 +3493,8 @@
       { id:"item_007_ancient_shell",kind:"item",name:"古代の貝殻",icon:"🐚",basePrice:90,rarity:6,rarityStars:2,strength:7,timeBonus:{day:0,evening:0,night:2},weatherBonus:{sunny:0,cloudy:1,rainy:1},description:"何千年も前の化石のような貝。" },
       { id:"item_008_star_sand",kind:"item",name:"星の砂",icon:"⭐",basePrice:150,rarity:9,rarityStars:3,strength:11,timeBonus:{day:-1,evening:2,night:3},weatherBonus:{sunny:0,cloudy:1,rainy:0},description:"夜空から落ちた砂粒。" },
     ];
-      const BGM_LIST = [
-     { id:'bgm01', title:'bgm01', url:'bgm01.mp3', credit:'Credit: Sample BGM' },
-      { id:'bgm02', title:'深い夜に浮かぶ', url:'bgm02.mp3', credit:'Credit:@NyalpacaBGM' },
-        { id:'bgm03', title:'人狼の為の子守唄 ', url:'bgm03.mp3', credit:'Credit:しゃろう' },
-       { id:'bgm04', title:'サカナだった頃 ', url:'bgm04.mp3', credit:'Credit:MATSU' },
-        { id:'bgm05', title:'ねこと暖炉でまどろむ', url:'bgm05.mp3', credit:'Credit:@NyalpacaBGM' },
-
+    const BGM_LIST = [
+      { id:'bgm01', title:'bgm01', url:'bgm01.mp3', credit:'Credit: Sample BGM' },
     ];
     const SFX_LIST = [
       { id:'sound01', title:'sound01', url:'sound01.mp3', credit:'Credit: Sample SFX' },
@@ -3508,7 +3519,7 @@
 
     const DEFAULT_STATE = {
       version:16,
-      ui:{navCollapsed:false,focusMode:false,fishingUiVisible:true,partsPanelOpen:false,timerMega:false,selfMoneyOpen:false,utilityOpen:false,utilityTab:"reminder",modeIndex:0},
+      ui:{navCollapsed:false,savedDisplayName:'',focusMode:false,fishingUiVisible:true,partsPanelOpen:false,timerMega:false,selfMoneyOpen:false,utilityOpen:false,utilityTab:"reminder",modeIndex:0},
       user:{uid:null,isGuest:true,displayName:"釣り人",photoURL:null,playerToken:null},
       room:{inRoom:false,roomId:null,status:"idle",idleStartedAt:null},
       miniGoal:"",miniGoalPublic:true,
@@ -3677,8 +3688,8 @@
     function bindEvents(){
       el.navToggle.addEventListener("click",()=>{state.ui.navCollapsed=!state.ui.navCollapsed;applyNavState();saveAll().catch(console.error);});
       el.navBtns.forEach(b=>b.addEventListener("click",()=>switchScreen(b.dataset.screen)));
-      el.partsPanelToggle.addEventListener("click",()=>{state.ui.partsPanelOpen=!state.ui.partsPanelOpen;renderNavParts();saveAll().catch(console.error);});
-      el.mailboxNavBtn.addEventListener("click",()=>openOfficialMailbox());
+      if(el.partsPanelToggle)el.partsPanelToggle.addEventListener("click",()=>{state.ui.partsPanelOpen=!state.ui.partsPanelOpen;renderNavParts();saveAll().catch(console.error);});
+      if(el.mailboxNavBtn)el.mailboxNavBtn.addEventListener("click",()=>openOfficialMailbox());
       el.playRoomBtn.addEventListener("click",()=>joinBestRoom().catch(console.error));
       // Lobby mode selector
       const LOBBY_MODES=["釣り×ポモドーロタイマー","網漁×集中特化","リアル×息抜き"];
@@ -3811,7 +3822,9 @@
       el.authBackBtn.addEventListener("click",showAuthChoice);
       el.authConfirmBtn.addEventListener("click",()=>confirmAuth().catch(console.error));
       // Settings
-      el.saveDisplayNameBtn.addEventListener("click",async()=>{state.user.displayName=safeName(el.displayNameInput.value)||"釣り人";await saveAll(true);await syncPresence().catch(()=>{});toast("保存しました。");renderAll();});
+      el.saveDisplayNameBtn.addEventListener("click",async()=>{state.user.displayName=safeName(el.displayNameInput.value)||"釣り人";localStorage.setItem("zz_savedName",state.user.displayName);await saveAll(true);await syncPresence().catch(()=>{});toast("保存しました。");renderAll();});
+      // Auto-restore name from localStorage
+      const savedName=localStorage.getItem("zz_savedName");if(savedName&&(!state.user.displayName||state.user.displayName==="釣り人")){state.user.displayName=savedName;}
       el.toggleWave.addEventListener("change",()=>updateSetting("waveSound",el.toggleWave.checked));
       el.toggleCatch.addEventListener("change",()=>updateSetting("catchSound",el.toggleCatch.checked));
       el.toggleNotify.addEventListener("change",async()=>{if(el.toggleNotify.checked&&typeof Notification!=="undefined"&&Notification.permission==="default")try{await Notification.requestPermission();}catch{}updateSetting("browserNotify",el.toggleNotify.checked&&typeof Notification!=="undefined"&&Notification.permission==="granted");});
@@ -4385,7 +4398,7 @@
     function applyNavState(){el.app.classList.toggle("nav-collapsed",!!state.ui.navCollapsed);el.app.classList.toggle("nav-hidden",!!state.fishing.inProgress);el.navToggle.textContent=state.ui.navCollapsed?"❯":"❮";updateNavIndicator();}
     function updateNavIndicator(){const a=el.navBtns.find(b=>b.classList.contains("active"))||el.navBtns[0];if(!a)return;const s=a.offsetHeight;el.navActiveBubble.style.top=`${a.offsetTop}px`;el.navActiveBubble.style.left=`${a.offsetLeft+3}px`;el.navActiveBubble.style.width=`${s}px`;el.navActiveBubble.style.height=`${s}px`;}
     function switchScreen(name){if(name==="fishing"&&!state.fishing.inProgress)return;el.navBtns.forEach(b=>b.classList.toggle("active",b.dataset.screen===name));Object.entries(el.screens).forEach(([k,n])=>n.classList.toggle("active",k===name));if(name!=="fishing"){state.ui.fishingUiVisible=true;el.app.classList.remove("fishing-ui-faded");clearFishingUiTimeout();}if(name!=="room"){el.app.classList.remove("room-rest-faded");if(roomRestFadeTimer)clearTimeout(roomRestFadeTimer);}applyNavState();handleFishingActivity();if(name==="room")handleRoomRestActivity();renderAll();}
-    function renderNavParts(){const open=!!state.ui.partsPanelOpen;el.navLevelList.classList.toggle("open",open);}
+    function renderNavParts(){if(!el.navLevelList)return;const open=!!state.ui.partsPanelOpen;el.navLevelList.classList.toggle("open",open);}
     function fillSelectors(){fillTaskSelect();}
     function fillBaitSelector(){}
     function applySelectors(){el.displayNameInput.value=state.user.displayName||"釣り人";el.settingsDisplayName.textContent=state.user.displayName||"釣り人";el.toggleWave.checked=!!state.settings.waveSound;el.toggleCatch.checked=!!state.settings.catchSound;el.toggleNotify.checked=!!state.settings.browserNotify;el.toggleShake.checked=!!state.settings.shakeOnFinish;const tsel=document.getElementById('taskCategorySelect');if(tsel)tsel.value=state.selectedTaskCategory||'work';syncGoalInputs();renderModeCard();}
@@ -4656,6 +4669,8 @@
       for(let i=0;i<count;i++){const r=rollCatch(state.fishing);results.push(r);}
       const tc=state.fishing.taskCategory||'work';
       results.forEach(r=>{r.isNew=!state.encyclopedia[r.picked.id]||state.encyclopedia[r.picked.id].count===0;});
+      // Apply escape chance
+      results.forEach(r=>{const s=r.picked.rarityStars||1;let escRate=0;if(s===1)escRate=0.25;else if(s===2)escRate=0.5;else if(s===3)escRate=0.5;r.escaped=Math.random()<escRate;});
       results.forEach(r=>{addWorkSession(Math.round(elapsedMin/count),r,tc);applyCatchRecord(r);});
       state.fishing.inProgress=false;state.fishing.paused=false;state.room.status="idle";
       syncPresence().catch(console.error);setFocusMode(false);
@@ -4680,14 +4695,80 @@
       const tc=state.fishing.taskCategory||'work';
       // Mark NEW before applying records
       results.forEach(r=>{r.isNew=!state.encyclopedia[r.picked.id]||state.encyclopedia[r.picked.id].count===0;});
+      // Apply escape chance
+      results.forEach(r=>{const s=r.picked.rarityStars||1;let escRate=0;if(s===1)escRate=0.25;else if(s===2)escRate=0.5;else if(s===3)escRate=0.5;r.escaped=Math.random()<escRate;});
       results.forEach(r=>{addWorkSession(Math.round(dm/count),r,tc);applyCatchRecord(r);});
       state.lastCatch=results[0]?.entry||null;state.fishing.inProgress=false;state.fishing.paused=false;state.ui.timerMega=false;state.room.status="idle";state.fishing.normaText="";state.fishing.extraSec=0;syncPresence().catch(console.error);setFocusMode(false);
       if(state.loopRun.active){results.forEach(r=>state.loopRun.results.push(r));saveAll().catch(console.error);if(state.loopRun.current>=state.loopRun.total)finishLoopRun(false);else startLoopRest();return;}
       if(state.normaRun.active){results.forEach(r=>state.normaRun.results.push(r));saveAll().catch(console.error);if(state.normaRun.current>=state.normaRun.total)finishNormaRun(false);else startNormaRest();return;}
-      if(results.length===1){pendingResult=results[0];saveAll().catch(console.error);renderAll();openResultModal(results[0]);}
-      else{state.batchResults=[...results];saveAll().catch(console.error);renderAll();openBatchModal();}
+      // Play animation then show results (caught only)
+      const caughtResults=results.filter(r=>!r.escaped);
+      saveAll().catch(console.error);renderAll();
+      playCatchAnimation(results,function(){
+        if(caughtResults.length===0){toast("全部逃げられた…");recoverAfterResult();return;}
+        if(caughtResults.length===1){pendingResult=caughtResults[0];openResultModal(caughtResults[0]);}
+        else{state.batchResults=[...caughtResults];openBatchModal();}
+      });
     }
     async function recoverAfterResult(){state.ui.fishingUiVisible=true;el.app.classList.remove("fishing-ui-faded");clearFishingUiTimeout();if(state.room.inRoom&&state.room.roomId&&!currentRoomData)startRoomListener(state.room.roomId);startIdleTracking();await saveAll();switchScreen("room");ensureRoomVisual();renderAll();}
+    // === Catch Animation System ===
+    function playCatchAnimation(results,onComplete){
+      const overlay=document.getElementById("catchAnimOverlay");
+      const card=document.getElementById("catchAnimCard");
+      const starsEl=document.getElementById("catchAnimStars");
+      const newEl=document.getElementById("catchAnimNew");
+      const nameEl=document.getElementById("catchAnimName");
+      const iconEl=document.getElementById("catchAnimIcon");
+      const effectEl=document.getElementById("catchAnimEffect");
+      const runEl=document.getElementById("catchAnimRunImg");
+      const tapBtn=document.getElementById("catchAnimTapBtn");
+      if(!overlay||!results.length){if(onComplete)onComplete();return;}
+      overlay.style.display="flex";let idx=0;
+      function showAcceptBtn(){tapBtn.style.display="block";tapBtn.textContent="受け取る";tapBtn.onclick=()=>{tapBtn.style.display="none";showNext();};}
+      function showNext(){
+        if(idx>=results.length){overlay.style.display="none";if(onComplete)onComplete();return;}
+        const r=results[idx];idx++;
+        const stars=r.picked.rarityStars||1;const st=getStarStyle(stars);
+        card.style.background=st.bg;starsEl.textContent="";nameEl.textContent="";
+        iconEl.textContent="❔";iconEl.style.transform="scale(1)";
+        newEl.style.display=r.isNew?"block":"none";
+        effectEl.innerHTML="";runEl.style.display="none";
+        overlay.style.background=stars>=3?"rgba(200,166,0,0.2)":stars>=2?"rgba(46,134,193,0.2)":"rgba(0,0,0,0.7)";
+        // Phase 1: Stars appear (0.3s)
+        let starCount=0;
+        const starTimer=setInterval(()=>{starCount++;
+          const sc=stars>=3?"#ffd700":stars>=2?"#7bdff5":"#aabbcc";
+          starsEl.innerHTML+="<span style='color:"+sc+";'>★</span>";
+          if(starCount>=stars){clearInterval(starTimer);
+            nameEl.textContent=r.entry.name;nameEl.style.color=st.text;
+            // Phase 2: Tension (1.5s)
+            let shakeCount=0;
+            const shakeTimer=setInterval(()=>{shakeCount++;
+              const intensity=Math.min(shakeCount*0.5,8);
+              iconEl.style.transform=`scale(${1+shakeCount*0.02}) rotate(${(Math.random()-0.5)*intensity}deg)`;
+              if(shakeCount%3===0)effectEl.innerHTML=`<div style="position:absolute;inset:0;display:grid;place-items:center;font-size:${20+shakeCount*2}px;color:rgba(255,255,255,${0.1+shakeCount*0.02});pointer-events:none;">!</div>`;
+            },50);
+            setTimeout(()=>{clearInterval(shakeTimer);
+              // Phase 3: Result reveal
+              try{const sfx=new Audio("stamp.mp3");sfx.volume=0.3;sfx.play().catch(()=>{});}catch(e){}
+              iconEl.style.transform="scale(1.2)";
+              if(r.escaped){
+                runEl.style.display="flex";iconEl.textContent="💨";
+                effectEl.innerHTML="";
+              }else{
+                iconEl.textContent=r.entry.icon;
+                iconEl.style.transform="scale(1.3)";
+                effectEl.innerHTML='<div style="position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;animation:catchSparkle 0.5s ease;"><span style="font-size:40px;">✨</span></div>';
+              }
+              // Wait for tap
+              const tapHandler=()=>{overlay.removeEventListener("click",tapHandler);showNext();};
+              setTimeout(()=>overlay.addEventListener("click",tapHandler),300);
+            },1500);
+          }
+        },100);
+      }
+      showAcceptBtn();
+    }
     function ensureRoomVisual(){if(!state.room.inRoom||!state.room.roomId)return;el.roomLobby.style.display="none";el.roomActiveUI.style.display="block";el.lobbyVideo.style.display="none";el.roomVideo.style.display="block";state.ui.fishingUiVisible=true;el.app.classList.remove("fishing-ui-faded");state.ui.modeIndex=0;if(!state.fishing.inProgress)startIdleTracking();updateRoomVideo();safePlay(el.roomVideo);}
     function applyCatchRecord(result){const{picked,entry,isRecord}=result;const baseId=picked.id;if(!state.encyclopedia[baseId])state.encyclopedia[baseId]={count:0,maxSize:0,recordHolder:null};const rec=state.encyclopedia[baseId];rec.count+=1;if(entry.kind==="fish"&&entry.sizeCm>(rec.maxSize||0)){rec.maxSize=entry.sizeCm;rec.recordHolder=state.user.displayName||"釣り人";}if(isRecord&&firebaseSyncOk&&!state.user.isGuest&&state.user.uid)saveGlobalRecord(baseId,entry.sizeCm,state.user.displayName||"釣り人").catch(console.error);}
     function addWorkSession(min,result,taskCat){const d=ensureDay(todayKey());const cat=taskCat||state.fishing.taskCategory||'work';if(cat==='work'){d.workMin+=min;}else{if(!d.customMin)d.customMin={};d.customMin[cat]=(d.customMin[cat]||0)+min;}d.sessions+=1;if(result?.entry?.kind==="fish")d.catches.push({baseId:result.entry.baseId,name:result.entry.name,icon:result.entry.icon,sizeCm:result.entry.sizeCm,avgSize:result.picked.avgSize,price:result.entry.sellPrice});d.catches=d.catches.slice(-50);}
@@ -4746,7 +4827,7 @@
     function getCourseBonus(dm){const b={rare:0,size:0,power:0,hugeChance:0,junkReduction:0,label:""};if(dm>=25){b.rare+=3;b.label="集中ボーナス";}if(dm>=40){b.size+=4;b.power+=1;}if(dm>=60){b.size+=6;b.power+=2;b.hugeChance+=0.005;b.label="深海ボーナス";}return b;}
     function rollCatch(src){const bait=BAIT_TYPES.find(b=>b.id===src.baitId)||BAIT_TYPES[0];const nb=NUMBERED_BAITS.find(b=>b.id===src.baitId);const upg=getUpgradeBuffs();const cb=getCourseBonus(src.durationMin);const baitPow=(nb?.power||0)+(bait?.power||0);const baitRare=(nb?.rareBonus||0)+(bait?.rareBonus||0);const baitSize=(nb?.sizeBonus||0)+(bait?.sizeBonus||0);const baitVal=(nb?.valueBonus||0)+(bait?.valueBonus||0);const power=baitPow+upg.power+cb.power,rareB=baitRare+upg.rare+cb.rare,sizeB=baitSize+upg.size+cb.size,junkR=upg.junkReduction+cb.junkReduction,hugeB=upg.hugeChance+cb.hugeChance,valueB=baitVal+upg.valueBonus;const totalLv=getTotalLevel();const usedBaitNum=nb?.num||0;const all=[...FISHES,...JUNK_ITEMS];const weighted=all.map(e=>{const ts=e.timeBonus?.[src.timeOfDay]??0,ws=e.weatherBonus?.[src.weather]??0,sg=power-(e.strength||0),jp=e.kind==="item"?(-0.9+junkR):0;let lvPen=0;if(e.reqLevel){const diff=totalLv-(e.reqLevel||0);lvPen=diff>=0?Math.min(diff*0.3,5):(diff*0.8);}const specB=getSpecialCondBonus(e.specialCond,src);let baitNumB=0;if(e.baitNum&&usedBaitNum>0){const dist=Math.abs(e.baitNum-usedBaitNum);baitNumB=dist===0?12:dist<=2?6:dist<=5?2:dist<=10?-2:-5;}return{entity:e,weight:Math.max(0.01,7+sg+ts+ws+rareB*0.28+jp-(e.rarity||0)*0.24+lvPen+specB+baitNumB)};});const picked=wPick(weighted);const isFish=picked.kind==="fish";let sizeCm=null,isHuge=false,price=picked.basePrice;if(isFish){const g=approxGaussian();sizeCm=Math.max(1,picked.avgSize+g*(picked.spread/2)+sizeB*0.55+src.durationMin*0.09);if(Math.random()<Math.max(0,picked.hugeChance+hugeB)){sizeCm*=picked.hugeFactor;isHuge=true;}sizeCm=Math.round(sizeCm*10)/10;const sr=sizeCm/picked.avgSize;const sf=sr<1?0.95+sr*0.12:1+Math.pow(sr-1,1.18)*1.15;price=Math.max(1,Math.round(picked.basePrice*sf*(1+picked.rarity*0.12+rareB*0.03)*(1+valueB)));}else{price=Math.max(1,Math.round(picked.basePrice*(1+rareB*0.02+src.durationMin*0.01+valueB)));}const entry={uid:makeId(),baseId:picked.id,kind:picked.kind,name:picked.name,icon:picked.icon,sellPrice:price,sizeCm,rarity:picked.rarity||0,rarityStars:picked.rarityStars||1,caughtAt:Date.now()};const ency=state.encyclopedia[picked.id]||{count:0,maxSize:0};return{entry,isRecord:isFish&&sizeCm>(ency.maxSize||0),isRare:(picked.rarity||0)>=8||isHuge||price>=220,isHuge,bonusText:cb.label,source:src,picked};}
 
-    function openResultModal(r){const st=getStarStyle(r.picked.rarityStars||1);el.resultArtEmoji.textContent=r.entry.icon;el.resultStarsInArt.textContent="★".repeat(r.picked.rarityStars||1);el.resultStarsInArt.style.color=st.star;el.resultPrice.textContent=`${r.entry.sellPrice} zz`;
+    function openResultModal(r){const st=getStarStyle(r.picked.rarityStars||1);el.resultArtEmoji.textContent=r.entry.icon;el.resultStarsInArt.textContent="★".repeat(r.picked.rarityStars||1);el.resultStarsInArt.style.color=st.star;el.resultPrice.textContent=`${fmtMoney(r.entry.sellPrice)} zz`;
       const artCard=el.resultArtEmoji.parentElement;if(artCard)artCard.style.cssText=`background:${st.bg};border-radius:16px;padding:16px;position:relative;`;
       if(r.entry.kind==="fish")el.resultTitle.innerHTML=`${esc(r.entry.name)} <span class="result-size-colored ${r.entry.sizeCm>=r.picked.avgSize?"plus":"minus"}" style="color:${st.text};">(${fmtSize(r.entry.sizeCm)}cm)</span>`;else el.resultTitle.textContent=r.entry.name;
       el.resultLines.innerHTML=r.entry.kind==="fish"?`すごさ：${greatness(r.entry.sizeCm,r.picked.avgSize)}<br/>条件：${trTime(r.source.timeOfDay)} / ${trWeather(r.source.weather)}`:`漂流物<br/>条件：${trTime(r.source.timeOfDay)} / ${trWeather(r.source.weather)}`;
@@ -4756,7 +4837,7 @@
       const existingNew=artCard?.querySelector(".new-badge");if(existingNew)existingNew.remove();
       if(r.isNew){const nb=document.createElement("div");nb.className="new-badge";nb.style.cssText="position:absolute;top:8px;right:8px;background:#ff3366;color:#fff;font-size:16px;font-weight:900;padding:3px 10px;border-radius:8px;z-index:5;letter-spacing:1px;text-shadow:0 1px 4px rgba(0,0,0,0.3);";nb.textContent="NEW";if(artCard)artCard.appendChild(nb);}
       if(r.isRare)el.resultFlags.appendChild(makeFlag("レア","rare"));if(r.isRecord)el.resultFlags.appendChild(makeFlag("最大更新","record"));if(r.isHuge)el.resultFlags.appendChild(makeFlag("超巨大","huge"));if(r.bonusText)el.resultFlags.appendChild(makeFlag(r.bonusText,""));el.resultModal.classList.add("show");}
-    function renderSizeMeter(r){el.sizeOverflowBadge.textContent="";el.sizeDeltaLabel.textContent="";el.sizeAvgBelow.textContent="";if(r.entry.kind!=="fish"){el.sizeFill.style.width="0%";return;}const avg=r.picked.avgSize,sz=r.entry.sizeCm,ratio=sz/avg;const norm=ratio<=1?Math.max(0,ratio*0.5):0.5+(ratio-1)*0.5;const cap=Math.min(norm,1);el.sizeFill.style.width=`${cap*100}%`;const d=sizeDelta(sz,avg);el.sizeDeltaLabel.innerHTML=d.html;el.sizeDeltaLabel.style.left=`calc(${cap*100}% + 6px)`;el.sizeAvgBelow.textContent=`${fmtSize(avg)}cm`;if(norm>1){el.sizeOverflowBadge.style.left="calc(100% + 8px)";el.sizeOverflowBadge.textContent="★";}}
+    function renderSizeMeter(r){el.sizeOverflowBadge.textContent="";el.sizeDeltaLabel.textContent="";el.sizeAvgBelow.textContent="";if(r.entry.kind!=="fish"){el.sizeFill.style.width="0%";el.sizeFill.style.background="";return;}const avg=r.picked.avgSize,sz=r.entry.sizeCm,ratio=sz/avg;const norm=ratio<=1?Math.max(0,ratio*0.5):0.5+(ratio-1)*0.5;const cap=Math.min(norm,1);el.sizeFill.style.width=`${cap*100}%`;if(norm>1){el.sizeFill.style.background=`linear-gradient(90deg,var(--accent) ${Math.round(50/cap*100)}%,#ff4444 ${Math.round(50/cap*100)}%)`;}else{el.sizeFill.style.background="";}const d=sizeDelta(sz,avg);el.sizeDeltaLabel.innerHTML=d.html;el.sizeDeltaLabel.style.left=`calc(${cap*100}% + 6px)`;el.sizeAvgBelow.textContent=`${fmtSize(avg)}cm`;if(norm>1){el.sizeOverflowBadge.style.left="calc(100% + 8px)";el.sizeOverflowBadge.textContent="★";}}
     function makeFlag(text,cls){const d=document.createElement("div");d.className=`flag ${cls}`;d.textContent=text;return d;}
     async function keepPending(){if(!pendingResult)return;state.inventory.unshift(pendingResult.entry);toast(`${pendingResult.entry.name} を所持品に入れました。`);pendingResult=null;el.resultModal.classList.remove("show");await recoverAfterResult();}
     async function sellPending(){if(!pendingResult)return;state.money+=pendingResult.entry.sellPrice;addEarnings(pendingResult.entry.sellPrice);toast(`${pendingResult.entry.name} を ${pendingResult.entry.sellPrice} zz で売却しました。`);pendingResult=null;el.resultModal.classList.remove("show");await recoverAfterResult();}
@@ -4771,11 +4852,13 @@
       if(batchIndex>=items.length)batchIndex=items.length-1;
       if(batchIndex<0)batchIndex=0;
       const r=items[batchIndex];const isFish=r.entry.kind==="fish";
+      const bst=getStarStyle(r.picked.rarityStars||1);
       el.batchResultList.innerHTML="";
       // Full result display like single catch
       const core=document.createElement("div");core.className="result-core";
-      const artWrap=document.createElement("div");artWrap.className="result-art-wrap";
-      artWrap.innerHTML=`<div class="result-art"><div class="result-stars-in-art">${"☆".repeat(r.picked.rarityStars||1)}</div><div>${r.entry.icon}</div><div class="result-art-avg">${isFish?`平均 ${fmtSize(r.picked.avgSize)}cm`:""}</div></div><div class="result-price" style="color:var(--gold);">${r.entry.sellPrice} zz</div>`;
+      const artWrap=document.createElement("div");artWrap.className="result-art-wrap";artWrap.style.cssText=`background:${bst.bg};border-radius:16px;padding:12px;position:relative;`;
+      const starColor=bst.star;
+      artWrap.innerHTML=`<div class="result-art"><div class="result-stars-in-art" style="color:${starColor};">${"★".repeat(r.picked.rarityStars||1)}</div><div>${r.entry.icon}</div><div class="result-art-avg" style="color:${bst.text};">${isFish?`平均 ${fmtSize(r.picked.avgSize)}cm`:""}</div></div><div class="result-price" style="color:var(--gold);">${fmtMoney(r.entry.sellPrice)} zz</div>${r.isNew?'<div style="position:absolute;top:6px;right:8px;background:#ff3366;color:#fff;font-size:14px;font-weight:900;padding:2px 8px;border-radius:6px;">NEW</div>':""}`;
       core.appendChild(artWrap);
       const detail=document.createElement("div");
       detail.innerHTML=`<div class="result-title-row"><div class="result-title">${isFish?`${esc(r.entry.name)} <span class="result-size-colored ${r.entry.sizeCm>=r.picked.avgSize?"plus":"minus"}">(${fmtSize(r.entry.sizeCm)}cm)</span>`:esc(r.entry.name)}</div></div>
@@ -4841,8 +4924,8 @@
 
     // ===== RENDER ALL =====
     let _renderAllRunning=false;
-    function renderAll(){if(_renderAllRunning)return;_renderAllRunning=true;try{applySelectors();applyNavState();renderNavLevels();renderFishingStatus();renderRoom();renderStore();renderResults();renderEncyclopedia();renderSettings();renderUserPill();renderStampFeeds();updateSync();updateRoomVideo();updateFishingVideo();renderMailIndicators();if(el.storeMoneyChip)el.storeMoneyChip.textContent=`${state.money} zz`;if(el.fishingTimer)el.fishingTimer.classList.toggle("mega",!!state.ui.timerMega);if(el.screens.utility?.classList.contains("active"))renderUtility();renderLoopInfo();renderCustomGraphList();renderWeekCalendar();renderUtilRoomStrip();renderLoopRestCenter();}finally{_renderAllRunning=false;}}
-    function renderNavLevels(){el.navLevelList.innerHTML="";UPGRADE_PARTS.forEach(p=>{const c=document.createElement("div");c.className="part-level-card";c.innerHTML=`<div class="part-level-name">${p.name}</div><div class="part-level-value">${state.upgrades[p.id]||0}</div>`;el.navLevelList.appendChild(c);});}
+    function renderAll(){if(_renderAllRunning)return;_renderAllRunning=true;try{applySelectors();applyNavState();renderNavLevels();renderFishingStatus();renderRoom();renderStore();renderResults();renderEncyclopedia();renderSettings();renderUserPill();renderStampFeeds();updateSync();updateRoomVideo();updateFishingVideo();renderMailIndicators();if(el.storeMoneyChip)el.storeMoneyChip.textContent=`${fmtMoney(state.money)} zz`;if(el.fishingTimer)el.fishingTimer.classList.toggle("mega",!!state.ui.timerMega);if(el.screens.utility?.classList.contains("active"))renderUtility();renderLoopInfo();renderCustomGraphList();renderWeekCalendar();renderUtilRoomStrip();renderLoopRestCenter();}finally{_renderAllRunning=false;}}
+    function renderNavLevels(){if(!el.navLevelList)return;el.navLevelList.innerHTML="";UPGRADE_PARTS.forEach(p=>{const c=document.createElement("div");c.className="part-level-card";c.innerHTML=`<div class="part-level-name">${p.name}</div><div class="part-level-value">${state.upgrades[p.id]||0}</div>`;el.navLevelList.appendChild(c);});}
     function renderRoom(){const inRoom=!!state.room.inRoom&&!!state.room.roomId;el.roomLobby.style.display=inRoom?"none":"flex";el.roomActiveUI.style.display=inRoom?"block":"none";if(!inRoom)return;const ms=currentRoomData?.members?.length?currentRoomData.members:[makeMember()];renderParticipants(el.roomParticipants,ms);renderParticipants(el.fishingParticipants,ms);}
     function renderParticipants(container,members){container.innerHTML="";const wrap=document.createElement("div");wrap.style.cssText="display:inline-flex;gap:0;align-items:center;justify-content:flex-start;";members.forEach(m=>{const slot=document.createElement("div");slot.className="participant-slot";const isSelf=(m.uid||"")===(state.user.uid||state.user.playerToken||"");const statusText=isSelf&&state.ui.selfMoneyOpen?`${state.money} zz`:m.status==="fishing"?"釣り中":m.status==="paused"?"停止中":"休憩中";const bubble=getLatestStamp(m.uid);const goalText=isSelf&&state.miniGoalPublic&&state.miniGoal?state.miniGoal:"";const goalHtml=goalText?`<div style="position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);max-width:100px;font-size:${goalText.length>10?'8px':'9px'};color:var(--gold);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none;background:rgba(30,30,30,0.8);padding:3px 8px;border-radius:8px;backdrop-filter:blur(4px);"><div style='position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid rgba(30,30,30,0.8);'></div>${esc(goalText)}</div>`:"";const stCls=m.status==="fishing"?"st-fishing":"st-resting";slot.innerHTML=`<div class="participant-avatar" style="position:relative;">${goalHtml}🐱${bubble?`<div class="participant-bubble">${bubble.stamp}</div>`:""}</div><div class="participant-name">${esc(m.name)}</div><div class="participant-status ${stCls}">${esc(statusText)}</div>`;slot.style.cursor="pointer";slot.addEventListener("click",()=>{if(isSelf){state.ui.selfMoneyOpen=!state.ui.selfMoneyOpen;renderAll();}else openGiftModalFn(m);});wrap.appendChild(slot);});container.appendChild(wrap);}
     function renderStampFeeds(){[el.roomStampFeed,el.fishingStampFeed].forEach(f=>{if(!f)return;f.innerHTML="";(currentRoomData?.recentStamps||[]).slice(-4).reverse().forEach(s=>{const d=document.createElement("div");d.className="stamp-feed-item";d.textContent=`${s.stamp} ${s.name}`;f.appendChild(d);});});}
@@ -4901,7 +4984,7 @@
       }}
       // Best fish
       const best=[...(today.catches||[])].sort((a,b)=>(b.sizeCm-b.avgSize)-(a.sizeCm-a.avgSize))[0];if(el.todayBestFish)el.todayBestFish.textContent=best?`${best.icon} ${best.name}`:"まだなし";if(el.todayBestFishSub)el.todayBestFishSub.textContent=best?`${fmtSize(best.avgSize)}cm平均 → ${fmtSize(best.sizeCm)}cm / ${best.price}zz`:"";
-      if(el.todayEarnedValue)el.todayEarnedValue.textContent=`${today.earnings||0} zz`;
+      if(el.todayEarnedValue)el.todayEarnedValue.textContent=`${fmtMoney(today.earnings||0)} zz`;
       const weekEarn=week.days.reduce((s,d)=>s+(d.stat.earnings||0),0);
       const wev=document.getElementById("weekEarnedValue");if(wev)wev.textContent=`${weekEarn} zz`;
       renderDailyGraph();}
@@ -4919,7 +5002,7 @@
     function renderSettings(){el.settingsDisplayName.textContent=state.user.displayName||"釣り人";el.displayNameInput.value=state.user.displayName||"釣り人";el.lastSavedAt.textContent=state.lastSavedAt?fmtDateTime(state.lastSavedAt):"-";}
     function renderUserPill(){el.userPill.innerHTML=`${esc(state.user.displayName||"釣り人")}<br/>${state.user.isGuest?"ローカル":"Google"}`;}
     function updateSync(){if(firebaseReady&&firebaseSyncOk&&!state.user.isGuest)el.syncStatus.textContent="Firebase同期中";else if(firebaseReady&&auth?.currentUser?.isAnonymous)el.syncStatus.textContent="匿名接続中";else el.syncStatus.textContent="ローカルのみ";}
-    function renderMailIndicators(){const uo=getUnreadMail("official").length,up=getUnreadMail("peer").length,pp=getPeerMail();el.mailNavDot.classList.toggle("show",uo>0);[el.roomMessageBtn,el.fishingMessageBtn].forEach(b=>{if(b)b.classList.toggle("show",pp.length>0);});[el.roomMessageDot,el.fishingMessageDot].forEach(d=>{if(d)d.classList.toggle("show",up>0);});}
+    function renderMailIndicators(){const uo=getUnreadMail("official").length,up=getUnreadMail("peer").length,pp=getPeerMail();if(el.mailNavDot)el.mailNavDot.classList.toggle("show",uo>0);[el.roomMessageBtn,el.fishingMessageBtn].forEach(b=>{if(b)b.classList.toggle("show",pp.length>0);});[el.roomMessageDot,el.fishingMessageDot].forEach(d=>{if(d)d.classList.toggle("show",up>0);});}
     function safePlay(v){if(!v)return;try{v.play()?.catch(()=>{});}catch{}}
     function setVideoSrc(v,src){if(!v||!src)return;if(v.getAttribute("data-src")===src){safePlay(v);return;}v.setAttribute("data-src",src);v.src=src;v.load();safePlay(v);}
     function updateRoomVideo(){const inRoom=!!state.room.inRoom;el.lobbyVideo.style.display=inRoom?"none":"block";el.roomVideo.style.display=inRoom?"block":"none";if(!inRoom){safePlay(el.lobbyVideo);return;}setVideoSrc(el.roomVideo,`boat${Math.max(1,Math.min(3,currentRoomData?.members?.length||1))}.mp4`);}
@@ -5003,14 +5086,19 @@
       for(let i=0;i<count;i++){
         const r=rollCatch(state.fishing);preRolledCatches.push(r);
         const stars=r.picked.rarityStars||1;
-        const sz=r.entry.sizeCm||20;const fishSize=Math.max(10,Math.min(40,sz*0.3));
-        const appearTime=Math.random()*dm*60000*0.8;
-        waterFishes.push({stars,x:Math.random(),y:0.4+Math.random()*0.35,vx:(Math.random()>0.5?1:-1)*0.0002,vy:0,
-          appeared:false,appearAt:appearTime,tunkAt:appearTime+Math.random()*(dm*60000*0.15),tunked:false,tunkDone:false,
-          size:fishSize,targetX:0.5,targetY:0.4,nextDash:Date.now()+3000+Math.random()*5000,dashing:false,dashEnd:0});
+        const sz=r.entry.sizeCm||20;const avg=r.picked.avgSize||20;
+        // Size based on ratio to average: bigger ratio = much bigger display
+        const sizeRatio=sz/Math.max(1,avg);
+        const baseSize=stars>=3?22:stars>=2?16:12;
+        const fishSize=Math.max(8,Math.min(80,baseSize*sizeRatio*(r.isHuge?2.5:1)));
+        const appearTime=Math.random()*dm*60000*0.85;
+        waterFishes.push({stars,x:Math.random()*0.8+0.1,y:0.4+Math.random()*0.35,vx:(Math.random()>0.5?1:-1)*0.00015,vy:0,
+          appeared:false,appearAt:appearTime,tunkAt:appearTime+Math.random()*(dm*60000*0.12),tunked:false,tunkDone:false,
+          size:fishSize,nextDash:Date.now()+2000+Math.random()*4000,dashing:false,dashEnd:0,
+          fleeAt:Date.now()+5000+Math.random()*8000,fleeing:false,fleeEnd:0});
       }
       for(let i=0;i<10+Math.floor(Math.random()*6);i++){
-        waterDecoys.push({x:Math.random(),y:0.3+Math.random()*0.5,vx:(Math.random()>0.5?1:-1)*(0.0001+Math.random()*0.0002),vy:0,size:6+Math.random()*5,alpha:0.12+Math.random()*0.08,
+        waterDecoys.push({x:Math.random(),y:0.3+Math.random()*0.5,vx:(Math.random()>0.5?1:-1)*(0.0001+Math.random()*0.0002),vy:0,size:5+Math.random()*4,alpha:0.1+Math.random()*0.06,
           nextTurn:Date.now()+2000+Math.random()*4000});
       }
     }
@@ -5050,14 +5138,16 @@
         // Catchable fish
         waterFishes.forEach(function(f){
           if(elapsed<f.appearAt)return;f.appeared=true;
-          // Natural movement: slow drift + occasional dash
-          if(!f.dashing&&now>f.nextDash){f.dashing=true;f.dashEnd=now+300+Math.random()*500;
-            f.targetX=0.15+Math.random()*0.7;f.targetY=0.35+Math.random()*0.3;
-            f.vx=(f.targetX-f.x)*0.003*(Math.random()+0.5);f.vy=(f.targetY-f.y)*0.003*(Math.random()+0.5);}
-          if(f.dashing&&now>f.dashEnd){f.dashing=false;f.nextDash=now+2000+Math.random()*6000;
-            f.vx=(Math.random()-0.5)*0.0002;f.vy=(Math.random()-0.5)*0.0001;}
-          // Tend toward float area
-          if(!f.dashing){var dfx=(0.5-f.x)*0.000015,dfy=(0.38-f.y)*0.00001;f.vx+=dfx;f.vy+=dfy;f.vx*=0.998;f.vy*=0.998;}
+          // Flee from float periodically to prevent clustering
+          if(!f.fleeing&&now>f.fleeAt){f.fleeing=true;f.fleeEnd=now+1500+Math.random()*2000;
+            var fleeDir=Math.random()>0.5?1:-1;f.vx=fleeDir*(0.001+Math.random()*0.002);f.vy=(Math.random()-0.5)*0.001;}
+          if(f.fleeing&&now>f.fleeEnd){f.fleeing=false;f.fleeAt=now+4000+Math.random()*6000;f.vx*=0.3;f.vy*=0.3;}
+          // Occasional dash
+          if(!f.dashing&&!f.fleeing&&now>f.nextDash){f.dashing=true;f.dashEnd=now+200+Math.random()*400;
+            f.vx=(Math.random()-0.5)*0.004;f.vy=(Math.random()-0.5)*0.002;}
+          if(f.dashing&&now>f.dashEnd){f.dashing=false;f.nextDash=now+3000+Math.random()*5000;f.vx*=0.2;f.vy*=0.1;}
+          // Gentle drift toward float (only when not fleeing/dashing)
+          if(!f.dashing&&!f.fleeing){var dfx=(0.5-f.x)*0.000008,dfy=(0.38-f.y)*0.000005;f.vx+=dfx;f.vy+=dfy;f.vx*=0.995;f.vy*=0.995;}
           f.x+=f.vx;f.y+=f.vy;
           if(f.x<0.02){f.x=0.02;f.vx=Math.abs(f.vx);}if(f.x>0.98){f.x=0.98;f.vx=-Math.abs(f.vx);}
           if(f.y<0.28){f.y=0.28;f.vy=Math.abs(f.vy);}if(f.y>0.88){f.y=0.88;f.vy=-Math.abs(f.vy);}
@@ -5094,6 +5184,8 @@
     function safeName(v){return String(v||"").trim().slice(0,16).replace(/[<>]/g,"");}
     function safeGiftText(v){return String(v||"").trim().slice(0,6).replace(/[<>]/g,"");}
     function todayKey(){const d=new Date();return`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;}
+    
+    function fmtMoney(n){return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,",");}
     function fmtRemain(ms){const t=Math.ceil(ms/1000);return`${String(Math.floor(t/60)).padStart(2,"0")}:${String(t%60).padStart(2,"0")}`;}
     function fmtSize(n){return Number(n||0).toFixed(1);}
     function fmtDateTime(ts){const d=new Date(ts);return`${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,"0")}/${String(d.getDate()).padStart(2,"0")} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;}
