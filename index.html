@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -2741,40 +2740,43 @@
         </div>
 
         <div id="roomLobby" class="lobby-center">
+          <!-- Settings button (top-left on mobile) -->
+          <button id="lobbySettingsBtn" onclick="switchScreen('settings')" style="position:absolute;top:12px;left:16px;border:1px solid rgba(255,255,255,0.15);border-radius:10px;background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.5);font-size:18px;width:36px;height:36px;cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);">⚙</button>
           <div style="position:absolute;top:12px;right:16px;font-size:14px;color:rgba(255,255,255,0.5);font-weight:600;">
             <span id="lobbyCurrentTime">00:00</span>
             <div id="lobbyDateSub" class="clock-date-sub" style="font-size:10px;"></div>
           </div>
-          <div style="display:flex;flex-direction:column;align-items:center;gap:16px;width:100%;">
-            <!-- Streak counter -->
-            <div id="lobbyStreak" style="font-size:clamp(36px,8vw,56px);font-weight:900;color:#fff;text-shadow:0 4px 20px rgba(0,0,0,0.3);line-height:1;">0</div>
-            <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:-10px;">日連続</div>
-            <!-- Calendar mini (3 circles) -->
-            <div style="display:flex;align-items:center;gap:12px;">
-              <div style="text-align:center;">
-                <div id="lobbyCalPrev" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.08);display:grid;place-items:center;position:relative;overflow:hidden;"></div>
-                <div id="lobbyCalPrevDate" style="font-size:9px;color:rgba(255,255,255,0.3);margin-top:3px;"></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:14px;width:100%;">
+            <!-- 7-day Calendar mini + streak -->
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="display:flex;align-items:flex-end;gap:6px;">
+                <!-- 7 circles (-3 to +3) -->
+                <div style="text-align:center;"><div id="lobbyCal_-3" style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.06);display:grid;place-items:center;border:1px solid transparent;"></div><div id="lobbyCalD_-3" style="font-size:8px;color:rgba(255,255,255,0.3);margin-top:2px;"></div></div>
+                <div style="text-align:center;"><div id="lobbyCal_-2" style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.06);display:grid;place-items:center;border:1px solid transparent;"></div><div id="lobbyCalD_-2" style="font-size:8px;color:rgba(255,255,255,0.3);margin-top:2px;"></div></div>
+                <div style="text-align:center;"><div id="lobbyCal_-1" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.08);display:grid;place-items:center;border:1px solid transparent;"></div><div id="lobbyCalD_-1" style="font-size:8px;color:rgba(255,255,255,0.3);margin-top:2px;"></div></div>
+                <div style="text-align:center;"><div id="lobbyCal_0" style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.12);display:grid;place-items:center;border:2px solid rgba(255,255,255,0.25);"></div><div id="lobbyCalD_0" style="font-size:9px;color:rgba(255,255,255,0.5);margin-top:2px;font-weight:700;"></div></div>
+                <div style="text-align:center;"><div id="lobbyCal_1" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.06);display:grid;place-items:center;border:1px solid transparent;"></div><div id="lobbyCalD_1" style="font-size:8px;color:rgba(255,255,255,0.3);margin-top:2px;"></div></div>
+                <div style="text-align:center;"><div id="lobbyCal_2" style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.06);display:grid;place-items:center;border:1px solid transparent;"></div><div id="lobbyCalD_2" style="font-size:8px;color:rgba(255,255,255,0.3);margin-top:2px;"></div></div>
+                <div style="text-align:center;"><div id="lobbyCal_3" style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.06);display:grid;place-items:center;border:1px solid transparent;"></div><div id="lobbyCalD_3" style="font-size:8px;color:rgba(255,255,255,0.3);margin-top:2px;"></div></div>
               </div>
-              <div style="text-align:center;">
-                <div id="lobbyCalToday" style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,0.15);display:grid;place-items:center;position:relative;overflow:hidden;border:2px solid rgba(255,255,255,0.2);"></div>
-                <div id="lobbyCalTodayDate" style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:3px;font-weight:700;"></div>
-              </div>
-              <div style="text-align:center;">
-                <div id="lobbyCalNext" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.08);display:grid;place-items:center;position:relative;overflow:hidden;"></div>
-                <div id="lobbyCalNextDate" style="font-size:9px;color:rgba(255,255,255,0.3);margin-top:3px;"></div>
-              </div>
-            </div>
-            <!-- Daily recommendation -->
-            <div id="lobbyRecommend" style="font-size:12px;color:rgba(255,255,255,0.5);text-align:center;cursor:pointer;padding:6px 16px;border-radius:12px;background:rgba(255,255,255,0.05);"></div>
-            <!-- Large play button -->
-            <button id="playRoomBtn" style="width:72px;height:72px;border:2px solid rgba(255,255,255,0.3);border-radius:50%;background:transparent;color:#fff;font-size:32px;cursor:pointer;display:grid;place-items:center;margin-top:8px;backdrop-filter:blur(4px);transition:transform 0.15s;">▶</button>
-            <!-- Solo toggle -->
-            <div id="soloToggleWrap" style="display:flex;flex-direction:column;align-items:center;gap:2px;">
-              <span id="soloLabel" style="font-size:10px;color:rgba(255,255,255,0.5);font-weight:700;">マルチ</span>
-              <div id="soloToggle" style="width:40px;height:22px;border-radius:11px;background:rgba(255,255,255,0.15);position:relative;cursor:pointer;transition:background 0.2s;">
-                <div id="soloToggleKnob" style="width:18px;height:18px;border-radius:50%;background:#999;position:absolute;top:2px;left:2px;transition:left 0.2s,background 0.2s;"></div>
+              <!-- Streak -->
+              <div style="display:flex;flex-direction:column;align-items:center;margin-left:6px;">
+                <div id="lobbyStreak" style="font-size:clamp(28px,6vw,40px);font-weight:900;color:#fff;line-height:1;">0</div>
+                <div style="font-size:9px;color:rgba(255,255,255,0.35);">日連続</div>
               </div>
             </div>
+            <!-- Play button + Solo toggle (horizontal) -->
+            <div style="display:flex;align-items:center;gap:16px;margin-top:8px;">
+              <button id="playRoomBtn" style="width:72px;height:72px;border:2px solid rgba(255,255,255,0.3);border-radius:50%;background:transparent;color:#fff;font-size:32px;cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);">▶</button>
+              <div id="soloToggleWrap" style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+                <span id="soloLabel" style="font-size:10px;color:rgba(255,255,255,0.5);font-weight:700;">マルチ</span>
+                <div id="soloToggle" style="width:40px;height:22px;border-radius:11px;background:rgba(255,255,255,0.15);position:relative;cursor:pointer;transition:background 0.2s;">
+                  <div id="soloToggleKnob" style="width:18px;height:18px;border-radius:50%;background:#999;position:absolute;top:2px;left:2px;transition:left 0.2s,background 0.2s;"></div>
+                </div>
+              </div>
+            </div>
+            <!-- Mission text (below play) -->
+            <div id="lobbyRecommend" style="font-size:13px;color:rgba(255,255,255,0.6);text-align:center;padding:8px 20px;border-radius:14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);font-weight:500;"></div>
           </div>
         </div>
 
@@ -2825,25 +2827,39 @@
           <div id="roomFishPredictPopup" class="fish-predict-popup" style="right:100px;bottom:70px;"></div>
           <div id="roomLoopInfo" class="room-loop-info"></div>
           <!-- Fullscreen fishing settings -->
-          <div id="fishSettingsOverlay" style="display:none;position:absolute;inset:0;z-index:30;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);overflow-y:auto;padding:20px;">
-            <button id="closeFishSettings" style="position:absolute;top:16px;left:16px;border:0;background:transparent;color:rgba(255,255,255,0.6);font-size:24px;cursor:pointer;">❮</button>
-            <div style="max-width:400px;margin:40px auto 0;display:flex;flex-direction:column;gap:16px;">
-              <!-- Mode selector cards -->
-              <div id="modeCardInner" style="position:relative;">
-                <button id="modeNavLeft" class="mode-card-nav left" style="position:absolute;left:-4px;top:50%;transform:translateY(-50%);z-index:2;border:0;background:transparent;color:var(--accent);font-size:24px;cursor:pointer;">❮</button>
-                <button id="modeNavRight" class="mode-card-nav right" style="position:absolute;right:-4px;top:50%;transform:translateY(-50%);z-index:2;border:0;background:transparent;color:var(--accent);font-size:24px;cursor:pointer;">❯</button>
-                <div id="modeCard" class="mode-card" style="aspect-ratio:auto;min-height:auto;padding:20px;border-radius:20px;">
-                  <div id="modeCardTitle" class="mode-card-title" style="font-size:20px;margin-bottom:12px;">単発作業</div>
-                  <div id="modeCardBody" class="mode-card-body" style="gap:12px;"></div>
-                </div>
+          <div id="fishSettingsOverlay" style="display:none;position:absolute;inset:0;z-index:30;background:rgba(6,14,28,0.95);backdrop-filter:blur(12px);overflow:hidden;">
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;">
+              <!-- 1/14: Top bar - back + bait -->
+              <div style="flex:1;display:flex;align-items:center;justify-content:space-between;padding:0 16px;min-height:0;">
+                <button id="closeFishSettings" style="border:0;background:transparent;color:rgba(255,255,255,0.6);font-size:20px;cursor:pointer;">❮ 戻る</button>
+                <select id="fishSettingsBait" style="height:30px;padding:0 10px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#fff;font-size:11px;font-weight:700;max-width:130px;"></select>
               </div>
-              <!-- Bait selector -->
-              <div style="display:flex;justify-content:flex-end;">
-                <select id="fishSettingsBait" style="height:36px;padding:0 12px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.08);color:#fff;font-size:12px;font-weight:700;"></select>
+              <!-- 3/14 (or 4/14 if no norma): Details -->
+              <div id="fsDetails" style="flex:3;display:flex;align-items:center;justify-content:center;text-align:center;padding:8px 24px;min-height:0;">
+                <div id="fsDetailsText" style="font-size:14px;color:rgba(255,255,255,0.55);line-height:1.8;font-weight:400;white-space:pre-line;"></div>
+              </div>
+              <!-- 1/14: Norma-only area -->
+              <div id="fsNormaArea" style="flex:1;display:none;align-items:center;justify-content:center;gap:6px;padding:0 16px;min-height:0;flex-wrap:wrap;"></div>
+              <!-- 3/14: Mode card carousel -->
+              <div id="fsModeCarousel" style="flex:3;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:0 8px;min-height:0;">
+                <canvas id="fsModeCanvas" style="width:100%;height:100%;"></canvas>
+              </div>
+              <!-- 4/14: Time slider -->
+              <div style="flex:4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:0;">
+                <div id="fsTimeDisplay" style="font-size:clamp(32px,7vw,48px);font-weight:900;color:#fff;letter-spacing:2px;">10<span style="font-size:0.35em;color:rgba(255,255,255,0.35);margin-left:2px;">min</span></div>
+                <canvas id="fsTimeCanvas" style="width:min(340px,85vw);height:52px;cursor:grab;touch-action:none;"></canvas>
+              </div>
+              <!-- 2/14: Start + task -->
+              <div style="flex:2;display:flex;align-items:center;gap:8px;padding:0 16px;min-height:0;">
+                <select id="fsTaskSelect" style="height:46px;flex:0 0 25%;border-radius:14px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.05);color:#fff;font-size:11px;font-weight:700;padding:0 6px;"></select>
+                <button id="fsStartBtn" style="flex:1;height:46px;border:1px solid rgba(255,255,255,0.25);border-radius:14px;background:transparent;color:#fff;font-size:16px;font-weight:800;cursor:pointer;letter-spacing:3px;">START</button>
               </div>
             </div>
+            <!-- Hidden containers for renderModeCard compat -->
+            <div id="modeCardBody" style="display:none;"></div>
+            <div id="modeCard" style="display:none;"><div id="modeCardTitle"></div></div>
           </div>
-          <div id="modeCardWrap" style="display:none;"><button id="modeCardToggle" style="display:none;"></button></div>
+          <div id="modeCardWrap" style="display:none;"><button id="modeCardToggle" style="display:none;"></button><div id="modeCardInner"><button id="modeNavLeft"></button><button id="modeNavRight"></button></div></div>
         </div>
       </div>
     </section>
@@ -3759,89 +3775,146 @@
       const openFSBtn=document.getElementById("openFishSettingsBtn");
       const fishSettingsOv=document.getElementById("fishSettingsOverlay");
       const closeFSBtn=document.getElementById("closeFishSettings");
-      if(openFSBtn)openFSBtn.addEventListener("click",()=>{if(fishSettingsOv){fishSettingsOv.style.display="block";renderModeCard();}});
+      if(openFSBtn)openFSBtn.addEventListener("click",()=>{if(fishSettingsOv){fishSettingsOv.style.display="block";renderFishSettings();}});
       if(closeFSBtn)closeFSBtn.addEventListener("click",()=>{if(fishSettingsOv)fishSettingsOv.style.display="none";});
+      // === Fish Settings System ===
+      let fsTimeVal=state.selectedCourseMin||10;
+      const MODE_DESCS=["好きな時間を設定して\n1回の作業に集中しよう","作業と休憩を繰り返す\n連続モードでリズムを作ろう","セットごとにノルマを設定\n計画的に作業を進めよう","時間制限なし\n好きなだけ作業して報酬GET"];
+      const MODE_COLORS=["rgba(72,211,109,0.15)","rgba(100,180,230,0.15)","rgba(255,180,100,0.15)","rgba(180,130,255,0.15)"];
+      function renderFishSettings(){drawModeCarousel();renderTimeSlider();updateFSDetails();updateFSBait();updateFSTask();
+        const startBtn=document.getElementById("fsStartBtn");
+        if(startBtn){startBtn.onclick=()=>{if(fishSettingsOv)fishSettingsOv.style.display="none";
+          const idx=state.ui.modeIndex||0;
+          if(idx===3){startCountupFishing();}else{startFishingFromRoom();}
+        };}
+      }
+      function updateFSDetails(){
+        const dt=document.getElementById("fsDetailsText");if(dt)dt.textContent=MODE_DESCS[state.ui.modeIndex||0]||"";
+        // Norma area
+        const na=document.getElementById("fsNormaArea");if(!na)return;
+        const idx=state.ui.modeIndex||0;na.style.display=idx===2?"flex":"none";na.innerHTML="";
+        if(idx!==2)return;
+        const rounds=state.normaConfig.rounds||[];const cur=state.normaConfig.currentEdit||0;const isEd=cur<rounds.length;
+        const rb=document.createElement("span");rb.style.cssText="cursor:pointer;color:#f88;font-size:16px;";rb.textContent="↺";
+        rb.addEventListener("click",()=>{state.normaConfig.rounds=[];state.normaConfig.currentEdit=0;saveAll().catch(console.error);renderFishSettings();});na.appendChild(rb);
+        for(let i=0;i<rounds.length;i++){const d=document.createElement("span");d.style.cssText="width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:9px;font-weight:700;cursor:pointer;border:1px solid rgba(255,255,255,0.2);color:#fff;background:"+(i===cur&&isEd?"rgba(123,223,245,0.3)":"rgba(255,255,255,0.06)")+";";d.textContent=String(i+1);d.addEventListener("click",()=>{state.normaConfig.currentEdit=i;renderFishSettings();});na.appendChild(d);}
+        if(rounds.length<9){const ad=document.createElement("span");ad.style.cssText="width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:14px;cursor:pointer;border:1px dashed rgba(255,255,255,0.2);color:rgba(255,255,255,0.4);";ad.textContent="+";ad.addEventListener("click",()=>{rounds.push({fishMin:fsTimeVal,restMin:5,norma:"",baitId:state.selectedBaitId});state.normaConfig.currentEdit=rounds.length-1;saveAll().catch(console.error);renderFishSettings();});na.appendChild(ad);}
+        const ni=document.createElement("input");ni.type="text";ni.placeholder="ノルマを入力";ni.value=isEd?(rounds[cur].norma||""):"";ni.style.cssText="flex:1;min-width:80px;height:26px;border:1px solid rgba(255,255,255,0.12);border-radius:8px;background:transparent;color:#fff;font-size:11px;padding:0 8px;outline:none;";
+        ni.addEventListener("change",()=>{if(isEd)rounds[cur].norma=ni.value;saveAll().catch(console.error);});na.appendChild(ni);
+        const svb=document.createElement("button");svb.style.cssText="border:1px solid rgba(255,255,255,0.15);border-radius:8px;background:transparent;color:rgba(255,255,255,0.5);font-size:10px;padding:3px 8px;cursor:pointer;white-space:nowrap;";svb.textContent="保存";svb.addEventListener("click",()=>saveWorkPreset());na.appendChild(svb);
+        const pvb=document.createElement("button");pvb.style.cssText="border:1px solid rgba(255,255,255,0.15);border-radius:8px;background:transparent;color:rgba(255,255,255,0.5);font-size:10px;padding:3px 8px;cursor:pointer;white-space:nowrap;";pvb.textContent="一覧";pvb.addEventListener("click",()=>openWorkPresetList());na.appendChild(pvb);
+      }
+      function updateFSBait(){const s=document.getElementById("fishSettingsBait");if(!s)return;s.innerHTML="";BAIT_TYPES.forEach(b=>{const o=document.createElement("option");o.value=b.id;o.textContent=b.icon+"×"+(state.baitCounts[b.id]||0);s.appendChild(o);});NUMBERED_BAITS.forEach(nb=>{const c=state.baitCounts[nb.id]||0;if(c>0){const o=document.createElement("option");o.value=nb.id;o.textContent="#"+nb.num+"×"+c;s.appendChild(o);}});s.value=state.selectedBaitId||"bait_basic";s.onchange=()=>{state.selectedBaitId=s.value;saveAll().catch(console.error);};}
+      function updateFSTask(){const s=document.getElementById("fsTaskSelect");if(!s)return;fillTaskSelect(s);s.value=state.selectedTaskCategory||"work";s.onchange=()=>{state.selectedTaskCategory=s.value;saveAll().catch(console.error);};}
+      // Mode carousel (Canvas)
+      let modeSwipeX=0;
+      function drawModeCarousel(){
+        const cv=document.getElementById("fsModeCanvas");if(!cv)return;
+        const W=cv.offsetWidth||300,H=cv.offsetHeight||80;cv.width=W;cv.height=H;
+        const ctx=cv.getContext("2d");ctx.clearRect(0,0,W,H);
+        const idx=state.ui.modeIndex||0;const len=MODE_NAMES.length;
+        for(let off=-2;off<=2;off++){
+          const mi=(idx+off+len)%len;const cx=W/2+off*W*0.35;const w=off===0?W*0.4:W*0.28;const h=H*0.7;const y=(H-h)/2;
+          const alpha=off===0?1:Math.max(0.15,0.5-Math.abs(off)*0.15);
+          ctx.globalAlpha=alpha;ctx.fillStyle=MODE_COLORS[mi]||"rgba(255,255,255,0.08)";
+          const r=12;ctx.beginPath();ctx.moveTo(cx-w/2+r,y);ctx.lineTo(cx+w/2-r,y);ctx.quadraticCurveTo(cx+w/2,y,cx+w/2,y+r);ctx.lineTo(cx+w/2,y+h-r);ctx.quadraticCurveTo(cx+w/2,y+h,cx+w/2-r,y+h);ctx.lineTo(cx-w/2+r,y+h);ctx.quadraticCurveTo(cx-w/2,y+h,cx-w/2,y+h-r);ctx.lineTo(cx-w/2,y+r);ctx.quadraticCurveTo(cx-w/2,y,cx-w/2+r,y);ctx.closePath();ctx.fill();
+          ctx.strokeStyle="rgba(255,255,255,"+(off===0?0.25:0.08)+")";ctx.lineWidth=1;ctx.stroke();
+          ctx.fillStyle="#fff";ctx.font=(off===0?"bold 15px":"11px")+" sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(MODE_NAMES[mi],cx,H/2);
+        }
+        ctx.globalAlpha=1;
+      }
+      const modeCV=document.getElementById("fsModeCanvas");
+      if(modeCV){
+        modeCV.addEventListener("click",e=>{const rect=modeCV.getBoundingClientRect();const x=e.clientX-rect.left;const W=rect.width;
+          if(x<W*0.3){state.ui.modeIndex=(state.ui.modeIndex+MODE_NAMES.length-1)%MODE_NAMES.length;renderFishSettings();saveAll().catch(console.error);}
+          else if(x>W*0.7){state.ui.modeIndex=(state.ui.modeIndex+1)%MODE_NAMES.length;renderFishSettings();saveAll().catch(console.error);}
+        });
+        let msTouchX=0;
+        modeCV.addEventListener("touchstart",e=>{msTouchX=e.touches[0].clientX;},{passive:true});
+        modeCV.addEventListener("touchend",e=>{const dx=e.changedTouches[0].clientX-msTouchX;
+          if(dx<-30){state.ui.modeIndex=(state.ui.modeIndex+1)%MODE_NAMES.length;renderFishSettings();saveAll().catch(console.error);}
+          else if(dx>30){state.ui.modeIndex=(state.ui.modeIndex+MODE_NAMES.length-1)%MODE_NAMES.length;renderFishSettings();saveAll().catch(console.error);}
+        },{passive:true});
+      }
+      // Time slider (Canvas)
+      function renderTimeSlider(){
+        const cv=document.getElementById("fsTimeCanvas");if(!cv)return;
+        const W=cv.offsetWidth||340,H=cv.offsetHeight||52;cv.width=W;cv.height=H;
+        const ctx=cv.getContext("2d");ctx.clearRect(0,0,W,H);
+        const spacing=W/15,center=W/2;
+        for(let i=-7;i<=7;i++){
+          const min=fsTimeVal+i;if(min<1||min>60)continue;
+          const x=center+i*spacing;const isFive=min%5===0;const isCenter=i===0;
+          const h=isCenter?H*0.85:isFive?H*0.55:H*0.35;
+          const alpha=Math.max(0.1,1-Math.abs(i)/8);
+          ctx.fillStyle=isCenter?"rgba(123,223,245,"+alpha+")":"rgba(255,255,255,"+(alpha*0.4)+")";
+          ctx.fillRect(x-1.5,H-h,3,h);
+        }
+        const disp=document.getElementById("fsTimeDisplay");
+        if(disp)disp.innerHTML=fsTimeVal+'<span style="font-size:0.35em;color:rgba(255,255,255,0.35);margin-left:2px;">min</span>';
+        if((state.ui.modeIndex||0)===0)state.selectedCourseMin=fsTimeVal;
+        else if((state.ui.modeIndex||0)===1)state.loopConfig.fishMin=fsTimeVal;
+      }
+      const tslider=document.getElementById("fsTimeCanvas");
+      if(tslider){
+        let tdragX=0,tdragging=false;
+        tslider.addEventListener("touchstart",e=>{tdragX=e.touches[0].clientX;tdragging=true;},{passive:true});
+        tslider.addEventListener("touchmove",e=>{if(!tdragging)return;const dx=tdragX-e.touches[0].clientX;if(Math.abs(dx)>10){fsTimeVal=Math.max(1,Math.min(60,fsTimeVal+(dx>0?1:-1)));tdragX=e.touches[0].clientX;renderTimeSlider();}},{passive:true});
+        tslider.addEventListener("touchend",()=>{tdragging=false;saveAll().catch(console.error);});
+        tslider.addEventListener("wheel",e=>{e.preventDefault();fsTimeVal=Math.max(1,Math.min(60,fsTimeVal+(e.deltaY>0?-1:1)));renderTimeSlider();saveAll().catch(console.error);},{passive:false});
+      }
       // Lobby calendar + recommendation
       function getStreak(){let streak=0;const now=new Date();for(let i=0;i<365;i++){const d=new Date(now);d.setDate(d.getDate()-i);const k=`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;const st=getDayStat(k);if(getTotalWorkMin(st)>=1)streak++;else if(i>0)break;}return streak;}
       function getRecommendMin(){
         const week=getWeekStats();const avg=week.days.reduce((s,d)=>s+getTotalWorkMin(d.stat),0)/7;
         const motiv=localStorage.getItem("zz_motiv_"+todayKey())||"normal";
-        let base=Math.max(1,Math.round(avg*0.8));
-        if(base<5)base=5;
+        let base=Math.max(1,Math.round(avg*0.8));if(base<5)base=5;
         if(motiv==="tired")base=Math.max(1,Math.round(base*0.5));
         if(motiv==="genki")base=Math.round(base*1.2);
-        // First time
-        if(avg<1)base=5;
-        return Math.max(1,Math.min(60,base));
+        if(avg<1)base=5;return Math.max(1,Math.min(60,base));
       }
       function renderLobbyCalendar(){
-        const streakEl=document.getElementById("lobbyStreak");
-        if(streakEl)streakEl.textContent=String(getStreak());
-        const now=new Date();
-        [-1,0,1].forEach((off,i)=>{
+        const streakEl=document.getElementById("lobbyStreak");if(streakEl)streakEl.textContent=String(getStreak());
+        const now=new Date();const target=getRecommendMin();
+        for(let off=-3;off<=3;off++){
           const d=new Date(now);d.setDate(d.getDate()+off);
           const k=`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
           const st=getDayStat(k);const wm=getTotalWorkMin(st);
-          const ids=["lobbyCalPrev","lobbyCalToday","lobbyCalNext"];
-          const dateIds=["lobbyCalPrevDate","lobbyCalTodayDate","lobbyCalNextDate"];
-          const circle=document.getElementById(ids[i]);
-          const dateEl=document.getElementById(dateIds[i]);
+          const cid="lobbyCal_"+off,did="lobbyCalD_"+off;
+          const circle=document.getElementById(cid),dateEl=document.getElementById(did);
           if(circle){
-            circle.style.background=wm>=1?(wm>=getRecommendMin()?"rgba(255,215,0,0.4)":"rgba(123,223,245,0.3)"):"rgba(255,255,255,0.08)";
-            circle.innerHTML=`<span style="font-size:${i===1?'16px':'12px'};font-weight:700;color:rgba(255,255,255,${wm>=1?'0.9':'0.3'});">${d.getDate()}</span>`;
+            const isToday=off===0;const cleared=wm>=target;const worked=wm>=1;
+            circle.style.background=cleared?"rgba(255,215,0,0.4)":worked?"rgba(123,223,245,0.3)":"rgba(255,255,255,0.08)";
+            circle.style.borderColor=isToday?"rgba(255,255,255,0.3)":"transparent";
+            circle.innerHTML=`<span style="font-size:${isToday?'14px':'11px'};font-weight:${isToday?800:600};color:rgba(255,255,255,${worked?'0.9':'0.35'});">${d.getDate()}</span>`;
           }
-          if(dateEl)dateEl.textContent=off===0?"今日":off===-1?"昨日":"明日";
-        });
-        // Recommendation
+          if(dateEl)dateEl.textContent=(d.getMonth()+1)+"/"+d.getDate();
+        }
         const recEl=document.getElementById("lobbyRecommend");
         if(recEl){
           const todayWm=getTotalWorkMin(getDayStat(todayKey()));
-          const target=getRecommendMin();
-          if(todayWm>=target)recEl.innerHTML='<span style="color:var(--gold);">🎉 クリアおめでとう！</span>';
-          else recEl.textContent=`おすすめ：今日は${target}分釣りしてみよう！`;
+          if(todayWm>=target)recEl.innerHTML='<span style="color:var(--gold);font-weight:700;">🎉 ミッションクリア！</span>';
+          else recEl.innerHTML='<span style="color:rgba(255,255,255,0.7);">ミッション：今日は<b style="color:var(--accent);">'+target+'分</b>釣りしよう</span>';
         }
       }
       renderLobbyCalendar();
-      // Motivation check (once per day)
+      // Motivation check
       function checkMotivation(){
-        const key="zz_motiv_"+todayKey();
-        if(localStorage.getItem(key))return;
-        const ov=document.createElement("div");ov.style.cssText="position:fixed;inset:0;z-index:300;display:grid;place-items:center;background:rgba(0,0,0,0.7);";
-        const card=document.createElement("div");card.style.cssText="padding:32px;border-radius:24px;background:rgba(10,22,40,0.95);text-align:center;max-width:320px;backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.1);";
-        card.innerHTML=`<div style="font-size:18px;font-weight:800;color:#fff;margin-bottom:16px;">今日のモチベは？</div>
-          <div style="display:flex;gap:12px;justify-content:center;">
-            <button data-m="tired" style="flex:1;padding:12px;border:1px solid rgba(255,255,255,0.15);border-radius:12px;background:transparent;color:rgba(255,255,255,0.6);font-size:14px;font-weight:700;cursor:pointer;">😮‍💨 疲れ</button>
-            <button data-m="normal" style="flex:1;padding:12px;border:1px solid rgba(255,255,255,0.15);border-radius:12px;background:transparent;color:rgba(255,255,255,0.8);font-size:14px;font-weight:700;cursor:pointer;">😐 普通</button>
-            <button data-m="genki" style="flex:1;padding:12px;border:1px solid rgba(123,223,245,0.3);border-radius:12px;background:rgba(123,223,245,0.1);color:var(--accent);font-size:14px;font-weight:700;cursor:pointer;">💪 元気</button>
-          </div>`;
+        const key="zz_motiv_"+todayKey();if(localStorage.getItem(key))return;
+        const ov=document.createElement("div");ov.style.cssText="position:fixed;inset:0;z-index:300;display:grid;place-items:center;background:rgba(0,0,0,0.75);backdrop-filter:blur(4px);";
+        const card=document.createElement("div");card.style.cssText="padding:32px;border-radius:24px;background:rgba(10,22,40,0.95);text-align:center;max-width:320px;border:1px solid rgba(255,255,255,0.1);";
+        card.innerHTML='<div style="font-size:18px;font-weight:800;color:#fff;margin-bottom:20px;">今日のモチベは？</div><div style="display:flex;gap:12px;justify-content:center;"><button data-m="tired" style="flex:1;padding:14px 8px;border:1px solid rgba(255,255,255,0.15);border-radius:14px;background:transparent;color:rgba(255,255,255,0.6);font-size:14px;font-weight:700;cursor:pointer;">😮‍💨<br>疲れ</button><button data-m="normal" style="flex:1;padding:14px 8px;border:1px solid rgba(255,255,255,0.2);border-radius:14px;background:rgba(255,255,255,0.03);color:rgba(255,255,255,0.8);font-size:14px;font-weight:700;cursor:pointer;">😐<br>普通</button><button data-m="genki" style="flex:1;padding:14px 8px;border:1px solid rgba(123,223,245,0.3);border-radius:14px;background:rgba(123,223,245,0.08);color:var(--accent);font-size:14px;font-weight:700;cursor:pointer;">💪<br>元気</button></div>';
         card.querySelectorAll("button").forEach(btn=>{btn.addEventListener("click",()=>{localStorage.setItem(key,btn.dataset.m);ov.remove();renderLobbyCalendar();});});
         ov.appendChild(card);document.body.appendChild(ov);
       }
       setTimeout(checkMotivation,500);
-      // Lobby mode selector
-      const LOBBY_MODES=["釣り×ポモドーロタイマー","網漁×集中特化","リアル×息抜き"];
-      let lobbyModeIdx=0;
-      const lmText=document.getElementById("lobbyModeText");
-      const lmPrev=document.getElementById("lobbyModePrev");
-      const lmNext=document.getElementById("lobbyModeNext");
-      const lmTitle=document.getElementById("lobbyModeTitle");
+      // Solo toggle
       const soloToggle=document.getElementById("soloToggle");
       const soloKnob=document.getElementById("soloToggleKnob");
-      const soloWrap=document.getElementById("soloToggleWrap");
       if(!state.soloMode)state.soloMode=false;
-      function updateLobbyMode(){
-        if(lmText)lmText.textContent=LOBBY_MODES[lobbyModeIdx];
-        if(lmPrev)lmPrev.textContent=LOBBY_MODES[(lobbyModeIdx+LOBBY_MODES.length-1)%LOBBY_MODES.length];
-        if(lmNext)lmNext.textContent=LOBBY_MODES[(lobbyModeIdx+1)%LOBBY_MODES.length];
-        if(soloWrap)soloWrap.style.display=lobbyModeIdx===0?"flex":"none";
-      }
       function updateSoloUI(){if(soloToggle)soloToggle.style.background=state.soloMode?"var(--accent)":"rgba(255,255,255,0.15)";if(soloKnob){soloKnob.style.left=state.soloMode?"20px":"2px";soloKnob.style.background=state.soloMode?"#fff":"#999";}const sl=document.getElementById("soloLabel");if(sl)sl.textContent=state.soloMode?"ソロ":"マルチ";}
-      if(lmPrev)lmPrev.addEventListener("click",()=>{lobbyModeIdx=(lobbyModeIdx+LOBBY_MODES.length-1)%LOBBY_MODES.length;updateLobbyMode();});
-      if(lmNext)lmNext.addEventListener("click",()=>{lobbyModeIdx=(lobbyModeIdx+1)%LOBBY_MODES.length;updateLobbyMode();});
-      // Scroll/wheel on lobby title
-      if(lmTitle)lmTitle.addEventListener("wheel",e=>{e.preventDefault();lobbyModeIdx=e.deltaY>0?(lobbyModeIdx+1)%LOBBY_MODES.length:(lobbyModeIdx+LOBBY_MODES.length-1)%LOBBY_MODES.length;updateLobbyMode();},{passive:false});
       if(soloToggle)soloToggle.addEventListener("click",()=>{state.soloMode=!state.soloMode;updateSoloUI();saveAll().catch(console.error);});
-      updateLobbyMode();updateSoloUI();
+      updateSoloUI();
       // Goal inputs
       [el.lobbyGoalInput,el.roomGoalInput].forEach(inp=>{if(!inp)return;inp.addEventListener("input",()=>{state.miniGoal=String(inp.value).trim().slice(0,28);syncGoalInputs();});inp.addEventListener("blur",()=>saveAll().catch(console.error));});
       [el.lobbyGoalVisibility,el.roomGoalVisibility,el.fishingGoalVisibility].forEach(sp=>{if(!sp)return;sp.addEventListener("click",()=>{state.miniGoalPublic=!state.miniGoalPublic;syncGoalInputs();saveAll().catch(console.error);});});
@@ -4144,7 +4217,7 @@
     function renderCustomGraphColors(){el.customGraphColors.innerHTML='';const used=(state.customGraphs||[]).map(g=>g.color);CUSTOM_COLORS.forEach(c=>{if(used.includes(c))return;const b=document.createElement('button');b.style.cssText=`width:28px;height:28px;border-radius:50%;border:2px solid transparent;background:${c};cursor:pointer;`;b.addEventListener('click',()=>{el.customGraphColors.querySelectorAll('button').forEach(x=>x.style.borderColor='transparent');b.style.borderColor='#fff';b.dataset.color=c;});el.customGraphColors.appendChild(b);});}
     function saveCustomGraphItem(){const title=el.customGraphTitle.value.trim().slice(0,12);const selBtn=el.customGraphColors.querySelector('button[style*="border-color: rgb(255, 255, 255)"]')||el.customGraphColors.querySelector('button[data-color]');if(!title){toast("タイトルを入力してください");return;}if(!selBtn?.dataset?.color){toast("色を選んでください");return;}state.customGraphs.push({id:makeId(),title,color:selBtn.dataset.color});el.customGraphForm.style.display='none';el.customGraphTitle.value='';fillTaskSelect();saveAll().catch(console.error);renderAll();}
     function renderCustomGraphList(){el.customGraphList.innerHTML='';(state.customGraphs||[]).forEach(g=>{const d=document.createElement('span');d.style.cssText=`display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:999px;background:${g.color}22;border:1px solid ${g.color}44;font-size:12px;color:${g.color};`;d.textContent=g.title;el.customGraphList.appendChild(d);});}
-    function fillTaskSelect(){const tsel=document.getElementById('taskCategorySelect');if(!tsel)return;tsel.innerHTML='';const opt=document.createElement('option');opt.value='work';opt.textContent='作業';opt.style.background='#1a3a2a';opt.style.color='#7fe89c';tsel.appendChild(opt);(state.customGraphs||[]).forEach(g=>{const o=document.createElement('option');o.value=g.id;o.textContent=g.title;o.style.background=g.color;o.style.color='#fff';tsel.appendChild(o);});tsel.value=state.selectedTaskCategory||'work';tsel.addEventListener("change",()=>{state.selectedTaskCategory=tsel.value;updateTaskSelectColor();saveAll().catch(console.error);});updateTaskSelectColor();}
+    function fillTaskSelect(optSel){const tsel=optSel||document.getElementById('taskCategorySelect');if(!tsel)return;tsel.innerHTML='';const opt=document.createElement('option');opt.value='work';opt.textContent='作業';opt.style.background='#1a3a2a';opt.style.color='#7fe89c';tsel.appendChild(opt);(state.customGraphs||[]).forEach(g=>{const o=document.createElement('option');o.value=g.id;o.textContent=g.title;o.style.background=g.color;o.style.color='#fff';tsel.appendChild(o);});tsel.value=state.selectedTaskCategory||'work';if(!optSel){tsel.addEventListener("change",()=>{state.selectedTaskCategory=tsel.value;updateTaskSelectColor();saveAll().catch(console.error);});}updateTaskSelectColor();}
     function updateTaskSelectColor(){const tsel=document.getElementById('taskCategorySelect');if(!tsel)return;const v=tsel.value;if(v==='work'){tsel.style.background='rgba(127,232,156,0.2)';tsel.style.color='#7fe89c';}else{const g=(state.customGraphs||[]).find(x=>x.id===v);if(g){tsel.style.background=g.color+'33';tsel.style.color=g.color;}else{tsel.style.background='';tsel.style.color='';}}}
 
     function toggleUtility(){switchScreen("utility");renderUtility();}
