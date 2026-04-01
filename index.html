@@ -39,7 +39,7 @@
     html, body {
       margin: 0;
       min-height: 100%;
-      background: #d4eef7;
+      background: #0a1628;
       color: var(--text);
       font-family: "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
     }
@@ -54,7 +54,7 @@
       height: 100dvh;
       height: calc(var(--appVh) * 100);
       overflow: hidden;
-      background: #d4eef7;
+      background: transparent;
     }
     #app.nav-collapsed { --navCurrent: var(--navCollapsed); }
     #app.nav-hidden .side-nav,
@@ -69,7 +69,6 @@
     .bg-screen {
       position: absolute;
       inset: 0;
-      left: -8px;
       overflow: hidden;
       border-radius: 0;
       background: #fff;
@@ -327,7 +326,7 @@
     }
     .screen-shell {
       position: absolute;
-      inset: calc(var(--safeTop) + 8px) 8px calc(var(--safeBottom) + 8px) calc(var(--navCurrent) + 8px);
+      inset: 0; padding: calc(var(--safeTop) + 8px) 8px calc(var(--safeBottom) + 8px) calc(var(--navCurrent) + 8px);
       transition: inset 0.22s ease;
       z-index: 4;
     }
@@ -2661,11 +2660,40 @@
       .mode-card-nav.right { right: 6px; top: 8px; }
       .mc-fish-btn { height: 34px; font-size: 13px; }
     }
+    /* === Mobile Bottom Nav === */
+    .bottom-nav { display:none; }
+    @media (max-width: 760px) {
+      .side-nav { display:none !important; }
+      .nav-toggle { display:none !important; }
+      .bottom-nav {
+        display:flex;position:fixed;bottom:0;left:0;right:0;z-index:100;
+        height:56px;background:rgba(10,22,40,0.95);backdrop-filter:blur(10px);
+        border-top:1px solid rgba(255,255,255,0.06);
+        align-items:center;justify-content:space-around;
+        padding:0 8px calc(var(--safeBottom));
+      }
+      .bottom-nav button {
+        flex:1;height:100%;border:0;background:transparent;color:rgba(255,255,255,0.4);
+        display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+        font-size:9px;font-weight:600;cursor:pointer;position:relative;
+      }
+      .bottom-nav button svg { width:20px;height:20px;fill:currentColor;stroke:none; }
+      .bottom-nav button.active { color:var(--accent); }
+      .bottom-nav .bnav-dot {
+        position:absolute;top:4px;right:calc(50% - 14px);width:6px;height:6px;border-radius:50%;
+        background:var(--accent);display:none;
+      }
+      .bottom-nav .bnav-dot.show { display:block; }
+      .screen-shell {
+        padding-bottom: calc(var(--safeBottom) + 64px) !important;
+        left: 8px !important;
+      }
+    }
   </style>
 </head>
 <body>
   <div id="app">
-    <button id="navToggle" class="nav-toggle" aria-label="メニュー切り替え">❯</button>
+    <button id="navToggle" class="nav-toggle" style="opacity:0;" aria-label="メニュー切り替え">❯</button>
 
     <nav class="side-nav">
       <div id="navActiveBubble" class="nav-active-bubble"></div>
@@ -2717,19 +2745,34 @@
             <span id="lobbyCurrentTime">00:00</span>
             <div id="lobbyDateSub" class="clock-date-sub" style="font-size:10px;"></div>
           </div>
-          <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
-            <div id="lobbyModeTitle" style="text-align:center;position:relative;min-height:60px;display:flex;align-items:center;justify-content:center;gap:12px;cursor:pointer;user-select:none;" >
-              <span id="lobbyModePrev" style="font-size:clamp(10px,2vw,13px);color:rgba(255,255,255,0.25);font-weight:600;cursor:pointer;white-space:nowrap;"></span>
-              <span id="lobbyModeText" style="font-size:clamp(18px,3.5vw,26px);font-weight:900;color:#fff;text-shadow:0 4px 16px rgba(0,0,0,0.4);white-space:nowrap;position:relative;top:-4px;">釣り×ポモドーロタイマー</span>
-              <span id="lobbyModeNext" style="font-size:clamp(10px,2vw,13px);color:rgba(255,255,255,0.25);font-weight:600;cursor:pointer;white-space:nowrap;"></span>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:16px;width:100%;">
+            <!-- Streak counter -->
+            <div id="lobbyStreak" style="font-size:clamp(36px,8vw,56px);font-weight:900;color:#fff;text-shadow:0 4px 20px rgba(0,0,0,0.3);line-height:1;">0</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:-10px;">日連続</div>
+            <!-- Calendar mini (3 circles) -->
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="text-align:center;">
+                <div id="lobbyCalPrev" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.08);display:grid;place-items:center;position:relative;overflow:hidden;"></div>
+                <div id="lobbyCalPrevDate" style="font-size:9px;color:rgba(255,255,255,0.3);margin-top:3px;"></div>
+              </div>
+              <div style="text-align:center;">
+                <div id="lobbyCalToday" style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,0.15);display:grid;place-items:center;position:relative;overflow:hidden;border:2px solid rgba(255,255,255,0.2);"></div>
+                <div id="lobbyCalTodayDate" style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:3px;font-weight:700;"></div>
+              </div>
+              <div style="text-align:center;">
+                <div id="lobbyCalNext" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.08);display:grid;place-items:center;position:relative;overflow:hidden;"></div>
+                <div id="lobbyCalNextDate" style="font-size:9px;color:rgba(255,255,255,0.3);margin-top:3px;"></div>
+              </div>
             </div>
-            <div id="lobbyPlayRow" style="display:flex;align-items:center;gap:14px;">
-              <button id="playRoomBtn" class="play-btn">プレイ</button>
-              <div id="soloToggleWrap" style="display:flex;flex-direction:column;align-items:center;gap:2px;">
-                <span style="font-size:10px;color:rgba(255,255,255,0.5);font-weight:700;">ソロ</span>
-                <div id="soloToggle" style="width:40px;height:22px;border-radius:11px;background:rgba(255,255,255,0.15);position:relative;cursor:pointer;transition:background 0.2s;">
-                  <div id="soloToggleKnob" style="width:18px;height:18px;border-radius:50%;background:#999;position:absolute;top:2px;left:2px;transition:left 0.2s,background 0.2s;"></div>
-                </div>
+            <!-- Daily recommendation -->
+            <div id="lobbyRecommend" style="font-size:12px;color:rgba(255,255,255,0.5);text-align:center;cursor:pointer;padding:6px 16px;border-radius:12px;background:rgba(255,255,255,0.05);"></div>
+            <!-- Large play button -->
+            <button id="playRoomBtn" style="width:72px;height:72px;border:2px solid rgba(255,255,255,0.3);border-radius:50%;background:transparent;color:#fff;font-size:32px;cursor:pointer;display:grid;place-items:center;margin-top:8px;backdrop-filter:blur(4px);transition:transform 0.15s;">▶</button>
+            <!-- Solo toggle -->
+            <div id="soloToggleWrap" style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+              <span id="soloLabel" style="font-size:10px;color:rgba(255,255,255,0.5);font-weight:700;">マルチ</span>
+              <div id="soloToggle" style="width:40px;height:22px;border-radius:11px;background:rgba(255,255,255,0.15);position:relative;cursor:pointer;transition:background 0.2s;">
+                <div id="soloToggleKnob" style="width:18px;height:18px;border-radius:50%;background:#999;position:absolute;top:2px;left:2px;transition:left 0.2s,background 0.2s;"></div>
               </div>
             </div>
           </div>
@@ -2775,21 +2818,32 @@
             <button id="loopRestCancelBtn" class="loop-rest-cancel-btn">キャンセル</button>
           </div>
 
-          <div class="mode-card-wrap fade-ui" id="modeCardWrap">
-            <button id="modeCardToggle" style="display:none;position:absolute;top:-36px;left:0;border:1px solid rgba(123,223,245,0.3);background:rgba(0,0,0,0.45);color:var(--accent);font-size:18px;font-weight:900;cursor:pointer;z-index:3;width:34px;height:28px;border-radius:10px;backdrop-filter:blur(4px);text-align:center;">⇓</button>
-            <button id="roomMessageBtn" class="message-trigger" style="position:absolute;left:-78px;bottom:4px;width:32px;height:32px;border:1px solid rgba(255,255,255,0.2);border-radius:10px;background:rgba(0,0,0,0.4);color:#fff;font-size:14px;cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);z-index:3;" aria-label="メッセージ">📨<span id="roomMessageDot" class="message-dot"></span></button>
-            <button id="roomFishPredictBtn" style="position:absolute;left:-40px;bottom:4px;width:32px;height:32px;border:1px solid rgba(255,255,255,0.2);border-radius:10px;background:rgba(0,0,0,0.4);color:#fff;font-size:16px;cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);z-index:3;" title="近くにいる魚">🐟</button>
-            <div id="roomFishPredictPopup" class="fish-predict-popup" style="left:-220px;bottom:0;right:auto;"></div>
-            <div id="roomLoopInfo" class="room-loop-info"></div>
-            <div id="modeCardInner" style="position:relative;">
-              <button id="modeNavLeft" class="mode-card-nav left" style="display:none;">❮</button>
-              <button id="modeNavRight" class="mode-card-nav right">❯</button>
-              <div id="modeCard" class="mode-card">
-                <div id="modeCardTitle" class="mode-card-title">単発作業</div>
-                <div id="modeCardBody" class="mode-card-body"></div>
+          <!-- Simple fishing button -->
+          <button id="openFishSettingsBtn" class="fade-ui" style="position:absolute;right:20px;bottom:20px;width:64px;height:64px;border:2px solid rgba(255,255,255,0.3);border-radius:50%;background:rgba(0,0,0,0.3);color:#fff;font-size:16px;font-weight:900;cursor:pointer;z-index:8;backdrop-filter:blur(6px);display:grid;place-items:center;letter-spacing:2px;">釣る</button>
+          <button id="roomMessageBtn" class="message-trigger fade-ui" style="position:absolute;right:96px;bottom:28px;width:32px;height:32px;border:1px solid rgba(255,255,255,0.2);border-radius:10px;background:rgba(0,0,0,0.4);color:#fff;font-size:14px;cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);z-index:8;" aria-label="メッセージ">📨<span id="roomMessageDot" class="message-dot"></span></button>
+          <button id="roomFishPredictBtn" class="fade-ui" style="position:absolute;right:134px;bottom:28px;width:32px;height:32px;border:1px solid rgba(255,255,255,0.2);border-radius:10px;background:rgba(0,0,0,0.4);color:#fff;font-size:16px;cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);z-index:8;" title="近くにいる魚">🐟</button>
+          <div id="roomFishPredictPopup" class="fish-predict-popup" style="right:100px;bottom:70px;"></div>
+          <div id="roomLoopInfo" class="room-loop-info"></div>
+          <!-- Fullscreen fishing settings -->
+          <div id="fishSettingsOverlay" style="display:none;position:absolute;inset:0;z-index:30;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);overflow-y:auto;padding:20px;">
+            <button id="closeFishSettings" style="position:absolute;top:16px;left:16px;border:0;background:transparent;color:rgba(255,255,255,0.6);font-size:24px;cursor:pointer;">❮</button>
+            <div style="max-width:400px;margin:40px auto 0;display:flex;flex-direction:column;gap:16px;">
+              <!-- Mode selector cards -->
+              <div id="modeCardInner" style="position:relative;">
+                <button id="modeNavLeft" class="mode-card-nav left" style="position:absolute;left:-4px;top:50%;transform:translateY(-50%);z-index:2;border:0;background:transparent;color:var(--accent);font-size:24px;cursor:pointer;">❮</button>
+                <button id="modeNavRight" class="mode-card-nav right" style="position:absolute;right:-4px;top:50%;transform:translateY(-50%);z-index:2;border:0;background:transparent;color:var(--accent);font-size:24px;cursor:pointer;">❯</button>
+                <div id="modeCard" class="mode-card" style="aspect-ratio:auto;min-height:auto;padding:20px;border-radius:20px;">
+                  <div id="modeCardTitle" class="mode-card-title" style="font-size:20px;margin-bottom:12px;">単発作業</div>
+                  <div id="modeCardBody" class="mode-card-body" style="gap:12px;"></div>
+                </div>
+              </div>
+              <!-- Bait selector -->
+              <div style="display:flex;justify-content:flex-end;">
+                <select id="fishSettingsBait" style="height:36px;padding:0 12px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.08);color:#fff;font-size:12px;font-weight:700;"></select>
               </div>
             </div>
           </div>
+          <div id="modeCardWrap" style="display:none;"><button id="modeCardToggle" style="display:none;"></button></div>
         </div>
       </div>
     </section>
@@ -3281,6 +3335,14 @@
     </div>
 
     <div id="toastWrap" class="toast-wrap"></div>
+    <!-- Mobile Bottom Nav -->
+    <nav class="bottom-nav" id="bottomNav">
+      <button data-screen="results" aria-label="リザルト"><svg viewBox="0 0 24 24"><path d="M3 3v18h18V3H3zm14 12H7v-2h10v2zm0-4H7V9h10v2z"/></svg><span>リザルト</span></button>
+      <button data-screen="utility" aria-label="便利"><svg viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/></svg><span>便利</span></button>
+      <button data-screen="room" aria-label="プレイ" class="active"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><span>プレイ</span></button>
+      <button data-screen="store" aria-label="ストア"><svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg><span>ストア</span></button>
+      <button data-screen="encyclopedia" aria-label="図鑑"><svg viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg><span>図鑑</span></button>
+    </nav>
   </div>
 
   <script type="module">
@@ -3688,9 +3750,74 @@
     function bindEvents(){
       el.navToggle.addEventListener("click",()=>{state.ui.navCollapsed=!state.ui.navCollapsed;applyNavState();saveAll().catch(console.error);});
       el.navBtns.forEach(b=>b.addEventListener("click",()=>switchScreen(b.dataset.screen)));
+      // Bottom nav
+      document.querySelectorAll(".bottom-nav button").forEach(b=>b.addEventListener("click",()=>{if(b.dataset.screen)switchScreen(b.dataset.screen);}));
       if(el.partsPanelToggle)el.partsPanelToggle.addEventListener("click",()=>{state.ui.partsPanelOpen=!state.ui.partsPanelOpen;renderNavParts();saveAll().catch(console.error);});
       if(el.mailboxNavBtn)el.mailboxNavBtn.addEventListener("click",()=>openOfficialMailbox());
       el.playRoomBtn.addEventListener("click",()=>joinBestRoom().catch(console.error));
+      // Fish settings overlay
+      const openFSBtn=document.getElementById("openFishSettingsBtn");
+      const fishSettingsOv=document.getElementById("fishSettingsOverlay");
+      const closeFSBtn=document.getElementById("closeFishSettings");
+      if(openFSBtn)openFSBtn.addEventListener("click",()=>{if(fishSettingsOv){fishSettingsOv.style.display="block";renderModeCard();}});
+      if(closeFSBtn)closeFSBtn.addEventListener("click",()=>{if(fishSettingsOv)fishSettingsOv.style.display="none";});
+      // Lobby calendar + recommendation
+      function getStreak(){let streak=0;const now=new Date();for(let i=0;i<365;i++){const d=new Date(now);d.setDate(d.getDate()-i);const k=`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;const st=getDayStat(k);if(getTotalWorkMin(st)>=1)streak++;else if(i>0)break;}return streak;}
+      function getRecommendMin(){
+        const week=getWeekStats();const avg=week.days.reduce((s,d)=>s+getTotalWorkMin(d.stat),0)/7;
+        const motiv=localStorage.getItem("zz_motiv_"+todayKey())||"normal";
+        let base=Math.max(1,Math.round(avg*0.8));
+        if(base<5)base=5;
+        if(motiv==="tired")base=Math.max(1,Math.round(base*0.5));
+        if(motiv==="genki")base=Math.round(base*1.2);
+        // First time
+        if(avg<1)base=5;
+        return Math.max(1,Math.min(60,base));
+      }
+      function renderLobbyCalendar(){
+        const streakEl=document.getElementById("lobbyStreak");
+        if(streakEl)streakEl.textContent=String(getStreak());
+        const now=new Date();
+        [-1,0,1].forEach((off,i)=>{
+          const d=new Date(now);d.setDate(d.getDate()+off);
+          const k=`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+          const st=getDayStat(k);const wm=getTotalWorkMin(st);
+          const ids=["lobbyCalPrev","lobbyCalToday","lobbyCalNext"];
+          const dateIds=["lobbyCalPrevDate","lobbyCalTodayDate","lobbyCalNextDate"];
+          const circle=document.getElementById(ids[i]);
+          const dateEl=document.getElementById(dateIds[i]);
+          if(circle){
+            circle.style.background=wm>=1?(wm>=getRecommendMin()?"rgba(255,215,0,0.4)":"rgba(123,223,245,0.3)"):"rgba(255,255,255,0.08)";
+            circle.innerHTML=`<span style="font-size:${i===1?'16px':'12px'};font-weight:700;color:rgba(255,255,255,${wm>=1?'0.9':'0.3'});">${d.getDate()}</span>`;
+          }
+          if(dateEl)dateEl.textContent=off===0?"今日":off===-1?"昨日":"明日";
+        });
+        // Recommendation
+        const recEl=document.getElementById("lobbyRecommend");
+        if(recEl){
+          const todayWm=getTotalWorkMin(getDayStat(todayKey()));
+          const target=getRecommendMin();
+          if(todayWm>=target)recEl.innerHTML='<span style="color:var(--gold);">🎉 クリアおめでとう！</span>';
+          else recEl.textContent=`おすすめ：今日は${target}分釣りしてみよう！`;
+        }
+      }
+      renderLobbyCalendar();
+      // Motivation check (once per day)
+      function checkMotivation(){
+        const key="zz_motiv_"+todayKey();
+        if(localStorage.getItem(key))return;
+        const ov=document.createElement("div");ov.style.cssText="position:fixed;inset:0;z-index:300;display:grid;place-items:center;background:rgba(0,0,0,0.7);";
+        const card=document.createElement("div");card.style.cssText="padding:32px;border-radius:24px;background:rgba(10,22,40,0.95);text-align:center;max-width:320px;backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.1);";
+        card.innerHTML=`<div style="font-size:18px;font-weight:800;color:#fff;margin-bottom:16px;">今日のモチベは？</div>
+          <div style="display:flex;gap:12px;justify-content:center;">
+            <button data-m="tired" style="flex:1;padding:12px;border:1px solid rgba(255,255,255,0.15);border-radius:12px;background:transparent;color:rgba(255,255,255,0.6);font-size:14px;font-weight:700;cursor:pointer;">😮‍💨 疲れ</button>
+            <button data-m="normal" style="flex:1;padding:12px;border:1px solid rgba(255,255,255,0.15);border-radius:12px;background:transparent;color:rgba(255,255,255,0.8);font-size:14px;font-weight:700;cursor:pointer;">😐 普通</button>
+            <button data-m="genki" style="flex:1;padding:12px;border:1px solid rgba(123,223,245,0.3);border-radius:12px;background:rgba(123,223,245,0.1);color:var(--accent);font-size:14px;font-weight:700;cursor:pointer;">💪 元気</button>
+          </div>`;
+        card.querySelectorAll("button").forEach(btn=>{btn.addEventListener("click",()=>{localStorage.setItem(key,btn.dataset.m);ov.remove();renderLobbyCalendar();});});
+        ov.appendChild(card);document.body.appendChild(ov);
+      }
+      setTimeout(checkMotivation,500);
       // Lobby mode selector
       const LOBBY_MODES=["釣り×ポモドーロタイマー","網漁×集中特化","リアル×息抜き"];
       let lobbyModeIdx=0;
@@ -3708,7 +3835,7 @@
         if(lmNext)lmNext.textContent=LOBBY_MODES[(lobbyModeIdx+1)%LOBBY_MODES.length];
         if(soloWrap)soloWrap.style.display=lobbyModeIdx===0?"flex":"none";
       }
-      function updateSoloUI(){if(soloToggle)soloToggle.style.background=state.soloMode?"var(--accent)":"rgba(255,255,255,0.15)";if(soloKnob){soloKnob.style.left=state.soloMode?"20px":"2px";soloKnob.style.background=state.soloMode?"#fff":"#999";}}
+      function updateSoloUI(){if(soloToggle)soloToggle.style.background=state.soloMode?"var(--accent)":"rgba(255,255,255,0.15)";if(soloKnob){soloKnob.style.left=state.soloMode?"20px":"2px";soloKnob.style.background=state.soloMode?"#fff":"#999";}const sl=document.getElementById("soloLabel");if(sl)sl.textContent=state.soloMode?"ソロ":"マルチ";}
       if(lmPrev)lmPrev.addEventListener("click",()=>{lobbyModeIdx=(lobbyModeIdx+LOBBY_MODES.length-1)%LOBBY_MODES.length;updateLobbyMode();});
       if(lmNext)lmNext.addEventListener("click",()=>{lobbyModeIdx=(lobbyModeIdx+1)%LOBBY_MODES.length;updateLobbyMode();});
       // Scroll/wheel on lobby title
@@ -4397,7 +4524,7 @@
     // ===== ALL REMAINING CORE FUNCTIONS (condensed but complete) =====
     function applyNavState(){el.app.classList.toggle("nav-collapsed",!!state.ui.navCollapsed);el.app.classList.toggle("nav-hidden",!!state.fishing.inProgress);el.navToggle.textContent=state.ui.navCollapsed?"❯":"❮";updateNavIndicator();}
     function updateNavIndicator(){const a=el.navBtns.find(b=>b.classList.contains("active"))||el.navBtns[0];if(!a)return;const s=a.offsetHeight;el.navActiveBubble.style.top=`${a.offsetTop}px`;el.navActiveBubble.style.left=`${a.offsetLeft+3}px`;el.navActiveBubble.style.width=`${s}px`;el.navActiveBubble.style.height=`${s}px`;}
-    function switchScreen(name){if(name==="fishing"&&!state.fishing.inProgress)return;el.navBtns.forEach(b=>b.classList.toggle("active",b.dataset.screen===name));Object.entries(el.screens).forEach(([k,n])=>n.classList.toggle("active",k===name));if(name!=="fishing"){state.ui.fishingUiVisible=true;el.app.classList.remove("fishing-ui-faded");clearFishingUiTimeout();}if(name!=="room"){el.app.classList.remove("room-rest-faded");if(roomRestFadeTimer)clearTimeout(roomRestFadeTimer);}applyNavState();handleFishingActivity();if(name==="room")handleRoomRestActivity();renderAll();}
+    function switchScreen(name){if(name==="fishing"&&!state.fishing.inProgress)return;el.navBtns.forEach(b=>b.classList.toggle("active",b.dataset.screen===name));Object.entries(el.screens).forEach(([k,n])=>n.classList.toggle("active",k===name));document.querySelectorAll(".bottom-nav button").forEach(b=>b.classList.toggle("active",b.dataset.screen===name));if(name!=="fishing"){state.ui.fishingUiVisible=true;el.app.classList.remove("fishing-ui-faded");clearFishingUiTimeout();}if(name!=="room"){el.app.classList.remove("room-rest-faded");if(roomRestFadeTimer)clearTimeout(roomRestFadeTimer);}applyNavState();handleFishingActivity();if(name==="room")handleRoomRestActivity();renderAll();}
     function renderNavParts(){if(!el.navLevelList)return;const open=!!state.ui.partsPanelOpen;el.navLevelList.classList.toggle("open",open);}
     function fillSelectors(){fillTaskSelect();}
     function fillBaitSelector(){}
