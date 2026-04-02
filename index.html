@@ -2422,6 +2422,7 @@
 
     /* ===== Animations ===== */
     @keyframes catchSparkle { 0%{transform:scale(0);opacity:0} 50%{transform:scale(1.3);opacity:1} 100%{transform:scale(1);opacity:0.6} }
+    @keyframes bossPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.7;transform:scale(1.05)} }
     @keyframes toastInOut {
       0% { opacity: 0; transform: translateY(-6px); }
       10%, 82% { opacity: 1; transform: translateY(0); }
@@ -2821,7 +2822,9 @@
           </div>
 
           <!-- Simple fishing button -->
-          <button id="openFishSettingsBtn" class="fade-ui" style="position:absolute;right:20px;bottom:20px;width:64px;height:64px;border:2px solid rgba(255,255,255,0.3);border-radius:50%;background:rgba(0,0,0,0.3);color:#fff;font-size:16px;font-weight:900;cursor:pointer;z-index:8;backdrop-filter:blur(6px);display:grid;place-items:center;letter-spacing:2px;">釣る</button>
+          <!-- Boss bubble -->
+          <div id="bossBubble" style="display:none;position:absolute;right:10px;bottom:142px;z-index:9;background:#22c55e;color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:12px;white-space:nowrap;pointer-events:none;animation:bossPulse 2s infinite;">🐋 ボス出現中！</div>
+          <button id="openFishSettingsBtn" class="fade-ui" style="position:absolute;right:20px;bottom:72px;width:64px;height:64px;border:2px solid rgba(255,255,255,0.3);border-radius:50%;background:rgba(0,0,0,0.3);color:#fff;font-size:16px;font-weight:900;cursor:pointer;z-index:8;backdrop-filter:blur(6px);display:grid;place-items:center;letter-spacing:2px;">釣る</button>
           <button id="roomMessageBtn" class="message-trigger fade-ui" style="position:absolute;right:96px;bottom:28px;width:32px;height:32px;border:1px solid rgba(255,255,255,0.2);border-radius:10px;background:rgba(0,0,0,0.4);color:#fff;font-size:14px;cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);z-index:8;" aria-label="メッセージ">📨<span id="roomMessageDot" class="message-dot"></span></button>
           <button id="roomFishPredictBtn" class="fade-ui" style="position:absolute;right:134px;bottom:28px;width:32px;height:32px;border:1px solid rgba(255,255,255,0.2);border-radius:10px;background:rgba(0,0,0,0.4);color:#fff;font-size:16px;cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);z-index:8;" title="近くにいる魚">🐟</button>
           <div id="roomFishPredictPopup" class="fish-predict-popup" style="right:100px;bottom:70px;"></div>
@@ -2863,6 +2866,23 @@
         </div>
       </div>
     </section>
+
+    <!-- ===== MAP SCREEN ===== -->
+    <div id="mapOverlay" style="display:none;position:fixed;inset:0;z-index:200;background:#0a1628;overflow-y:auto;">
+      <div style="position:relative;width:100%;max-width:100vw;">
+        <div id="mapContainer" style="position:relative;width:100%;overflow:hidden;">
+          <img id="mapSea" src="sea.png" style="width:100%;display:block;" alt="sea" onerror="this.style.background='linear-gradient(180deg,#0a3d5c,#062a40)';this.style.height='60vw';">
+          <img id="mapLand" src="land.png" style="position:absolute;inset:0;width:100%;pointer-events:none;" alt="land" onerror="this.style.display='none';">
+          <div id="mapBossMarkers" style="position:absolute;inset:0;pointer-events:none;"></div>
+        </div>
+        <!-- Top/bottom blur -->
+        <div style="position:absolute;top:0;left:0;right:0;height:40px;background:linear-gradient(180deg,#0a1628,transparent);z-index:2;pointer-events:none;"></div>
+        <div style="position:absolute;bottom:0;left:0;right:0;height:40px;background:linear-gradient(0deg,#0a1628,transparent);z-index:2;pointer-events:none;"></div>
+      </div>
+      <button id="mapBackBtn" style="position:fixed;top:16px;left:16px;z-index:210;border:0;background:rgba(0,0,0,0.5);color:#fff;font-size:22px;width:40px;height:40px;border-radius:50%;cursor:pointer;backdrop-filter:blur(4px);display:grid;place-items:center;">❮</button>
+      <!-- Boss info below map -->
+      <div id="mapBossInfo" style="padding:16px;color:#fff;"></div>
+    </div>
 
     <!-- ===== FISHING SCREEN ===== -->
     <section id="screen-fishing" class="screen">
@@ -3174,6 +3194,7 @@
               <div class="row"><span>節電モード</span><input id="togglePowerSave" class="toggle" type="checkbox" /></div>
               <div class="row"><span>開始・終了音</span><input id="toggleCatch" class="toggle" type="checkbox" /></div>
               <div class="row"><span>ブラウザ通知</span><input id="toggleNotify" class="toggle" type="checkbox" /></div>
+              <div class="row"><span>ボス出現通知</span><button id="bossNotifyBtn" style="padding:4px 12px;border:1px solid rgba(255,255,255,0.15);border-radius:8px;background:transparent;color:var(--accent);font-size:11px;cursor:pointer;">許可する</button></div>
               <div class="row"><span>終了時に軽く揺らす</span><input id="toggleShake" class="toggle" type="checkbox" /></div>
             </div>
             <div class="settings-box">
@@ -3561,6 +3582,19 @@
       {id:"fb39",kind:"fish",name:"創世の魚神",icon:"🌟",baitNum:39,basePrice:15000,avgSize:250,spread:80,strength:32,rarity:23,rarityStars:3,timeBonus:{day:1,evening:1,night:1},weatherBonus:{sunny:1,cloudy:1,rainy:1},hugeChance:0.035,hugeFactor:8.0,description:"世界を創った神の化身。"},
       {id:"fb40",kind:"fish",name:"全知の海王",icon:"👑",baitNum:40,basePrice:50000,avgSize:350,spread:120,strength:35,rarity:25,rarityStars:3,timeBonus:{day:1,evening:1,night:1},weatherBonus:{sunny:1,cloudy:1,rainy:1},hugeChance:0.04,hugeFactor:10.0,description:"全知の餌のみで現れる絶対王者。"},
     ];
+    // === Boss Fish (★4, red frame) ===
+    const BOSS_FISHES = [
+      { id:"boss_001",kind:"fish",name:"リヴァイアサン",icon:"🐋",basePrice:500,avgSize:200,spread:60,strength:20,rarity:20,rarityStars:4,isBoss:true,catchRate:0.03,description:"深海から現れる巨大な影。" },
+      { id:"boss_002",kind:"fish",name:"竜宮の主",icon:"🐉",basePrice:800,avgSize:300,spread:80,strength:25,rarity:25,rarityStars:4,isBoss:true,catchRate:0.02,description:"竜宮城を守る伝説の魚。" },
+      { id:"boss_003",kind:"fish",name:"嵐のカジキ",icon:"⚡",basePrice:600,avgSize:250,spread:70,strength:22,rarity:22,rarityStars:4,isBoss:true,catchRate:0.05,description:"雷を纏って現れる超高速魚。" },
+      { id:"boss_004",kind:"fish",name:"氷河マンタ",icon:"❄️",basePrice:700,avgSize:280,spread:75,strength:24,rarity:24,rarityStars:4,isBoss:true,catchRate:0.03,description:"冷たい海から来る巨大マンタ。" },
+      { id:"boss_005",kind:"fish",name:"黄金クジラ",icon:"🐳",basePrice:1000,avgSize:400,spread:100,strength:30,rarity:30,rarityStars:4,isBoss:true,catchRate:0.01,description:"見た者に幸運をもたらす。" },
+      { id:"boss_006",kind:"fish",name:"深淵アンコウ",icon:"🐡",basePrice:550,avgSize:180,spread:50,strength:18,rarity:18,rarityStars:4,isBoss:true,catchRate:0.05,description:"暗闇で光る誘惑の魚。" },
+      { id:"boss_007",kind:"fish",name:"紅蓮タコ",icon:"🐙",basePrice:650,avgSize:220,spread:65,strength:21,rarity:21,rarityStars:4,isBoss:true,catchRate:0.04,description:"8本の腕で船を揺らす。" },
+      { id:"boss_008",kind:"fish",name:"月光エイ",icon:"🌙",basePrice:750,avgSize:260,spread:72,strength:23,rarity:23,rarityStars:4,isBoss:true,catchRate:0.03,description:"満月の夜に浮かぶ幻の魚。" },
+      { id:"boss_009",kind:"fish",name:"珊瑚龍",icon:"🪸",basePrice:900,avgSize:320,spread:85,strength:27,rarity:27,rarityStars:4,isBoss:true,catchRate:0.02,description:"珊瑚礁の守護者。" },
+      { id:"boss_010",kind:"fish",name:"時空サメ",icon:"🦈",basePrice:850,avgSize:350,spread:90,strength:28,rarity:28,rarityStars:4,isBoss:true,catchRate:0.015,description:"時空を超えて現れる最強の捕食者。" },
+    ];
     const JUNK_ITEMS = [
       { id:"item_001_can",kind:"item",name:"空き缶",icon:"🥫",basePrice:8,rarity:1,rarityStars:1,strength:0,timeBonus:{day:0,evening:0,night:0},weatherBonus:{sunny:0,cloudy:1,rainy:2},description:"海のはずれから流れてきた。" },
       { id:"item_002_wood_box",kind:"item",name:"木箱",icon:"🪵",basePrice:24,rarity:2,rarityStars:1,strength:2,timeBonus:{day:0,evening:1,night:1},weatherBonus:{sunny:0,cloudy:1,rainy:1},description:"なにか入っていた気配だけある。" },
@@ -3779,8 +3813,8 @@
       if(closeFSBtn)closeFSBtn.addEventListener("click",()=>{if(fishSettingsOv)fishSettingsOv.style.display="none";});
       // === Fish Settings System ===
       let fsTimeVal=state.selectedCourseMin||10;
-      const MODE_DESCS=["好きな時間を設定して\n1回の作業に集中しよう","作業と休憩を繰り返す\n連続モードでリズムを作ろう","セットごとにノルマを設定\n計画的に作業を進めよう","時間制限なし\n好きなだけ作業して報酬GET"];
-      const MODE_COLORS=["rgba(72,211,109,0.15)","rgba(100,180,230,0.15)","rgba(255,180,100,0.15)","rgba(180,130,255,0.15)"];
+      const MODE_DESCS=["好きな時間を設定して\n1回の作業に集中しよう","作業と休憩を繰り返す\n連続モードでリズムを作ろう","セットごとにノルマを設定\n計画的に作業を進めよう","時間制限なし\n好きなだけ作業して報酬GET","ボスが出現中のみ挑戦可能\n低確率でレアなボス魚が釣れる"];
+      const MODE_COLORS=["rgba(72,211,109,0.15)","rgba(100,180,230,0.15)","rgba(255,180,100,0.15)","rgba(180,130,255,0.15)","rgba(255,60,60,0.15)"];
       function renderFishSettings(){drawModeCarousel();renderTimeSlider();updateFSDetails();updateFSBait();updateFSTask();
         const startBtn=document.getElementById("fsStartBtn");
         if(startBtn){startBtn.onclick=()=>{if(fishSettingsOv)fishSettingsOv.style.display="none";
@@ -3789,10 +3823,14 @@
         };}
       }
       function updateFSDetails(){
-        const dt=document.getElementById("fsDetailsText");if(dt)dt.textContent=MODE_DESCS[state.ui.modeIndex||0]||"";
-        // Norma area
+        const dt=document.getElementById("fsDetailsText");const idx=state.ui.modeIndex||0;
+        if(idx===4){
+          const boss=getActiveBoss();
+          if(boss){const rem=Math.round(bossTimeRemaining(boss)/60000);dt.innerHTML=`<span style="color:#ff4444;font-weight:800;">${boss.boss.icon} ${boss.boss.name}</span>\n残り${rem}分 / 捕獲率${(boss.boss.catchRate*100).toFixed(1)}%\n\nボスが出現中！単発と同じ仕組みで\n低確率でボス魚が釣れる`;}
+          else{dt.innerHTML='<span style="color:rgba(255,255,255,0.3);">現在ボスは出現していません\n次の出現をお待ちください</span>';}
+        }else{if(dt)dt.textContent=MODE_DESCS[idx]||"";}
         const na=document.getElementById("fsNormaArea");if(!na)return;
-        const idx=state.ui.modeIndex||0;na.style.display=idx===2?"flex":"none";na.innerHTML="";
+        na.style.display=idx===2?"flex":"none";na.innerHTML="";
         if(idx!==2)return;
         const rounds=state.normaConfig.rounds||[];const cur=state.normaConfig.currentEdit||0;const isEd=cur<rounds.length;
         const rb=document.createElement("span");rb.style.cssText="cursor:pointer;color:#f88;font-size:16px;";rb.textContent="↺";
@@ -4028,6 +4066,8 @@
       el.toggleWave.addEventListener("change",()=>updateSetting("waveSound",el.toggleWave.checked));
       el.toggleCatch.addEventListener("change",()=>updateSetting("catchSound",el.toggleCatch.checked));
       el.toggleNotify.addEventListener("change",async()=>{if(el.toggleNotify.checked&&typeof Notification!=="undefined"&&Notification.permission==="default")try{await Notification.requestPermission();}catch{}updateSetting("browserNotify",el.toggleNotify.checked&&typeof Notification!=="undefined"&&Notification.permission==="granted");});
+      const bossNotBtn=document.getElementById("bossNotifyBtn");
+      if(bossNotBtn)bossNotBtn.addEventListener("click",async()=>{if(typeof Notification==="undefined"){toast("このブラウザは通知非対応");return;}if(Notification.permission==="granted"){toast("通知は既に許可済み");bossNotBtn.textContent="許可済み";return;}try{const p=await Notification.requestPermission();if(p==="granted"){toast("ボス出現通知を許可しました");bossNotBtn.textContent="許可済み";}else{toast("通知が拒否されました");}}catch(e){toast("通知の設定に失敗");}});
       el.toggleShake.addEventListener("change",()=>updateSetting("shakeOnFinish",el.toggleShake.checked));
       const toggleVib=document.getElementById("toggleVibrate");if(toggleVib){toggleVib.checked=!!state.settings.vibrate;toggleVib.addEventListener("change",()=>updateSetting("vibrate",toggleVib.checked));}
       const togglePipMin=document.getElementById("togglePipMinimize");if(togglePipMin){togglePipMin.checked=!!state.settings.pipMinimize;togglePipMin.addEventListener("change",()=>updateSetting("pipMinimize",togglePipMin.checked));}
@@ -4519,12 +4559,7 @@
         row.appendChild(item);
       });
     }
-    function toggleFishPredict(btn,popup){
-      if(!popup)return;
-      const showing=popup.classList.contains("show");
-      document.querySelectorAll(".fish-predict-popup").forEach(p=>p.classList.remove("show"));
-      if(!showing){renderFishPredictPopup(popup);popup.classList.add("show");}
-    }
+    function toggleFishPredict(btn,popup){openMapOverlay();}
 
     function setGraphTab(tab){
       const dw=document.getElementById("dailyGraphWrap"),ww=document.getElementById("weeklyGraphWrap");
@@ -4597,7 +4632,7 @@
     // ===== ALL REMAINING CORE FUNCTIONS (condensed but complete) =====
     function applyNavState(){el.app.classList.toggle("nav-collapsed",!!state.ui.navCollapsed);el.app.classList.toggle("nav-hidden",!!state.fishing.inProgress);el.navToggle.textContent=state.ui.navCollapsed?"❯":"❮";updateNavIndicator();}
     function updateNavIndicator(){const a=el.navBtns.find(b=>b.classList.contains("active"))||el.navBtns[0];if(!a)return;const s=a.offsetHeight;el.navActiveBubble.style.top=`${a.offsetTop}px`;el.navActiveBubble.style.left=`${a.offsetLeft+3}px`;el.navActiveBubble.style.width=`${s}px`;el.navActiveBubble.style.height=`${s}px`;}
-    function switchScreen(name){if(name==="fishing"&&!state.fishing.inProgress)return;el.navBtns.forEach(b=>b.classList.toggle("active",b.dataset.screen===name));Object.entries(el.screens).forEach(([k,n])=>n.classList.toggle("active",k===name));document.querySelectorAll(".bottom-nav button").forEach(b=>b.classList.toggle("active",b.dataset.screen===name));if(name!=="fishing"){state.ui.fishingUiVisible=true;el.app.classList.remove("fishing-ui-faded");clearFishingUiTimeout();}if(name!=="room"){el.app.classList.remove("room-rest-faded");if(roomRestFadeTimer)clearTimeout(roomRestFadeTimer);}applyNavState();handleFishingActivity();if(name==="room")handleRoomRestActivity();renderAll();}
+    function switchScreen(name){if(name==="fishing"&&!state.fishing.inProgress&&!state.countupRun?.active)return;el.navBtns.forEach(b=>b.classList.toggle("active",b.dataset.screen===name));Object.entries(el.screens).forEach(([k,n])=>n.classList.toggle("active",k===name));document.querySelectorAll(".bottom-nav button").forEach(b=>b.classList.toggle("active",b.dataset.screen===name));const bn=document.getElementById("bottomNav");if(bn){const showNav=["room","results","utility","settings","encyclopedia"].includes(name);bn.style.display=showNav?"":"none";}if(name!=="fishing"){state.ui.fishingUiVisible=true;el.app.classList.remove("fishing-ui-faded");clearFishingUiTimeout();}if(name!=="room"){el.app.classList.remove("room-rest-faded");if(roomRestFadeTimer)clearTimeout(roomRestFadeTimer);}applyNavState();handleFishingActivity();if(name==="room")handleRoomRestActivity();renderAll();}
     function renderNavParts(){if(!el.navLevelList)return;const open=!!state.ui.partsPanelOpen;el.navLevelList.classList.toggle("open",open);}
     function fillSelectors(){fillTaskSelect();}
     function fillBaitSelector(){}
@@ -4771,24 +4806,26 @@
     function startFishingFromRoom(){if(!state.room.inRoom){toast("先に部屋に入ってください。");return;}if(state.fishing.inProgress){toast("いま釣り中です。");return;}
       const mode=state.ui.modeIndex||0;
       state.fishing.taskCategory=state.selectedTaskCategory||'work';
-      if(mode===0){
-        // 単発
-        state.fishing.normaText="";
+      if(mode===0||mode===4){
+        // 単発 or ボス戦 (same mechanics, boss adds boss fish to pool)
+        state.fishing.normaText="";state.fishing.bossMode=mode===4;
         const bid=state.selectedBaitId;const cm=state.selectedCourseMin||25;
         if((state.baitCounts[bid]||0)<=0){toast("餌が足りません。");return;}
+        if(mode===4&&!getActiveBoss()){toast("ボスが出現していません");return;}
         startSingleFishing(cm,bid,false);
       }else if(mode===1){
-        // 連続
-        state.fishing.normaText="";
+        state.fishing.normaText="";state.fishing.bossMode=false;
         startLoopRun();
-      }else{
-        // ノルマ
+      }else if(mode===2){
+        state.fishing.bossMode=false;
         const rounds=state.normaConfig.rounds||[];
         if(!rounds.length){toast("まず周回を作ってください");return;}
         const bid=state.selectedBaitId;const owned=state.baitCounts[bid]||0;
         if(owned<rounds.length){toast(`餌が${rounds.length-owned}個足りません`);return;}
         state.normaRun={active:true,current:0,total:rounds.length,restEndAt:null,results:[]};
         startNextNormaRound();
+      }else if(mode===3){
+        state.fishing.bossMode=false;startCountupFishing();
       }
     }
     function startNextNormaRound(){
@@ -4866,7 +4903,7 @@
       waterActive=false;waterInited=false;const wc=document.getElementById("waterSurface");if(wc)wc.style.display="none";const wbg=wc?.previousElementSibling;if(wbg)wbg.style.visibility="visible";if(waterAnim){cancelAnimationFrame(waterAnim);waterAnim=null;}
       stopBgmOnFishEnd();
       const count=getCatchCount(elapsedMin);const results=[];
-      for(let i=0;i<count;i++){const r=rollCatch(state.fishing);results.push(r);}
+      for(let i=0;i<count;i++){const r=rollCatchMayBoss(state.fishing);results.push(r);}
       const tc=state.fishing.taskCategory||'work';
       results.forEach(r=>{r.isNew=!state.encyclopedia[r.picked.id]||state.encyclopedia[r.picked.id].count===0;});
       // Apply escape chance
@@ -4889,7 +4926,7 @@
       // Clean up water surface
       waterActive=false;waterInited=false;const wc=document.getElementById("waterSurface");if(wc)wc.style.display="none";const wbg=wc?.previousElementSibling;if(wbg)wbg.style.visibility="visible";if(waterAnim){cancelAnimationFrame(waterAnim);waterAnim=null;}
       const dm=state.fishing.durationMin;const count=getCatchCount(dm);
-      const results=preRolledCatches.length===count?[...preRolledCatches]:(function(){const r=[];for(let i=0;i<count;i++){const c=rollCatch(state.fishing);if(dm>=50&&i===0)c.isRare=true;r.push(c);}return r;})();preRolledCatches=[];
+      const results=preRolledCatches.length===count?[...preRolledCatches]:(function(){const r=[];for(let i=0;i<count;i++){const c=rollCatchMayBoss(state.fishing);if(dm>=50&&i===0)c.isRare=true;r.push(c);}return r;})();preRolledCatches=[];
       // Rare upgrade bonus for 50+ min
       if(dm>=50){const parts=Object.keys(state.upgrades);const rp=parts[Math.floor(Math.random()*parts.length)];state.upgrades[rp]=(state.upgrades[rp]||0)+1;toast(`🎣 ${UPGRADE_PARTS.find(p=>p.id===rp)?.name||rp} が自動強化されました！`);}
       const tc=state.fishing.taskCategory||'work';
@@ -5026,6 +5063,23 @@
     // Catch rolling (preserved exactly)
     function getCourseBonus(dm){const b={rare:0,size:0,power:0,hugeChance:0,junkReduction:0,label:""};if(dm>=25){b.rare+=3;b.label="集中ボーナス";}if(dm>=40){b.size+=4;b.power+=1;}if(dm>=60){b.size+=6;b.power+=2;b.hugeChance+=0.005;b.label="深海ボーナス";}return b;}
     function rollCatch(src){const bait=BAIT_TYPES.find(b=>b.id===src.baitId)||BAIT_TYPES[0];const nb=NUMBERED_BAITS.find(b=>b.id===src.baitId);const upg=getUpgradeBuffs();const cb=getCourseBonus(src.durationMin);const baitPow=(nb?.power||0)+(bait?.power||0);const baitRare=(nb?.rareBonus||0)+(bait?.rareBonus||0);const baitSize=(nb?.sizeBonus||0)+(bait?.sizeBonus||0);const baitVal=(nb?.valueBonus||0)+(bait?.valueBonus||0);const power=baitPow+upg.power+cb.power,rareB=baitRare+upg.rare+cb.rare,sizeB=baitSize+upg.size+cb.size,junkR=upg.junkReduction+cb.junkReduction,hugeB=upg.hugeChance+cb.hugeChance,valueB=baitVal+upg.valueBonus;const totalLv=getTotalLevel();const usedBaitNum=nb?.num||0;const all=[...FISHES,...JUNK_ITEMS];const weighted=all.map(e=>{const ts=e.timeBonus?.[src.timeOfDay]??0,ws=e.weatherBonus?.[src.weather]??0,sg=power-(e.strength||0),jp=e.kind==="item"?(-0.9+junkR):0;let lvPen=0;if(e.reqLevel){const diff=totalLv-(e.reqLevel||0);lvPen=diff>=0?Math.min(diff*0.3,5):(diff*0.8);}const specB=getSpecialCondBonus(e.specialCond,src);let baitNumB=0;if(e.baitNum&&usedBaitNum>0){const dist=Math.abs(e.baitNum-usedBaitNum);baitNumB=dist===0?12:dist<=2?6:dist<=5?2:dist<=10?-2:-5;}return{entity:e,weight:Math.max(0.01,7+sg+ts+ws+rareB*0.28+jp-(e.rarity||0)*0.24+lvPen+specB+baitNumB)};});const picked=wPick(weighted);const isFish=picked.kind==="fish";let sizeCm=null,isHuge=false,price=picked.basePrice;if(isFish){const g=approxGaussian();sizeCm=Math.max(1,picked.avgSize+g*(picked.spread/2)+sizeB*0.55+src.durationMin*0.09);if(Math.random()<Math.max(0,picked.hugeChance+hugeB)){sizeCm*=picked.hugeFactor;isHuge=true;}sizeCm=Math.round(sizeCm*10)/10;const sr=sizeCm/picked.avgSize;const sf=sr<1?0.95+sr*0.12:1+Math.pow(sr-1,1.18)*1.15;price=Math.max(1,Math.round(picked.basePrice*sf*(1+picked.rarity*0.12+rareB*0.03)*(1+valueB)));}else{price=Math.max(1,Math.round(picked.basePrice*(1+rareB*0.02+src.durationMin*0.01+valueB)));}const entry={uid:makeId(),baseId:picked.id,kind:picked.kind,name:picked.name,icon:picked.icon,sellPrice:price,sizeCm,rarity:picked.rarity||0,rarityStars:picked.rarityStars||1,caughtAt:Date.now()};const ency=state.encyclopedia[picked.id]||{count:0,maxSize:0};return{entry,isRecord:isFish&&sizeCm>(ency.maxSize||0),isRare:(picked.rarity||0)>=8||isHuge||price>=220,isHuge,bonusText:cb.label,source:src,picked};}
+
+    // Boss catch: in boss mode, chance to replace result with boss fish
+    function rollCatchMayBoss(src){
+      const result=rollCatch(src);
+      if(state.fishing.bossMode){
+        const boss=getActiveBoss();
+        if(boss&&Math.random()<boss.boss.catchRate){
+          const b=boss.boss;const g=approxGaussian();
+          const sizeCm=Math.max(1,Math.round((b.avgSize+g*(b.spread/2))*10)/10);
+          const sr=sizeCm/b.avgSize;const sf=sr<1?0.95+sr*0.12:1+Math.pow(sr-1,1.18)*1.15;
+          const price=Math.max(1,Math.round(b.basePrice*sf));
+          result.entry={uid:makeId(),baseId:b.id,kind:"fish",name:b.name,icon:b.icon,sellPrice:price,sizeCm,rarity:b.rarity,rarityStars:4,caughtAt:Date.now()};
+          result.picked=b;result.isRare=true;result.isBoss=true;
+        }
+      }
+      return result;
+    }
 
     function openResultModal(r){const st=getStarStyle(r.picked.rarityStars||1);el.resultArtEmoji.textContent=r.entry.icon;el.resultStarsInArt.textContent="★".repeat(r.picked.rarityStars||1);el.resultStarsInArt.style.color=st.star;el.resultPrice.textContent=`${fmtMoney(r.entry.sellPrice)} zz`;
       const artCard=el.resultArtEmoji.parentElement;if(artCard)artCard.style.cssText=`background:${st.bg};border-radius:16px;padding:16px;position:relative;`;
@@ -5190,19 +5244,116 @@
       renderDailyGraph();}
     function getWeekStats(){const n=new Date();const d=n.getDay();const diff=d===0?-6:1-d;const mon=new Date(n);mon.setHours(0,0,0,0);mon.setDate(n.getDate()+diff);const labels=["月","火","水","木","金","土","日"];const days=[];for(let i=0;i<7;i++){const x=new Date(mon);x.setDate(mon.getDate()+i);const k=`${x.getFullYear()}-${x.getMonth()+1}-${x.getDate()}`;days.push({key:k,stat:getDayStat(k),label:labels[i],dateLabel:`${x.getMonth()+1}/${x.getDate()}`});}return{days};}
     function getStarStyle(stars){
+      if(stars>=4)return{bg:"linear-gradient(135deg,#8b0000,#ff2222,#8b0000)",text:"#fff",star:"#ff6666"};
       if(stars>=3)return{bg:"linear-gradient(135deg,#c8a600,#ffd700,#c8a600)",text:"#fff",star:"#ffd700"};
       if(stars>=2)return{bg:"linear-gradient(135deg,#1a5276,#2e86c1,#1a5276)",text:"#e0f0ff",star:"#7bdff5"};
       return{bg:"linear-gradient(135deg,#1a1a1a,#333,#1a1a1a)",text:"#ddd",star:"#999"};
     }
     function renderEncyclopedia(){
-      const caught=Object.keys(state.encyclopedia).filter(k=>FISHES.some(f=>f.id===k));
-      el.encyStats.innerHTML="";const chip=document.createElement("div");chip.className="stat-chip";chip.textContent=`発見 ${caught.length} / ${FISHES.length}`;el.encyStats.appendChild(chip);
-      el.encyList.innerHTML="";FISHES.forEach(f=>{const own=state.encyclopedia[f.id];const g=globalRecords[f.id];const st=getStarStyle(f.rarityStars||1);const c=document.createElement("div");c.className=`fish-card ${own?"":"unknown"}`;c.style.cssText=`background:${st.bg};color:${st.text};`;
-        c.innerHTML=`<div class="fish-art">${own?f.icon:"❔"}</div><div class="fish-name" style="color:${st.text};">${own?f.name:"？？？"}</div><div style="color:${st.star};font-size:10px;">${"★".repeat(f.rarityStars||1)}</div><div class="fish-meta" style="color:${st.text};">${own?`平均 ${fmtSize(f.avgSize)}cm<br/>累計 ${own.count}匹<br/>自己最大 ${own.maxSize?`${fmtSize(own.maxSize)}cm`:"-"}`:"まだ見つけていません"}<br/><span class="record" style="color:${st.star};">世界記録 ${g?`${fmtSize(g.sizeCm)}cm / ${esc(g.recordHolder||"-")}`:"未登録"}</span>${own?`<br/>${f.description}`:""}</div>`;el.encyList.appendChild(c);});}
+      const allFish=[...FISHES,...BOSS_FISHES];
+      const caught=Object.keys(state.encyclopedia).filter(k=>allFish.some(f=>f.id===k));
+      el.encyStats.innerHTML="";const chip=document.createElement("div");chip.className="stat-chip";chip.textContent=`発見 ${caught.length} / ${allFish.length}`;el.encyStats.appendChild(chip);
+      el.encyList.innerHTML="";
+      // Boss section header
+      const bossHeader=document.createElement("div");bossHeader.style.cssText="width:100%;text-align:center;padding:8px;font-size:13px;font-weight:800;color:#ff4444;margin-top:8px;";bossHeader.textContent="— ボス魚 —";
+      // Normal fish first
+      FISHES.forEach(f=>{const own=state.encyclopedia[f.id];const g=globalRecords[f.id];const st=getStarStyle(f.rarityStars||1);const c=document.createElement("div");c.className=`fish-card ${own?"":"unknown"}`;c.style.cssText=`background:${st.bg};color:${st.text};`;
+        c.innerHTML=`<div class="fish-art">${own?f.icon:"❔"}</div><div class="fish-name" style="color:${st.text};">${own?f.name:"？？？"}</div><div style="color:${st.star};font-size:10px;">${"★".repeat(f.rarityStars||1)}</div><div class="fish-meta" style="color:${st.text};">${own?`平均 ${fmtSize(f.avgSize)}cm<br/>累計 ${own.count}匹<br/>自己最大 ${own.maxSize?`${fmtSize(own.maxSize)}cm`:"-"}`:"まだ見つけていません"}<br/><span class="record" style="color:${st.star};">世界記録 ${g?`${fmtSize(g.sizeCm)}cm / ${esc(g.recordHolder||"-")}`:"未登録"}</span>${own?`<br/>${f.description}`:""}</div>`;el.encyList.appendChild(c);});
+      el.encyList.appendChild(bossHeader);
+      BOSS_FISHES.forEach(f=>{const own=state.encyclopedia[f.id];const g=globalRecords[f.id];const st=getStarStyle(4);const c=document.createElement("div");c.className=`fish-card ${own?"":"unknown"}`;c.style.cssText=`background:${st.bg};color:${st.text};border:2px solid #ff4444;`;
+        c.innerHTML=`<div class="fish-art">${own?f.icon:"❔"}</div><div class="fish-name" style="color:${st.text};">${own?f.name:"？？？"}</div><div style="color:${st.star};font-size:10px;">★★★★</div><div class="fish-meta" style="color:${st.text};">${own?`平均 ${fmtSize(f.avgSize)}cm<br/>累計 ${own.count}匹<br/>捕獲率 ${(f.catchRate*100).toFixed(1)}%`:"まだ見つけていません"}<br/><span class="record" style="color:${st.star};">世界記録 ${g?`${fmtSize(g.sizeCm)}cm / ${esc(g.recordHolder||"-")}`:"未登録"}</span>${own?`<br/>${f.description}`:""}</div>`;el.encyList.appendChild(c);});
+    }
     function renderSettings(){el.settingsDisplayName.textContent=state.user.displayName||"釣り人";el.displayNameInput.value=state.user.displayName||"釣り人";el.lastSavedAt.textContent=state.lastSavedAt?fmtDateTime(state.lastSavedAt):"-";}
     function renderUserPill(){el.userPill.innerHTML=`${esc(state.user.displayName||"釣り人")}<br/>${state.user.isGuest?"ローカル":"Google"}`;}
     function updateSync(){if(firebaseReady&&firebaseSyncOk&&!state.user.isGuest)el.syncStatus.textContent="Firebase同期中";else if(firebaseReady&&auth?.currentUser?.isAnonymous)el.syncStatus.textContent="匿名接続中";else el.syncStatus.textContent="ローカルのみ";}
-    function renderMailIndicators(){const uo=getUnreadMail("official").length,up=getUnreadMail("peer").length,pp=getPeerMail();if(el.mailNavDot)el.mailNavDot.classList.toggle("show",uo>0);[el.roomMessageBtn,el.fishingMessageBtn].forEach(b=>{if(b)b.classList.toggle("show",pp.length>0);});[el.roomMessageDot,el.fishingMessageDot].forEach(d=>{if(d)d.classList.toggle("show",up>0);});}
+    function renderMailIndicators(){const uo=getUnreadMail("official").length,up=getUnreadMail("peer").length,pp=getPeerMail();if(el.mailNavDot)el.mailNavDot.classList.toggle("show",uo>0);[el.roomMessageBtn,el.fishingMessageBtn].forEach(b=>{if(b)b.classList.toggle("show",pp.length>0);});[el.roomMessageDot,el.fishingMessageDot].forEach(d=>{if(d)d.classList.toggle("show",up>0);})}
+    // === BOSS SYSTEM ===
+    function getBossSpawns(dateStr){
+      // Deterministic: all users see same bosses at same times
+      let seed=0;for(let i=0;i<dateStr.length;i++)seed=((seed<<5)-seed+dateStr.charCodeAt(i))|0;
+      function rng(){seed=(seed*16807+0)%2147483647;return(seed&0x7fffffff)/2147483647;}
+      const count=4+Math.floor(rng()*3); // 4-6 per day
+      const spawns=[];
+      for(let i=0;i<count;i++){
+        const startH=Math.floor(rng()*23);const startM=Math.floor(rng()*60);
+        const startMs=(startH*60+startM)*60000;
+        const bossIdx=Math.floor(rng()*BOSS_FISHES.length);
+        const px=0.15+rng()*0.7;const py=0.2+rng()*0.6;
+        spawns.push({boss:BOSS_FISHES[bossIdx],startMs,endMs:startMs+3600000,x:px,y:py,id:dateStr+"_"+i});
+      }
+      spawns.sort((a,b)=>a.startMs-b.startMs);
+      return spawns;
+    }
+    function getActiveBoss(){
+      const dk=todayKey();const spawns=getBossSpawns(dk);
+      const now=new Date();const todayMs=(now.getHours()*60+now.getMinutes())*60000+now.getSeconds()*1000;
+      return spawns.find(s=>todayMs>=s.startMs&&todayMs<s.endMs)||null;
+    }
+    function bossTimeRemaining(boss){
+      const now=new Date();const todayMs=(now.getHours()*60+now.getMinutes())*60000+now.getSeconds()*1000;
+      return Math.max(0,boss.endMs-todayMs);
+    }
+    function updateBossUI(){
+      const boss=getActiveBoss();
+      const bubble=document.getElementById("bossBubble");
+      if(bubble)bubble.style.display=boss?"block":"none";
+      // Auto-set boss mode if boss active and not fishing
+      if(boss&&!state.fishing.inProgress&&state.ui.modeIndex!==4){
+        // Don't force, just show bubble
+      }
+    }
+    setInterval(updateBossUI,5000);setTimeout(updateBossUI,500);
+    // Map overlay
+    function openMapOverlay(){
+      const ov=document.getElementById("mapOverlay");if(!ov)return;ov.style.display="block";
+      renderMapBosses();
+    }
+    function closeMapOverlay(){const ov=document.getElementById("mapOverlay");if(ov)ov.style.display="none";}
+    document.getElementById("mapBackBtn")?.addEventListener("click",closeMapOverlay);
+    function renderMapBosses(){
+      const markers=document.getElementById("mapBossMarkers");const info=document.getElementById("mapBossInfo");
+      if(!markers||!info)return;markers.innerHTML="";info.innerHTML="";
+      const dk=todayKey();const spawns=getBossSpawns(dk);
+      const now=new Date();const todayMs=(now.getHours()*60+now.getMinutes())*60000+now.getSeconds()*1000;
+      spawns.forEach(s=>{
+        const active=todayMs>=s.startMs&&todayMs<s.endMs;
+        const future=todayMs<s.startMs;
+        const past=todayMs>=s.endMs;
+        const owned=!!state.encyclopedia[s.boss.id];
+        // Marker on map
+        const m=document.createElement("div");m.style.cssText=`position:absolute;left:${s.x*100}%;top:${s.y*100}%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:4px;pointer-events:auto;`;
+        const icon=document.createElement("div");
+        icon.style.cssText=`width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:18px;border:2px solid ${active?"#22c55e":past?"rgba(255,255,255,0.15)":"rgba(255,200,0,0.3)"};background:${active?"rgba(34,197,94,0.15)":past?"rgba(0,0,0,0.4)":"rgba(0,0,0,0.3)"};${past?"opacity:0.3;":""}`;
+        icon.textContent=owned?s.boss.icon:"❔";m.appendChild(icon);
+        if(active||future){
+          const label=document.createElement("div");label.style.cssText="font-size:10px;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.8);white-space:nowrap;";
+          if(active){const rem=Math.round((s.endMs-todayMs)/60000);label.innerHTML=`<b>${s.boss.name}</b><br>残り${rem}分`;}
+          else{const startH=Math.floor(s.startMs/3600000);const startM=Math.floor((s.startMs%3600000)/60000);label.innerHTML=`<span style="opacity:0.5">${startH}:${String(startM).padStart(2,"0")}~</span>`;}
+          m.appendChild(label);
+        }
+        markers.appendChild(m);
+        // Info list
+        if(active||future){
+          const row=document.createElement("div");row.style.cssText=`display:flex;align-items:center;gap:10px;padding:8px 12px;margin:4px 0;border-radius:12px;background:${active?"rgba(34,197,94,0.1)":"rgba(255,255,255,0.03)"};border:1px solid ${active?"rgba(34,197,94,0.2)":"rgba(255,255,255,0.06)"};`;
+          const startH=Math.floor(s.startMs/3600000);const startM=Math.floor((s.startMs%3600000)/60000);
+          const endH=Math.floor(s.endMs/3600000);const endM=Math.floor((s.endMs%3600000)/60000);
+          row.innerHTML=`<span style="font-size:24px;">${owned?s.boss.icon:"❔"}</span><div><div style="font-weight:700;font-size:13px;">${s.boss.name}</div><div style="font-size:10px;color:rgba(255,255,255,0.4);">${startH}:${String(startM).padStart(2,"0")}〜${endH}:${String(endM).padStart(2,"0")} / 捕獲率${(s.boss.catchRate*100).toFixed(1)}%</div></div>${active?'<span style="margin-left:auto;color:#22c55e;font-size:11px;font-weight:700;">出現中</span>':""}`;
+          info.appendChild(row);
+        }
+      });
+      if(!info.children.length)info.innerHTML='<div style="text-align:center;color:rgba(255,255,255,0.3);padding:20px;">今日のボスはすべて終了しました</div>';
+    }
+    // Fish predict → Map (defined above)
+    // Boss mode in renderModeCard
+    if(!MODE_NAMES.includes("ボス戦"))MODE_NAMES.push("ボス戦");
+    // Boss notification
+    let lastBossNotifId="";
+    function checkBossNotification(){
+      const boss=getActiveBoss();if(!boss)return;
+      if(boss.id===lastBossNotifId)return;lastBossNotifId=boss.id;
+      if(typeof Notification!=="undefined"&&Notification.permission==="granted"){new Notification("🐋 "+boss.boss.name+"が暴れている…！",{body:"ボスが出現中！今すぐ釣りに行こう",icon:"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><text y='32' font-size='32'>🐋</text></svg>"});}
+    }
+    setInterval(checkBossNotification,30000);setTimeout(checkBossNotification,2000);
     function safePlay(v){if(!v)return;try{v.play()?.catch(()=>{});}catch{}}
     function setVideoSrc(v,src){if(!v||!src)return;if(v.getAttribute("data-src")===src){safePlay(v);return;}v.setAttribute("data-src",src);v.src=src;v.load();safePlay(v);}
     function updateRoomVideo(){const inRoom=!!state.room.inRoom;el.lobbyVideo.style.display=inRoom?"none":"block";el.roomVideo.style.display=inRoom?"block":"none";if(!inRoom){safePlay(el.lobbyVideo);return;}setVideoSrc(el.roomVideo,`boat${Math.max(1,Math.min(3,currentRoomData?.members?.length||1))}.mp4`);}
@@ -5284,7 +5435,7 @@
       if(!state.fishing.inProgress)return;
       const dm=state.fishing.durationMin||25;const count=getCatchCount(dm);
       for(let i=0;i<count;i++){
-        const r=rollCatch(state.fishing);preRolledCatches.push(r);
+        const r=rollCatchMayBoss(state.fishing);preRolledCatches.push(r);
         const stars=r.picked.rarityStars||1;
         const sz=r.entry.sizeCm||20;const avg=r.picked.avgSize||20;
         // Size based on ratio to average: bigger ratio = much bigger display
