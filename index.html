@@ -170,6 +170,11 @@
       pointer-events: auto !important;
       transform: none !important;
     }
+    #app.fs-overlay-open .side-nav {
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transform: translateX(-100%) !important;
+    }
     .nav-active-bubble {
       position: absolute;
       width: 48px;
@@ -339,6 +344,9 @@
     }
     #app.nav-always-show .screen-shell {
       padding-left: calc(var(--navExpanded) + 16px);
+    }
+    @media (max-width: 760px) {
+      #app.nav-always-show .screen-shell { padding-left: 8px !important; }
     }
 
     .fade-ui { transition: opacity 0.35s ease, transform 0.35s ease; }
@@ -2697,6 +2705,7 @@
       .bottom-nav .bnav-dot.show { display:block; }
       .fish-btn-room { bottom: 72px !important; }
       #bossBubble { bottom: 142px !important; }
+      .room-bottom-btn { bottom: 72px !important; }
       .screen-shell {
         padding-bottom: calc(var(--safeBottom) + 64px) !important;
         left: 8px !important;
@@ -2838,8 +2847,8 @@
           <!-- Boss bubble -->
           <div id="bossBubble" style="display:none;position:absolute;right:10px;bottom:90px;z-index:9;background:#22c55e;color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:12px;white-space:nowrap;pointer-events:none;animation:bossPulse 2s infinite;">🐋 ボス出現中！</div>
           <button id="openFishSettingsBtn" class="fade-ui fish-btn-room" style="position:absolute;right:20px;bottom:20px;width:64px;height:64px;border:2px solid rgba(255,255,255,0.3);border-radius:50%;background:rgba(0,0,0,0.3);color:#fff;font-size:16px;font-weight:900;cursor:pointer;z-index:8;backdrop-filter:blur(6px);display:grid;place-items:center;letter-spacing:2px;">釣る</button>
-          <button id="roomMessageBtn" class="message-trigger fade-ui" style="position:absolute;right:96px;bottom:28px;width:32px;height:32px;border:1px solid rgba(255,255,255,0.2);border-radius:10px;background:rgba(0,0,0,0.4);color:#fff;font-size:14px;cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);z-index:8;" aria-label="メッセージ">📨<span id="roomMessageDot" class="message-dot"></span></button>
-          <button id="roomFishPredictBtn" class="fade-ui" style="position:absolute;right:134px;bottom:28px;width:32px;height:32px;border:1px solid rgba(255,255,255,0.2);border-radius:10px;background:rgba(0,0,0,0.4);color:#fff;font-size:16px;cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);z-index:8;" title="マップ">🗺️</button>
+          <button id="roomMessageBtn" class="message-trigger fade-ui room-bottom-btn" style="position:absolute;right:96px;bottom:28px;width:32px;height:32px;border:1px solid rgba(255,255,255,0.2);border-radius:10px;background:rgba(0,0,0,0.4);color:#fff;font-size:14px;cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);z-index:8;" aria-label="メッセージ">📨<span id="roomMessageDot" class="message-dot"></span></button>
+          <button id="roomFishPredictBtn" class="fade-ui room-bottom-btn" style="position:absolute;right:134px;bottom:28px;width:32px;height:32px;border:1px solid rgba(255,255,255,0.2);border-radius:10px;background:rgba(0,0,0,0.4);color:#fff;font-size:16px;cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);z-index:8;" title="マップ">🗺️</button>
           <div id="roomFishPredictPopup" class="fish-predict-popup" style="right:100px;bottom:70px;"></div>
           <div id="roomLoopInfo" class="room-loop-info"></div>
           <!-- Fullscreen fishing settings -->
@@ -2862,6 +2871,7 @@
               </div>
               <!-- 4/14: Time slider -->
               <div style="flex:4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:0;">
+                <div id="fsLoopCount" style="display:none;font-size:14px;color:var(--accent);font-weight:700;cursor:pointer;"></div>
                 <div id="fsTimeDisplay" style="font-size:clamp(32px,7vw,48px);font-weight:900;color:#fff;letter-spacing:2px;">10<span style="font-size:0.35em;color:rgba(255,255,255,0.35);margin-left:2px;">min</span></div>
                 <canvas id="fsTimeCanvas" style="width:min(340px,85vw);height:52px;cursor:grab;touch-action:none;"></canvas>
               </div>
@@ -3816,6 +3826,7 @@
       let sidebarTimer=null;
       function showSidebarTemp(){
         if(el.app.classList.contains("nav-always-show"))return;
+        if(el.app.classList.contains("fs-overlay-open"))return;
         state.ui.navCollapsed=false;applyNavState();
         clearTimeout(sidebarTimer);
         sidebarTimer=setTimeout(()=>{
@@ -3830,10 +3841,17 @@
         });
         sideNav.addEventListener("click",e=>{e.stopPropagation();clearTimeout(sidebarTimer);});
       }
-      // Show on left edge hover (PC)
-      document.addEventListener("mousemove",e=>{if(e.clientX<=8&&!el.app.classList.contains("nav-always-show"))showSidebarTemp();});
-      // Hide on click outside sidebar
-      document.addEventListener("click",e=>{if(!e.target.closest(".side-nav")&&!e.target.closest(".nav-toggle")&&!el.app.classList.contains("nav-always-show")){state.ui.navCollapsed=true;applyNavState();}});
+      // Show on left edge hover (PC) - very far left only
+      document.addEventListener("mousemove",e=>{if(e.clientX<=3&&!el.app.classList.contains("nav-always-show")&&!el.app.classList.contains("fs-overlay-open"))showSidebarTemp();});
+      // Hide on click outside sidebar (for all screens)
+      document.addEventListener("click",e=>{
+        if(el.app.classList.contains("nav-always-show"))return;
+        if(el.app.classList.contains("fs-overlay-open"))return;
+        if(e.target.closest(".side-nav")||e.target.closest(".nav-toggle"))return;
+        // Mobile: click on far left edge (<30px) to show
+        if(e.clientX<30&&state.ui.navCollapsed){showSidebarTemp();return;}
+        state.ui.navCollapsed=true;applyNavState();
+      });
       el.navBtns.forEach(b=>b.addEventListener("click",()=>switchScreen(b.dataset.screen)));
       // Bottom nav
       document.querySelectorAll(".bottom-nav button").forEach(b=>b.addEventListener("click",()=>{if(b.dataset.screen)switchScreen(b.dataset.screen);}));
@@ -3844,8 +3862,8 @@
       const openFSBtn=document.getElementById("openFishSettingsBtn");
       const fishSettingsOv=document.getElementById("fishSettingsOverlay");
       const closeFSBtn=document.getElementById("closeFishSettings");
-      if(openFSBtn)openFSBtn.addEventListener("click",()=>{if(fishSettingsOv){fishSettingsOv.style.display="block";state.ui.navCollapsed=true;applyNavState();renderFishSettings();}});
-      if(closeFSBtn)closeFSBtn.addEventListener("click",()=>{if(fishSettingsOv)fishSettingsOv.style.display="none";});
+      if(openFSBtn)openFSBtn.addEventListener("click",()=>{if(fishSettingsOv){fishSettingsOv.style.display="block";el.app.classList.add("fs-overlay-open");state.ui.navCollapsed=true;applyNavState();renderFishSettings();}});
+      if(closeFSBtn)closeFSBtn.addEventListener("click",()=>{if(fishSettingsOv)fishSettingsOv.style.display="none";el.app.classList.remove("fs-overlay-open");});
       // === Fish Settings System ===
       let fsTimeVal=state.selectedCourseMin||10;
       const MODE_DESCS=["好きな時間を設定して\n1回の作業に集中しよう","作業と休憩を繰り返す\n連続モードでリズムを作ろう","セットごとにノルマを設定\n計画的に作業を進めよう","時間制限なし\n好きなだけ作業して報酬GET","ボスが出現中のみ挑戦可能\n低確率でレアなボス魚が釣れる"];
@@ -3927,6 +3945,20 @@
         if(disp)disp.innerHTML=fsTimeVal+'<span style="font-size:0.35em;color:rgba(255,255,255,0.35);margin-left:2px;">min</span>';
         if((state.ui.modeIndex||0)===0)state.selectedCourseMin=fsTimeVal;
         else if((state.ui.modeIndex||0)===1)state.loopConfig.fishMin=fsTimeVal;
+        // Loop count display
+        const loopEl=document.getElementById("fsLoopCount");
+        if(loopEl){
+          const idx=state.ui.modeIndex||0;
+          if(idx===1){
+            const cnt=state.loopConfig.count||2;
+            loopEl.style.display="block";loopEl.textContent=cnt+"ループ";
+            loopEl.onclick=()=>{let n=cnt+1;if(n>9)n=1;state.loopConfig.count=n;renderTimeSlider();saveAll().catch(console.error);};
+          }else if(idx===2){
+            const rounds=state.normaConfig.rounds||[];
+            loopEl.style.display="block";loopEl.textContent=rounds.length+"セット";
+            loopEl.onclick=null;
+          }else{loopEl.style.display="none";}
+        }
       }
       const tslider=document.getElementById("fsTimeCanvas");
       if(tslider){
@@ -4031,6 +4063,8 @@
       el.focusModeBtn.addEventListener("click",()=>setFocusMode(true));
       // Water surface toggle on background click
       el.screens.fishing.addEventListener("click",e=>{
+      // PC wheel up on fishing screen -> open map
+      el.screens.fishing.addEventListener("wheel",e=>{if(e.deltaY<-30&&state.fishing.inProgress){e.preventDefault();openMapOverlay();}},{passive:false});
         if(!state.fishing.inProgress||!state.ui.fishingUiVisible)return;
         const t=e.target;if(t.closest("button")||t.closest("select")||t.closest("input")||t.closest(".timer-actions")||t.closest(".fishing-timer")||t.closest(".audio-player-wrap")||t.closest(".bottom-right-stack")||t.closest(".stamp-rail")||t.closest(".focus-overlay")||t.closest(".top-left-meta")||t.closest(".top-right-stack")||t.closest(".mini-goal-wrap"))return;
         toggleWaterSurface();
@@ -4284,8 +4318,22 @@
     function syncGoalInputs(){const v=state.miniGoal||"";[el.lobbyGoalInput,el.roomGoalInput,el.fishingGoalInput].forEach(i=>{if(!i)return;if(document.activeElement!==i)i.value=v;});const isPub=state.miniGoalPublic;const vis=isPub?"公開中":"非公開";[el.lobbyGoalVisibility,el.roomGoalVisibility,el.fishingGoalVisibility].forEach(s=>{if(!s)return;s.textContent=vis;s.style.color=isPub?"var(--gold)":"rgba(255,255,255,0.35)";});}
     function updateDateSubs(){const now=new Date();const days=['日','月','火','水','木','金','土'];const txt=`${now.getMonth()+1}/${now.getDate()} ${days[now.getDay()]}`;[el.lobbyDateSub,el.roomDateSub,el.fishingDateSub].forEach(s=>{if(!s)return;s.textContent=txt;s.classList.toggle('show',clockDateExpanded);});}
 
-    function openStoreCategory(cat){storeActiveCategory=cat;el.storeCategoryScreen.style.display='none';['bait','upgrade','items','sell'].forEach(k=>{document.getElementById(`storeSub${k.charAt(0).toUpperCase()+k.slice(1)}`).classList.toggle('active',k===cat);});renderStore();}
+    const STORE_CATS=["bait","upgrade","items","sell"];
+    let storeSwipeX=0;
+    function openStoreCategory(cat){storeActiveCategory=cat;el.storeCategoryScreen.style.display='none';STORE_CATS.forEach(k=>{document.getElementById(`storeSub${k.charAt(0).toUpperCase()+k.slice(1)}`).classList.toggle('active',k===cat);});renderStore();}
     function closeStoreCategory(){storeActiveCategory=null;el.storeCategoryScreen.style.display='flex';document.querySelectorAll('.store-sub-screen').forEach(s=>s.classList.remove('active'));}
+    // Store swipe between sub-screens
+    if(el.screens.store){
+      el.screens.store.addEventListener("touchstart",e=>{storeSwipeX=e.touches[0].clientX;},{passive:true});
+      el.screens.store.addEventListener("touchend",e=>{
+        if(!storeActiveCategory)return;
+        const dx=e.changedTouches[0].clientX-storeSwipeX;
+        if(Math.abs(dx)<40)return;
+        const ci=STORE_CATS.indexOf(storeActiveCategory);if(ci<0)return;
+        const ni=dx<0?(ci+1)%STORE_CATS.length:(ci-1+STORE_CATS.length)%STORE_CATS.length;
+        openStoreCategory(STORE_CATS[ni]);
+      },{passive:true});
+    }
 
     function editWeeklyGoal(){/* now handled by input blur events */}
 
@@ -4667,7 +4715,7 @@
     // ===== ALL REMAINING CORE FUNCTIONS (condensed but complete) =====
     function applyNavState(){el.app.classList.toggle("nav-collapsed",!!state.ui.navCollapsed);el.app.classList.toggle("nav-hidden",!!state.fishing.inProgress);el.navToggle.textContent=state.ui.navCollapsed?"❯":"❮";updateNavIndicator();}
     function updateNavIndicator(){const a=el.navBtns.find(b=>b.classList.contains("active"))||el.navBtns[0];if(!a)return;const s=a.offsetHeight;el.navActiveBubble.style.top=`${a.offsetTop}px`;el.navActiveBubble.style.left=`${a.offsetLeft+3}px`;el.navActiveBubble.style.width=`${s}px`;el.navActiveBubble.style.height=`${s}px`;}
-    function switchScreen(name){if(name==="fishing"&&!state.fishing.inProgress&&!state.countupRun?.active)return;el.navBtns.forEach(b=>b.classList.toggle("active",b.dataset.screen===name));Object.entries(el.screens).forEach(([k,n])=>n.classList.toggle("active",k===name));document.querySelectorAll(".bottom-nav button").forEach(b=>b.classList.toggle("active",b.dataset.screen===name));const bn=document.getElementById("bottomNav");if(bn){const showNav=["room","results","utility","settings","encyclopedia"].includes(name);bn.style.display=showNav?"":"none";}
+    function switchScreen(name){if(name==="fishing"&&!state.fishing.inProgress&&!state.countupRun?.active)return;el.navBtns.forEach(b=>b.classList.toggle("active",b.dataset.screen===name));Object.entries(el.screens).forEach(([k,n])=>n.classList.toggle("active",k===name));document.querySelectorAll(".bottom-nav button").forEach(b=>b.classList.toggle("active",b.dataset.screen===name));const bn=document.getElementById("bottomNav");if(bn){const showNav=["room","results","utility","settings","encyclopedia","store"].includes(name);bn.style.display=showNav?"":"none";}
       // Sidebar: always visible on content screens, auto-hide on room/fishing
       const alwaysShow=["results","utility","settings","encyclopedia","store"].includes(name);
       el.app.classList.toggle("nav-always-show",alwaysShow);
