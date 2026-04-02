@@ -2718,6 +2718,7 @@
     <button id="navToggle" class="nav-toggle" style="opacity:0;" aria-label="メニュー切り替え">❯</button>
 
     <nav class="side-nav">
+      <button id="sideNavHideBtn" style="position:absolute;left:-14px;top:50%;transform:translateY(-50%);width:14px;height:48px;border:0;background:rgba(10,22,40,0.6);color:rgba(255,255,255,0.4);font-size:11px;cursor:pointer;border-radius:6px 0 0 6px;display:grid;place-items:center;padding:0;">❮</button>
       <div id="navActiveBubble" class="nav-active-bubble"></div>
 
       <button class="nav-btn active" data-screen="room" aria-label="プレイ">
@@ -2859,13 +2860,14 @@
                 <button id="closeFishSettings" style="border:0;background:transparent;color:rgba(255,255,255,0.6);font-size:20px;cursor:pointer;">❮ 戻る</button>
                 <select id="fishSettingsBait" style="height:30px;padding:0 10px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#fff;font-size:11px;font-weight:700;max-width:130px;"></select>
               </div>
-              <!-- 3/14 (or 4/14 if no norma): Details -->
-              <div id="fsDetails" style="flex:3;display:flex;align-items:center;justify-content:center;text-align:center;padding:8px 24px;min-height:0;">
-                <div id="fsDetailsText" style="font-size:14px;color:rgba(255,255,255,0.55);line-height:1.8;font-weight:400;white-space:pre-line;"></div>
+              <!-- 4/14: Details + Norma (combined fixed area) -->
+              <div style="flex:4;display:flex;flex-direction:column;min-height:0;overflow:hidden;">
+                <div id="fsDetails" style="flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:4px 24px;min-height:0;overflow:hidden;">
+                  <div id="fsDetailsText" style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.7;font-weight:400;white-space:pre-line;"></div>
+                </div>
+                <div id="fsNormaArea" style="flex:0 0 auto;display:none;align-items:center;justify-content:center;gap:6px;padding:4px 16px;flex-wrap:wrap;"></div>
               </div>
-              <!-- 1/14: Norma-only area -->
-              <div id="fsNormaArea" style="flex:1;display:none;align-items:center;justify-content:center;gap:6px;padding:0 16px;min-height:0;flex-wrap:wrap;"></div>
-              <!-- 3/14: Mode card carousel -->
+              <!-- 3/14: Mode card carousel (position fixed) -->
               <div id="fsModeCarousel" style="flex:3;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:0 8px;min-height:0;">
                 <canvas id="fsModeCanvas" style="width:100%;height:100%;"></canvas>
               </div>
@@ -2878,7 +2880,7 @@
               <!-- 2/14: Start + task -->
               <div style="flex:2;display:flex;align-items:center;gap:8px;padding:0 16px;min-height:0;">
                 <select id="fsTaskSelect" style="height:46px;flex:0 0 25%;border-radius:14px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.05);color:#fff;font-size:11px;font-weight:700;padding:0 6px;"></select>
-                <button id="fsStartBtn" style="flex:1;height:46px;border:1px solid rgba(255,255,255,0.25);border-radius:14px;background:transparent;color:#fff;font-size:16px;font-weight:800;cursor:pointer;letter-spacing:3px;">START</button>
+                <button id="fsStartBtn" style="flex:1;height:46px;border:none;border-radius:14px;background:rgba(255,255,255,0.95);color:#333;font-size:16px;font-weight:800;cursor:pointer;letter-spacing:3px;">START</button>
               </div>
             </div>
             <!-- Hidden containers for renderModeCard compat -->
@@ -3822,6 +3824,8 @@
 
     function bindEvents(){
       el.navToggle.addEventListener("click",()=>{state.ui.navCollapsed=!state.ui.navCollapsed;applyNavState();saveAll().catch(console.error);});
+      const sideHideBtn=document.getElementById("sideNavHideBtn");
+      if(sideHideBtn)sideHideBtn.addEventListener("click",e=>{e.stopPropagation();state.ui.navCollapsed=true;applyNavState();});
       // Sidebar: show on hover/click near left edge, auto-hide after 3s
       let sidebarTimer=null;
       function showSidebarTemp(){
