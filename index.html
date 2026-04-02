@@ -127,7 +127,7 @@
       border: 0;
       border-radius: 0 8px 8px 0;
       background: rgba(255,255,255,0.85);
-      color: #555;
+      color: rgba(255,255,255,0.5);
       font-size: 13px;
       display: grid;
       place-items: center;
@@ -147,27 +147,35 @@
       width: var(--navExpanded);
       z-index: 40;
       padding: 16px 10px 14px;
-      background: rgba(255,255,255,0.95);
+      background: rgba(10,22,40,0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.08);
       border-radius: 22px;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 8px;
-      transition: opacity 0.2s ease, transform 0.2s ease;
+      transition: opacity 0.25s ease, transform 0.25s ease;
       overflow: visible;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.3);
     }
     #app.nav-collapsed .side-nav {
       opacity: 0;
       pointer-events: none;
       transform: translateX(calc(-100% - 18px));
     }
+    /* Screens where sidebar is always visible */
+    #app.nav-always-show .side-nav {
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      transform: none !important;
+    }
     .nav-active-bubble {
       position: absolute;
       width: 48px;
       height: 48px;
       border-radius: 50%;
-      background: rgba(123,223,245,0.85);
+      background: rgba(123,223,245,0.25);
       box-shadow: 0 0 14px rgba(123,223,245,0.4);
       transition: top 0.26s ease, left 0.26s ease, opacity 0.2s ease;
       z-index: 1;
@@ -181,7 +189,7 @@
       border: 0;
       border-radius: 16px;
       background: transparent;
-      color: #555;
+      color: rgba(255,255,255,0.5);
       display: grid;
       place-items: center;
       padding: 0;
@@ -197,7 +205,7 @@
       stroke-linejoin: round;
       opacity: 0.85;
     }
-    .nav-btn.active { color: #103148; }
+    .nav-btn.active { color: #fff; }
     .nav-btn .tip {
       position: absolute;
       left: 50%;
@@ -233,7 +241,7 @@
       border: 0;
       border-radius: 16px;
       background: transparent;
-      color: #555;
+      color: rgba(255,255,255,0.5);
       display: grid;
       place-items: center;
       font-size: 22px;
@@ -325,9 +333,12 @@
     }
     .screen-shell {
       position: absolute;
-      inset: 0; padding: calc(var(--safeTop) + 8px) 8px calc(var(--safeBottom) + 8px) calc(var(--navCurrent) + 8px);
-      transition: inset 0.22s ease;
+      inset: 0; padding: calc(var(--safeTop) + 8px) 8px calc(var(--safeBottom) + 8px) 8px;
+      transition: padding 0.22s ease;
       z-index: 4;
+    }
+    #app.nav-always-show .screen-shell {
+      padding-left: calc(var(--navExpanded) + 16px);
     }
 
     .fade-ui { transition: opacity 0.35s ease, transform 0.35s ease; }
@@ -336,7 +347,7 @@
       pointer-events: none;
       transform: translateY(8px);
     }
-    #app.room-rest-faded #screen-room.active .fade-ui:not(.mode-card-wrap):not(.top-left-stack):not(.loop-rest-center) {
+    #app.room-rest-faded #screen-room.active .fade-ui:not(.mode-card-wrap):not(.top-left-stack):not(.loop-rest-center):not(.fish-btn-room):not(.top-left-meta) {
       opacity: 0;
       pointer-events: none;
       transform: translateY(8px);
@@ -1345,7 +1356,7 @@
       border-radius: 12px;
       border: 1px solid rgba(0,0,0,0.08);
       background: #fff;
-      color: #555;
+      color: rgba(255,255,255,0.5);
       font-weight: 700;
       font-size: 13px;
       cursor: pointer;
@@ -2647,7 +2658,7 @@
     .schedule-day-btn.active { color: #333; }
     .schedule-day-btn.active::after { content: ''; position: absolute; bottom: -2px; left: 25%; right: 25%; height: 3px; background: var(--accent); border-radius: 2px; }
     .schedule-timeline { flex: 1; overflow-y: auto; position: relative; padding-left: 52px; }
-    .schedule-hour-mark { position: absolute; left: 0; width: 48px; font-size: 11px; color: #555; font-weight: 600; text-align: right; padding-right: 6px; }
+    .schedule-hour-mark { position: absolute; left: 0; width: 48px; font-size: 11px; color: rgba(255,255,255,0.5); font-weight: 600; text-align: right; padding-right: 6px; }
     .schedule-hour-line { position: absolute; left: 48px; right: 0; height: 1px; background: rgba(0,0,0,0.06); }
     .schedule-now-dot { position: absolute; left: 38px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); z-index: 3; transform: translateY(-5px); }
     .schedule-card { position: absolute; left: 52px; right: 8px; border-radius: 10px; padding: 6px 8px; font-size: 11px; font-weight: 600; color: #fff; overflow: hidden; cursor: pointer; z-index: 2; }
@@ -2684,6 +2695,8 @@
         background:var(--accent);display:none;
       }
       .bottom-nav .bnav-dot.show { display:block; }
+      .fish-btn-room { bottom: 72px !important; }
+      #bossBubble { bottom: 142px !important; }
       .screen-shell {
         padding-bottom: calc(var(--safeBottom) + 64px) !important;
         left: 8px !important;
@@ -2823,10 +2836,10 @@
 
           <!-- Simple fishing button -->
           <!-- Boss bubble -->
-          <div id="bossBubble" style="display:none;position:absolute;right:10px;bottom:142px;z-index:9;background:#22c55e;color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:12px;white-space:nowrap;pointer-events:none;animation:bossPulse 2s infinite;">🐋 ボス出現中！</div>
-          <button id="openFishSettingsBtn" class="fade-ui" style="position:absolute;right:20px;bottom:72px;width:64px;height:64px;border:2px solid rgba(255,255,255,0.3);border-radius:50%;background:rgba(0,0,0,0.3);color:#fff;font-size:16px;font-weight:900;cursor:pointer;z-index:8;backdrop-filter:blur(6px);display:grid;place-items:center;letter-spacing:2px;">釣る</button>
+          <div id="bossBubble" style="display:none;position:absolute;right:10px;bottom:90px;z-index:9;background:#22c55e;color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:12px;white-space:nowrap;pointer-events:none;animation:bossPulse 2s infinite;">🐋 ボス出現中！</div>
+          <button id="openFishSettingsBtn" class="fade-ui fish-btn-room" style="position:absolute;right:20px;bottom:20px;width:64px;height:64px;border:2px solid rgba(255,255,255,0.3);border-radius:50%;background:rgba(0,0,0,0.3);color:#fff;font-size:16px;font-weight:900;cursor:pointer;z-index:8;backdrop-filter:blur(6px);display:grid;place-items:center;letter-spacing:2px;">釣る</button>
           <button id="roomMessageBtn" class="message-trigger fade-ui" style="position:absolute;right:96px;bottom:28px;width:32px;height:32px;border:1px solid rgba(255,255,255,0.2);border-radius:10px;background:rgba(0,0,0,0.4);color:#fff;font-size:14px;cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);z-index:8;" aria-label="メッセージ">📨<span id="roomMessageDot" class="message-dot"></span></button>
-          <button id="roomFishPredictBtn" class="fade-ui" style="position:absolute;right:134px;bottom:28px;width:32px;height:32px;border:1px solid rgba(255,255,255,0.2);border-radius:10px;background:rgba(0,0,0,0.4);color:#fff;font-size:16px;cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);z-index:8;" title="近くにいる魚">🐟</button>
+          <button id="roomFishPredictBtn" class="fade-ui" style="position:absolute;right:134px;bottom:28px;width:32px;height:32px;border:1px solid rgba(255,255,255,0.2);border-radius:10px;background:rgba(0,0,0,0.4);color:#fff;font-size:16px;cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);z-index:8;" title="マップ">🗺️</button>
           <div id="roomFishPredictPopup" class="fish-predict-popup" style="right:100px;bottom:70px;"></div>
           <div id="roomLoopInfo" class="room-loop-info"></div>
           <!-- Fullscreen fishing settings -->
@@ -3799,6 +3812,28 @@
 
     function bindEvents(){
       el.navToggle.addEventListener("click",()=>{state.ui.navCollapsed=!state.ui.navCollapsed;applyNavState();saveAll().catch(console.error);});
+      // Sidebar: show on hover/click near left edge, auto-hide after 3s
+      let sidebarTimer=null;
+      function showSidebarTemp(){
+        if(el.app.classList.contains("nav-always-show"))return;
+        state.ui.navCollapsed=false;applyNavState();
+        clearTimeout(sidebarTimer);
+        sidebarTimer=setTimeout(()=>{
+          if(!el.app.classList.contains("nav-always-show")){state.ui.navCollapsed=true;applyNavState();}
+        },3000);
+      }
+      const sideNav=document.querySelector(".side-nav");
+      if(sideNav){
+        sideNav.addEventListener("mouseenter",()=>{clearTimeout(sidebarTimer);});
+        sideNav.addEventListener("mouseleave",()=>{
+          if(!el.app.classList.contains("nav-always-show")){sidebarTimer=setTimeout(()=>{state.ui.navCollapsed=true;applyNavState();},3000);}
+        });
+        sideNav.addEventListener("click",e=>{e.stopPropagation();clearTimeout(sidebarTimer);});
+      }
+      // Show on left edge hover (PC)
+      document.addEventListener("mousemove",e=>{if(e.clientX<=8&&!el.app.classList.contains("nav-always-show"))showSidebarTemp();});
+      // Hide on click outside sidebar
+      document.addEventListener("click",e=>{if(!e.target.closest(".side-nav")&&!e.target.closest(".nav-toggle")&&!el.app.classList.contains("nav-always-show")){state.ui.navCollapsed=true;applyNavState();}});
       el.navBtns.forEach(b=>b.addEventListener("click",()=>switchScreen(b.dataset.screen)));
       // Bottom nav
       document.querySelectorAll(".bottom-nav button").forEach(b=>b.addEventListener("click",()=>{if(b.dataset.screen)switchScreen(b.dataset.screen);}));
@@ -3809,7 +3844,7 @@
       const openFSBtn=document.getElementById("openFishSettingsBtn");
       const fishSettingsOv=document.getElementById("fishSettingsOverlay");
       const closeFSBtn=document.getElementById("closeFishSettings");
-      if(openFSBtn)openFSBtn.addEventListener("click",()=>{if(fishSettingsOv){fishSettingsOv.style.display="block";renderFishSettings();}});
+      if(openFSBtn)openFSBtn.addEventListener("click",()=>{if(fishSettingsOv){fishSettingsOv.style.display="block";state.ui.navCollapsed=true;applyNavState();renderFishSettings();}});
       if(closeFSBtn)closeFSBtn.addEventListener("click",()=>{if(fishSettingsOv)fishSettingsOv.style.display="none";});
       // === Fish Settings System ===
       let fsTimeVal=state.selectedCourseMin||10;
@@ -4632,7 +4667,13 @@
     // ===== ALL REMAINING CORE FUNCTIONS (condensed but complete) =====
     function applyNavState(){el.app.classList.toggle("nav-collapsed",!!state.ui.navCollapsed);el.app.classList.toggle("nav-hidden",!!state.fishing.inProgress);el.navToggle.textContent=state.ui.navCollapsed?"❯":"❮";updateNavIndicator();}
     function updateNavIndicator(){const a=el.navBtns.find(b=>b.classList.contains("active"))||el.navBtns[0];if(!a)return;const s=a.offsetHeight;el.navActiveBubble.style.top=`${a.offsetTop}px`;el.navActiveBubble.style.left=`${a.offsetLeft+3}px`;el.navActiveBubble.style.width=`${s}px`;el.navActiveBubble.style.height=`${s}px`;}
-    function switchScreen(name){if(name==="fishing"&&!state.fishing.inProgress&&!state.countupRun?.active)return;el.navBtns.forEach(b=>b.classList.toggle("active",b.dataset.screen===name));Object.entries(el.screens).forEach(([k,n])=>n.classList.toggle("active",k===name));document.querySelectorAll(".bottom-nav button").forEach(b=>b.classList.toggle("active",b.dataset.screen===name));const bn=document.getElementById("bottomNav");if(bn){const showNav=["room","results","utility","settings","encyclopedia"].includes(name);bn.style.display=showNav?"":"none";}if(name!=="fishing"){state.ui.fishingUiVisible=true;el.app.classList.remove("fishing-ui-faded");clearFishingUiTimeout();}if(name!=="room"){el.app.classList.remove("room-rest-faded");if(roomRestFadeTimer)clearTimeout(roomRestFadeTimer);}applyNavState();handleFishingActivity();if(name==="room")handleRoomRestActivity();renderAll();}
+    function switchScreen(name){if(name==="fishing"&&!state.fishing.inProgress&&!state.countupRun?.active)return;el.navBtns.forEach(b=>b.classList.toggle("active",b.dataset.screen===name));Object.entries(el.screens).forEach(([k,n])=>n.classList.toggle("active",k===name));document.querySelectorAll(".bottom-nav button").forEach(b=>b.classList.toggle("active",b.dataset.screen===name));const bn=document.getElementById("bottomNav");if(bn){const showNav=["room","results","utility","settings","encyclopedia"].includes(name);bn.style.display=showNav?"":"none";}
+      // Sidebar: always visible on content screens, auto-hide on room/fishing
+      const alwaysShow=["results","utility","settings","encyclopedia","store"].includes(name);
+      el.app.classList.toggle("nav-always-show",alwaysShow);
+      if(alwaysShow){state.ui.navCollapsed=false;applyNavState();}
+      else if(name==="room"||name==="fishing"){state.ui.navCollapsed=true;applyNavState();}
+      if(name!=="fishing"){state.ui.fishingUiVisible=true;el.app.classList.remove("fishing-ui-faded");clearFishingUiTimeout();}if(name!=="room"){el.app.classList.remove("room-rest-faded");if(roomRestFadeTimer)clearTimeout(roomRestFadeTimer);}applyNavState();handleFishingActivity();if(name==="room")handleRoomRestActivity();renderAll();}
     function renderNavParts(){if(!el.navLevelList)return;const open=!!state.ui.partsPanelOpen;el.navLevelList.classList.toggle("open",open);}
     function fillSelectors(){fillTaskSelect();}
     function fillBaitSelector(){}
@@ -5266,7 +5307,7 @@
     function renderSettings(){el.settingsDisplayName.textContent=state.user.displayName||"釣り人";el.displayNameInput.value=state.user.displayName||"釣り人";el.lastSavedAt.textContent=state.lastSavedAt?fmtDateTime(state.lastSavedAt):"-";}
     function renderUserPill(){el.userPill.innerHTML=`${esc(state.user.displayName||"釣り人")}<br/>${state.user.isGuest?"ローカル":"Google"}`;}
     function updateSync(){if(firebaseReady&&firebaseSyncOk&&!state.user.isGuest)el.syncStatus.textContent="Firebase同期中";else if(firebaseReady&&auth?.currentUser?.isAnonymous)el.syncStatus.textContent="匿名接続中";else el.syncStatus.textContent="ローカルのみ";}
-    function renderMailIndicators(){const uo=getUnreadMail("official").length,up=getUnreadMail("peer").length,pp=getPeerMail();if(el.mailNavDot)el.mailNavDot.classList.toggle("show",uo>0);[el.roomMessageBtn,el.fishingMessageBtn].forEach(b=>{if(b)b.classList.toggle("show",pp.length>0);});[el.roomMessageDot,el.fishingMessageDot].forEach(d=>{if(d)d.classList.toggle("show",up>0);})}
+    function renderMailIndicators(){const uo=getUnreadMail("official").length,up=getUnreadMail("peer").length,pp=getPeerMail();if(el.mailNavDot)el.mailNavDot.classList.toggle("show",uo>0);const hasMsg=pp.length>0||up>0;[el.roomMessageBtn,el.fishingMessageBtn].forEach(b=>{if(b)b.style.display=hasMsg?"grid":"none";});[el.roomMessageDot,el.fishingMessageDot].forEach(d=>{if(d)d.classList.toggle("show",up>0);})}
     // === BOSS SYSTEM ===
     function getBossSpawns(dateStr){
       // Deterministic: all users see same bosses at same times
