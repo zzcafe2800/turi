@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -2994,7 +2995,7 @@
 
         <div id="fishingStampFeed" class="stamp-feed" style="display:none;"></div>
         <!-- Sub timer widget -->
-        <div id="subTimerWrap" class="fade-ui" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);z-index:10;width:160px;background:rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:6px;backdrop-filter:blur(6px);display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <div id="subTimerWrap" class="fade-ui" style="display:none;position:absolute;right:8px;top:50%;transform:translateY(-50%);z-index:10;width:160px;background:rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:6px;backdrop-filter:blur(6px);display:flex;flex-direction:column;align-items:center;gap:4px;">
           <input id="subTimerInput" type="text" value="00:00" style="width:100%;text-align:center;font-size:28px;font-weight:900;color:#fff;background:transparent;border:0;outline:none;font-family:monospace;" placeholder="--:--"/>
           <button id="subTimerBtn" style="width:100%;height:36px;border:0;border-radius:8px;background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.6);font-size:10px;font-weight:700;cursor:pointer;">START</button>
         </div>
@@ -3220,6 +3221,7 @@
               <div class="row"><span>開始・終了音</span><input id="toggleCatch" class="toggle" type="checkbox" /></div>
               <div class="row"><span>ブラウザ通知</span><input id="toggleNotify" class="toggle" type="checkbox" /></div>
               <div class="row"><span>ボス出現通知</span><button id="bossNotifyBtn" style="padding:4px 12px;border:1px solid rgba(255,255,255,0.15);border-radius:8px;background:transparent;color:var(--accent);font-size:11px;cursor:pointer;">許可する</button></div>
+              <div class="row"><span>サブタイマー表示</span><input id="toggleSubTimer" class="toggle" type="checkbox" /></div>
               <div class="row"><span>終了時に軽く揺らす</span><input id="toggleShake" class="toggle" type="checkbox" /></div>
             </div>
             <div class="settings-box">
@@ -3870,8 +3872,8 @@
       if(closeFSBtn)closeFSBtn.addEventListener("click",()=>{if(fishSettingsOv)fishSettingsOv.style.display="none";el.app.classList.remove("fs-overlay-open");});
       // === Fish Settings System ===
       let fsTimeVal=state.selectedCourseMin||10;
-      const MODE_DESCS=["好きな時間を設定して\n1回の作業に集中しよう","作業と休憩を繰り返す\n連続モードでリズムを作ろう","セットごとにノルマを設定\n計画的に作業を進めよう","時間制限なし\n好きなだけ作業して報酬GET","ボスが出現中のみ挑戦可能\n低確率でレアなボス魚が釣れる"];
-      const MODE_COLORS=["rgba(72,211,109,0.15)","rgba(100,180,230,0.15)","rgba(255,180,100,0.15)","rgba(180,130,255,0.15)","rgba(255,60,60,0.15)"];
+      const MODE_DESCS=["好きな時間を設定して\n1回の作業に集中しよう","作業と休憩を繰り返す\n連続モードでリズムを作ろう","セットごとにノルマを設定\n計画的に作業を進めよう","時間制限なし\n好きなだけ作業して報酬GET","ボスが出現中のみ挑戦可能\n低確率でレアなボス魚が釣れる","ランダムな間隔で魚がヒット\nのんびり待ちながら釣ろう"];
+      const MODE_COLORS=["rgba(72,211,109,0.15)","rgba(100,180,230,0.15)","rgba(255,180,100,0.15)","rgba(180,130,255,0.15)","rgba(255,60,60,0.15)","rgba(100,200,150,0.15)"];
       function renderFishSettings(){drawModeCarousel();renderTimeSlider();updateFSDetails();updateFSBait();updateFSTask();
         const startBtn=document.getElementById("fsStartBtn");
         if(startBtn){startBtn.onclick=()=>{if(fishSettingsOv)fishSettingsOv.style.display="none";
@@ -3957,11 +3959,28 @@
             const cnt=state.loopConfig.count||2;
             loopEl.style.display="block";loopEl.textContent=cnt+"ループ";
             loopEl.onclick=()=>{let n=cnt+1;if(n>9)n=1;state.loopConfig.count=n;renderTimeSlider();saveAll().catch(console.error);};
-          }else if(idx===2){
-            const rounds=state.normaConfig.rounds||[];
-            loopEl.style.display="block";loopEl.textContent=rounds.length+"セット";
-            loopEl.onclick=null;
           }else{loopEl.style.display="none";}
+        }
+        // Hide/show time slider for countup/のんびり
+        const tsliderWrap=document.getElementById("fsTimeCanvas")?.parentElement;
+        if(tsliderWrap){
+          const idx=state.ui.modeIndex||0;
+          if(idx===3){tsliderWrap.style.opacity="0";tsliderWrap.style.pointerEvents="none";}
+          else if(idx===5){
+            // のんびり: replace with confirm toggle
+            tsliderWrap.style.opacity="1";tsliderWrap.style.pointerEvents="auto";
+            const existToggle=document.getElementById("nonbiriToggle");
+            if(!existToggle){
+              const tw=document.createElement("div");tw.id="nonbiriToggle";tw.style.cssText="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:2;background:rgba(6,14,28,0.95);";
+              const btn=document.createElement("button");btn.style.cssText="padding:10px 24px;border:1px solid rgba(255,255,255,0.2);border-radius:14px;background:"+(state.nonbiriAutoSell?"transparent":"rgba(255,255,255,0.08)")+";color:#fff;font-size:13px;font-weight:700;cursor:pointer;";
+              btn.textContent=state.nonbiriAutoSell?"釣果を流す":"毎回確認";
+              btn.addEventListener("click",()=>{state.nonbiriAutoSell=!state.nonbiriAutoSell;btn.textContent=state.nonbiriAutoSell?"釣果を流す":"毎回確認";btn.style.background=state.nonbiriAutoSell?"transparent":"rgba(255,255,255,0.08)";saveAll().catch(console.error);});
+              tw.appendChild(btn);tsliderWrap.style.position="relative";tsliderWrap.appendChild(tw);
+            }
+          }else{
+            tsliderWrap.style.opacity="1";tsliderWrap.style.pointerEvents="auto";
+            const existToggle=document.getElementById("nonbiriToggle");if(existToggle)existToggle.remove();
+          }
         }
       }
       const tslider=document.getElementById("fsTimeCanvas");
@@ -4142,6 +4161,19 @@
       const bossNotBtn=document.getElementById("bossNotifyBtn");
       if(bossNotBtn)bossNotBtn.addEventListener("click",async()=>{if(typeof Notification==="undefined"){toast("このブラウザは通知非対応");return;}if(Notification.permission==="granted"){toast("通知は既に許可済み");bossNotBtn.textContent="許可済み";return;}try{const p=await Notification.requestPermission();if(p==="granted"){toast("ボス出現通知を許可しました");bossNotBtn.textContent="許可済み";}else{toast("通知が拒否されました");}}catch(e){toast("通知の設定に失敗");}});
       el.toggleShake.addEventListener("change",()=>updateSetting("shakeOnFinish",el.toggleShake.checked));
+      // Sub-timer visibility toggle
+      const stToggle=document.getElementById("toggleSubTimer");
+      if(stToggle){
+        stToggle.checked=!!state.settings.showSubTimer;
+        stToggle.addEventListener("change",()=>{
+          updateSetting("showSubTimer",stToggle.checked);
+          const stw=document.getElementById("subTimerWrap");if(stw)stw.style.display=stToggle.checked?"flex":"none";
+        });
+      }
+      // Auto-restore notification permission from state
+      if(state.settings.browserNotify&&typeof Notification!=="undefined"&&Notification.permission==="granted"){
+        el.toggleNotify.checked=true;
+      }
       const toggleVib=document.getElementById("toggleVibrate");if(toggleVib){toggleVib.checked=!!state.settings.vibrate;toggleVib.addEventListener("change",()=>updateSetting("vibrate",toggleVib.checked));}
       const togglePipMin=document.getElementById("togglePipMinimize");if(togglePipMin){togglePipMin.checked=!!state.settings.pipMinimize;togglePipMin.addEventListener("change",()=>updateSetting("pipMinimize",togglePipMin.checked));}
       const togglePower=document.getElementById("togglePowerSave");if(togglePower){togglePower.checked=!!state.settings.powerSave;togglePower.addEventListener("change",()=>{updateSetting("powerSave",togglePower.checked);applyPowerSave();});}
@@ -4919,7 +4951,106 @@
         startNextNormaRound();
       }else if(mode===3){
         state.fishing.bossMode=false;startCountupFishing();
+      }else if(mode===5){
+        state.fishing.bossMode=false;startNonbiriFishing();
       }
+    }
+    // === のんびりモード ===
+    let nonbiriTimer=null,nonbiriResults=[],nonbiriStartAt=0;
+    if(!state.nonbiriAutoSell)state.nonbiriAutoSell=false;
+    function startNonbiriFishing(){
+      if(!state.room.inRoom){toast("先に部屋に入ってください。");return;}
+      const bid=state.selectedBaitId;
+      if((state.baitCounts[bid]||0)<=0){toast("餌が足りません。");return;}
+      state.baitCounts[bid]=Math.max(0,(state.baitCounts[bid]||0)-1);
+      state.fishing.taskCategory=state.selectedTaskCategory||"work";
+      state.fishing.inProgress=true;state.fishing.paused=false;state.fishing.startAt=Date.now();
+      state.fishing.endAt=Date.now()+999999999;state.fishing.durationMin=0;state.fishing.baitId=bid;
+      state.fishing.normaText="";state.fishing.extraSec=0;state.fishing.nonbiriMode=true;
+      refreshConditions(true);state.fishing.weather=state.currentConditions.weather;state.fishing.timeOfDay=state.currentConditions.timeOfDay;
+      state.room.status="fishing";syncPresence().catch(console.error);
+      nonbiriStartAt=Date.now();nonbiriResults=[];
+      switchScreen("fishing");autoPlayBgmOnFishing();saveAll().catch(console.error);
+      scheduleNonbiriHit();startNonbiriCountup();renderAll();handleFishingActivity();
+      // Add end button
+      const existing=document.getElementById("nonbiriEndBtn");if(existing)existing.remove();
+      const endBtn=document.createElement("button");endBtn.id="nonbiriEndBtn";
+      endBtn.style.cssText="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:20;padding:10px 28px;border:1px solid rgba(255,255,255,0.25);border-radius:14px;background:rgba(0,0,0,0.5);color:#fff;font-size:14px;font-weight:700;cursor:pointer;backdrop-filter:blur(4px);";
+      endBtn.textContent="終わる";
+      endBtn.addEventListener("click",()=>finishNonbiriFishing());
+      document.getElementById("screen-fishing")?.appendChild(endBtn);
+    }
+    let nonbiriCountupTimer=null;
+    function startNonbiriCountup(){
+      if(nonbiriCountupTimer)clearInterval(nonbiriCountupTimer);
+      nonbiriCountupTimer=setInterval(()=>{
+        if(!state.fishing.nonbiriMode){clearInterval(nonbiriCountupTimer);return;}
+        const elapsed=Date.now()-nonbiriStartAt;
+        const timerEl=document.getElementById("timerText");if(timerEl)timerEl.textContent=fmtRemain(elapsed);
+        const planEl=document.getElementById("timerPlanMini");if(planEl)planEl.textContent="のんびり";
+        const ft=document.getElementById("focusTime");if(ft)ft.textContent=fmtRemain(elapsed);
+      },500);
+    }
+    function scheduleNonbiriHit(){
+      if(nonbiriTimer)clearTimeout(nonbiriTimer);
+      const delay=30000+Math.random()*1470000; // 30s ~ 25min
+      nonbiriTimer=setTimeout(()=>{
+        if(!state.fishing.nonbiriMode||!state.fishing.inProgress)return;
+        triggerNonbiriHit();
+      },delay);
+    }
+    function triggerNonbiriHit(){
+      try{const a=new Audio("bb.mp3");a.volume=0.4;a.play().catch(()=>{});}catch(e){}
+      tryVibrate([200,100,200]);
+      // Show HIT overlay with 4s countdown
+      const ov=document.createElement("div");ov.id="nonbiriHitOverlay";
+      ov.style.cssText="position:fixed;inset:0;z-index:150;background:rgba(0,0,0,0.6);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;";
+      ov.innerHTML='<div style="font-size:clamp(48px,12vw,72px);font-weight:900;color:#fff;text-shadow:0 4px 20px rgba(123,223,245,0.5);">ヒット！</div><div id="nonbiriCountdown" style="font-size:36px;font-weight:900;color:var(--accent);margin-top:12px;">4</div>';
+      let countdown=4,caught=false;
+      const cdEl=()=>ov.querySelector("#nonbiriCountdown");
+      const cdTimer=setInterval(()=>{countdown--;if(cdEl())cdEl().textContent=String(countdown);if(countdown<=0){clearInterval(cdTimer);if(!caught){ov.remove();toast("逃げられた…");scheduleNonbiriHit();}}},1000);
+      ov.addEventListener("click",()=>{if(caught)return;caught=true;clearInterval(cdTimer);ov.remove();
+        // Catch a fish
+        const r=rollCatchMayBoss(state.fishing);r.isNew=!state.encyclopedia[r.picked.id]||state.encyclopedia[r.picked.id].count===0;
+        const s=r.picked.rarityStars||1;let escRate=0;if(s===1)escRate=0.25;else if(s===2)escRate=0.5;else if(s===3)escRate=0.5;r.escaped=Math.random()<escRate;
+        if(!r.escaped){const elMin=Math.max(1,Math.round((Date.now()-nonbiriStartAt)/60000));addWorkSession(1,r,state.fishing.taskCategory);applyCatchRecord(r);nonbiriResults.push(r);}
+        // Play animation
+        playCatchAnimation([r],()=>{
+          if(r.escaped){scheduleNonbiriHit();return;}
+          if(state.nonbiriAutoSell){
+            // Auto-sell, back to fishing
+            state.money+=r.entry.sellPrice;addEarnings(r.entry.sellPrice);
+            toast(`${r.entry.name}を${fmtMoney(r.entry.sellPrice)}zzで売却`);
+            scheduleNonbiriHit();
+          }else{
+            // Show sell/keep choice then back to fishing
+            pendingResult=r;openResultModal(r);
+            // Override recover to return to fishing instead of room
+            const origRecover=recoverAfterResult;
+            window._nonbiriRecoverOverride=true;
+          }
+        });
+      });
+      document.body.appendChild(ov);
+    }
+    function finishNonbiriFishing(){
+      if(nonbiriTimer){clearTimeout(nonbiriTimer);nonbiriTimer=null;}
+      if(nonbiriCountupTimer){clearInterval(nonbiriCountupTimer);nonbiriCountupTimer=null;}
+      const elapsed=Date.now()-nonbiriStartAt;const elMin=Math.max(1,Math.round(elapsed/60000));
+      state.fishing.durationMin=elMin;state.fishing.nonbiriMode=false;state.fishing.inProgress=false;
+      state.room.status="idle";syncPresence().catch(console.error);setFocusMode(false);stopBgmOnFishEnd();
+      const endBtn=document.getElementById("nonbiriEndBtn");if(endBtn)endBtn.remove();
+      const hitOv=document.getElementById("nonbiriHitOverlay");if(hitOv)hitOv.remove();
+      // Add work time
+      const d=ensureDay(todayKey());const tc=state.fishing.taskCategory||"work";
+      if(tc==="work")d.workMin+=elMin;else{if(!d.customMin)d.customMin={};d.customMin[tc]=(d.customMin[tc]||0)+elMin;}
+      if(nonbiriResults.length>0&&!state.nonbiriAutoSell){
+        state.batchResults=[...nonbiriResults];openBatchModal();
+      }else{
+        saveAll().catch(console.error);switchScreen("room");ensureRoomVisual();renderAll();
+        if(nonbiriResults.length)toast(`${nonbiriResults.length}匹釣れました！`);
+      }
+      nonbiriResults=[];
     }
     function startNextNormaRound(){
       if(!state.normaRun.active)return;
@@ -4952,7 +5083,7 @@
       state.normaRun.results=[];saveAll().catch(console.error);switchScreen("room");renderAll();
     }
     function startSingleFishing(cm,bid,fromLoop=false){state.selectedCourseMin=cm;state.selectedBaitId=bid;state.baitCounts[bid]=Math.max(0,(state.baitCounts[bid]||0)-1);stopIdleTracking();refreshConditions(true);const n=Date.now();state.fishing={inProgress:true,paused:false,startAt:n,endAt:n+cm*60000,pausedAt:null,remainingMs:null,durationMin:cm,baitId:bid,weather:state.currentConditions.weather,timeOfDay:state.currentConditions.timeOfDay,normaText:state.fishing.normaText||"",taskCategory:state.selectedTaskCategory||"work",extraSec:0};state.room.status="fishing";if(fromLoop){if(state.loopRun.active)state.loopRun.phase="fishing";if(state.normaRun.active)state.normaRun.phase="fishing";}syncPresence().catch(console.error);if(state.settings.catchSound)playAudio("time.mp3","time");tryVibrate([100,50,100]);toast(`${cm}分コースを開始しました。`);waterInited=false;initWaterFishes();saveAll().catch(console.error);switchScreen("fishing");startTimerTick();handleFishingActivity();renderAll();autoPlayBgmOnFishing();}
-    function startLoopRun(){const bid=state.loopConfig.baitId||state.selectedBaitId,total=state.loopConfig.count||2,owned=state.baitCounts[bid]||0;if(owned<total){toast(`餌が${total-owned}個足りません。`);return;}state.loopConfig.enabled=true;state.loopRun={active:true,phase:"idle",current:0,total,fishMin:state.loopConfig.fishMin||25,restMin:state.loopConfig.restMin||5,baitId:bid,restEndAt:null,results:[]};startNextLoopFishing();}
+    function startLoopRun(){const bid=state.selectedBaitId||"bait_basic",total=state.loopConfig.count||2,owned=state.baitCounts[bid]||0;if(owned<total){toast(`餌が${total-owned}個足りません。`);return;}state.loopConfig.baitId=bid;state.loopConfig.enabled=true;state.loopRun={active:true,phase:"idle",current:0,total,fishMin:state.loopConfig.fishMin||25,restMin:state.loopConfig.restMin||5,baitId:bid,restEndAt:null,results:[]};startNextLoopFishing();}
     function startNextLoopFishing(){if(!state.loopRun.active)return;if(state.loopRun.current>=state.loopRun.total){finishLoopRun(false);return;}const bid=state.loopRun.baitId;if((state.baitCounts[bid]||0)<=0){finishLoopRun(true);toast("ループ中に餌が足りなくなりました。");return;}state.loopRun.current+=1;state.loopRun.restEndAt=null;startSingleFishing(state.loopRun.fishMin,bid,true);}
     function startLoopRest(){if(!state.loopRun.active)return;state.loopRun.phase="rest";state.loopRun.restEndAt=Date.now()+state.loopRun.restMin*60000;state.room.status="idle";syncPresence().catch(console.error);switchScreen("room");startIdleTracking();renderLoopInfo();renderLoopRestCenter();saveAll().catch(console.error);renderAll();handleRoomRestActivity();}
     function finishLoopRun(cancelled){state.loopRun.active=false;state.loopRun.phase=null;state.loopRun.restEndAt=null;state.room.status="idle";syncPresence().catch(console.error);stopIdleTracking();startIdleTracking();renderLoopInfo();if(state.loopRun.results.length>0){state.batchResults=[...state.loopRun.results];openBatchModal();}else if(cancelled)toast("ループを終了しました。");state.loopRun.results=[];saveAll().catch(console.error);switchScreen("room");renderAll();}
@@ -5014,7 +5145,7 @@
     function setFocusMode(on){state.ui.focusMode=!!on;el.focusOverlay.classList.toggle("show",!!on);if(on)clearFishingUiTimeout();else handleFishingActivity();renderFishingStatus();}
     function toggleTimerMega(){state.ui.timerMega=!state.ui.timerMega;const btn=document.getElementById("timerMegaBtn");if(btn)btn.textContent=state.ui.timerMega?"◀":"▶";renderFishingStatus();}
     function togglePauseResume(){if(!state.fishing.inProgress)return;if(state.fishing.paused)resumeFishing();else pauseFishing();}
-    function getCatchCount(min){if(min>=50)return 7;if(min>=25)return 5;if(min>=10)return 3;return 1;}
+    function getCatchCount(min){if(state.fishing.bossMode)return Math.max(1,Math.round(min));if(min>=50)return 7;if(min>=25)return 5;if(min>=10)return 3;return 1;}
     function finishFishing(){stopTimerTick();if(!state.fishing.inProgress)return;if(state.settings.catchSound)playAudio("time.mp3","time");maybeNotify();stopBgmOnFishEnd();tryVibrate([200,100,200]);
       // Clean up water surface
       waterActive=false;waterInited=false;const wc=document.getElementById("waterSurface");if(wc)wc.style.display="none";const wbg=wc?.previousElementSibling;if(wbg)wbg.style.visibility="visible";if(waterAnim){cancelAnimationFrame(waterAnim);waterAnim=null;}
@@ -5040,7 +5171,15 @@
         else{state.batchResults=[...caughtResults];openBatchModal();}
       });
     }
-    async function recoverAfterResult(){state.ui.fishingUiVisible=true;el.app.classList.remove("fishing-ui-faded");clearFishingUiTimeout();if(state.room.inRoom&&state.room.roomId&&!currentRoomData)startRoomListener(state.room.roomId);startIdleTracking();await saveAll();switchScreen("room");ensureRoomVisual();renderAll();}
+    async function recoverAfterResult(){
+      // のんびりモード: 釣り画面に戻る
+      if(window._nonbiriRecoverOverride&&state.fishing.nonbiriMode){
+        window._nonbiriRecoverOverride=false;
+        await saveAll();scheduleNonbiriHit();renderAll();return;
+      }
+      window._nonbiriRecoverOverride=false;
+      state.ui.fishingUiVisible=true;el.app.classList.remove("fishing-ui-faded");clearFishingUiTimeout();if(state.room.inRoom&&state.room.roomId&&!currentRoomData)startRoomListener(state.room.roomId);startIdleTracking();await saveAll();switchScreen("room");ensureRoomVisual();renderAll();
+    }
     // === Catch Animation System ===
     function playCatchAnimation(results,onComplete){
       const overlay=document.getElementById("catchAnimOverlay");
@@ -5054,7 +5193,7 @@
       const tapBtn=document.getElementById("catchAnimTapBtn");
       if(!overlay||!results.length){if(onComplete)onComplete();return;}
       overlay.style.display="flex";let idx=0;
-      function showAcceptBtn(){tapBtn.style.display="block";tapBtn.textContent="受け取る";tapBtn.onclick=()=>{tapBtn.style.display="none";showNext();};}
+      function showAcceptBtn(){starsEl.textContent="";nameEl.textContent="";iconEl.textContent="";effectEl.innerHTML="";runEl.style.display="none";card.style.background="#222";overlay.style.background="rgba(0,0,0,0.7)";tapBtn.style.display="block";tapBtn.textContent="受け取る";tapBtn.onclick=()=>{tapBtn.style.display="none";showNext();};}
       function showNext(){
         if(idx>=results.length){overlay.style.display="none";if(onComplete)onComplete();return;}
         const r=results[idx];idx++;
@@ -5099,7 +5238,14 @@
       }
       showAcceptBtn();
     }
-    function ensureRoomVisual(){if(!state.room.inRoom||!state.room.roomId)return;el.roomLobby.style.display="none";el.roomActiveUI.style.display="block";el.lobbyVideo.style.display="none";el.roomVideo.style.display="block";state.ui.fishingUiVisible=true;el.app.classList.remove("fishing-ui-faded");state.ui.modeIndex=0;if(!state.fishing.inProgress)startIdleTracking();updateRoomVideo();safePlay(el.roomVideo);}
+    function ensureRoomVisual(){if(!state.room.inRoom||!state.room.roomId)return;
+      // Force end stuck fishing
+      if(state.fishing.inProgress&&!el.screens.fishing.classList.contains("active")){
+        state.fishing.inProgress=false;state.fishing.paused=false;state.fishing.nonbiriMode=false;
+        state.room.status="idle";if(state.countupRun)state.countupRun.active=false;
+        syncPresence().catch(console.error);toast("釣りを終了しました");
+      }
+      el.roomLobby.style.display="none";el.roomActiveUI.style.display="block";el.lobbyVideo.style.display="none";el.roomVideo.style.display="block";state.ui.fishingUiVisible=true;el.app.classList.remove("fishing-ui-faded");state.ui.modeIndex=0;if(!state.fishing.inProgress)startIdleTracking();updateRoomVideo();safePlay(el.roomVideo);}
     function applyCatchRecord(result){const{picked,entry,isRecord}=result;const baseId=picked.id;if(!state.encyclopedia[baseId])state.encyclopedia[baseId]={count:0,maxSize:0,recordHolder:null};const rec=state.encyclopedia[baseId];rec.count+=1;if(entry.kind==="fish"&&entry.sizeCm>(rec.maxSize||0)){rec.maxSize=entry.sizeCm;rec.recordHolder=state.user.displayName||"釣り人";}if(isRecord&&firebaseSyncOk&&!state.user.isGuest&&state.user.uid)saveGlobalRecord(baseId,entry.sizeCm,state.user.displayName||"釣り人").catch(console.error);}
     function addWorkSession(min,result,taskCat){const d=ensureDay(todayKey());const cat=taskCat||state.fishing.taskCategory||'work';if(cat==='work'){d.workMin+=min;}else{if(!d.customMin)d.customMin={};d.customMin[cat]=(d.customMin[cat]||0)+min;}d.sessions+=1;if(result?.entry?.kind==="fish")d.catches.push({baseId:result.entry.baseId,name:result.entry.name,icon:result.entry.icon,sizeCm:result.entry.sizeCm,avgSize:result.picked.avgSize,price:result.entry.sellPrice});d.catches=d.catches.slice(-50);}
     function addEarnings(amt){ensureDay(todayKey()).earnings+=amt;}
@@ -5439,6 +5585,7 @@
     // Fish predict → Map (defined above)
     // Boss mode in renderModeCard
     if(!MODE_NAMES.includes("ボス戦"))MODE_NAMES.push("ボス戦");
+    if(!MODE_NAMES.includes("のんびり"))MODE_NAMES.push("のんびり");
     // Boss notification
     let lastBossNotifId="";
     function checkBossNotification(){
@@ -5595,7 +5742,7 @@
           f.x+=f.vx;f.y+=f.vy;
           if(f.x<0.02){f.x=0.02;f.vx=Math.abs(f.vx);}if(f.x>0.98){f.x=0.98;f.vx=-Math.abs(f.vx);}
           if(f.y<0.28){f.y=0.28;f.vy=Math.abs(f.vy);}if(f.y>0.88){f.y=0.88;f.vy=-Math.abs(f.vy);}
-          var color=f.stars>=3?"rgba(200,166,0,0.4)":f.stars>=2?"rgba(80,160,210,0.35)":"rgba(0,0,0,0.28)";
+          var color=state.fishing.bossMode?"rgba(255,255,255,0.3)":(f.stars>=3?"rgba(200,166,0,0.4)":f.stars>=2?"rgba(80,160,210,0.35)":"rgba(0,0,0,0.28)");
           drawFish(f.x*W,f.y*H,f.size,f.size*0.45,color,f.vx>=0);
         });
       }
