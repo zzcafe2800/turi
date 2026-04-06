@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -2797,8 +2796,9 @@
           <!-- Mission below calendar -->
           <div id="lobbyRecommend" style="font-size:13px;color:rgba(255,255,255,0.6);text-align:center;padding:8px 20px;border-radius:14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);font-weight:500;"></div>
           <div style="flex:1;"></div>
-          <!-- Play button + Solo toggle -->
-          <div style="display:flex;align-items:center;gap:16px;">
+          <!-- Play button + Solo toggle + Map selector -->
+          <div style="display:flex;align-items:center;gap:12px;">
+            <select id="mapSelector" style="height:40px;padding:0 8px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#fff;font-size:11px;font-weight:700;max-width:110px;"></select>
             <button id="playRoomBtn" style="width:72px;height:72px;border:2px solid rgba(255,255,255,0.3);border-radius:50%;background:transparent;color:#fff;font-size:32px;cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);">▶</button>
             <div id="soloToggleWrap" style="display:flex;flex-direction:column;align-items:center;gap:2px;">
               <span id="soloLabel" style="font-size:10px;color:rgba(255,255,255,0.5);font-weight:700;">マルチ</span>
@@ -3258,7 +3258,14 @@
         </div>
         <div class="result-core">
           <div class="result-art-wrap">
-            <div id="resultArt" class="result-art">
+            <div id="resultArt" class="result-art" style="position:relative;">
+              <div id="resultSizeCompare" style="position:absolute;top:-60px;left:50%;transform:translateX(-50%);display:none;align-items:flex-end;gap:4px;">
+                <img src="hito.png" style="height:50px;object-fit:contain;" onerror="this.style.opacity='0.3';">
+                <div style="text-align:center;">
+                  <div id="resultSizeCm" style="font-size:11px;font-weight:900;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.6);"></div>
+                  <img id="resultFishImg" src="sakana@.png" style="width:40px;object-fit:contain;" onerror="this.style.display='none';">
+                </div>
+              </div>
               <div id="resultStarsInArt" class="result-stars-in-art">☆</div>
               <div id="resultArtEmoji">🐟</div>
               <div id="resultArtAvg" class="result-art-avg">平均 0.0 cm</div>
@@ -3654,6 +3661,64 @@
       { id:"item_007_ancient_shell",kind:"item",name:"古代の貝殻",icon:"🐚",basePrice:90,rarity:6,rarityStars:2,strength:7,timeBonus:{day:0,evening:0,night:2},weatherBonus:{sunny:0,cloudy:1,rainy:1},description:"何千年も前の化石のような貝。" },
       { id:"item_008_star_sand",kind:"item",name:"星の砂",icon:"⭐",basePrice:150,rarity:9,rarityStars:3,strength:11,timeBonus:{day:-1,evening:2,night:3},weatherBonus:{sunny:0,cloudy:1,rainy:0},description:"夜空から落ちた砂粒。" },
     ];
+    // ★0 Items (50% catch rate in all maps)
+    const ZERO_STAR_ITEMS=(function(){const names=[
+      ["流木","🪵",3],["空き瓶","🫙",2],["ビニール袋","🛍️",1],["古い靴","👢",2],["タイヤ片","⚫",1],
+      ["割れた茶碗","🍵",2],["サビた釘","📌",1],["貝の欠片","🐚",3],["海藻の塊","🌿",2],["プラ容器","📦",1],
+      ["ロープ切れ","🪢",1],["石ころ","🪨",1],["砂団子","⚪",1],["ガラス片","💎",2],["古い鍵","🔑",4],
+      ["ボタン","🔘",1],["木の枝","🌳",1],["苔むし石","🟢",2],["錆びたフック","🪝",2],["布の切れ端","🧵",1],
+      ["ペットボトル","🧴",1],["魚の骨","🦴",2],["泥だんご","🟤",1],["水草","🌱",2],["浮き輪の破片","🔴",1],
+      ["古い手紙","📜",3],["変な石","🪨",2],["使い捨てカメラ","📷",5],["小さな鈴","🔔",3],["壊れた時計","⏰",4],
+      ["ヘアピン","📍",1],["消しゴム","🧽",1],["乾いた花","🌸",2],["ミニ地球儀","🌍",6],["古い切手","📮",5],
+      ["鉛筆の欠片","✏️",1],["ゼムクリップ","🖇️",1],["小銭","🪙",3],["電池","🔋",2],["割り箸","🥢",1],
+      ["ティーバッグ","🫖",1],["サングラス","🕶️",3],["コルク","🍷",2],["洗濯ばさみ","🧷",1],["マッチ箱","🔥",2],
+      ["ねじ","🔩",1],["消しゴム","◻️",1],["木の実","🌰",2],["化石","🦕",8],["パイプ","🪈",3],
+      ["鳥の羽","🪶",2],["きのこ","🍄",2],["琥珀","🟠",7],["宝の地図","🗺️",10],["万年筆","🖊️",6],
+      ["ドングリ","🌰",1],["松ぼっくり","🎄",1],["四つ葉","🍀",5],["青い石","💙",4],["赤い実","🔴",2],
+      ["貝ボタン","⚪",2],["竹片","🎋",1],["炭","⬛",1],["蝋燭の欠片","🕯️",2],["古い鏡","🪞",4],
+      ["指ぬき","🧵",2],["サイコロ","🎲",3],["ビー玉","🟢",3],["おはじき","🔵",2],["万華鏡","🔮",6],
+      ["栓抜き","🔓",2],["バッジ","🏅",3],["カード","🃏",2],["落書き","📝",1],["紙飛行機","✈️",1],
+      ["ミニ人形","🎎",5],["古いラジオ","📻",7],["望遠鏡","🔭",8],["オルゴール","🎵",9],["水晶","💠",12]
+    ];return names.map((n,i)=>({id:"zitem_"+String(i).padStart(3,"0"),kind:"item",name:n[0],icon:n[1],basePrice:n[2],rarity:0,rarityStars:0,strength:0,timeBonus:{day:0,evening:0,night:0},weatherBonus:{sunny:0,cloudy:0,rainy:0},description:"釣りで見つけたもの。"}));})();
+    // 5 Maps with fish assignments
+    const MAP_DEFS=[
+      {id:"map1",name:"穏やかな入り江",icon:"🏖️",difficulty:1,bingoMax:100,bingoLines:1,bingoRule:"横1列",unlocked:true},
+      {id:"map2",name:"岩場の浜辺",icon:"🪨",difficulty:2,bingoMax:200,bingoLines:1,bingoRule:"縦1列",unlocked:false},
+      {id:"map3",name:"深い湖",icon:"🏞️",difficulty:3,bingoMax:300,bingoLines:2,bingoRule:"縦横2列",unlocked:false},
+      {id:"map4",name:"珊瑚の海",icon:"🐠",difficulty:4,bingoMax:450,bingoLines:2,bingoRule:"斜め含む2列",unlocked:false},
+      {id:"map5",name:"深淵の洞窟",icon:"🌊",difficulty:5,bingoMax:600,bingoLines:3,bingoRule:"3列以上",unlocked:false}
+    ];
+    // Assign fish to maps (★1-3 split across 5 maps, ★0 and ★4 everywhere)
+    function assignFishToMaps(){
+      const byStars={1:[],2:[],3:[]};
+      FISHES.forEach(f=>{const s=f.rarityStars;if(byStars[s])byStars[s].push(f.id);});
+      const mapFish={};MAP_DEFS.forEach(m=>mapFish[m.id]=[]);
+      [1,2,3].forEach(s=>{const arr=byStars[s];const per=Math.ceil(arr.length/5);
+        arr.forEach((id,i)=>{const mi=Math.min(4,Math.floor(i/per));mapFish[MAP_DEFS[mi].id].push(id);});
+      });
+      return mapFish;
+    }
+    const MAP_FISH=assignFishToMaps();
+    // Bingo system
+    function initBingo(mapId){
+      const map=MAP_DEFS.find(m=>m.id===mapId);if(!map)return null;
+      const grid=[];for(let i=0;i<25;i++)grid.push({num:1+Math.floor(Math.random()*map.bingoMax),hit:false});
+      return{mapId,grid,cleared:false};
+    }
+    function checkBingoHit(bingo,sizeCm){
+      if(!bingo||bingo.cleared)return false;
+      const sz=Math.floor(sizeCm);let hit=false;
+      bingo.grid.forEach(cell=>{if(!cell.hit&&cell.num===sz){cell.hit=true;hit=true;}});
+      return hit;
+    }
+    function checkBingoCleared(bingo){
+      if(!bingo)return false;const g=bingo.grid;const map=MAP_DEFS.find(m=>m.id===bingo.mapId);if(!map)return false;
+      const rows=[[0,1,2,3,4],[5,6,7,8,9],[10,11,12,13,14],[15,16,17,18,19],[20,21,22,23,24]];
+      const cols=[[0,5,10,15,20],[1,6,11,16,21],[2,7,12,17,22],[3,8,13,18,23],[4,9,14,19,24]];
+      const diags=[[0,6,12,18,24],[4,8,12,16,20]];
+      let lines=0;[...rows,...cols,...diags].forEach(line=>{if(line.every(i=>g[i].hit))lines++;});
+      return lines>=map.bingoLines;
+    }
     const BGM_LIST = [
       { id:'bgm01', title:'積乱雲と電信柱', url:'bgm01.mp3', credit:'Credit: Nofu' },
       { id:'bgm02', title:'深い夜に浮かぶ', url:'bgm02.mp3', credit:'Credit:@NyalpacaBGM' },
@@ -3733,6 +3798,11 @@
     if(!state.selectedTaskCategory)state.selectedTaskCategory='work';
     if(!state.bgmFavList)state.bgmFavList=[];
     bgmFavList=state.bgmFavList||[];
+    // Map & Bingo state init
+    if(!state.currentMap)state.currentMap="map1";
+    if(!state.unlockedMaps)state.unlockedMaps=["map1"];
+    if(!state.bingos)state.bingos={};
+    MAP_DEFS.forEach(m=>{if(!state.bingos[m.id])state.bingos[m.id]=initBingo(m.id);});
     if(!Array.isArray(state.utilityRoomTabs))state.utilityRoomTabs=state.utilityRoomTab?[state.utilityRoomTab]:[];
     if(state.utilityRoomVisible===undefined)state.utilityRoomVisible=true;
     const U_ICONS=['📋','🔔','⏰','📝','✅','🎯','💡','⭐','🏃','📚','🎵','🍎','💪','🧘'];
@@ -4116,6 +4186,44 @@
         }
       }
       renderLobbyCalendar();
+      // Map selector
+      const mapSel=document.getElementById("mapSelector");
+      function updateMapSelector(){
+        if(!mapSel)return;mapSel.innerHTML="";
+        MAP_DEFS.forEach(m=>{
+          const unlocked=state.unlockedMaps.includes(m.id);
+          const opt=document.createElement("option");opt.value=m.id;
+          opt.textContent=m.icon+" "+m.name+(unlocked?"":" 🔒");
+          opt.disabled=!unlocked;mapSel.appendChild(opt);
+        });
+        mapSel.value=state.currentMap||"map1";
+        mapSel.addEventListener("change",()=>{if(state.unlockedMaps.includes(mapSel.value)){state.currentMap=mapSel.value;saveAll().catch(console.error);}else{mapSel.value=state.currentMap;toast("ビンゴをクリアして解放しよう");}});
+      }
+      updateMapSelector();
+      // Bingo check on catch
+      function checkAndShowBingo(r){
+        if(!r.entry.sizeCm)return;
+        const mapId=state.currentMap||"map1";
+        const bingo=state.bingos[mapId];if(!bingo||bingo.cleared)return;
+        const hit=checkBingoHit(bingo,r.entry.sizeCm);
+        if(hit){
+          toast("🎯 ビンゴにヒット! "+Math.floor(r.entry.sizeCm)+"cm");
+          if(checkBingoCleared(bingo)){
+            bingo.cleared=true;
+            // Unlock next map
+            const mi=MAP_DEFS.findIndex(m=>m.id===mapId);
+            if(mi>=0&&mi<MAP_DEFS.length-1){
+              const nextId=MAP_DEFS[mi+1].id;
+              if(!state.unlockedMaps.includes(nextId)){state.unlockedMaps.push(nextId);toast("🎉 "+MAP_DEFS[mi+1].name+"が解放されました！");}
+            }
+            updateMapSelector();
+          }
+          saveAll().catch(console.error);
+        }
+      }
+      // Hook bingo into sell/keep
+      const origSellPending=sellPending;
+      const origKeepPending=keepPending;
       // Settings button on lobby
       const lsBtn=document.getElementById("lobbySettingsBtn2");
       if(lsBtn)lsBtn.addEventListener("click",()=>switchScreen("settings"));
@@ -5255,7 +5363,7 @@
     function finishFishing(){stopTimerTick();if(!state.fishing.inProgress)return;if(state.settings.catchSound)playAudio("time.mp3","time");maybeNotify();stopBgmOnFishEnd();tryVibrate([200,100,200]);
       // Clean up water surface
       waterActive=false;waterInited=false;const wc=document.getElementById("waterSurface");if(wc)wc.style.display="none";const wbg=wc?.previousElementSibling;if(wbg)wbg.style.visibility="visible";if(waterAnim){cancelAnimationFrame(waterAnim);waterAnim=null;}
-      const dm=state.fishing.durationMin;const wasBoss=!!state.fishing.bossMode;const count=wasBoss?Math.max(1,Math.round(dm)):getCatchCount(dm);
+      const dm=state.fishing.durationMin;const wasBoss=!!state.fishing.bossMode;const count=wasBoss?Math.max(1,dm):getCatchCount(dm);
       const results=preRolledCatches.length===count?[...preRolledCatches]:(function(){const r=[];for(let i=0;i<count;i++){const c=rollCatchMayBoss(state.fishing);if(dm>=50&&i===0)c.isRare=true;r.push(c);}return r;})();preRolledCatches=[];
       // Rare upgrade bonus for 50+ min
       if(dm>=50){const parts=Object.keys(state.upgrades);const rp=parts[Math.floor(Math.random()*parts.length)];state.upgrades[rp]=(state.upgrades[rp]||0)+1;toast(`🎣 ${UPGRADE_PARTS.find(p=>p.id===rp)?.name||rp} が自動強化されました！`);}
@@ -5441,7 +5549,21 @@
 
     // Catch rolling (preserved exactly)
     function getCourseBonus(dm){const b={rare:0,size:0,power:0,hugeChance:0,junkReduction:0,label:""};if(dm>=25){b.rare+=3;b.label="集中ボーナス";}if(dm>=40){b.size+=4;b.power+=1;}if(dm>=60){b.size+=6;b.power+=2;b.hugeChance+=0.005;b.label="深海ボーナス";}return b;}
-    function rollCatch(src){const bait=BAIT_TYPES.find(b=>b.id===src.baitId)||BAIT_TYPES[0];const nb=NUMBERED_BAITS.find(b=>b.id===src.baitId);const upg=getUpgradeBuffs();const cb=getCourseBonus(src.durationMin);const baitPow=(nb?.power||0)+(bait?.power||0);const baitRare=(nb?.rareBonus||0)+(bait?.rareBonus||0);const baitSize=(nb?.sizeBonus||0)+(bait?.sizeBonus||0);const baitVal=(nb?.valueBonus||0)+(bait?.valueBonus||0);const power=baitPow+upg.power+cb.power,rareB=baitRare+upg.rare+cb.rare,sizeB=baitSize+upg.size+cb.size,junkR=upg.junkReduction+cb.junkReduction,hugeB=upg.hugeChance+cb.hugeChance,valueB=baitVal+upg.valueBonus;const totalLv=getTotalLevel();const usedBaitNum=nb?.num||0;const all=[...FISHES,...JUNK_ITEMS];const weighted=all.map(e=>{const ts=e.timeBonus?.[src.timeOfDay]??0,ws=e.weatherBonus?.[src.weather]??0,sg=power-(e.strength||0),jp=e.kind==="item"?(-0.9+junkR):0;let lvPen=0;if(e.reqLevel){const diff=totalLv-(e.reqLevel||0);lvPen=diff>=0?Math.min(diff*0.3,5):(diff*0.8);}const specB=getSpecialCondBonus(e.specialCond,src);let baitNumB=0;if(e.baitNum&&usedBaitNum>0){const dist=Math.abs(e.baitNum-usedBaitNum);baitNumB=dist===0?12:dist<=2?6:dist<=5?2:dist<=10?-2:-5;}return{entity:e,weight:Math.max(0.01,7+sg+ts+ws+rareB*0.28+jp-(e.rarity||0)*0.24+lvPen+specB+baitNumB)};});const picked=wPick(weighted);const isFish=picked.kind==="fish";let sizeCm=null,isHuge=false,price=picked.basePrice;if(isFish){const g=approxGaussian();sizeCm=Math.max(1,picked.avgSize+g*(picked.spread/2)+sizeB*0.55+src.durationMin*0.09);if(Math.random()<Math.max(0,picked.hugeChance+hugeB)){sizeCm*=picked.hugeFactor;isHuge=true;}sizeCm=Math.round(sizeCm*10)/10;const sr=sizeCm/picked.avgSize;const sf=sr<1?0.95+sr*0.12:1+Math.pow(sr-1,1.18)*1.15;price=Math.max(1,Math.round(picked.basePrice*sf*(1+picked.rarity*0.12+rareB*0.03)*(1+valueB)));}else{price=Math.max(1,Math.round(picked.basePrice*(1+rareB*0.02+src.durationMin*0.01+valueB)));}const entry={uid:makeId(),baseId:picked.id,kind:picked.kind,name:picked.name,icon:picked.icon,sellPrice:price,sizeCm,rarity:picked.rarity||0,rarityStars:picked.rarityStars||1,caughtAt:Date.now()};const ency=state.encyclopedia[picked.id]||{count:0,maxSize:0};return{entry,isRecord:isFish&&sizeCm>(ency.maxSize||0),isRare:(picked.rarity||0)>=8||isHuge||price>=220,isHuge,bonusText:cb.label,source:src,picked};}
+    function rollCatch(src){
+      // 50% chance: ★0 item
+      if(Math.random()<0.5&&ZERO_STAR_ITEMS.length>0){
+        const zi=ZERO_STAR_ITEMS[Math.floor(Math.random()*ZERO_STAR_ITEMS.length)];
+        const price=Math.max(1,zi.basePrice);
+        const entry={uid:makeId(),baseId:zi.id,kind:"item",name:zi.name,icon:zi.icon,sellPrice:price,sizeCm:null,rarity:0,rarityStars:0,caughtAt:Date.now()};
+        return{entry,isRecord:false,isRare:false,isHuge:false,bonusText:"",source:src,picked:zi};
+      }
+      const bait=BAIT_TYPES.find(b=>b.id===src.baitId)||BAIT_TYPES[0];const nb=NUMBERED_BAITS.find(b=>b.id===src.baitId);const upg=getUpgradeBuffs();const cb=getCourseBonus(src.durationMin);const baitPow=(nb?.power||0)+(bait?.power||0);const baitRare=(nb?.rareBonus||0)+(bait?.rareBonus||0);const baitSize=(nb?.sizeBonus||0)+(bait?.sizeBonus||0);const baitVal=(nb?.valueBonus||0)+(bait?.valueBonus||0);const power=baitPow+upg.power+cb.power,rareB=baitRare+upg.rare+cb.rare,sizeB=baitSize+upg.size+cb.size,junkR=upg.junkReduction+cb.junkReduction,hugeB=upg.hugeChance+cb.hugeChance,valueB=baitVal+upg.valueBonus;const totalLv=getTotalLevel();const usedBaitNum=nb?.num||0;
+      // Filter fish by current map
+      const mapId=state.currentMap||"map1";const mapFishIds=MAP_FISH[mapId]||[];
+      const mapFishes=FISHES.filter(f=>mapFishIds.includes(f.id)||(f.rarityStars===0)||(f.rarityStars===4));
+      const all=[...(mapFishes.length?mapFishes:FISHES),...JUNK_ITEMS];
+      const weighted=all.map(e=>{const ts=e.timeBonus?.[src.timeOfDay]??0,ws=e.weatherBonus?.[src.weather]??0,sg=power-(e.strength||0),jp=e.kind==="item"?(-0.9+junkR):0;let lvPen=0;if(e.reqLevel){const diff=totalLv-(e.reqLevel||0);lvPen=diff>=0?Math.min(diff*0.3,5):(diff*0.8);}const specB=getSpecialCondBonus(e.specialCond,src);let baitNumB=0;if(e.baitNum&&usedBaitNum>0){const dist=Math.abs(e.baitNum-usedBaitNum);baitNumB=dist===0?12:dist<=2?6:dist<=5?2:dist<=10?-2:-5;}return{entity:e,weight:Math.max(0.01,7+sg+ts+ws+rareB*0.28+jp-(e.rarity||0)*0.24+lvPen+specB+baitNumB)};});const picked=wPick(weighted);const isFish=picked.kind==="fish";let sizeCm=null,isHuge=false,price=picked.basePrice;if(isFish){const g=approxGaussian();sizeCm=Math.max(1,picked.avgSize+g*(picked.spread/2)+sizeB*0.55+src.durationMin*0.09);if(Math.random()<Math.max(0,picked.hugeChance+hugeB)){sizeCm*=picked.hugeFactor;isHuge=true;}sizeCm=Math.round(sizeCm*10)/10;const sr=sizeCm/picked.avgSize;const sf=sr<1?0.95+sr*0.12:1+Math.pow(sr-1,1.18)*1.15;price=Math.max(1,Math.round(picked.basePrice*sf*(1+picked.rarity*0.12+rareB*0.03)*(1+valueB)));}else{price=Math.max(1,Math.round(picked.basePrice*(1+rareB*0.02+src.durationMin*0.01+valueB)));}const entry={uid:makeId(),baseId:picked.id,kind:picked.kind,name:picked.name,icon:picked.icon,sellPrice:price,sizeCm,rarity:picked.rarity||0,rarityStars:picked.rarityStars||1,caughtAt:Date.now()};const ency=state.encyclopedia[picked.id]||{count:0,maxSize:0};return{entry,isRecord:isFish&&sizeCm>(ency.maxSize||0),isRare:(picked.rarity||0)>=8||isHuge||price>=220,isHuge,bonusText:cb.label,source:src,picked};
+    }
 
     // Boss catch: in boss mode, chance to replace result with boss fish
     function rollCatchMayBoss(src){
@@ -5466,7 +5588,12 @@
       return result;
     }
 
-    function openResultModal(r){const st=getStarStyle(r.picked.rarityStars||1);el.resultArtEmoji.textContent=r.entry.icon;el.resultStarsInArt.textContent="★".repeat(r.picked.rarityStars||1);el.resultStarsInArt.style.color=(r.picked.rarityStars||1)>=3?"#fff":st.star;el.resultPrice.textContent=`${fmtMoney(r.entry.sellPrice)} zz`;el.resultPrice.style.color=(r.picked.rarityStars||1)>=3?'#7bdff5':'var(--gold)';
+    function openResultModal(r){const st=getStarStyle(r.picked.rarityStars||1);
+      // Size comparison
+      const rsc=document.getElementById("resultSizeCompare");const rscm=document.getElementById("resultSizeCm");const rfimg=document.getElementById("resultFishImg");
+      if(rsc&&r.entry.sizeCm){rsc.style.display="flex";if(rscm)rscm.textContent=Math.round(r.entry.sizeCm*10)/10+"cm";if(rfimg){rfimg.style.display="block";const sc=Math.max(0.3,Math.min(2.5,r.entry.sizeCm/40));rfimg.style.width=Math.max(16,40*sc)+"px";}}
+      else if(rsc)rsc.style.display="none";
+      el.resultArtEmoji.textContent=r.entry.icon;el.resultStarsInArt.textContent="★".repeat(r.picked.rarityStars||1);el.resultStarsInArt.style.color=(r.picked.rarityStars||1)>=3?"#fff":st.star;el.resultPrice.textContent=`${fmtMoney(r.entry.sellPrice)} zz`;el.resultPrice.style.color=(r.picked.rarityStars||1)>=3?'#7bdff5':'var(--gold)';
       const artCard=el.resultArtEmoji.parentElement;if(artCard)artCard.style.cssText=`background:${st.bg};border-radius:16px;padding:16px;position:relative;`;
       if(r.entry.kind==="fish")el.resultTitle.innerHTML=`${esc(r.entry.name)} <span class="result-size-colored ${r.entry.sizeCm>=r.picked.avgSize?"plus":"minus"}" style="color:${st.text};">(${fmtSize(r.entry.sizeCm)}cm)</span>`;else el.resultTitle.textContent=r.entry.name;
       el.resultLines.innerHTML=r.entry.kind==="fish"?`すごさ：${greatness(r.entry.sizeCm,r.picked.avgSize)}<br/>条件：${trTime(r.source.timeOfDay)} / ${trWeather(r.source.weather)}`:`漂流物<br/>条件：${trTime(r.source.timeOfDay)} / ${trWeather(r.source.weather)}`;
@@ -5478,8 +5605,8 @@
       if(r.isRare)el.resultFlags.appendChild(makeFlag("レア","rare"));if(r.isRecord)el.resultFlags.appendChild(makeFlag("最大更新","record"));if(r.isHuge)el.resultFlags.appendChild(makeFlag("超巨大","huge"));if(r.bonusText)el.resultFlags.appendChild(makeFlag(r.bonusText,""));el.resultModal.classList.add("show");}
     function renderSizeMeter(r){el.sizeOverflowBadge.textContent="";el.sizeDeltaLabel.textContent="";el.sizeAvgBelow.textContent="";if(r.entry.kind!=="fish"){el.sizeFill.style.width="0%";el.sizeFill.style.background="";return;}const avg=r.picked.avgSize,sz=r.entry.sizeCm,ratio=sz/avg;const norm=ratio<=1?Math.max(0,ratio*0.5):0.5+(ratio-1)*0.5;const cap=Math.min(norm,1);el.sizeFill.style.width=`${cap*100}%`;if(norm>1){el.sizeFill.style.background=`linear-gradient(90deg,var(--accent) ${Math.round(50/cap*100)}%,#ff4444 ${Math.round(50/cap*100)}%)`;}else{el.sizeFill.style.background="";}const d=sizeDelta(sz,avg);el.sizeDeltaLabel.innerHTML=d.html;el.sizeDeltaLabel.style.left=`calc(${cap*100}% + 6px)`;el.sizeAvgBelow.textContent=`${fmtSize(avg)}cm`;if(norm>1){el.sizeOverflowBadge.style.left="calc(100% + 8px)";el.sizeOverflowBadge.textContent="★";}}
     function makeFlag(text,cls){const d=document.createElement("div");d.className=`flag ${cls}`;d.textContent=text;return d;}
-    async function keepPending(){if(!pendingResult)return;state.inventory.unshift(pendingResult.entry);toast(`${pendingResult.entry.name} を所持品に入れました。`);pendingResult=null;el.resultModal.classList.remove("show");await recoverAfterResult();}
-    async function sellPending(){if(!pendingResult)return;state.money+=pendingResult.entry.sellPrice;addEarnings(pendingResult.entry.sellPrice);toast(`${pendingResult.entry.name} を ${pendingResult.entry.sellPrice} zz で売却しました。`);pendingResult=null;el.resultModal.classList.remove("show");await recoverAfterResult();}
+    async function keepPending(){if(!pendingResult)return;if(typeof checkAndShowBingo==="function")checkAndShowBingo(pendingResult);state.inventory.unshift(pendingResult.entry);toast(`${pendingResult.entry.name} を所持品に入れました。`);pendingResult=null;el.resultModal.classList.remove("show");await recoverAfterResult();}
+    async function sellPending(){if(!pendingResult)return;if(typeof checkAndShowBingo==="function")checkAndShowBingo(pendingResult);state.money+=pendingResult.entry.sellPrice;addEarnings(pendingResult.entry.sellPrice);toast(`${pendingResult.entry.name} を ${pendingResult.entry.sellPrice} zz で売却しました。`);pendingResult=null;el.resultModal.classList.remove("show");await recoverAfterResult();}
 
     // Batch result
     let batchIndex=0;
@@ -5632,7 +5759,8 @@
       if(stars>=4)return{bg:"linear-gradient(135deg,#8b0000,#ff2222,#8b0000)",text:"#fff",star:"#ff6666"};
       if(stars>=3)return{bg:"linear-gradient(135deg,#c8a600,#ffd700,#c8a600)",text:"#fff",star:"#ffd700"};
       if(stars>=2)return{bg:"linear-gradient(135deg,#1a5276,#2e86c1,#1a5276)",text:"#e0f0ff",star:"#7bdff5"};
-      return{bg:"linear-gradient(135deg,#1a1a1a,#333,#1a1a1a)",text:"#ddd",star:"#999"};
+      if(stars>=1)return{bg:"linear-gradient(135deg,#1a1a1a,#333,#1a1a1a)",text:"#ddd",star:"#999"};
+      return{bg:"linear-gradient(135deg,#2a2a2a,#444,#2a2a2a)",text:"#aaa",star:"#666"};
     }
     function renderEncyclopedia(){
       const allFish=[...FISHES,...BOSS_FISHES];
