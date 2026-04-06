@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -421,7 +420,11 @@
       display: flex;
       align-items: center;
       gap: 8px;
+      transition: left 0.2s ease;
     }
+    #app:not(.nav-collapsed) .top-left-meta { left: calc(var(--navExpanded) + 8px); }
+    #app.nav-collapsed .top-left-meta { left: 0; }
+    #app.nav-always-show .top-left-meta { left: 0; }
     .top-right-stack {
       position: absolute;
       top: 0;
@@ -2775,7 +2778,7 @@
           </div>
           <!-- Calendar at very top -->
           <div style="margin-top:44px;display:flex;align-items:center;gap:8px;">
-            <div style="display:flex;align-items:flex-end;gap:6px;">
+            <div style="display:flex;align-items:flex-end;gap:12px;">
               <div style="text-align:center;"><div id="lobbyCal_-3" style="width:34px;height:34px;border-radius:50%;background:#fff;display:grid;place-items:center;border:2px solid #7bdff5;"></div><div id="lobbyCalD_-3" style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:3px;"></div></div>
               <div style="text-align:center;"><div id="lobbyCal_-2" style="width:36px;height:36px;border-radius:50%;background:#fff;display:grid;place-items:center;border:2px solid #7bdff5;"></div><div id="lobbyCalD_-2" style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:3px;"></div></div>
               <div style="text-align:center;"><div id="lobbyCal_-1" style="width:38px;height:38px;border-radius:50%;background:#fff;display:grid;place-items:center;border:2px solid #7bdff5;"></div><div id="lobbyCalD_-1" style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:3px;"></div></div>
@@ -3351,6 +3354,14 @@
 
     <!-- ===== CATCH ANIMATION ===== -->
     <div id="catchAnimOverlay" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.7);flex-direction:column;align-items:center;justify-content:center;">
+      <!-- Size comparison UI above card -->
+      <div id="catchAnimSizeUI" style="display:none;position:relative;width:min(400px,88vw);height:100px;margin-bottom:-10px;">
+        <img id="catchAnimHito" src="hito.png" style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);height:80px;object-fit:contain;pointer-events:none;z-index:1;" onerror="this.style.display='none';">
+        <div id="catchAnimFishImg" style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);z-index:2;text-align:center;">
+          <div id="catchAnimSizeLabel" style="font-size:12px;font-weight:800;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,0.6);margin-bottom:2px;"></div>
+          <img id="catchAnimFishPic" src="" style="height:40px;object-fit:contain;pointer-events:none;" onerror="this.style.display='none';">
+        </div>
+      </div>
       <div id="catchAnimCard" style="width:min(400px,88vw);min-height:220px;border-radius:24px;background:#222;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;box-shadow:0 16px 60px rgba(0,0,0,0.5);">
         <div id="catchAnimStars" style="position:absolute;top:12px;left:16px;font-size:20px;"></div>
         <div id="catchAnimNew" style="position:absolute;top:10px;right:14px;font-size:18px;font-weight:900;color:#ff3366;display:none;">NEW</div>
@@ -3360,7 +3371,11 @@
         <div id="catchAnimRunImg" style="position:absolute;inset:0;display:none;align-items:center;justify-content:center;font-size:48px;font-weight:900;color:#ff4444;background:rgba(0,0,0,0.4);">逃げられた！</div>
       </div>
       <div id="catchAnimDots" style="display:flex;gap:6px;margin-top:12px;align-items:center;flex-wrap:wrap;justify-content:center;"></div>
-      <button id="catchAnimTapBtn" style="margin-top:16px;padding:10px 32px;border:0;border-radius:999px;background:var(--accent);color:#fff;font-size:16px;font-weight:800;cursor:pointer;display:none;">受け取る</button>
+      <div id="catchAnimLineBreak" style="font-size:11px;color:rgba(255,150,150,0.7);margin-top:4px;"></div>
+      <div style="display:flex;gap:12px;margin-top:12px;align-items:center;">
+        <button id="catchAnimTapBtn" style="padding:10px 32px;border:0;border-radius:999px;background:var(--accent);color:#fff;font-size:16px;font-weight:800;cursor:pointer;display:none;">受け取る</button>
+        <button id="catchAnimSkipBtn" style="padding:6px 16px;border:1px solid rgba(255,255,255,0.2);border-radius:999px;background:transparent;color:rgba(255,255,255,0.5);font-size:12px;cursor:pointer;display:none;">スキップ</button>
+      </div>
     </div>
     <!-- ===== OTHER MODALS ===== -->
     <div id="mailboxModal" class="modal">
@@ -3635,22 +3650,21 @@
       { id:"item_007_ancient_shell",kind:"item",name:"古代の貝殻",icon:"🐚",basePrice:90,rarity:6,rarityStars:2,strength:7,timeBonus:{day:0,evening:0,night:2},weatherBonus:{sunny:0,cloudy:1,rainy:1},description:"何千年も前の化石のような貝。" },
       { id:"item_008_star_sand",kind:"item",name:"星の砂",icon:"⭐",basePrice:150,rarity:9,rarityStars:3,strength:11,timeBonus:{day:-1,evening:2,night:3},weatherBonus:{sunny:0,cloudy:1,rainy:0},description:"夜空から落ちた砂粒。" },
     ];
-     const BGM_LIST = [
-     { id:'bgm01', title:'積乱雲と電信柱', url:'bgm01.mp3', credit:'Credit: Nofu' },
+    const BGM_LIST = [
+      { id:'bgm01', title:'積乱雲と電信柱', url:'bgm01.mp3', credit:'Credit: Nofu' },
       { id:'bgm02', title:'深い夜に浮かぶ', url:'bgm02.mp3', credit:'Credit:@NyalpacaBGM' },
-        { id:'bgm03', title:'人狼の為の子守唄 ', url:'bgm03.mp3', credit:'Credit:しゃろう' },
-       { id:'bgm04', title:'サカナだった頃 ', url:'bgm04.mp3', credit:'Credit:MATSU' },
-        { id:'bgm05', title:'ねこと暖炉でまどろむ', url:'bgm05.mp3', credit:'Credit:@NyalpacaBGM' },
-        { id:'bgm06', title:'ローファイ少女は今日も寝不足', url:'bgm06.mp3', credit:'Credit:しゃろう ' },
-{ id:'bgm07', title:'おひるすぎ', url:'bgm07.mp3', credit:'Credit:ふぁいの音楽置き場/fai-musics' },
-{ id:'bgm08', title:' あの時、ボクらは', url:'bgm08.mp3', credit:'Credit:Nofu ' },
-{ id:'bgm09', title:'Fika ', url:'bgm09.mp3', credit:'Credit: かたばみ ' },
-{ id:'bgm10', title:'ねことよふかし', url:'bgm10.mp3', credit:'Credit: かたばみ ' },
-{ id:'bgm11', title:'Weekend', url:'bgm11.mp3', credit:'Credit:かたばみ' },
-{ id:'bgm12', title:'ホワイトマシュマロ', url:'bgm12.mp3', credit:'Credit:マツヤマ マキ' },
-{ id:'bgm13', title:'Afterglow', url:'bgm13.mp3', credit:'Credit:zukisuzuki BGM' },
+      { id:'bgm03', title:'人狼の為の子守唄', url:'bgm03.mp3', credit:'Credit:しゃろう' },
+      { id:'bgm04', title:'サカナだった頃', url:'bgm04.mp3', credit:'Credit:MATSU' },
+      { id:'bgm05', title:'ねこと暖炉でまどろむ', url:'bgm05.mp3', credit:'Credit:@NyalpacaBGM' },
+      { id:'bgm06', title:'ローファイ少女は今日も寝不足', url:'bgm06.mp3', credit:'Credit:しゃろう' },
+      { id:'bgm07', title:'おひるすぎ', url:'bgm07.mp3', credit:'Credit:ふぁいの音楽置き場/fai-musics' },
+      { id:'bgm08', title:'あの時、ボクらは', url:'bgm08.mp3', credit:'Credit:Nofu' },
+      { id:'bgm09', title:'Fika', url:'bgm09.mp3', credit:'Credit:かたばみ' },
+      { id:'bgm10', title:'ねことよふかし', url:'bgm10.mp3', credit:'Credit:かたばみ' },
+      { id:'bgm11', title:'Weekend', url:'bgm11.mp3', credit:'Credit:かたばみ' },
+      { id:'bgm12', title:'ホワイトマシュマロ', url:'bgm12.mp3', credit:'Credit:マツヤマ マキ' },
+      { id:'bgm13', title:'Afterglow', url:'bgm13.mp3', credit:'Credit:zukisuzuki BGM' },
     ];
-
     const SFX_LIST = [
       { id:'sound01', title:'sound01', url:'sound01.mp3', credit:'Credit: Sample SFX' },
     ];
@@ -3670,7 +3684,7 @@
     let selectedGiftTarget=null,reloadNavigation=false,activeMailboxMode="official";
     let clockDateExpanded=false,storeActiveCategory=null;
     let bgmAudio=null,bgmPlaying=false,bgmMuted=false,bgmVolume=5,sfxMuted=false,sfxVolume=70;
-    let bgmCurrentIndex=0,bgmLoopMode='loop',bgmFavOnly=false,bgmFavList=[];
+    let bgmCurrentIndex=Math.floor(Math.random()*13),bgmLoopMode='loop',bgmFavOnly=false,bgmFavList=JSON.parse(localStorage.getItem('zz_bgmFavs')||'[]');
 
     const DEFAULT_STATE = {
       version:16,
@@ -3884,7 +3898,7 @@
       const openFSBtn=document.getElementById("openFishSettingsBtn");
       const fishSettingsOv=document.getElementById("fishSettingsOverlay");
       const closeFSBtn=document.getElementById("closeFishSettings");
-      if(openFSBtn)openFSBtn.addEventListener("click",()=>{if(fishSettingsOv){fishSettingsOv.style.display="block";el.app.classList.add("fs-overlay-open");state.ui.navCollapsed=true;applyNavState();renderFishSettings();}});
+      if(openFSBtn)openFSBtn.addEventListener("click",()=>{if(fishSettingsOv){fishSettingsOv.style.display="block";el.app.classList.add("fs-overlay-open");state.ui.navCollapsed=true;applyNavState();if(getActiveBoss()&&MODE_NAMES.indexOf("ボス戦")>=0)state.ui.modeIndex=MODE_NAMES.indexOf("ボス戦");renderFishSettings();}});
       if(closeFSBtn)closeFSBtn.addEventListener("click",()=>{if(fishSettingsOv)fishSettingsOv.style.display="none";el.app.classList.remove("fs-overlay-open");});
       // === Fish Settings System ===
       let fsTimeVal=state.selectedCourseMin||10;
@@ -3902,8 +3916,14 @@
         const dt=document.getElementById("fsDetailsText");const idx=state.ui.modeIndex||0;
         if(idx===4){
           const boss=getActiveBoss();
-          if(boss){const rem=Math.round(bossTimeRemaining(boss)/60000);dt.innerHTML=`<span style="color:#ff4444;font-weight:800;">${boss.boss.icon} ${boss.boss.name}</span>\n残り${rem}分 / 捕獲率${(boss.boss.catchRate*100).toFixed(1)}%\n\nボスが出現中！単発と同じ仕組みで\n低確率でボス魚が釣れる\n参加費: 10,000zz`;}
-          else{dt.innerHTML='<span style="color:rgba(255,255,255,0.3);">現在ボスは出現していません\n次の出現をお待ちください</span>';}
+          if(boss){const remMs=bossTimeRemaining(boss);const remM=Math.floor(remMs/60000);const remS=Math.floor((remMs%60000)/1000);dt.innerHTML=`<span style="color:#ff4444;font-weight:800;">${boss.boss.icon} ${boss.boss.name}</span>\n残り${remM}分${remS}秒 / 捕獲率${(boss.boss.catchRate*100).toFixed(1)}%\n\nボスが出現中！\n時間(分)=釣れる匹数\n参加費: 10,000zz`;}
+          else{
+            const dk=todayKey();const spawns=getBossSpawns(dk);
+            const now2=new Date();const todayMs2=(now2.getHours()*60+now2.getMinutes())*60000+now2.getSeconds()*1000;
+            const nextBoss=spawns.find(s=>s.startMs>todayMs2);
+            const countdown=nextBoss?Math.round((nextBoss.startMs-todayMs2)/60000):0;
+            dt.innerHTML='<span style="color:rgba(255,255,255,0.3);">現在ボスは出現していません</span>'+(nextBoss?'\n\n次のボス: <span style="color:#ff8888;">'+nextBoss.boss.name+'</span>\n約'+countdown+'分後':'');
+          }
         }else{if(dt)dt.textContent=MODE_DESCS[idx]||"";}
         const na=document.getElementById("fsNormaArea");if(!na)return;
         na.style.display=idx===2?"flex":"none";na.innerHTML="";
@@ -3953,14 +3973,14 @@
       const modeCV=document.getElementById("fsModeCanvas");
       if(modeCV){
         modeCV.addEventListener("click",e=>{const rect=modeCV.getBoundingClientRect();const x=e.clientX-rect.left;const W=rect.width;
-          if(x<W*0.3){state.ui.modeIndex=(state.ui.modeIndex+MODE_NAMES.length-1)%MODE_NAMES.length;animateCarousel(1);renderTimeSlider();updateFSDetails();saveAll().catch(console.error);}
-          else if(x>W*0.7){state.ui.modeIndex=(state.ui.modeIndex+1)%MODE_NAMES.length;animateCarousel(-1);renderTimeSlider();updateFSDetails();saveAll().catch(console.error);}
+          if(x<W*0.3){state.ui.modeIndex=(state.ui.modeIndex+MODE_NAMES.length-1)%MODE_NAMES.length;animateCarousel(-1);renderTimeSlider();updateFSDetails();saveAll().catch(console.error);}
+          else if(x>W*0.7){state.ui.modeIndex=(state.ui.modeIndex+1)%MODE_NAMES.length;animateCarousel(1);renderTimeSlider();updateFSDetails();saveAll().catch(console.error);}
         });
         let msTouchX=0;
         modeCV.addEventListener("touchstart",e=>{msTouchX=e.touches[0].clientX;},{passive:true});
         modeCV.addEventListener("touchend",e=>{const dx=e.changedTouches[0].clientX-msTouchX;
-          if(dx<-30){state.ui.modeIndex=(state.ui.modeIndex+1)%MODE_NAMES.length;animateCarousel(-1);renderTimeSlider();updateFSDetails();saveAll().catch(console.error);}
-          else if(dx>30){state.ui.modeIndex=(state.ui.modeIndex+MODE_NAMES.length-1)%MODE_NAMES.length;animateCarousel(1);renderTimeSlider();updateFSDetails();saveAll().catch(console.error);}
+          if(dx<-30){state.ui.modeIndex=(state.ui.modeIndex+1)%MODE_NAMES.length;animateCarousel(1);renderTimeSlider();updateFSDetails();saveAll().catch(console.error);}
+          else if(dx>30){state.ui.modeIndex=(state.ui.modeIndex+MODE_NAMES.length-1)%MODE_NAMES.length;animateCarousel(-1);renderTimeSlider();updateFSDetails();saveAll().catch(console.error);}
         },{passive:true});
       }
       // Time slider (Canvas)
@@ -5121,11 +5141,11 @@
       // Add work time
       const d=ensureDay(todayKey());const tc=state.fishing.taskCategory||"work";
       if(tc==="work")d.workMin+=elMin;else{if(!d.customMin)d.customMin={};d.customMin[tc]=(d.customMin[tc]||0)+elMin;}
-      if(nonbiriResults.length>0){
+      if(nonbiriResults.length>0&&state.nonbiriAutoSell){
         state.batchResults=[...nonbiriResults];openBatchModal();
       }else{
         saveAll().catch(console.error);switchScreen("room");ensureRoomVisual();renderAll();
-        toast("釣果なし");
+        if(!nonbiriResults.length)toast("釣果なし");
       }
       nonbiriResults=[];
     }
@@ -5273,16 +5293,87 @@
       const effectEl=document.getElementById("catchAnimEffect");
       const runEl=document.getElementById("catchAnimRunImg");
       const tapBtn=document.getElementById("catchAnimTapBtn");
+      const skipBtn=document.getElementById("catchAnimSkipBtn");
       const dotsEl=document.getElementById("catchAnimDots");
+      const lineBreakEl=document.getElementById("catchAnimLineBreak");
+      const sizeUI=document.getElementById("catchAnimSizeUI");
+      const sizeLabel=document.getElementById("catchAnimSizeLabel");
+      const fishPic=document.getElementById("catchAnimFishPic");
       if(!overlay||!results.length){if(onComplete)onComplete();return;}
-      overlay.style.display="flex";let idx=0;
-      // Build dots indicator
+      overlay.style.display="flex";let idx=0;let skipMode=false;
+      // Line break % based on elapsed fishing time
+      const elapsedMin=state.fishing.durationMin||Math.round((Date.now()-(state.fishing.startAt||Date.now()))/60000);
+      const lineBreakPct=Math.min(100,Math.max(1,Math.round(elapsedMin/70*100)));
+      if(lineBreakEl)lineBreakEl.textContent=lineBreakPct+"% で糸が切れます";
+      // Check if line breaks
+      const lineBreaks=Math.random()*100<lineBreakPct;
+      // Build dots
       if(dotsEl){dotsEl.innerHTML="";results.forEach(function(r,i){
-        const dotColors={1:"#888",2:"#7bdff5",3:"#ffd700",4:"#ff4444"};
+        const dc={1:"#888",2:"#7bdff5",3:"#ffd700",4:"#ff4444"};
         const dot=document.createElement("span");dot.id="catchDot_"+i;
-        dot.style.cssText="width:10px;height:10px;border-radius:50%;background:"+(dotColors[r.picked.rarityStars||1]||"#888")+";position:relative;opacity:0.3;transition:opacity 0.3s;";
+        dot.style.cssText="width:10px;height:10px;border-radius:50%;background:"+(dc[r.picked.rarityStars||1]||"#888")+";position:relative;opacity:0.3;transition:opacity 0.3s;";
         dotsEl.appendChild(dot);
       });}
+      // Skip button
+      if(skipBtn){skipBtn.style.display="inline-block";skipBtn.onclick=()=>{skipMode=true;};}
+      function highlightDot(i,escaped){
+        const dot=document.getElementById("catchDot_"+i);if(!dot)return;dot.style.opacity="1";
+        if(escaped)dot.innerHTML='<span style="position:absolute;inset:0;display:grid;place-items:center;color:#ff4444;font-size:12px;font-weight:900;">×</span>';
+      }
+      function showAcceptBtn(){starsEl.textContent="";nameEl.textContent="";iconEl.textContent="";effectEl.innerHTML="";runEl.style.display="none";card.style.background="#222";overlay.style.background="rgba(0,0,0,0.7)";if(sizeUI)sizeUI.style.display="none";tapBtn.style.display="inline-block";tapBtn.textContent="受け取る";tapBtn.onclick=()=>{tapBtn.style.display="none";showNext();};}
+      function showNext(){
+        if(idx>=results.length||(lineBreaks&&idx>0)){
+          overlay.style.display="none";if(dotsEl)dotsEl.innerHTML="";if(lineBreakEl)lineBreakEl.textContent="";if(skipBtn)skipBtn.style.display="none";if(sizeUI)sizeUI.style.display="none";
+          if(lineBreaks&&idx<results.length)toast("糸が切れた！");
+          if(onComplete)onComplete();return;
+        }
+        const r=results[idx];const curIdx=idx;idx++;
+        highlightDot(curIdx,false);
+        const stars=r.picked.rarityStars||1;const st=getStarStyle(stars);
+        card.style.background=st.bg;starsEl.textContent="";nameEl.textContent="";
+        iconEl.textContent="❔";iconEl.style.transform="scale(1)";
+        newEl.style.display=r.isNew?"block":"none";effectEl.innerHTML="";runEl.style.display="none";
+        overlay.style.background=stars>=4?"rgba(255,40,40,0.2)":stars>=3?"rgba(200,166,0,0.2)":stars>=2?"rgba(46,134,193,0.2)":"rgba(0,0,0,0.7)";
+        // Size comparison
+        if(sizeUI&&r.entry.sizeCm){
+          sizeUI.style.display="block";
+          const szCm=r.entry.sizeCm;if(sizeLabel)sizeLabel.textContent=Math.round(szCm*10)/10+"cm";
+          // Fish image: sakana{stars}.png, scale relative to hito (40cm reference)
+          if(fishPic){fishPic.src="sakana"+stars+".png";const scale=Math.min(2,szCm/40);fishPic.style.height=Math.max(20,80*scale)+"px";}
+        }else{if(sizeUI)sizeUI.style.display="none";}
+        const spd=skipMode?0.05:1;
+        // Phase 1: Stars
+        let starCount=0;
+        const starTimer=setInterval(()=>{starCount++;
+          const sc=stars>=4?"#ff6666":stars>=3?"#fff":stars>=2?"#7bdff5":"#aabbcc";
+          starsEl.innerHTML+="<span style='color:"+sc+";'>★</span>";
+          if(starCount>=stars){clearInterval(starTimer);
+            nameEl.textContent=r.entry.name;nameEl.style.color=st.text;
+            let shakeCount=0;
+            const shakeTimer=setInterval(()=>{shakeCount++;
+              const intensity=Math.min(shakeCount*0.5,8);
+              iconEl.style.transform="scale("+(1+shakeCount*0.02)+") rotate("+((Math.random()-0.5)*intensity)+"deg)";
+              if(shakeCount%3===0)effectEl.innerHTML='<div style="position:absolute;inset:0;display:grid;place-items:center;font-size:'+(20+shakeCount*2)+'px;color:rgba(255,255,255,'+(0.1+shakeCount*0.02)+');pointer-events:none;">!</div>';
+            },50*spd);
+            setTimeout(()=>{clearInterval(shakeTimer);
+              iconEl.style.transform="scale(1.2)";
+              if(r.escaped){
+                runEl.style.display="flex";iconEl.textContent="💨";effectEl.innerHTML="";
+                highlightDot(curIdx,true);
+                try{new Audio("nige.mp3").play().catch(()=>{});}catch(e){}
+              }else{
+                iconEl.textContent=r.entry.icon;iconEl.style.transform="scale(1.3)";
+                effectEl.innerHTML='<div style="position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;animation:catchSparkle 0.5s ease;"><span style="font-size:40px;">✨</span></div>';
+                try{new Audio("get.mp3").play().catch(()=>{});}catch(e){}
+              }
+              if(skipMode){setTimeout(()=>showNext(),100*spd);}
+              else{const tapHandler=()=>{overlay.removeEventListener("click",tapHandler);showNext();};setTimeout(()=>overlay.addEventListener("click",tapHandler),300);}
+            },1500*spd);
+          }
+        },100*spd);
+      }
+      showAcceptBtn();
+    }
       function highlightDot(i,escaped){
         const dot=document.getElementById("catchDot_"+i);if(!dot)return;
         dot.style.opacity="1";
@@ -5442,7 +5533,7 @@
       const core=document.createElement("div");core.className="result-core";
       const artWrap=document.createElement("div");artWrap.className="result-art-wrap";artWrap.style.cssText=`background:${bst.bg};border-radius:16px;padding:12px;position:relative;`;
       const starColor=(r.picked.rarityStars||1)>=3?"#fff":bst.star;
-      artWrap.innerHTML=`<div class="result-art"><div class="result-stars-in-art" style="color:${starColor};">${"★".repeat(r.picked.rarityStars||1)}</div><div>${r.entry.icon}</div><div class="result-art-avg" style="color:${bst.text};">${isFish?`平均 ${fmtSize(r.picked.avgSize)}cm`:""}</div></div><div class="result-price" style="color:var(--gold);">${fmtMoney(r.entry.sellPrice)} zz</div>${r.isNew?'<div style="position:absolute;top:6px;right:8px;background:#ff3366;color:#fff;font-size:14px;font-weight:900;padding:2px 8px;border-radius:6px;">NEW</div>':""}`;
+      artWrap.innerHTML=`<div class="result-art"><div class="result-stars-in-art" style="color:${(r.picked.rarityStars||1)>=3?'#c0e8ff':starColor};">${"★".repeat(r.picked.rarityStars||1)}</div><div>${r.entry.icon}</div><div class="result-art-avg" style="color:${bst.text};">${isFish?`平均 ${fmtSize(r.picked.avgSize)}cm`:""}</div></div><div class="result-price" style="color:var(--gold);">${fmtMoney(r.entry.sellPrice)} zz</div>${r.isNew?'<div style="position:absolute;top:6px;right:8px;background:#ff3366;color:#fff;font-size:14px;font-weight:900;padding:2px 8px;border-radius:6px;">NEW</div>':""}`;
       core.appendChild(artWrap);
       const detail=document.createElement("div");
       detail.innerHTML=`<div class="result-title-row"><div class="result-title">${isFish?`${esc(r.entry.name)} <span class="result-size-colored ${r.entry.sizeCm>=r.picked.avgSize?"plus":"minus"}">(${fmtSize(r.entry.sizeCm)}cm)</span>`:esc(r.entry.name)}</div></div>
