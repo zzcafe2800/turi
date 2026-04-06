@@ -3974,13 +3974,6 @@
             document.getElementById("fsRestToggle")?.addEventListener("click",()=>{fsRestMode=!fsRestMode;renderTimeSlider();});
           }else{loopEl.style.display="none";loopEl.innerHTML="";}
         }
-          const idx=state.ui.modeIndex||0;
-          if(idx===1){
-            const cnt=state.loopConfig.count||2;
-            loopEl.style.display="block";loopEl.textContent=cnt+"ループ";
-            loopEl.onclick=()=>{let n=cnt+1;if(n>9)n=1;state.loopConfig.count=n;renderTimeSlider();saveAll().catch(console.error);};
-          }else{loopEl.style.display="none";}
-        }
         // Hide/show time slider for countup/のんびり
         const tsliderWrap=document.getElementById("fsTimeCanvas")?.parentElement;
         if(tsliderWrap){
