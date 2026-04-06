@@ -422,9 +422,10 @@
       gap: 8px;
       transition: left 0.2s ease;
     }
-    #app:not(.nav-collapsed) .top-left-meta { left: calc(var(--navExpanded) + 8px); }
+    #app:not(.nav-collapsed) #screen-room .top-left-meta { left: calc(var(--navExpanded) + 8px); }
     #app.nav-collapsed .top-left-meta { left: 0; }
-    #app.nav-always-show .top-left-meta { left: 0; }
+    /* Leave button offset */
+    #app:not(.nav-collapsed) #screen-room .action-btn.exit { margin-left: calc(var(--navExpanded) + 8px); }
     .top-right-stack {
       position: absolute;
       top: 0;
@@ -2779,13 +2780,13 @@
           <!-- Calendar at very top -->
           <div style="margin-top:44px;display:flex;align-items:center;gap:8px;">
             <div style="display:flex;align-items:flex-end;gap:14px;">
-              <div style="text-align:center;"><div id="lobbyCal_-3" style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.08);display:grid;place-items:center;border:1.5px solid rgba(255,255,255,0.2);"></div><div id="lobbyCalD_-3" style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:3px;"></div></div>
-              <div style="text-align:center;"><div id="lobbyCal_-2" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.08);display:grid;place-items:center;border:1.5px solid rgba(255,255,255,0.2);"></div><div id="lobbyCalD_-2" style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:3px;"></div></div>
-              <div style="text-align:center;"><div id="lobbyCal_-1" style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.08);display:grid;place-items:center;border:1.5px solid rgba(255,255,255,0.2);"></div><div id="lobbyCalD_-1" style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:3px;"></div></div>
+              <div style="text-align:center;"><div id="lobbyCal_-3" style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.08);display:grid;place-items:center;border:1.5px solid rgba(255,255,255,0.2);"></div><div id="lobbyCalD_-3" style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:8px;"></div></div>
+              <div style="text-align:center;"><div id="lobbyCal_-2" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.08);display:grid;place-items:center;border:1.5px solid rgba(255,255,255,0.2);"></div><div id="lobbyCalD_-2" style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:8px;"></div></div>
+              <div style="text-align:center;"><div id="lobbyCal_-1" style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.08);display:grid;place-items:center;border:1.5px solid rgba(255,255,255,0.2);"></div><div id="lobbyCalD_-1" style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:8px;"></div></div>
               <div style="text-align:center;"><div id="lobbyCal_0" style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.08);display:grid;place-items:center;border:1.5px solid rgba(255,255,255,0.2);"></div><div id="lobbyCalD_0" style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:3px;font-weight:700;"></div></div>
-              <div style="text-align:center;"><div id="lobbyCal_1" style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.08);display:grid;place-items:center;border:1.5px solid rgba(255,255,255,0.2);"></div><div id="lobbyCalD_1" style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:3px;"></div></div>
-              <div style="text-align:center;"><div id="lobbyCal_2" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.08);display:grid;place-items:center;border:1.5px solid rgba(255,255,255,0.2);"></div><div id="lobbyCalD_2" style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:3px;"></div></div>
-              <div style="text-align:center;"><div id="lobbyCal_3" style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.08);display:grid;place-items:center;border:1.5px solid rgba(255,255,255,0.2);"></div><div id="lobbyCalD_3" style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:3px;"></div></div>
+              <div style="text-align:center;"><div id="lobbyCal_1" style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.08);display:grid;place-items:center;border:1.5px solid rgba(255,255,255,0.2);"></div><div id="lobbyCalD_1" style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:8px;"></div></div>
+              <div style="text-align:center;"><div id="lobbyCal_2" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.08);display:grid;place-items:center;border:1.5px solid rgba(255,255,255,0.2);"></div><div id="lobbyCalD_2" style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:8px;"></div></div>
+              <div style="text-align:center;"><div id="lobbyCal_3" style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.08);display:grid;place-items:center;border:1.5px solid rgba(255,255,255,0.2);"></div><div id="lobbyCalD_3" style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:8px;"></div></div>
             </div>
             <div style="display:flex;flex-direction:column;align-items:center;margin-left:6px;">
               <div id="lobbyStreak" style="font-size:clamp(28px,6vw,40px);font-weight:900;color:#fff;line-height:1;">0</div>
@@ -3370,12 +3371,12 @@
         <div id="catchAnimEffect" style="position:absolute;inset:0;pointer-events:none;"></div>
         <div id="catchAnimRunImg" style="position:absolute;inset:0;display:none;align-items:center;justify-content:center;font-size:48px;font-weight:900;color:#ff4444;background:rgba(0,0,0,0.4);">逃げられた！</div>
       </div>
-      <div id="catchAnimDots" style="display:flex;gap:6px;margin-top:12px;align-items:center;flex-wrap:wrap;justify-content:center;"></div>
-      <div id="catchAnimLineBreak" style="font-size:11px;color:rgba(255,150,150,0.7);margin-top:4px;"></div>
-      <div style="display:flex;gap:12px;margin-top:12px;align-items:center;">
-        <button id="catchAnimTapBtn" style="padding:10px 32px;border:0;border-radius:999px;background:var(--accent);color:#fff;font-size:16px;font-weight:800;cursor:pointer;display:none;">受け取る</button>
-        <button id="catchAnimSkipBtn" style="padding:6px 16px;border:1px solid rgba(255,255,255,0.2);border-radius:999px;background:transparent;color:rgba(255,255,255,0.5);font-size:12px;cursor:pointer;display:none;">スキップ</button>
+      <div style="display:flex;gap:6px;margin-top:12px;align-items:center;flex-wrap:wrap;justify-content:center;">
+        <div id="catchAnimDots" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;"></div>
+        <button id="catchAnimSkipBtn" style="padding:2px 8px;border:1px solid rgba(255,255,255,0.15);border-radius:8px;background:transparent;color:rgba(255,255,255,0.4);font-size:9px;cursor:pointer;display:none;margin-left:4px;">スキップ</button>
       </div>
+      <div id="catchAnimLineBreak" style="font-size:11px;color:rgba(255,150,150,0.7);margin-top:4px;"></div>
+      <button id="catchAnimTapBtn" style="margin-top:12px;padding:10px 32px;border:0;border-radius:999px;background:var(--accent);color:#fff;font-size:16px;font-weight:800;cursor:pointer;display:none;">受け取る</button>
     </div>
     <!-- ===== OTHER MODALS ===== -->
     <div id="mailboxModal" class="modal">
@@ -3973,14 +3974,14 @@
       const modeCV=document.getElementById("fsModeCanvas");
       if(modeCV){
         modeCV.addEventListener("click",e=>{const rect=modeCV.getBoundingClientRect();const x=e.clientX-rect.left;const W=rect.width;
-          if(x<W*0.3){state.ui.modeIndex=(state.ui.modeIndex+MODE_NAMES.length-1)%MODE_NAMES.length;animateCarousel(1);renderTimeSlider();updateFSDetails();saveAll().catch(console.error);}
-          else if(x>W*0.7){state.ui.modeIndex=(state.ui.modeIndex+1)%MODE_NAMES.length;animateCarousel(-1);renderTimeSlider();updateFSDetails();saveAll().catch(console.error);}
+          if(x<W*0.3){state.ui.modeIndex=(state.ui.modeIndex+MODE_NAMES.length-1)%MODE_NAMES.length;animateCarousel(-1);renderTimeSlider();updateFSDetails();saveAll().catch(console.error);}
+          else if(x>W*0.7){state.ui.modeIndex=(state.ui.modeIndex+1)%MODE_NAMES.length;animateCarousel(1);renderTimeSlider();updateFSDetails();saveAll().catch(console.error);}
         });
         let msTouchX=0;
         modeCV.addEventListener("touchstart",e=>{msTouchX=e.touches[0].clientX;},{passive:true});
         modeCV.addEventListener("touchend",e=>{const dx=e.changedTouches[0].clientX-msTouchX;
-          if(dx<-30){state.ui.modeIndex=(state.ui.modeIndex+1)%MODE_NAMES.length;animateCarousel(-1);renderTimeSlider();updateFSDetails();saveAll().catch(console.error);}
-          else if(dx>30){state.ui.modeIndex=(state.ui.modeIndex+MODE_NAMES.length-1)%MODE_NAMES.length;animateCarousel(1);renderTimeSlider();updateFSDetails();saveAll().catch(console.error);}
+          if(dx<-30){state.ui.modeIndex=(state.ui.modeIndex+1)%MODE_NAMES.length;animateCarousel(1);renderTimeSlider();updateFSDetails();saveAll().catch(console.error);}
+          else if(dx>30){state.ui.modeIndex=(state.ui.modeIndex+MODE_NAMES.length-1)%MODE_NAMES.length;animateCarousel(-1);renderTimeSlider();updateFSDetails();saveAll().catch(console.error);}
         },{passive:true});
       }
       // Time slider (Canvas)
@@ -5251,7 +5252,7 @@
     function finishFishing(){stopTimerTick();if(!state.fishing.inProgress)return;if(state.settings.catchSound)playAudio("time.mp3","time");maybeNotify();stopBgmOnFishEnd();tryVibrate([200,100,200]);
       // Clean up water surface
       waterActive=false;waterInited=false;const wc=document.getElementById("waterSurface");if(wc)wc.style.display="none";const wbg=wc?.previousElementSibling;if(wbg)wbg.style.visibility="visible";if(waterAnim){cancelAnimationFrame(waterAnim);waterAnim=null;}
-      const dm=state.fishing.durationMin;const count=getCatchCount(dm);
+      const dm=state.fishing.durationMin;const wasBoss=!!state.fishing.bossMode;const count=wasBoss?Math.max(1,Math.round(dm)):getCatchCount(dm);
       const results=preRolledCatches.length===count?[...preRolledCatches]:(function(){const r=[];for(let i=0;i<count;i++){const c=rollCatchMayBoss(state.fishing);if(dm>=50&&i===0)c.isRare=true;r.push(c);}return r;})();preRolledCatches=[];
       // Rare upgrade bonus for 50+ min
       if(dm>=50){const parts=Object.keys(state.upgrades);const rp=parts[Math.floor(Math.random()*parts.length)];state.upgrades[rp]=(state.upgrades[rp]||0)+1;toast(`🎣 ${UPGRADE_PARTS.find(p=>p.id===rp)?.name||rp} が自動強化されました！`);}
@@ -5261,7 +5262,7 @@
       // Apply escape chance
       results.forEach(r=>{const s=r.picked.rarityStars||1;let escRate=0;if(s===1)escRate=0.25;else if(s===2)escRate=0.5;else if(s===3)escRate=0.5;r.escaped=Math.random()<escRate;});
       results.forEach(r=>{addWorkSession(Math.round(dm/count),r,tc);applyCatchRecord(r);});
-      state.lastCatch=results[0]?.entry||null;state.fishing.inProgress=false;state.fishing.paused=false;state.ui.timerMega=false;state.room.status="idle";state.fishing.normaText="";state.fishing.extraSec=0;syncPresence().catch(console.error);setFocusMode(false);
+      state.lastCatch=results[0]?.entry||null;state.fishing.inProgress=false;state.fishing.paused=false;state.ui.timerMega=false;state.room.status="idle";state.fishing.normaText="";state.fishing.extraSec=0;state.fishing.bossMode=false;syncPresence().catch(console.error);setFocusMode(false);
       if(state.loopRun.active){results.forEach(r=>state.loopRun.results.push(r));saveAll().catch(console.error);if(state.loopRun.current>=state.loopRun.total)finishLoopRun(false);else startLoopRest();return;}
       if(state.normaRun.active){results.forEach(r=>state.normaRun.results.push(r));saveAll().catch(console.error);if(state.normaRun.current>=state.normaRun.total)finishNormaRun(false);else startNormaRest();return;}
       // Play animation then show results (caught only)
@@ -5303,10 +5304,10 @@
       overlay.style.display="flex";let idx=0;let skipMode=false;
       // Line break % based on elapsed fishing time
       const elapsedMin=state.fishing.durationMin||Math.round((Date.now()-(state.fishing.startAt||Date.now()))/60000);
-      const lineBreakPct=Math.min(100,Math.max(1,Math.round(elapsedMin/70*100)));
-      if(lineBreakEl)lineBreakEl.textContent=lineBreakPct+"% で糸が切れます";
-      // Check if line breaks
-      const lineBreaks=Math.random()*100<lineBreakPct;
+      const isNonbiri=!!state.fishing.nonbiriMode;
+      const lineBreakPct=isNonbiri?Math.min(100,Math.max(1,Math.round(elapsedMin/70*100))):0;
+      if(lineBreakEl)lineBreakEl.textContent=isNonbiri?(lineBreakPct+"% で糸が切れます"):"";
+      const lineBreaks=isNonbiri&&Math.random()*100<lineBreakPct;
       // Build dots
       if(dotsEl){dotsEl.innerHTML="";results.forEach(function(r,i){
         const dc={1:"#888",2:"#7bdff5",3:"#ffd700",4:"#ff4444"};
@@ -5339,7 +5340,7 @@
           sizeUI.style.display="block";
           const szCm=r.entry.sizeCm;if(sizeLabel)sizeLabel.textContent=Math.round(szCm*10)/10+"cm";
           // Fish image: sakana{stars}.png, scale relative to hito (40cm reference)
-          if(fishPic){fishPic.src="sakana"+stars+".png";const scale=Math.min(2,szCm/40);fishPic.style.height=Math.max(20,80*scale)+"px";}
+          if(fishPic){fishPic.src="sakana@.png";const scale=Math.min(2,szCm/40);fishPic.style.height=Math.max(20,80*scale)+"px";}
         }else{if(sizeUI)sizeUI.style.display="none";}
         const spd=skipMode?0.05:1;
         // Phase 1: Stars
