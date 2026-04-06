@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -694,8 +695,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      gap: 18px;
+      justify-content: flex-start;
+      gap: 14px;
       text-align: center;
       padding: 20px;
     }
@@ -2711,6 +2712,9 @@
         left: 8px !important;
       }
     }
+    @media (min-width: 761px) {
+      #lobbyCal_-3,#lobbyCal_-2,#lobbyCal_-1,#lobbyCal_0,#lobbyCal_1,#lobbyCal_2,#lobbyCal_3 { transform: scale(1.6); margin: 0 8px; }
+    }
   </style>
 </head>
 <body>
@@ -2764,44 +2768,41 @@
         </div>
 
         <div id="roomLobby" class="lobby-center">
-          <!-- Settings button (top-left on mobile) -->
-          <button id="lobbySettingsBtn" id="lobbySettingsBtn2" style="position:absolute;top:12px;left:16px;border:1px solid rgba(255,255,255,0.15);border-radius:10px;background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.5);font-size:18px;width:36px;height:36px;cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);">⚙</button>
+          <button id="lobbySettingsBtn2" style="position:absolute;top:12px;left:16px;border:1px solid rgba(255,255,255,0.15);border-radius:10px;background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.5);font-size:18px;width:36px;height:36px;cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);">⚙</button>
           <div style="position:absolute;top:12px;right:16px;font-size:14px;color:rgba(255,255,255,0.5);font-weight:600;">
             <span id="lobbyCurrentTime">00:00</span>
             <div id="lobbyDateSub" class="clock-date-sub" style="font-size:10px;"></div>
           </div>
-          <div style="display:flex;flex-direction:column;align-items:center;gap:14px;width:100%;">
-            <!-- 7-day Calendar mini + streak -->
-            <div style="display:flex;align-items:center;gap:8px;">
-              <div style="display:flex;align-items:flex-end;gap:6px;">
-                <!-- 7 circles (-3 to +3) -->
-                <div style="text-align:center;"><div id="lobbyCal_-3" style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.06);display:grid;place-items:center;border:1px solid transparent;"></div><div id="lobbyCalD_-3" style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:3px;"></div></div>
-                <div style="text-align:center;"><div id="lobbyCal_-2" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);display:grid;place-items:center;border:1px solid transparent;"></div><div id="lobbyCalD_-2" style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:3px;"></div></div>
-                <div style="text-align:center;"><div id="lobbyCal_-1" style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.08);display:grid;place-items:center;border:1px solid transparent;"></div><div id="lobbyCalD_-1" style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:3px;"></div></div>
-                <div style="text-align:center;"><div id="lobbyCal_0" style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.12);display:grid;place-items:center;border:2px solid rgba(255,255,255,0.25);"></div><div id="lobbyCalD_0" style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:3px;font-weight:700;"></div></div>
-                <div style="text-align:center;"><div id="lobbyCal_1" style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.06);display:grid;place-items:center;border:1px solid transparent;"></div><div id="lobbyCalD_1" style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:3px;"></div></div>
-                <div style="text-align:center;"><div id="lobbyCal_2" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);display:grid;place-items:center;border:1px solid transparent;"></div><div id="lobbyCalD_2" style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:3px;"></div></div>
-                <div style="text-align:center;"><div id="lobbyCal_3" style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.06);display:grid;place-items:center;border:1px solid transparent;"></div><div id="lobbyCalD_3" style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:3px;"></div></div>
-              </div>
-              <!-- Streak -->
-              <div style="display:flex;flex-direction:column;align-items:center;margin-left:6px;">
-                <div id="lobbyStreak" style="font-size:clamp(28px,6vw,40px);font-weight:900;color:#fff;line-height:1;">0</div>
-                <div style="font-size:9px;color:rgba(255,255,255,0.35);">日連続</div>
-              </div>
+          <!-- Calendar at very top -->
+          <div style="margin-top:44px;display:flex;align-items:center;gap:8px;">
+            <div style="display:flex;align-items:flex-end;gap:6px;">
+              <div style="text-align:center;"><div id="lobbyCal_-3" style="width:34px;height:34px;border-radius:50%;background:#fff;display:grid;place-items:center;border:2px solid #7bdff5;"></div><div id="lobbyCalD_-3" style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:3px;"></div></div>
+              <div style="text-align:center;"><div id="lobbyCal_-2" style="width:36px;height:36px;border-radius:50%;background:#fff;display:grid;place-items:center;border:2px solid #7bdff5;"></div><div id="lobbyCalD_-2" style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:3px;"></div></div>
+              <div style="text-align:center;"><div id="lobbyCal_-1" style="width:38px;height:38px;border-radius:50%;background:#fff;display:grid;place-items:center;border:2px solid #7bdff5;"></div><div id="lobbyCalD_-1" style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:3px;"></div></div>
+              <div style="text-align:center;"><div id="lobbyCal_0" style="width:44px;height:44px;border-radius:50%;background:#fff;display:grid;place-items:center;border:2px solid #7bdff5;"></div><div id="lobbyCalD_0" style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:3px;font-weight:700;"></div></div>
+              <div style="text-align:center;"><div id="lobbyCal_1" style="width:38px;height:38px;border-radius:50%;background:#fff;display:grid;place-items:center;border:2px solid #7bdff5;"></div><div id="lobbyCalD_1" style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:3px;"></div></div>
+              <div style="text-align:center;"><div id="lobbyCal_2" style="width:36px;height:36px;border-radius:50%;background:#fff;display:grid;place-items:center;border:2px solid #7bdff5;"></div><div id="lobbyCalD_2" style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:3px;"></div></div>
+              <div style="text-align:center;"><div id="lobbyCal_3" style="width:34px;height:34px;border-radius:50%;background:#fff;display:grid;place-items:center;border:2px solid #7bdff5;"></div><div id="lobbyCalD_3" style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:3px;"></div></div>
             </div>
-            <!-- Play button + Solo toggle (horizontal) -->
-            <div style="display:flex;align-items:center;gap:16px;margin-top:8px;">
-              <button id="playRoomBtn" style="width:72px;height:72px;border:2px solid rgba(255,255,255,0.3);border-radius:50%;background:transparent;color:#fff;font-size:32px;cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);">▶</button>
-              <div id="soloToggleWrap" style="display:flex;flex-direction:column;align-items:center;gap:2px;">
-                <span id="soloLabel" style="font-size:10px;color:rgba(255,255,255,0.5);font-weight:700;">マルチ</span>
-                <div id="soloToggle" style="width:40px;height:22px;border-radius:11px;background:rgba(255,255,255,0.15);position:relative;cursor:pointer;transition:background 0.2s;">
-                  <div id="soloToggleKnob" style="width:18px;height:18px;border-radius:50%;background:#999;position:absolute;top:2px;left:2px;transition:left 0.2s,background 0.2s;"></div>
-                </div>
-              </div>
+            <div style="display:flex;flex-direction:column;align-items:center;margin-left:6px;">
+              <div id="lobbyStreak" style="font-size:clamp(28px,6vw,40px);font-weight:900;color:#fff;line-height:1;">0</div>
+              <div style="font-size:9px;color:rgba(255,255,255,0.35);">日連続</div>
             </div>
-            <!-- Mission text (below play) -->
-            <div id="lobbyRecommend" style="font-size:13px;color:rgba(255,255,255,0.6);text-align:center;padding:8px 20px;border-radius:14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);font-weight:500;"></div>
           </div>
+          <!-- Mission below calendar -->
+          <div id="lobbyRecommend" style="font-size:13px;color:rgba(255,255,255,0.6);text-align:center;padding:8px 20px;border-radius:14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);font-weight:500;"></div>
+          <div style="flex:1;"></div>
+          <!-- Play button + Solo toggle -->
+          <div style="display:flex;align-items:center;gap:16px;">
+            <button id="playRoomBtn" style="width:72px;height:72px;border:2px solid rgba(255,255,255,0.3);border-radius:50%;background:transparent;color:#fff;font-size:32px;cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(4px);">▶</button>
+            <div id="soloToggleWrap" style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+              <span id="soloLabel" style="font-size:10px;color:rgba(255,255,255,0.5);font-weight:700;">マルチ</span>
+              <div id="soloToggle" style="width:40px;height:22px;border-radius:11px;background:rgba(255,255,255,0.15);position:relative;cursor:pointer;transition:background 0.2s;">
+                <div id="soloToggleKnob" style="width:18px;height:18px;border-radius:50%;background:#999;position:absolute;top:2px;left:2px;transition:left 0.2s,background 0.2s;"></div>
+              </div>
+            </div>
+          </div>
+          <div style="height:20px;"></div>
         </div>
 
         <div id="roomActiveUI" style="display:none; position:absolute; inset:0; z-index:4;">
@@ -2833,7 +2834,7 @@
           </div>
 
           <div class="bottom-left-stack fade-ui">
-            <button id="leaveRoomBtnLeft" class="action-btn exit">退出</button>
+            <button id="leaveRoomBtnLeft" class="action-btn exit room-bottom-btn">退出</button>
           </div>
 
           <!-- Loop rest center display -->
@@ -3358,6 +3359,7 @@
         <div id="catchAnimEffect" style="position:absolute;inset:0;pointer-events:none;"></div>
         <div id="catchAnimRunImg" style="position:absolute;inset:0;display:none;align-items:center;justify-content:center;font-size:48px;font-weight:900;color:#ff4444;background:rgba(0,0,0,0.4);">逃げられた！</div>
       </div>
+      <div id="catchAnimDots" style="display:flex;gap:6px;margin-top:12px;align-items:center;flex-wrap:wrap;justify-content:center;"></div>
       <button id="catchAnimTapBtn" style="margin-top:16px;padding:10px 32px;border:0;border-radius:999px;background:var(--accent);color:#fff;font-size:16px;font-weight:800;cursor:pointer;display:none;">受け取る</button>
     </div>
     <!-- ===== OTHER MODALS ===== -->
@@ -3874,7 +3876,7 @@
       // === Fish Settings System ===
       let fsTimeVal=state.selectedCourseMin||10;
       const MODE_DESCS=["好きな時間を設定して\n1回の作業に集中しよう","作業と休憩を繰り返す\n連続モードでリズムを作ろう","セットごとにノルマを設定\n計画的に作業を進めよう","時間制限なし\n好きなだけ作業して報酬GET","ボスが出現中のみ挑戦可能\n低確率でレアなボス魚が釣れる","ランダムな間隔で魚がヒット\nのんびり待ちながら釣ろう"];
-      const MODE_COLORS=["rgba(72,211,109,0.15)","rgba(100,180,230,0.15)","rgba(255,180,100,0.15)","rgba(180,130,255,0.15)","rgba(255,60,60,0.15)","rgba(100,200,150,0.15)"];
+      const MODE_COLORS=["rgba(72,211,109,0.3)","rgba(100,180,230,0.3)","rgba(255,180,100,0.3)","rgba(180,130,255,0.3)","rgba(255,60,60,0.3)","rgba(100,200,150,0.3)"];
       function renderFishSettings(){drawModeCarousel();renderTimeSlider();updateFSDetails();updateFSBait();updateFSTask();
         const startBtn=document.getElementById("fsStartBtn");
         if(startBtn){startBtn.onclick=()=>{
@@ -3907,32 +3909,45 @@
       function updateFSTask(){const s=document.getElementById("fsTaskSelect");if(!s)return;fillTaskSelect(s);s.value=state.selectedTaskCategory||"work";s.onchange=()=>{state.selectedTaskCategory=s.value;saveAll().catch(console.error);};}
       // Mode carousel (Canvas)
       let modeSwipeX=0;
-      function drawModeCarousel(){
+      let carouselAnimOffset=0,carouselAnimId=null;
+      function drawModeCarousel(animOff){
         const cv=document.getElementById("fsModeCanvas");if(!cv)return;
         const W=cv.offsetWidth||300,H=cv.offsetHeight||80;cv.width=W;cv.height=H;
         const ctx=cv.getContext("2d");ctx.clearRect(0,0,W,H);
-        const idx=state.ui.modeIndex||0;const len=MODE_NAMES.length;
-        for(let off=-2;off<=2;off++){
-          const mi=(idx+off+len)%len;const cx=W/2+off*W*0.35;const w=off===0?W*0.4:W*0.28;const h=H*0.7;const y=(H-h)/2;
-          const alpha=off===0?1:Math.max(0.15,0.5-Math.abs(off)*0.15);
+        const idx=state.ui.modeIndex||0;const len=MODE_NAMES.length;const shift=animOff||0;
+        for(let off=-3;off<=3;off++){
+          const mi=(idx+off+len)%len;const cx=W/2+(off+shift)*W*0.35;
+          if(cx<-W*0.3||cx>W*1.3)continue;
+          const dist=Math.abs(off+shift);const w=dist<0.5?W*0.4:W*0.28;const h=H*0.7;const y=(H-h)/2;
+          const alpha=Math.max(0.1,1-dist*0.35);
           ctx.globalAlpha=alpha;ctx.fillStyle=MODE_COLORS[mi]||"rgba(255,255,255,0.08)";
           const r=12;ctx.beginPath();ctx.moveTo(cx-w/2+r,y);ctx.lineTo(cx+w/2-r,y);ctx.quadraticCurveTo(cx+w/2,y,cx+w/2,y+r);ctx.lineTo(cx+w/2,y+h-r);ctx.quadraticCurveTo(cx+w/2,y+h,cx+w/2-r,y+h);ctx.lineTo(cx-w/2+r,y+h);ctx.quadraticCurveTo(cx-w/2,y+h,cx-w/2,y+h-r);ctx.lineTo(cx-w/2,y+r);ctx.quadraticCurveTo(cx-w/2,y,cx-w/2+r,y);ctx.closePath();ctx.fill();
-          ctx.strokeStyle="rgba(255,255,255,"+(off===0?0.25:0.08)+")";ctx.lineWidth=1;ctx.stroke();
-          ctx.fillStyle="#fff";ctx.font=(off===0?"bold 15px":"11px")+" sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(MODE_NAMES[mi],cx,H/2);
+          ctx.strokeStyle="rgba(255,255,255,"+(dist<0.5?0.3:0.08)+")";ctx.lineWidth=1;ctx.stroke();
+          ctx.fillStyle="#fff";ctx.font=(dist<0.5?"bold 15px":"11px")+" sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(MODE_NAMES[mi],cx,H/2);
         }
         ctx.globalAlpha=1;
+      }
+      function animateCarousel(dir){
+        if(carouselAnimId)cancelAnimationFrame(carouselAnimId);
+        const start=Date.now(),dur=400;carouselAnimOffset=dir;
+        function tick(){const t=Math.min(1,(Date.now()-start)/dur);
+          const ease=t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2; // ease-in-out
+          drawModeCarousel(dir*(1-ease));
+          if(t<1)carouselAnimId=requestAnimationFrame(tick);
+          else{carouselAnimId=null;drawModeCarousel(0);}
+        }tick();
       }
       const modeCV=document.getElementById("fsModeCanvas");
       if(modeCV){
         modeCV.addEventListener("click",e=>{const rect=modeCV.getBoundingClientRect();const x=e.clientX-rect.left;const W=rect.width;
-          if(x<W*0.3){state.ui.modeIndex=(state.ui.modeIndex+MODE_NAMES.length-1)%MODE_NAMES.length;renderFishSettings();saveAll().catch(console.error);}
-          else if(x>W*0.7){state.ui.modeIndex=(state.ui.modeIndex+1)%MODE_NAMES.length;renderFishSettings();saveAll().catch(console.error);}
+          if(x<W*0.3){state.ui.modeIndex=(state.ui.modeIndex+MODE_NAMES.length-1)%MODE_NAMES.length;animateCarousel(1);renderTimeSlider();updateFSDetails();saveAll().catch(console.error);}
+          else if(x>W*0.7){state.ui.modeIndex=(state.ui.modeIndex+1)%MODE_NAMES.length;animateCarousel(-1);renderTimeSlider();updateFSDetails();saveAll().catch(console.error);}
         });
         let msTouchX=0;
         modeCV.addEventListener("touchstart",e=>{msTouchX=e.touches[0].clientX;},{passive:true});
         modeCV.addEventListener("touchend",e=>{const dx=e.changedTouches[0].clientX-msTouchX;
-          if(dx<-30){state.ui.modeIndex=(state.ui.modeIndex+1)%MODE_NAMES.length;renderFishSettings();saveAll().catch(console.error);}
-          else if(dx>30){state.ui.modeIndex=(state.ui.modeIndex+MODE_NAMES.length-1)%MODE_NAMES.length;renderFishSettings();saveAll().catch(console.error);}
+          if(dx<-30){state.ui.modeIndex=(state.ui.modeIndex+1)%MODE_NAMES.length;animateCarousel(-1);renderTimeSlider();updateFSDetails();saveAll().catch(console.error);}
+          else if(dx>30){state.ui.modeIndex=(state.ui.modeIndex+MODE_NAMES.length-1)%MODE_NAMES.length;animateCarousel(1);renderTimeSlider();updateFSDetails();saveAll().catch(console.error);}
         },{passive:true});
       }
       // Time slider (Canvas)
@@ -4012,6 +4027,14 @@
         tslider.addEventListener("touchend",()=>{tdragging=false;saveAll().catch(console.error);});
         tslider.addEventListener("wheel",e=>{e.preventDefault();const isR=(state.ui.modeIndex||0)===1&&fsRestMode;const mx=isR?30:60;if(isR){fsRestVal=Math.max(1,Math.min(mx,fsRestVal+(e.deltaY>0?-1:1)));}else{fsTimeVal=Math.max(1,Math.min(mx,fsTimeVal+(e.deltaY>0?-1:1)));}renderTimeSlider();saveAll().catch(console.error);},{passive:false});
       }
+      // Expand wheel area: anywhere in fish settings overlay (except loop buttons)
+      if(fishSettingsOv)fishSettingsOv.addEventListener("wheel",function(e){
+        if(e.target.closest("#fsLoopCount")||e.target.closest("#fsModeCarousel")||e.target.closest("#fsStartBtn")||e.target.closest("#fsTaskSelect")||e.target.closest("select"))return;
+        e.preventDefault();const isR=(state.ui.modeIndex||0)===1&&fsRestMode;const mx=isR?30:60;
+        if(isR){fsRestVal=Math.max(1,Math.min(mx,fsRestVal+(e.deltaY>0?-1:1)));}
+        else{fsTimeVal=Math.max(1,Math.min(mx,fsTimeVal+(e.deltaY>0?-1:1)));}
+        renderTimeSlider();saveAll().catch(console.error);
+      },{passive:false});
       // Lobby calendar + recommendation
       function getStreak(){let streak=0;const now=new Date();for(let i=0;i<365;i++){const d=new Date(now);d.setDate(d.getDate()-i);const k=`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;const st=getDayStat(k);if(getTotalWorkMin(st)>=1)streak++;else if(i>0)break;}return streak;}
       function getRecommendMin(){
@@ -4033,7 +4056,7 @@
           const circle=document.getElementById(cid),dateEl=document.getElementById(did);
           if(circle){
             const isToday=off===0;const cleared=wm>=target;const worked=wm>=1;
-            circle.style.background="rgba(255,255,255,0.12)";
+            circle.style.background="#fff";
             circle.style.borderColor=isToday?"#fff":"rgba(255,255,255,0.15)";
             if(worked&&cleared){circle.innerHTML='<span style="font-size:18px;color:#ffd700;font-weight:900;">✓</span>';}
             else if(worked){circle.innerHTML='<span style="font-size:18px;color:#7bdff5;font-weight:900;">✓</span>';}
@@ -4966,8 +4989,8 @@
       state.fishing.taskCategory=state.selectedTaskCategory||'work';
       if(mode===0||mode===4){
         state.fishing.normaText="";state.fishing.bossMode=mode===4;
-        const bid=state.selectedBaitId;const cm=fsTimeVal||state.selectedCourseMin||25;
-        state.selectedCourseMin=cm;
+        const bid=state.selectedBaitId;const cm=state.selectedCourseMin||10;
+        if(cm<1){toast("時間を設定してください");return;}
         if((state.baitCounts[bid]||0)<=0){toast("餌が足りません。");return;}
         if(mode===4){
           const boss=getActiveBoss();if(!boss){toast("ボスが出現していません");return;}
@@ -5037,7 +5060,7 @@
       },delay);
     }
     function triggerNonbiriHit(){
-      try{const a=new Audio("bb.mp3");a.volume=0.4;a.play().catch(()=>{});}catch(e){}
+      try{const a=new Audio("bb.mp3");a.volume=0.85;a.play().catch(()=>{});}catch(e){}
       tryVibrate([200,100,200]);
       // Show HIT overlay with 4s countdown
       const ov=document.createElement("div");ov.id="nonbiriHitOverlay";
@@ -5055,7 +5078,7 @@
         for(let ci=0;ci<catchCount;ci++){const r=rollCatchMayBoss(state.fishing);r.isNew=!state.encyclopedia[r.picked.id]||state.encyclopedia[r.picked.id].count===0;
         const s=r.picked.rarityStars||1;let escRate=0;if(s===1)escRate=0.25;else if(s===2)escRate=0.5;else if(s===3)escRate=0.5;r.escaped=Math.random()<escRate;
           if(!r.escaped){addWorkSession(1,r,state.fishing.taskCategory);applyCatchRecord(r);nonbiriResults.push(r);}caughtFish.push(r);}
-        nonbiriStartAt=Date.now(); // Reset timer for next interval
+        // Don't reset start time - keep counting total elapsed
         // Play animation for all caught fish
         playCatchAnimation(caughtFish,()=>{
           const survived=caughtFish.filter(f=>!f.escaped);if(!survived.length){scheduleNonbiriHit();return;}
@@ -5085,11 +5108,11 @@
       // Add work time
       const d=ensureDay(todayKey());const tc=state.fishing.taskCategory||"work";
       if(tc==="work")d.workMin+=elMin;else{if(!d.customMin)d.customMin={};d.customMin[tc]=(d.customMin[tc]||0)+elMin;}
-      if(nonbiriResults.length>0&&!state.nonbiriAutoSell){
+      if(nonbiriResults.length>0){
         state.batchResults=[...nonbiriResults];openBatchModal();
       }else{
         saveAll().catch(console.error);switchScreen("room");ensureRoomVisual();renderAll();
-        if(nonbiriResults.length)toast(`${nonbiriResults.length}匹釣れました！`);
+        toast("釣果なし");
       }
       nonbiriResults=[];
     }
@@ -5176,8 +5199,13 @@
       results.forEach(r=>{addWorkSession(Math.round(elapsedMin/count),r,tc);applyCatchRecord(r);});
       state.fishing.inProgress=false;state.fishing.paused=false;state.room.status="idle";
       syncPresence().catch(console.error);setFocusMode(false);
-      if(results.length===1){pendingResult=results[0];saveAll().catch(console.error);renderAll();openResultModal(results[0]);}
-      else{state.batchResults=[...results];saveAll().catch(console.error);renderAll();openBatchModal();}
+      const caughtResults=results.filter(r=>!r.escaped);
+      saveAll().catch(console.error);renderAll();
+      playCatchAnimation(results,function(){
+        if(caughtResults.length===0){toast("全部逃げられた…");recoverAfterResult();return;}
+        if(caughtResults.length===1){pendingResult=caughtResults[0];openResultModal(caughtResults[0]);}
+        else{state.batchResults=[...caughtResults];openBatchModal();}
+      });
     }
     function cancelFishingOnReload(){stopTimerTick();state.fishing.inProgress=false;state.fishing.paused=false;state.fishing.remainingMs=null;state.room.status="idle";state.ui.focusMode=false;state.ui.timerMega=false;syncPresence().catch(console.error);saveAll().catch(console.error);toast("リロードのため釣りを終了しました。");renderAll();}
     function restoreFishingTimer(){if(!state.fishing.inProgress)return;if(state.fishing.paused)renderFishingStatus();else if(Date.now()>=state.fishing.endAt)finishFishing();else startTimerTick();}
@@ -5232,45 +5260,54 @@
       const effectEl=document.getElementById("catchAnimEffect");
       const runEl=document.getElementById("catchAnimRunImg");
       const tapBtn=document.getElementById("catchAnimTapBtn");
+      const dotsEl=document.getElementById("catchAnimDots");
       if(!overlay||!results.length){if(onComplete)onComplete();return;}
       overlay.style.display="flex";let idx=0;
+      // Build dots indicator
+      if(dotsEl){dotsEl.innerHTML="";results.forEach(function(r,i){
+        const dotColors={1:"#888",2:"#7bdff5",3:"#ffd700",4:"#ff4444"};
+        const dot=document.createElement("span");dot.id="catchDot_"+i;
+        dot.style.cssText="width:10px;height:10px;border-radius:50%;background:"+(dotColors[r.picked.rarityStars||1]||"#888")+";position:relative;opacity:0.3;transition:opacity 0.3s;";
+        dotsEl.appendChild(dot);
+      });}
+      function highlightDot(i,escaped){
+        const dot=document.getElementById("catchDot_"+i);if(!dot)return;
+        dot.style.opacity="1";
+        if(escaped){dot.innerHTML='<span style="position:absolute;inset:0;display:grid;place-items:center;color:#ff4444;font-size:12px;font-weight:900;">×</span>';}
+      }
       function showAcceptBtn(){starsEl.textContent="";nameEl.textContent="";iconEl.textContent="";effectEl.innerHTML="";runEl.style.display="none";card.style.background="#222";overlay.style.background="rgba(0,0,0,0.7)";tapBtn.style.display="block";tapBtn.textContent="受け取る";tapBtn.onclick=()=>{tapBtn.style.display="none";showNext();};}
       function showNext(){
-        if(idx>=results.length){overlay.style.display="none";if(onComplete)onComplete();return;}
-        const r=results[idx];idx++;
+        if(idx>=results.length){overlay.style.display="none";if(dotsEl)dotsEl.innerHTML="";if(onComplete)onComplete();return;}
+        const r=results[idx];const curIdx=idx;idx++;
+        highlightDot(curIdx,false);
         const stars=r.picked.rarityStars||1;const st=getStarStyle(stars);
         card.style.background=st.bg;starsEl.textContent="";nameEl.textContent="";
         iconEl.textContent="❔";iconEl.style.transform="scale(1)";
         newEl.style.display=r.isNew?"block":"none";
         effectEl.innerHTML="";runEl.style.display="none";
-        overlay.style.background=stars>=3?"rgba(200,166,0,0.2)":stars>=2?"rgba(46,134,193,0.2)":"rgba(0,0,0,0.7)";
-        // Phase 1: Stars appear (0.3s)
+        overlay.style.background=stars>=4?"rgba(255,40,40,0.2)":stars>=3?"rgba(200,166,0,0.2)":stars>=2?"rgba(46,134,193,0.2)":"rgba(0,0,0,0.7)";
         let starCount=0;
         const starTimer=setInterval(()=>{starCount++;
-          const sc=stars>=3?"#ffd700":stars>=2?"#7bdff5":"#aabbcc";
+          const sc=stars>=4?"#ff6666":stars>=3?"#fff":stars>=2?"#7bdff5":"#aabbcc";
           starsEl.innerHTML+="<span style='color:"+sc+";'>★</span>";
           if(starCount>=stars){clearInterval(starTimer);
             nameEl.textContent=r.entry.name;nameEl.style.color=st.text;
-            // Phase 2: Tension (1.5s)
             let shakeCount=0;
             const shakeTimer=setInterval(()=>{shakeCount++;
               const intensity=Math.min(shakeCount*0.5,8);
-              iconEl.style.transform=`scale(${1+shakeCount*0.02}) rotate(${(Math.random()-0.5)*intensity}deg)`;
-              if(shakeCount%3===0)effectEl.innerHTML=`<div style="position:absolute;inset:0;display:grid;place-items:center;font-size:${20+shakeCount*2}px;color:rgba(255,255,255,${0.1+shakeCount*0.02});pointer-events:none;">!</div>`;
+              iconEl.style.transform="scale("+(1+shakeCount*0.02)+") rotate("+((Math.random()-0.5)*intensity)+"deg)";
+              if(shakeCount%3===0)effectEl.innerHTML='<div style="position:absolute;inset:0;display:grid;place-items:center;font-size:'+(20+shakeCount*2)+'px;color:rgba(255,255,255,'+(0.1+shakeCount*0.02)+');pointer-events:none;">!</div>';
             },50);
             setTimeout(()=>{clearInterval(shakeTimer);
-              // Phase 3: Result reveal
               try{const sfx=new Audio("stamp.mp3");sfx.volume=0.3;sfx.play().catch(()=>{});}catch(e){}
               iconEl.style.transform="scale(1.2)";
               if(r.escaped){
-                runEl.style.display="flex";iconEl.textContent="💨";
-                effectEl.innerHTML="";
+                runEl.style.display="flex";iconEl.textContent="💨";effectEl.innerHTML="";
+                highlightDot(curIdx,true);
               }else{
-                iconEl.textContent=r.entry.icon;
-                iconEl.style.transform="scale(1.3)";
+                iconEl.textContent=r.entry.icon;iconEl.style.transform="scale(1.3)";
                 effectEl.innerHTML='<div style="position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;animation:catchSparkle 0.5s ease;"><span style="font-size:40px;">✨</span></div>';
               }
-              // Wait for tap
               const tapHandler=()=>{overlay.removeEventListener("click",tapHandler);showNext();};
               setTimeout(()=>overlay.addEventListener("click",tapHandler),300);
             },1500);
@@ -5361,7 +5398,7 @@
       return result;
     }
 
-    function openResultModal(r){const st=getStarStyle(r.picked.rarityStars||1);el.resultArtEmoji.textContent=r.entry.icon;el.resultStarsInArt.textContent="★".repeat(r.picked.rarityStars||1);el.resultStarsInArt.style.color=st.star;el.resultPrice.textContent=`${fmtMoney(r.entry.sellPrice)} zz`;
+    function openResultModal(r){const st=getStarStyle(r.picked.rarityStars||1);el.resultArtEmoji.textContent=r.entry.icon;el.resultStarsInArt.textContent="★".repeat(r.picked.rarityStars||1);el.resultStarsInArt.style.color=(r.picked.rarityStars||1)>=3?"#fff":st.star;el.resultPrice.textContent=`${fmtMoney(r.entry.sellPrice)} zz`;el.resultPrice.style.color=(r.picked.rarityStars||1)>=3?'#7bdff5':'var(--gold)';
       const artCard=el.resultArtEmoji.parentElement;if(artCard)artCard.style.cssText=`background:${st.bg};border-radius:16px;padding:16px;position:relative;`;
       if(r.entry.kind==="fish")el.resultTitle.innerHTML=`${esc(r.entry.name)} <span class="result-size-colored ${r.entry.sizeCm>=r.picked.avgSize?"plus":"minus"}" style="color:${st.text};">(${fmtSize(r.entry.sizeCm)}cm)</span>`;else el.resultTitle.textContent=r.entry.name;
       el.resultLines.innerHTML=r.entry.kind==="fish"?`すごさ：${greatness(r.entry.sizeCm,r.picked.avgSize)}<br/>条件：${trTime(r.source.timeOfDay)} / ${trWeather(r.source.weather)}`:`漂流物<br/>条件：${trTime(r.source.timeOfDay)} / ${trWeather(r.source.weather)}`;
@@ -5391,7 +5428,7 @@
       // Full result display like single catch
       const core=document.createElement("div");core.className="result-core";
       const artWrap=document.createElement("div");artWrap.className="result-art-wrap";artWrap.style.cssText=`background:${bst.bg};border-radius:16px;padding:12px;position:relative;`;
-      const starColor=bst.star;
+      const starColor=(r.picked.rarityStars||1)>=3?"#fff":bst.star;
       artWrap.innerHTML=`<div class="result-art"><div class="result-stars-in-art" style="color:${starColor};">${"★".repeat(r.picked.rarityStars||1)}</div><div>${r.entry.icon}</div><div class="result-art-avg" style="color:${bst.text};">${isFish?`平均 ${fmtSize(r.picked.avgSize)}cm`:""}</div></div><div class="result-price" style="color:var(--gold);">${fmtMoney(r.entry.sellPrice)} zz</div>${r.isNew?'<div style="position:absolute;top:6px;right:8px;background:#ff3366;color:#fff;font-size:14px;font-weight:900;padding:2px 8px;border-radius:6px;">NEW</div>':""}`;
       core.appendChild(artWrap);
       const detail=document.createElement("div");
@@ -5722,7 +5759,7 @@
         const baseSize=stars>=3?22:stars>=2?16:12;
         const fishSize=Math.max(8,Math.min(80,baseSize*sizeRatio*(r.isHuge?2.5:1)));
         const appearTime=Math.random()*dm*60000*0.85;
-        waterFishes.push({stars,x:Math.random()*0.8+0.1,y:0.4+Math.random()*0.35,vx:(Math.random()>0.5?1:-1)*0.00015,vy:0,
+        waterFishes.push({stars,sizeCm:Math.round(sz),x:Math.random()*0.8+0.1,y:0.4+Math.random()*0.35,vx:(Math.random()>0.5?1:-1)*0.00015,vy:0,
           appeared:false,appearAt:appearTime,tunkAt:appearTime+Math.random()*(dm*60000*0.12),tunked:false,tunkDone:false,
           size:fishSize,nextDash:Date.now()+2000+Math.random()*4000,dashing:false,dashEnd:0,
           fleeAt:Date.now()+5000+Math.random()*8000,fleeing:false,fleeEnd:0});
@@ -5783,6 +5820,9 @@
           if(f.y<0.28){f.y=0.28;f.vy=Math.abs(f.vy);}if(f.y>0.88){f.y=0.88;f.vy=-Math.abs(f.vy);}
           var color=state.fishing.bossMode?"rgba(255,255,255,0.3)":(f.stars>=3?"rgba(200,166,0,0.4)":f.stars>=2?"rgba(80,160,210,0.35)":"rgba(0,0,0,0.28)");
           drawFish(f.x*W,f.y*H,f.size,f.size*0.45,color,f.vx>=0);
+          // Size label
+          ctx.globalAlpha=0.6;ctx.fillStyle="#fff";ctx.font="bold 8px sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";
+          ctx.fillText(f.sizeCm+"cm",f.x*W,f.y*H);ctx.globalAlpha=1;
         });
       }
       draw();
