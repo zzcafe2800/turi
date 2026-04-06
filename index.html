@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -3356,11 +3357,13 @@
     <!-- ===== CATCH ANIMATION ===== -->
     <div id="catchAnimOverlay" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.7);flex-direction:column;align-items:center;justify-content:center;">
       <!-- Size comparison UI above card -->
-      <div id="catchAnimSizeUI" style="display:none;position:relative;width:min(400px,88vw);height:100px;margin-bottom:-10px;">
-        <img id="catchAnimHito" src="hito.png" style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);height:80px;object-fit:contain;pointer-events:none;z-index:1;" onerror="this.style.display='none';">
-        <div id="catchAnimFishImg" style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);z-index:2;text-align:center;">
-          <div id="catchAnimSizeLabel" style="font-size:12px;font-weight:800;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,0.6);margin-bottom:2px;"></div>
-          <img id="catchAnimFishPic" src="" style="height:40px;object-fit:contain;pointer-events:none;" onerror="this.style.display='none';">
+      <div id="catchAnimSizeUI" style="display:none;width:min(400px,88vw);height:120px;position:relative;margin-bottom:-8px;">
+        <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);display:flex;align-items:flex-end;justify-content:center;gap:4px;height:100%;">
+          <img id="catchAnimHito" src="hito.png" style="height:80px;object-fit:contain;pointer-events:none;flex-shrink:0;" onerror="this.style.opacity='0.3';this.style.height='80px';">
+          <div id="catchAnimFishImg" style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+            <div id="catchAnimSizeLabel" style="font-size:13px;font-weight:900;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0.8);margin-bottom:2px;"></div>
+            <img id="catchAnimFishPic" src="" style="width:60px;object-fit:contain;pointer-events:none;" onerror="this.textContent='🐟';">
+          </div>
         </div>
       </div>
       <div id="catchAnimCard" style="width:min(400px,88vw);min-height:220px;border-radius:24px;background:#222;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;box-shadow:0 16px 60px rgba(0,0,0,0.5);">
@@ -5248,7 +5251,7 @@
     function setFocusMode(on){state.ui.focusMode=!!on;el.focusOverlay.classList.toggle("show",!!on);if(on)clearFishingUiTimeout();else handleFishingActivity();renderFishingStatus();}
     function toggleTimerMega(){state.ui.timerMega=!state.ui.timerMega;const btn=document.getElementById("timerMegaBtn");if(btn)btn.textContent=state.ui.timerMega?"◀":"▶";renderFishingStatus();}
     function togglePauseResume(){if(!state.fishing.inProgress)return;if(state.fishing.paused)resumeFishing();else pauseFishing();}
-    function getCatchCount(min){if(state.fishing.bossMode)return Math.max(1,Math.round(min));if(min>=50)return 7;if(min>=25)return 5;if(min>=10)return 3;return 1;}
+    function getCatchCount(min){if(state.fishing.bossMode)return Math.max(1,min);if(min>=50)return 7;if(min>=25)return 5;if(min>=10)return 3;return 1;}
     function finishFishing(){stopTimerTick();if(!state.fishing.inProgress)return;if(state.settings.catchSound)playAudio("time.mp3","time");maybeNotify();stopBgmOnFishEnd();tryVibrate([200,100,200]);
       // Clean up water surface
       waterActive=false;waterInited=false;const wc=document.getElementById("waterSurface");if(wc)wc.style.display="none";const wbg=wc?.previousElementSibling;if(wbg)wbg.style.visibility="visible";if(waterAnim){cancelAnimationFrame(waterAnim);waterAnim=null;}
@@ -5323,7 +5326,7 @@
       }
       function showAcceptBtn(){starsEl.textContent="";nameEl.textContent="";iconEl.textContent="";effectEl.innerHTML="";runEl.style.display="none";card.style.background="#222";overlay.style.background="rgba(0,0,0,0.7)";if(sizeUI)sizeUI.style.display="none";tapBtn.style.display="inline-block";tapBtn.textContent="受け取る";tapBtn.onclick=()=>{tapBtn.style.display="none";showNext();};}
       function showNext(){
-        if(idx>=results.length||(lineBreaks&&idx>0)){
+        if(idx>=results.length){
           overlay.style.display="none";if(dotsEl)dotsEl.innerHTML="";if(lineBreakEl)lineBreakEl.textContent="";if(skipBtn)skipBtn.style.display="none";if(sizeUI)sizeUI.style.display="none";
           if(lineBreaks&&idx<results.length)toast("糸が切れた！");
           if(onComplete)onComplete();return;
@@ -5340,7 +5343,7 @@
           sizeUI.style.display="block";
           const szCm=r.entry.sizeCm;if(sizeLabel)sizeLabel.textContent=Math.round(szCm*10)/10+"cm";
           // Fish image: sakana{stars}.png, scale relative to hito (40cm reference)
-          if(fishPic){fishPic.src="sakana@.png";const scale=Math.min(2,szCm/40);fishPic.style.height=Math.max(20,80*scale)+"px";}
+          if(fishPic){fishPic.src="sakana@.png";fishPic.style.display="block";const scale=Math.max(0.3,Math.min(3,szCm/40));fishPic.style.width=Math.max(20,60*scale)+"px";fishPic.style.height="auto";}
         }else{if(sizeUI)sizeUI.style.display="none";}
         const spd=skipMode?0.05:1;
         // Phase 1: Stars
@@ -5443,16 +5446,22 @@
     // Boss catch: in boss mode, chance to replace result with boss fish
     function rollCatchMayBoss(src){
       const result=rollCatch(src);
+      // Boss mode: use active boss catch rate
+      // Other modes: 0.1% chance for random boss
+      let bossChance=0,targetBoss=null;
       if(state.fishing.bossMode){
-        const boss=getActiveBoss();
-        if(boss&&Math.random()<boss.boss.catchRate){
-          const b=boss.boss;const g=approxGaussian();
-          const sizeCm=Math.max(1,Math.round((b.avgSize+g*(b.spread/2))*10)/10);
-          const sr=sizeCm/b.avgSize;const sf=sr<1?0.95+sr*0.12:1+Math.pow(sr-1,1.18)*1.15;
-          const price=Math.max(1,Math.round(b.basePrice*sf));
-          result.entry={uid:makeId(),baseId:b.id,kind:"fish",name:b.name,icon:b.icon,sellPrice:price,sizeCm,rarity:b.rarity,rarityStars:4,caughtAt:Date.now()};
-          result.picked=b;result.isRare=true;result.isBoss=true;
-        }
+        const ab=getActiveBoss();if(ab){bossChance=ab.boss.catchRate;targetBoss=ab.boss;}
+      }else{
+        bossChance=0.001; // 0.1%
+        targetBoss=BOSS_FISHES[Math.floor(Math.random()*BOSS_FISHES.length)];
+      }
+      if(targetBoss&&Math.random()<bossChance){
+        const b=targetBoss;const g=approxGaussian();
+        const sizeCm=Math.max(1,Math.round((b.avgSize+g*(b.spread/2))*10)/10);
+        const sr=sizeCm/b.avgSize;const sf=sr<1?0.95+sr*0.12:1+Math.pow(sr-1,1.18)*1.15;
+        const price=Math.max(1,Math.round(b.basePrice*sf));
+        result.entry={uid:makeId(),baseId:b.id,kind:"fish",name:b.name,icon:b.icon,sellPrice:price,sizeCm,rarity:b.rarity,rarityStars:4,caughtAt:Date.now()};
+        result.picked=b;result.isRare=true;result.isBoss=true;
       }
       return result;
     }
