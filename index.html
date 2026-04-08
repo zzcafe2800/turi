@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -2985,23 +2986,23 @@
           <div id="fishingParticipants"></div>
         </div>
 
-        <!-- Audio player (horizontal) -->
-        <div id="audioPlayerWrap" class="audio-player-wrap fade-ui" style="display:flex;align-items:center;gap:6px;padding:4px 8px;">
-          <div id="audioBgmTitle" class="audio-bgm-title" style="flex:0 0 auto;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;cursor:pointer;padding:4px 6px;border-radius:6px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6);">bgm01</div>
-          <button id="audioPrevBtn" class="audio-ctrl-btn" title="前の曲" style="width:24px;height:24px;border:0;background:transparent;color:#fff;font-size:11px;cursor:pointer;display:grid;place-items:center;">❚◀</button>
-          <button id="audioPlayBtn" class="audio-ctrl-btn" title="再生/停止" style="width:24px;height:24px;border:0;background:transparent;color:#fff;font-size:11px;cursor:pointer;display:grid;place-items:center;">▶</button>
-          <button id="audioNextBtn" class="audio-ctrl-btn" title="次の曲" style="width:24px;height:24px;border:0;background:transparent;color:#fff;font-size:11px;cursor:pointer;display:grid;place-items:center;">▶❚</button>
-          <button id="audioFavListBtn" class="audio-ctrl-btn" title="全曲/お気に入り" style="width:24px;height:24px;border:0;background:transparent;color:#fff;font-size:12px;cursor:pointer;display:grid;place-items:center;">♬</button>
-          <div id="audioVolBar" style="flex:1;min-width:50px;max-width:100px;height:6px;background:rgba(255,255,255,0.15);border-radius:3px;position:relative;cursor:pointer;touch-action:none;">
-            <div id="audioVolFill" style="height:100%;background:var(--accent);border-radius:3px;width:50%;pointer-events:none;"></div>
-            <div id="audioVolKnob" style="position:absolute;top:50%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,0.4);left:50%;cursor:grab;"></div>
+        <!-- Audio player -->
+        <div id="audioPlayerWrap" class="audio-player-wrap fade-ui">
+          <div id="audioBgmTitle" class="audio-bgm-title">bgm01</div>
+          <div class="audio-bar-wrap">
+            <div id="audioSeekBar" class="audio-seek-bar">
+              <div id="audioSeekFill" class="audio-seek-fill" style="width:0%"></div>
+            </div>
+            <span id="audioTimeText" class="audio-time-text">00:00/00:00</span>
           </div>
-          <!-- Hidden elements for compatibility -->
-          <div id="audioSeekBar" style="display:none;"><div id="audioSeekFill"></div></div>
-          <span id="audioTimeText" style="display:none;"></span>
-          <button id="audioMuteBtn" style="display:none;"></button>
-          <button id="audioLoopBtn" style="display:none;"></button>
-          <button id="audioSfxMuteBtn" style="display:none;"></button>
+          <div class="audio-controls">
+            <button id="audioMuteBtn" class="audio-ctrl-btn" title="BGM音量"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg><svg class="vol-ring" viewBox="0 0 36 36"><circle cx="18" cy="18" r="16" stroke-dasharray="100.53" stroke-dashoffset="100.53"/></svg></button>
+            <button id="audioPlayBtn" class="audio-ctrl-btn" title="再生/停止"><svg viewBox="0 0 24 24" width="16" height="16" fill="#fff" stroke="none"><path d="M8 5v14l11-7z"/></svg></button>
+            <button id="audioNextBtn" class="audio-ctrl-btn" title="次の曲"><svg viewBox="0 0 24 24" width="16" height="16" fill="#fff" stroke="none"><path d="M5 4l10 8-10 8V4z"/><rect x="17" y="5" width="2" height="14"/></svg></button>
+            <button id="audioLoopBtn" class="audio-ctrl-btn" title="ループ"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></button>
+            <button id="audioFavListBtn" class="audio-ctrl-btn" title="全曲/お気に入り"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+            <button id="audioSfxMuteBtn" class="audio-ctrl-btn" title="効果音"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M18 8a6 6 0 0 1 0 8"/><path d="M6 16a6 6 0 0 1 0-8"/></svg><svg class="vol-ring" viewBox="0 0 36 36"><circle cx="18" cy="18" r="16" stroke-dasharray="100.53" stroke-dashoffset="100.53"/></svg></button>
+          </div>
         </div>
 
         <div id="fishingStampFeed" class="stamp-feed" style="display:none;"></div>
@@ -3400,7 +3401,7 @@
         <div id="catchAnimDots" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;"></div>
         <button id="catchAnimSkipBtn" style="padding:2px 8px;border:1px solid rgba(255,255,255,0.15);border-radius:8px;background:transparent;color:rgba(255,255,255,0.4);font-size:9px;cursor:pointer;display:none;margin-left:4px;">スキップ</button>
       </div>
-      
+      <div id="catchAnimLineBreak" style="font-size:11px;color:rgba(255,150,150,0.7);margin-top:4px;"></div>
       <button id="catchAnimTapBtn" style="margin-top:12px;padding:10px 32px;border:0;border-radius:999px;background:var(--accent);color:#fff;font-size:16px;font-weight:800;cursor:pointer;display:none;">受け取る</button>
     </div>
     <!-- ===== OTHER MODALS ===== -->
@@ -3982,7 +3983,7 @@
       document.querySelectorAll(".bottom-nav button").forEach(b=>b.addEventListener("click",()=>{if(b.dataset.screen)switchScreen(b.dataset.screen);}));
       if(el.partsPanelToggle)el.partsPanelToggle.addEventListener("click",()=>{state.ui.partsPanelOpen=!state.ui.partsPanelOpen;renderNavParts();saveAll().catch(console.error);});
       if(el.mailboxNavBtn)el.mailboxNavBtn.addEventListener("click",()=>openOfficialMailbox());
-      el.playRoomBtn.addEventListener("click",()=>{if(state.soloMode)joinSoloRoom().catch(console.error);else joinBestRoom().catch(console.error);});
+      el.playRoomBtn.addEventListener("click",()=>joinBestRoom().catch(console.error));
       // Fish settings overlay
       const openFSBtn=document.getElementById("openFishSettingsBtn");
       const fishSettingsOv=document.getElementById("fishSettingsOverlay");
@@ -4474,19 +4475,6 @@
       // Audio
       el.audioPlayBtn.addEventListener("click",toggleBgmPlay);
       el.audioNextBtn.addEventListener("click",nextBgm);
-      // Prev button
-      document.getElementById("audioPrevBtn")?.addEventListener("click",()=>{bgmCurrentIndex=(bgmCurrentIndex-1+BGM_LIST.length)%BGM_LIST.length;if(bgmPlaying)playCurrentBgm();else{el.audioBgmTitle.textContent=BGM_LIST[bgmCurrentIndex].title;}});
-      // Volume bar
-      const volBar=document.getElementById("audioVolBar"),volFill=document.getElementById("audioVolFill"),volKnob=document.getElementById("audioVolKnob");
-      function setVolFromX(x){const rect=volBar.getBoundingClientRect();const pct=Math.max(0,Math.min(100,Math.round((x-rect.left)/rect.width*100)));bgmVolume=pct;sfxVolume=pct;if(bgmAudio)bgmAudio.volume=pct/100;if(volFill)volFill.style.width=pct+"%";if(volKnob)volKnob.style.left=pct+"%";}
-      if(volBar){
-        volBar.addEventListener("pointerdown",e=>{e.preventDefault();setVolFromX(e.clientX);
-          const move=ev=>setVolFromX(ev.clientX);const up=()=>{document.removeEventListener("pointermove",move);document.removeEventListener("pointerup",up);};
-          document.addEventListener("pointermove",move);document.addEventListener("pointerup",up);
-        });
-        // Init position
-        if(volFill)volFill.style.width=bgmVolume+"%";if(volKnob)volKnob.style.left=bgmVolume+"%";
-      }
       el.audioLoopBtn.addEventListener("click",()=>{const modes=['loop','shuffle','repeat'];const ci=modes.indexOf(bgmLoopMode);bgmLoopMode=modes[(ci+1)%3];const icons={loop:'🔁',shuffle:'🔀',repeat:'🔂'};el.audioLoopBtn.textContent=icons[bgmLoopMode]||'🔁';toast({loop:'順番再生',shuffle:'シャッフル',repeat:'1曲ループ'}[bgmLoopMode],1500);});
       el.audioFavListBtn.addEventListener("click",()=>{bgmFavOnly=!bgmFavOnly;el.audioFavListBtn.textContent=bgmFavOnly?'❤':'📋';});
       el.audioBgmTitle.addEventListener("click",openBgmList);
@@ -5184,8 +5172,6 @@
     }
 
     // Room functions (all preserved)
-    
-    async function joinSoloRoom(){if(!db){toast("Firebase接続が必要です。");return;}if(!auth?.currentUser&&firebaseReady)try{await signInAnonymously(auth);}catch{}try{const t=todayKey();const rid="solo_"+state.user.uid+"_"+t.replace(/-/g,"_");const ref=doc(db,"rooms",rid);const m=makeMember();await runTransaction(db,async tx=>{const s=await tx.get(ref);const d=s.exists()?normalizeRoom(s.data()):null;tx.set(ref,{index:9999,resetDate:t,members:[m],recentStamps:d?.recentStamps||[],updatedAt:Date.now(),createdAt:d?.createdAt||Date.now()},{merge:true});});state.room.inRoom=true;state.room.roomId=rid;startRoomListener(rid);await saveAll();switchScreen("room");renderAll();ensureRoomVisual();}catch(e){console.error(e);toast("ソロ部屋の作成に失敗しました。");}}
     async function joinBestRoom(){if(!db){toast("Firebase接続が必要です。");return;}if(!auth?.currentUser&&firebaseReady)try{await signInAnonymously(auth);}catch{}try{await resetRoomsIfNeeded();const t=todayKey();const snap=await getDocs(query(collection(db,"rooms"),where("resetDate","==",t)));const rooms=snap.docs.map(s=>({id:s.id,...normalizeRoom(s.data())}));rooms.sort((a,b)=>(b.members.length-a.members.length)||(a.index-b.index));let joined=false;for(const r of rooms){if(r.members.length<ROOM_CAPACITY){joined=await tryJoin(r.id,r.index,false);if(joined)break;}}if(!joined){const ni=rooms.reduce((m,r)=>Math.max(m,r.index||0),0)+1;joined=await tryJoin(`room_${t.replace(/-/g,"_")}_${ni}`,ni,true);}if(joined){switchScreen("room");renderAll();ensureRoomVisual();}}catch(e){console.error(e);toast("部屋参加に失敗しました。");}}
     async function tryJoin(roomId,index,create){const ref=doc(db,"rooms",roomId);const m=makeMember();try{await runTransaction(db,async tx=>{const s=await tx.get(ref);const d=s.exists()?normalizeRoom(s.data()):null;if(!s.exists()&&!create)throw new Error("missing");const ms=[...(d?.members||[])].filter(x=>x.uid!==m.uid);if(ms.length>=ROOM_CAPACITY)throw new Error("full");ms.push(m);tx.set(ref,{index,resetDate:todayKey(),members:ms,recentStamps:d?.recentStamps||[],updatedAt:Date.now(),createdAt:d?.createdAt||Date.now()},{merge:true});});state.room.inRoom=true;state.room.roomId=roomId;startRoomListener(roomId);await saveAll();return true;}catch(e){if(String(e?.message).includes("full")||String(e?.message).includes("missing"))return false;throw e;}}
     let _snapRenderTimer=null;
@@ -5481,14 +5467,18 @@
       const tapBtn=document.getElementById("catchAnimTapBtn");
       const skipBtn=document.getElementById("catchAnimSkipBtn");
       const dotsEl=document.getElementById("catchAnimDots");
-            const sizeUI=document.getElementById("catchAnimSizeUI");
+      const lineBreakEl=document.getElementById("catchAnimLineBreak");
+      const sizeUI=document.getElementById("catchAnimSizeUI");
       const sizeLabel=document.getElementById("catchAnimSizeLabel");
       const fishPic=document.getElementById("catchAnimFishPic");
       if(!overlay||!results.length){if(onComplete)onComplete();return;}
       overlay.style.display="flex";let idx=0;let skipMode=false;
       // Line break % based on elapsed fishing time
       const elapsedMin=state.fishing.durationMin||Math.round((Date.now()-(state.fishing.startAt||Date.now()))/60000);
-      
+      const isNonbiri=!!state.fishing.nonbiriMode;
+      const lineBreakPct=isNonbiri?Math.min(100,Math.max(1,Math.round(elapsedMin/70*100))):0;
+      if(lineBreakEl)lineBreakEl.textContent=isNonbiri?(lineBreakPct+"% で糸が切れます"):"";
+      const lineBreaks=isNonbiri&&Math.random()*100<lineBreakPct;
       // Build dots
       if(dotsEl){dotsEl.innerHTML="";results.forEach(function(r,i){
         const dc={1:"#888",2:"#7bdff5",3:"#ffd700",4:"#ff4444"};
@@ -5497,16 +5487,12 @@
         dotsEl.appendChild(dot);
       });}
       // Skip button
-      if(skipBtn){skipBtn.style.display="none";skipBtn.onclick=()=>{skipMode=true;};}
+      if(skipBtn){skipBtn.style.display="inline-block";skipBtn.onclick=()=>{skipMode=true;};}
       function highlightDot(i,escaped){
         const dot=document.getElementById("catchDot_"+i);if(!dot)return;dot.style.opacity="1";
-        if(escaped){dot.style.background="transparent";dot.innerHTML='<span style="position:absolute;inset:0;display:grid;place-items:center;color:#ff4444;font-size:12px;font-weight:900;">×</span>';}
+        if(escaped)dot.innerHTML='<span style="position:absolute;inset:0;display:grid;place-items:center;color:#ff4444;font-size:12px;font-weight:900;">×</span>';
       }
-      function showAcceptBtn(){starsEl.textContent="";nameEl.textContent="";iconEl.textContent="";effectEl.innerHTML="";runEl.style.display="none";card.style.background="#222";overlay.style.background="rgba(0,0,0,0.7)";if(sizeUI)sizeUI.style.display="none";if(skipBtn)skipBtn.style.display="none";
-        // Show work time
-        const wt=state.fishing.nonbiriMode?Math.round((Date.now()-(window._lastNonbiriCatchTime||nonbiriStartAt))/60000):Math.round((Date.now()-(state.fishing.startAt||Date.now()))/60000);
-        iconEl.textContent="";effectEl.innerHTML='<div style="font-size:clamp(18px,5vw,28px);font-weight:900;color:#fff;text-align:center;">'+Math.max(1,wt)+'分作業！！</div>';
-        tapBtn.style.display="inline-block";tapBtn.textContent="受け取る";tapBtn.onclick=()=>{tapBtn.style.display="none";if(skipBtn)skipBtn.style.display="inline-block";showNext();};}
+      function showAcceptBtn(){starsEl.textContent="";nameEl.textContent="";iconEl.textContent="";effectEl.innerHTML="";runEl.style.display="none";card.style.background="#222";overlay.style.background="rgba(0,0,0,0.7)";if(sizeUI)sizeUI.style.display="none";tapBtn.style.display="inline-block";tapBtn.textContent="受け取る";tapBtn.onclick=()=>{tapBtn.style.display="none";showNext();};}
       function showNext(){
         if(idx>=results.length){
           overlay.style.display="none";if(dotsEl)dotsEl.innerHTML="";if(lineBreakEl)lineBreakEl.textContent="";if(skipBtn)skipBtn.style.display="none";if(sizeUI)sizeUI.style.display="none";
@@ -5532,16 +5518,16 @@
         let starCount=0;
         const starTimer=setInterval(()=>{starCount++;
           const sc=stars>=4?"#ff6666":stars>=3?"#fff":stars>=2?"#7bdff5":"#aabbcc";
-          if(stars===0){starsEl.innerHTML='<span style="color:#888;font-size:14px;">はずれ</span>';starCount=999;}else starsEl.innerHTML+="<span style='color:"+sc+";'>★</span>";
-          if(starCount>=stars||stars===0){clearInterval(starTimer);
+          starsEl.innerHTML+="<span style='color:"+sc+";'>★</span>";
+          if(starCount>=stars){clearInterval(starTimer);
             nameEl.textContent=r.entry.name;nameEl.style.color=st.text;
-            let shakeCount=0;let tensionDone=false;
+            let shakeCount=0;
             const shakeTimer=setInterval(()=>{shakeCount++;
               const intensity=Math.min(shakeCount*0.5,8);
               iconEl.style.transform="scale("+(1+shakeCount*0.02)+") rotate("+((Math.random()-0.5)*intensity)+"deg)";
               if(shakeCount%3===0)effectEl.innerHTML='<div style="position:absolute;inset:0;display:grid;place-items:center;font-size:'+(20+shakeCount*2)+'px;color:rgba(255,255,255,'+(0.1+shakeCount*0.02)+');pointer-events:none;">!</div>';
             },50*spd);
-            function revealResult(){if(tensionDone)return;tensionDone=true;clearInterval(shakeTimer);overlay.removeEventListener("click",tensionSkip);
+            setTimeout(()=>{clearInterval(shakeTimer);
               iconEl.style.transform="scale(1.2)";
               if(r.escaped){
                 runEl.style.display="flex";iconEl.textContent="💨";effectEl.innerHTML="";
@@ -5552,13 +5538,9 @@
                 effectEl.innerHTML='<div style="position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;animation:catchSparkle 0.5s ease;"><span style="font-size:40px;">✨</span></div>';
                 try{new Audio("get.mp3").play().catch(()=>{});}catch(e){}
               }
-              if(state.fishing.nonbiriMode)window._lastNonbiriCatchTime=Date.now();
               if(skipMode){setTimeout(()=>showNext(),100*spd);}
               else{const tapHandler=()=>{overlay.removeEventListener("click",tapHandler);showNext();};setTimeout(()=>overlay.addEventListener("click",tapHandler),300);}
-            }
-            const tensionSkip=()=>revealResult();
-            overlay.addEventListener("click",tensionSkip);
-            setTimeout(()=>revealResult(),1500*spd);
+            },1500*spd);
           }
         },100*spd);
       }
@@ -5629,7 +5611,7 @@
     function getCourseBonus(dm){const b={rare:0,size:0,power:0,hugeChance:0,junkReduction:0,label:""};if(dm>=25){b.rare+=3;b.label="集中ボーナス";}if(dm>=40){b.size+=4;b.power+=1;}if(dm>=60){b.size+=6;b.power+=2;b.hugeChance+=0.005;b.label="深海ボーナス";}return b;}
     function rollCatch(src){
       // 50% chance: ★0 item
-      if(!state.fishing.bossMode&&Math.random()<0.5&&ZERO_STAR_ITEMS.length>0){
+      if(Math.random()<0.5&&ZERO_STAR_ITEMS.length>0){
         const zi=ZERO_STAR_ITEMS[Math.floor(Math.random()*ZERO_STAR_ITEMS.length)];
         const price=Math.max(1,zi.basePrice);
         const entry={uid:makeId(),baseId:zi.id,kind:"item",name:zi.name,icon:zi.icon,sellPrice:price,sizeCm:null,rarity:0,rarityStars:0,caughtAt:Date.now()};
@@ -5702,9 +5684,7 @@
       const core=document.createElement("div");core.className="result-core";
       const artWrap=document.createElement("div");artWrap.className="result-art-wrap";artWrap.style.cssText=`background:${bst.bg};border-radius:16px;padding:12px;position:relative;`;
       const starColor=(r.picked.rarityStars||1)>=3?"#fff":bst.star;
-      const starDisp=(r.picked.rarityStars||0)===0?'<span style="color:#888;">はずれ</span>':"★".repeat(r.picked.rarityStars||1);
-      const sizeHtml=r.entry.sizeCm?'<div style="position:absolute;top:-50px;left:50%;transform:translateX(-50%);display:flex;align-items:flex-end;gap:4px;"><img src="hito.png" style="height:40px;" onerror="this.style.opacity=0.3"><div style="text-align:center;"><div style="font-size:10px;font-weight:900;color:#fff;">'+Math.round(r.entry.sizeCm*10)/10+'cm</div><img src="sakana@.png" style="width:'+Math.max(14,40*(r.entry.sizeCm/40))+'px;" onerror="this.style.display=\'none\'"></div></div>':"";
-      artWrap.innerHTML=sizeHtml+`<div class="result-art"><div class="result-stars-in-art" style="color:${(r.picked.rarityStars||0)>=3?'#c0e8ff':starColor};">${starDisp}</div><div>${r.entry.icon}</div><div class="result-art-avg" style="color:${bst.text};">${isFish?`平均 ${fmtSize(r.picked.avgSize)}cm`:""}</div></div><div class="result-price" style="color:#fff;">${fmtMoney(r.entry.sellPrice)} zz</div>${r.isNew?'<div style="position:absolute;top:6px;right:8px;background:#ff3366;color:#fff;font-size:14px;font-weight:900;padding:2px 8px;border-radius:6px;">NEW</div>':""}`;
+      artWrap.innerHTML=`<div class="result-art"><div class="result-stars-in-art" style="color:${(r.picked.rarityStars||1)>=3?'#c0e8ff':starColor};">${"★".repeat(r.picked.rarityStars||1)}</div><div>${r.entry.icon}</div><div class="result-art-avg" style="color:${bst.text};">${isFish?`平均 ${fmtSize(r.picked.avgSize)}cm`:""}</div></div><div class="result-price" style="color:var(--gold);">${fmtMoney(r.entry.sellPrice)} zz</div>${r.isNew?'<div style="position:absolute;top:6px;right:8px;background:#ff3366;color:#fff;font-size:14px;font-weight:900;padding:2px 8px;border-radius:6px;">NEW</div>':""}`;
       core.appendChild(artWrap);
       const detail=document.createElement("div");
       detail.innerHTML=`<div class="result-title-row"><div class="result-title">${isFish?`${esc(r.entry.name)} <span class="result-size-colored ${r.entry.sizeCm>=r.picked.avgSize?"plus":"minus"}">(${fmtSize(r.entry.sizeCm)}cm)</span>`:esc(r.entry.name)}</div></div>
@@ -5864,9 +5844,9 @@
     function getBossSpawns(dateStr){
       let seed=0;for(let i=0;i<dateStr.length;i++)seed=((seed<<5)-seed+dateStr.charCodeAt(i))|0;
       function rng(){seed=(seed*16807+0)%2147483647;return(seed&0x7fffffff)/2147483647;}
-      const count=24;const spawns=[];let cursor=0;
+      const count=12;const spawns=[];let cursor=0;
       for(let i=0;i<count;i++){
-        const gap=20+Math.floor(rng()*40); // 40-80 min gap
+        const gap=40+Math.floor(rng()*40); // 40-80 min gap
         cursor+=gap;
         const startMs=cursor*60000;
         const bossIdx=Math.floor(rng()*BOSS_FISHES.length);
@@ -5906,31 +5886,33 @@
       if(!markers||!info)return;markers.innerHTML="";info.innerHTML="";
       const dk=todayKey();const spawns=getBossSpawns(dk);
       const now=new Date();const todayMs=(now.getHours()*60+now.getMinutes())*60000+now.getSeconds()*1000;
-      // Find nearest: active first, then next future
-      const active=spawns.find(s=>todayMs>=s.startMs&&todayMs<s.endMs);
-      const future=spawns.filter(s=>todayMs<s.startMs).sort((a,b)=>a.startMs-b.startMs)[0];
-      const nearest=active||future;
-      // Show only markers for active/future
       spawns.forEach(s=>{
-        const isActive=todayMs>=s.startMs&&todayMs<s.endMs;
-        const isFuture=todayMs<s.startMs;
-        if(!isActive&&!isFuture)return;
+        const active=todayMs>=s.startMs&&todayMs<s.endMs;
+        const future=todayMs<s.startMs;
+        const past=todayMs>=s.endMs;
         const owned=!!state.encyclopedia[s.boss.id];
-        const m=document.createElement("div");m.style.cssText=`position:absolute;left:${s.x*100}%;top:${s.y*100}%;transform:translate(-50%,-50%);pointer-events:auto;`;
+        // Marker on map
+        const m=document.createElement("div");m.style.cssText=`position:absolute;left:${s.x*100}%;top:${s.y*100}%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:4px;pointer-events:auto;`;
         const icon=document.createElement("div");
-        icon.style.cssText=`width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:14px;border:2px solid ${isActive?"#22c55e":"rgba(255,200,0,0.3)"};background:${isActive?"rgba(34,197,94,0.15)":"rgba(0,0,0,0.3)"};`;
-        icon.textContent=owned?s.boss.icon:"❔";m.appendChild(icon);markers.appendChild(m);
+        icon.style.cssText=`width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:18px;border:2px solid ${active?"#22c55e":past?"rgba(255,255,255,0.15)":"rgba(255,200,0,0.3)"};background:${active?"rgba(34,197,94,0.15)":past?"rgba(0,0,0,0.4)":"rgba(0,0,0,0.3)"};${past?"opacity:0.3;":""}`;
+        icon.textContent=owned?s.boss.icon:"❔";m.appendChild(icon);
+        if(active||future){
+          const label=document.createElement("div");label.style.cssText="font-size:10px;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.8);white-space:nowrap;";
+          if(active){const rem=Math.round((s.endMs-todayMs)/60000);label.innerHTML=`<b>${s.boss.name}</b><br>残り${rem}分`;}
+          else{const startH=Math.floor(s.startMs/3600000);const startM=Math.floor((s.startMs%3600000)/60000);label.innerHTML=`<span style="opacity:0.5">${startH}:${String(startM).padStart(2,"0")}~</span>`;}
+          m.appendChild(label);
+        }
+        markers.appendChild(m);
+        // Info list
+        if(active||future){
+          const row=document.createElement("div");row.style.cssText=`display:flex;align-items:center;gap:10px;padding:8px 12px;margin:4px 0;border-radius:12px;background:${active?"rgba(34,197,94,0.1)":"rgba(255,255,255,0.03)"};border:1px solid ${active?"rgba(34,197,94,0.2)":"rgba(255,255,255,0.06)"};`;
+          const startH=Math.floor(s.startMs/3600000);const startM=Math.floor((s.startMs%3600000)/60000);
+          const endH=Math.floor(s.endMs/3600000);const endM=Math.floor((s.endMs%3600000)/60000);
+          row.innerHTML=`<span style="font-size:24px;">${owned?s.boss.icon:"❔"}</span><div><div style="font-weight:700;font-size:13px;">${s.boss.name}</div><div style="font-size:10px;color:rgba(255,255,255,0.4);">${startH}:${String(startM).padStart(2,"0")}〜${endH}:${String(endM).padStart(2,"0")} / 捕獲率${(s.boss.catchRate*100).toFixed(1)}%</div></div>${active?'<span style="margin-left:auto;color:#22c55e;font-size:11px;font-weight:700;">出現中</span>':""}`;
+          info.appendChild(row);
+        }
       });
-      // Nearest boss: big countdown overlay
-      if(nearest){
-        const isActive=todayMs>=nearest.startMs&&todayMs<nearest.endMs;
-        const owned=!!state.encyclopedia[nearest.boss.id];
-        const startH=Math.floor(nearest.startMs/3600000);const startM=Math.floor((nearest.startMs%3600000)/60000);
-        let cdText="";
-        if(isActive){const remMs=nearest.endMs-todayMs;const rm=Math.floor(remMs/60000);const rs=Math.floor((remMs%60000)/1000);cdText=`残り ${rm}分${String(rs).padStart(2,"0")}秒`;}
-        else{const waitMs=nearest.startMs-todayMs;const wm=Math.floor(waitMs/60000);const ws=Math.floor((waitMs%60000)/1000);cdText=`あと ${wm}分${String(ws).padStart(2,"0")}秒`;}
-        info.innerHTML=`<div style="text-align:center;"><div style="font-size:clamp(24px,6vw,36px);font-weight:900;color:${isActive?"#22c55e":"#ffd700"};">${cdText}</div><div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:4px;">${nearest.boss.name} / ${startH}:${String(startM).padStart(2,"0")}~ / 捕獲率${(nearest.boss.catchRate*100).toFixed(1)}%</div></div>`;
-      }else{info.innerHTML='<div style="text-align:center;color:rgba(255,255,255,0.3);padding:12px;">本日のボスは終了しました</div>';}
+      if(!info.children.length)info.innerHTML='<div style="text-align:center;color:rgba(255,255,255,0.3);padding:20px;">今日のボスはすべて終了しました</div>';
     }
     // Fish predict → Map (defined above)
     // Boss mode in renderModeCard
