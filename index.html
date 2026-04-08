@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -2986,23 +2985,23 @@
           <div id="fishingParticipants"></div>
         </div>
 
-        <!-- Audio player -->
-        <div id="audioPlayerWrap" class="audio-player-wrap fade-ui">
-          <div id="audioBgmTitle" class="audio-bgm-title">bgm01</div>
-          <div class="audio-bar-wrap">
-            <div id="audioSeekBar" class="audio-seek-bar">
-              <div id="audioSeekFill" class="audio-seek-fill" style="width:0%"></div>
-            </div>
-            <span id="audioTimeText" class="audio-time-text">00:00/00:00</span>
+        <!-- Audio player (horizontal) -->
+        <div id="audioPlayerWrap" class="audio-player-wrap fade-ui" style="display:flex;align-items:center;gap:6px;padding:4px 8px;">
+          <div id="audioBgmTitle" class="audio-bgm-title" style="flex:0 0 auto;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;cursor:pointer;padding:4px 6px;border-radius:6px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6);">bgm01</div>
+          <button id="audioPrevBtn" class="audio-ctrl-btn" title="前の曲" style="width:24px;height:24px;border:0;background:transparent;color:#fff;font-size:11px;cursor:pointer;display:grid;place-items:center;">❚◀</button>
+          <button id="audioPlayBtn" class="audio-ctrl-btn" title="再生/停止" style="width:24px;height:24px;border:0;background:transparent;color:#fff;font-size:11px;cursor:pointer;display:grid;place-items:center;">▶</button>
+          <button id="audioNextBtn" class="audio-ctrl-btn" title="次の曲" style="width:24px;height:24px;border:0;background:transparent;color:#fff;font-size:11px;cursor:pointer;display:grid;place-items:center;">▶❚</button>
+          <button id="audioFavListBtn" class="audio-ctrl-btn" title="全曲/お気に入り" style="width:24px;height:24px;border:0;background:transparent;color:#fff;font-size:12px;cursor:pointer;display:grid;place-items:center;">♬</button>
+          <div id="audioVolBar" style="flex:1;min-width:50px;max-width:100px;height:6px;background:rgba(255,255,255,0.15);border-radius:3px;position:relative;cursor:pointer;touch-action:none;">
+            <div id="audioVolFill" style="height:100%;background:var(--accent);border-radius:3px;width:50%;pointer-events:none;"></div>
+            <div id="audioVolKnob" style="position:absolute;top:50%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,0.4);left:50%;cursor:grab;"></div>
           </div>
-          <div class="audio-controls">
-            <button id="audioMuteBtn" class="audio-ctrl-btn" title="BGM音量"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg><svg class="vol-ring" viewBox="0 0 36 36"><circle cx="18" cy="18" r="16" stroke-dasharray="100.53" stroke-dashoffset="100.53"/></svg></button>
-            <button id="audioPlayBtn" class="audio-ctrl-btn" title="再生/停止"><svg viewBox="0 0 24 24" width="16" height="16" fill="#fff" stroke="none"><path d="M8 5v14l11-7z"/></svg></button>
-            <button id="audioNextBtn" class="audio-ctrl-btn" title="次の曲"><svg viewBox="0 0 24 24" width="16" height="16" fill="#fff" stroke="none"><path d="M5 4l10 8-10 8V4z"/><rect x="17" y="5" width="2" height="14"/></svg></button>
-            <button id="audioLoopBtn" class="audio-ctrl-btn" title="ループ"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></button>
-            <button id="audioFavListBtn" class="audio-ctrl-btn" title="全曲/お気に入り"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
-            <button id="audioSfxMuteBtn" class="audio-ctrl-btn" title="効果音"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M18 8a6 6 0 0 1 0 8"/><path d="M6 16a6 6 0 0 1 0-8"/></svg><svg class="vol-ring" viewBox="0 0 36 36"><circle cx="18" cy="18" r="16" stroke-dasharray="100.53" stroke-dashoffset="100.53"/></svg></button>
-          </div>
+          <!-- Hidden elements for compatibility -->
+          <div id="audioSeekBar" style="display:none;"><div id="audioSeekFill"></div></div>
+          <span id="audioTimeText" style="display:none;"></span>
+          <button id="audioMuteBtn" style="display:none;"></button>
+          <button id="audioLoopBtn" style="display:none;"></button>
+          <button id="audioSfxMuteBtn" style="display:none;"></button>
         </div>
 
         <div id="fishingStampFeed" class="stamp-feed" style="display:none;"></div>
@@ -3401,7 +3400,7 @@
         <div id="catchAnimDots" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;"></div>
         <button id="catchAnimSkipBtn" style="padding:2px 8px;border:1px solid rgba(255,255,255,0.15);border-radius:8px;background:transparent;color:rgba(255,255,255,0.4);font-size:9px;cursor:pointer;display:none;margin-left:4px;">スキップ</button>
       </div>
-      <div id="catchAnimLineBreak" style="font-size:11px;color:rgba(255,150,150,0.7);margin-top:4px;"></div>
+      
       <button id="catchAnimTapBtn" style="margin-top:12px;padding:10px 32px;border:0;border-radius:999px;background:var(--accent);color:#fff;font-size:16px;font-weight:800;cursor:pointer;display:none;">受け取る</button>
     </div>
     <!-- ===== OTHER MODALS ===== -->
@@ -3983,7 +3982,7 @@
       document.querySelectorAll(".bottom-nav button").forEach(b=>b.addEventListener("click",()=>{if(b.dataset.screen)switchScreen(b.dataset.screen);}));
       if(el.partsPanelToggle)el.partsPanelToggle.addEventListener("click",()=>{state.ui.partsPanelOpen=!state.ui.partsPanelOpen;renderNavParts();saveAll().catch(console.error);});
       if(el.mailboxNavBtn)el.mailboxNavBtn.addEventListener("click",()=>openOfficialMailbox());
-      el.playRoomBtn.addEventListener("click",()=>joinBestRoom().catch(console.error));
+      el.playRoomBtn.addEventListener("click",()=>{if(state.soloMode)joinSoloRoom().catch(console.error);else joinBestRoom().catch(console.error);});
       // Fish settings overlay
       const openFSBtn=document.getElementById("openFishSettingsBtn");
       const fishSettingsOv=document.getElementById("fishSettingsOverlay");
@@ -4475,6 +4474,19 @@
       // Audio
       el.audioPlayBtn.addEventListener("click",toggleBgmPlay);
       el.audioNextBtn.addEventListener("click",nextBgm);
+      // Prev button
+      document.getElementById("audioPrevBtn")?.addEventListener("click",()=>{bgmCurrentIndex=(bgmCurrentIndex-1+BGM_LIST.length)%BGM_LIST.length;if(bgmPlaying)playCurrentBgm();else{el.audioBgmTitle.textContent=BGM_LIST[bgmCurrentIndex].title;}});
+      // Volume bar
+      const volBar=document.getElementById("audioVolBar"),volFill=document.getElementById("audioVolFill"),volKnob=document.getElementById("audioVolKnob");
+      function setVolFromX(x){const rect=volBar.getBoundingClientRect();const pct=Math.max(0,Math.min(100,Math.round((x-rect.left)/rect.width*100)));bgmVolume=pct;sfxVolume=pct;if(bgmAudio)bgmAudio.volume=pct/100;if(volFill)volFill.style.width=pct+"%";if(volKnob)volKnob.style.left=pct+"%";}
+      if(volBar){
+        volBar.addEventListener("pointerdown",e=>{e.preventDefault();setVolFromX(e.clientX);
+          const move=ev=>setVolFromX(ev.clientX);const up=()=>{document.removeEventListener("pointermove",move);document.removeEventListener("pointerup",up);};
+          document.addEventListener("pointermove",move);document.addEventListener("pointerup",up);
+        });
+        // Init position
+        if(volFill)volFill.style.width=bgmVolume+"%";if(volKnob)volKnob.style.left=bgmVolume+"%";
+      }
       el.audioLoopBtn.addEventListener("click",()=>{const modes=['loop','shuffle','repeat'];const ci=modes.indexOf(bgmLoopMode);bgmLoopMode=modes[(ci+1)%3];const icons={loop:'🔁',shuffle:'🔀',repeat:'🔂'};el.audioLoopBtn.textContent=icons[bgmLoopMode]||'🔁';toast({loop:'順番再生',shuffle:'シャッフル',repeat:'1曲ループ'}[bgmLoopMode],1500);});
       el.audioFavListBtn.addEventListener("click",()=>{bgmFavOnly=!bgmFavOnly;el.audioFavListBtn.textContent=bgmFavOnly?'❤':'📋';});
       el.audioBgmTitle.addEventListener("click",openBgmList);
@@ -5172,6 +5184,8 @@
     }
 
     // Room functions (all preserved)
+    
+    async function joinSoloRoom(){if(!db){toast("Firebase接続が必要です。");return;}if(!auth?.currentUser&&firebaseReady)try{await signInAnonymously(auth);}catch{}try{const t=todayKey();const rid="solo_"+state.user.uid+"_"+t.replace(/-/g,"_");const ref=doc(db,"rooms",rid);const m=makeMember();await runTransaction(db,async tx=>{const s=await tx.get(ref);const d=s.exists()?normalizeRoom(s.data()):null;tx.set(ref,{index:9999,resetDate:t,members:[m],recentStamps:d?.recentStamps||[],updatedAt:Date.now(),createdAt:d?.createdAt||Date.now()},{merge:true});});state.room.inRoom=true;state.room.roomId=rid;startRoomListener(rid);await saveAll();switchScreen("room");renderAll();ensureRoomVisual();}catch(e){console.error(e);toast("ソロ部屋の作成に失敗しました。");}}
     async function joinBestRoom(){if(!db){toast("Firebase接続が必要です。");return;}if(!auth?.currentUser&&firebaseReady)try{await signInAnonymously(auth);}catch{}try{await resetRoomsIfNeeded();const t=todayKey();const snap=await getDocs(query(collection(db,"rooms"),where("resetDate","==",t)));const rooms=snap.docs.map(s=>({id:s.id,...normalizeRoom(s.data())}));rooms.sort((a,b)=>(b.members.length-a.members.length)||(a.index-b.index));let joined=false;for(const r of rooms){if(r.members.length<ROOM_CAPACITY){joined=await tryJoin(r.id,r.index,false);if(joined)break;}}if(!joined){const ni=rooms.reduce((m,r)=>Math.max(m,r.index||0),0)+1;joined=await tryJoin(`room_${t.replace(/-/g,"_")}_${ni}`,ni,true);}if(joined){switchScreen("room");renderAll();ensureRoomVisual();}}catch(e){console.error(e);toast("部屋参加に失敗しました。");}}
     async function tryJoin(roomId,index,create){const ref=doc(db,"rooms",roomId);const m=makeMember();try{await runTransaction(db,async tx=>{const s=await tx.get(ref);const d=s.exists()?normalizeRoom(s.data()):null;if(!s.exists()&&!create)throw new Error("missing");const ms=[...(d?.members||[])].filter(x=>x.uid!==m.uid);if(ms.length>=ROOM_CAPACITY)throw new Error("full");ms.push(m);tx.set(ref,{index,resetDate:todayKey(),members:ms,recentStamps:d?.recentStamps||[],updatedAt:Date.now(),createdAt:d?.createdAt||Date.now()},{merge:true});});state.room.inRoom=true;state.room.roomId=roomId;startRoomListener(roomId);await saveAll();return true;}catch(e){if(String(e?.message).includes("full")||String(e?.message).includes("missing"))return false;throw e;}}
     let _snapRenderTimer=null;
@@ -5467,18 +5481,14 @@
       const tapBtn=document.getElementById("catchAnimTapBtn");
       const skipBtn=document.getElementById("catchAnimSkipBtn");
       const dotsEl=document.getElementById("catchAnimDots");
-      const lineBreakEl=document.getElementById("catchAnimLineBreak");
-      const sizeUI=document.getElementById("catchAnimSizeUI");
+            const sizeUI=document.getElementById("catchAnimSizeUI");
       const sizeLabel=document.getElementById("catchAnimSizeLabel");
       const fishPic=document.getElementById("catchAnimFishPic");
       if(!overlay||!results.length){if(onComplete)onComplete();return;}
       overlay.style.display="flex";let idx=0;let skipMode=false;
       // Line break % based on elapsed fishing time
       const elapsedMin=state.fishing.durationMin||Math.round((Date.now()-(state.fishing.startAt||Date.now()))/60000);
-      const isNonbiri=!!state.fishing.nonbiriMode;
-      const lineBreakPct=isNonbiri?Math.min(100,Math.max(1,Math.round(elapsedMin/70*100))):0;
-      if(lineBreakEl)lineBreakEl.textContent=isNonbiri?(lineBreakPct+"% で糸が切れます"):"";
-      const lineBreaks=isNonbiri&&Math.random()*100<lineBreakPct;
+      
       // Build dots
       if(dotsEl){dotsEl.innerHTML="";results.forEach(function(r,i){
         const dc={1:"#888",2:"#7bdff5",3:"#ffd700",4:"#ff4444"};
@@ -5487,12 +5497,16 @@
         dotsEl.appendChild(dot);
       });}
       // Skip button
-      if(skipBtn){skipBtn.style.display="inline-block";skipBtn.onclick=()=>{skipMode=true;};}
+      if(skipBtn){skipBtn.style.display="none";skipBtn.onclick=()=>{skipMode=true;};}
       function highlightDot(i,escaped){
         const dot=document.getElementById("catchDot_"+i);if(!dot)return;dot.style.opacity="1";
-        if(escaped)dot.innerHTML='<span style="position:absolute;inset:0;display:grid;place-items:center;color:#ff4444;font-size:12px;font-weight:900;">×</span>';
+        if(escaped){dot.style.background="transparent";dot.innerHTML='<span style="position:absolute;inset:0;display:grid;place-items:center;color:#ff4444;font-size:12px;font-weight:900;">×</span>';}
       }
-      function showAcceptBtn(){starsEl.textContent="";nameEl.textContent="";iconEl.textContent="";effectEl.innerHTML="";runEl.style.display="none";card.style.background="#222";overlay.style.background="rgba(0,0,0,0.7)";if(sizeUI)sizeUI.style.display="none";tapBtn.style.display="inline-block";tapBtn.textContent="受け取る";tapBtn.onclick=()=>{tapBtn.style.display="none";showNext();};}
+      function showAcceptBtn(){starsEl.textContent="";nameEl.textContent="";iconEl.textContent="";effectEl.innerHTML="";runEl.style.display="none";card.style.background="#222";overlay.style.background="rgba(0,0,0,0.7)";if(sizeUI)sizeUI.style.display="none";if(skipBtn)skipBtn.style.display="none";
+        // Show work time
+        const wt=state.fishing.nonbiriMode?Math.round((Date.now()-(window._lastNonbiriCatchTime||nonbiriStartAt))/60000):Math.round((Date.now()-(state.fishing.startAt||Date.now()))/60000);
+        iconEl.textContent="";effectEl.innerHTML='<div style="font-size:clamp(18px,5vw,28px);font-weight:900;color:#fff;text-align:center;">'+Math.max(1,wt)+'分作業！！</div>';
+        tapBtn.style.display="inline-block";tapBtn.textContent="受け取る";tapBtn.onclick=()=>{tapBtn.style.display="none";if(skipBtn)skipBtn.style.display="inline-block";showNext();};}
       function showNext(){
         if(idx>=results.length){
           overlay.style.display="none";if(dotsEl)dotsEl.innerHTML="";if(lineBreakEl)lineBreakEl.textContent="";if(skipBtn)skipBtn.style.display="none";if(sizeUI)sizeUI.style.display="none";
@@ -5518,16 +5532,16 @@
         let starCount=0;
         const starTimer=setInterval(()=>{starCount++;
           const sc=stars>=4?"#ff6666":stars>=3?"#fff":stars>=2?"#7bdff5":"#aabbcc";
-          starsEl.innerHTML+="<span style='color:"+sc+";'>★</span>";
-          if(starCount>=stars){clearInterval(starTimer);
+          if(stars===0){starsEl.innerHTML='<span style="color:#888;font-size:14px;">はずれ</span>';starCount=999;}else starsEl.innerHTML+="<span style='color:"+sc+";'>★</span>";
+          if(starCount>=stars||stars===0){clearInterval(starTimer);
             nameEl.textContent=r.entry.name;nameEl.style.color=st.text;
-            let shakeCount=0;
+            let shakeCount=0;let tensionDone=false;
             const shakeTimer=setInterval(()=>{shakeCount++;
               const intensity=Math.min(shakeCount*0.5,8);
               iconEl.style.transform="scale("+(1+shakeCount*0.02)+") rotate("+((Math.random()-0.5)*intensity)+"deg)";
               if(shakeCount%3===0)effectEl.innerHTML='<div style="position:absolute;inset:0;display:grid;place-items:center;font-size:'+(20+shakeCount*2)+'px;color:rgba(255,255,255,'+(0.1+shakeCount*0.02)+');pointer-events:none;">!</div>';
             },50*spd);
-            setTimeout(()=>{clearInterval(shakeTimer);
+            function revealResult(){if(tensionDone)return;tensionDone=true;clearInterval(shakeTimer);overlay.removeEventListener("click",tensionSkip);
               iconEl.style.transform="scale(1.2)";
               if(r.escaped){
                 runEl.style.display="flex";iconEl.textContent="💨";effectEl.innerHTML="";
@@ -5538,9 +5552,13 @@
                 effectEl.innerHTML='<div style="position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;animation:catchSparkle 0.5s ease;"><span style="font-size:40px;">✨</span></div>';
                 try{new Audio("get.mp3").play().catch(()=>{});}catch(e){}
               }
+              if(state.fishing.nonbiriMode)window._lastNonbiriCatchTime=Date.now();
               if(skipMode){setTimeout(()=>showNext(),100*spd);}
               else{const tapHandler=()=>{overlay.removeEventListener("click",tapHandler);showNext();};setTimeout(()=>overlay.addEventListener("click",tapHandler),300);}
-            },1500*spd);
+            }
+            const tensionSkip=()=>revealResult();
+            overlay.addEventListener("click",tensionSkip);
+            setTimeout(()=>revealResult(),1500*spd);
           }
         },100*spd);
       }
@@ -5611,7 +5629,7 @@
     function getCourseBonus(dm){const b={rare:0,size:0,power:0,hugeChance:0,junkReduction:0,label:""};if(dm>=25){b.rare+=3;b.label="集中ボーナス";}if(dm>=40){b.size+=4;b.power+=1;}if(dm>=60){b.size+=6;b.power+=2;b.hugeChance+=0.005;b.label="深海ボーナス";}return b;}
     function rollCatch(src){
       // 50% chance: ★0 item
-      if(Math.random()<0.5&&ZERO_STAR_ITEMS.length>0){
+      if(!state.fishing.bossMode&&Math.random()<0.5&&ZERO_STAR_ITEMS.length>0){
         const zi=ZERO_STAR_ITEMS[Math.floor(Math.random()*ZERO_STAR_ITEMS.length)];
         const price=Math.max(1,zi.basePrice);
         const entry={uid:makeId(),baseId:zi.id,kind:"item",name:zi.name,icon:zi.icon,sellPrice:price,sizeCm:null,rarity:0,rarityStars:0,caughtAt:Date.now()};
@@ -5684,7 +5702,9 @@
       const core=document.createElement("div");core.className="result-core";
       const artWrap=document.createElement("div");artWrap.className="result-art-wrap";artWrap.style.cssText=`background:${bst.bg};border-radius:16px;padding:12px;position:relative;`;
       const starColor=(r.picked.rarityStars||1)>=3?"#fff":bst.star;
-      artWrap.innerHTML=`<div class="result-art"><div class="result-stars-in-art" style="color:${(r.picked.rarityStars||1)>=3?'#c0e8ff':starColor};">${"★".repeat(r.picked.rarityStars||1)}</div><div>${r.entry.icon}</div><div class="result-art-avg" style="color:${bst.text};">${isFish?`平均 ${fmtSize(r.picked.avgSize)}cm`:""}</div></div><div class="result-price" style="color:var(--gold);">${fmtMoney(r.entry.sellPrice)} zz</div>${r.isNew?'<div style="position:absolute;top:6px;right:8px;background:#ff3366;color:#fff;font-size:14px;font-weight:900;padding:2px 8px;border-radius:6px;">NEW</div>':""}`;
+      const starDisp=(r.picked.rarityStars||0)===0?'<span style="color:#888;">はずれ</span>':"★".repeat(r.picked.rarityStars||1);
+      const sizeHtml=r.entry.sizeCm?'<div style="position:absolute;top:-50px;left:50%;transform:translateX(-50%);display:flex;align-items:flex-end;gap:4px;"><img src="hito.png" style="height:40px;" onerror="this.style.opacity=0.3"><div style="text-align:center;"><div style="font-size:10px;font-weight:900;color:#fff;">'+Math.round(r.entry.sizeCm*10)/10+'cm</div><img src="sakana@.png" style="width:'+Math.max(14,40*(r.entry.sizeCm/40))+'px;" onerror="this.style.display=\'none\'"></div></div>':"";
+      artWrap.innerHTML=sizeHtml+`<div class="result-art"><div class="result-stars-in-art" style="color:${(r.picked.rarityStars||0)>=3?'#c0e8ff':starColor};">${starDisp}</div><div>${r.entry.icon}</div><div class="result-art-avg" style="color:${bst.text};">${isFish?`平均 ${fmtSize(r.picked.avgSize)}cm`:""}</div></div><div class="result-price" style="color:#fff;">${fmtMoney(r.entry.sellPrice)} zz</div>${r.isNew?'<div style="position:absolute;top:6px;right:8px;background:#ff3366;color:#fff;font-size:14px;font-weight:900;padding:2px 8px;border-radius:6px;">NEW</div>':""}`;
       core.appendChild(artWrap);
       const detail=document.createElement("div");
       detail.innerHTML=`<div class="result-title-row"><div class="result-title">${isFish?`${esc(r.entry.name)} <span class="result-size-colored ${r.entry.sizeCm>=r.picked.avgSize?"plus":"minus"}">(${fmtSize(r.entry.sizeCm)}cm)</span>`:esc(r.entry.name)}</div></div>
@@ -5817,316 +5837,4 @@
     function getWeekStats(){const n=new Date();const d=n.getDay();const diff=d===0?-6:1-d;const mon=new Date(n);mon.setHours(0,0,0,0);mon.setDate(n.getDate()+diff);const labels=["月","火","水","木","金","土","日"];const days=[];for(let i=0;i<7;i++){const x=new Date(mon);x.setDate(mon.getDate()+i);const k=`${x.getFullYear()}-${x.getMonth()+1}-${x.getDate()}`;days.push({key:k,stat:getDayStat(k),label:labels[i],dateLabel:`${x.getMonth()+1}/${x.getDate()}`});}return{days};}
     function getStarStyle(stars){
       if(stars>=4)return{bg:"linear-gradient(135deg,#8b0000,#ff2222,#8b0000)",text:"#fff",star:"#ff6666"};
-      if(stars>=3)return{bg:"linear-gradient(135deg,#c8a600,#ffd700,#c8a600)",text:"#fff",star:"#ffd700"};
-      if(stars>=2)return{bg:"linear-gradient(135deg,#1a5276,#2e86c1,#1a5276)",text:"#e0f0ff",star:"#7bdff5"};
-      if(stars>=1)return{bg:"linear-gradient(135deg,#1a1a1a,#333,#1a1a1a)",text:"#ddd",star:"#999"};
-      return{bg:"linear-gradient(135deg,#2a2a2a,#444,#2a2a2a)",text:"#aaa",star:"#666"};
-    }
-    function renderEncyclopedia(){
-      const allFish=[...FISHES,...BOSS_FISHES];
-      const caught=Object.keys(state.encyclopedia).filter(k=>allFish.some(f=>f.id===k));
-      el.encyStats.innerHTML="";const chip=document.createElement("div");chip.className="stat-chip";chip.textContent=`発見 ${caught.length} / ${allFish.length}`;el.encyStats.appendChild(chip);
-      el.encyList.innerHTML="";
-      // Boss section header
-      const bossHeader=document.createElement("div");bossHeader.style.cssText="width:100%;text-align:center;padding:8px;font-size:13px;font-weight:800;color:#ff4444;margin-top:8px;";bossHeader.textContent="— ボス魚 —";
-      // Normal fish first
-      FISHES.forEach(f=>{const own=state.encyclopedia[f.id];const g=globalRecords[f.id];const st=getStarStyle(f.rarityStars||1);const c=document.createElement("div");c.className=`fish-card ${own?"":"unknown"}`;c.style.cssText=`background:${st.bg};color:${st.text};`;
-        c.innerHTML=`<div class="fish-art">${own?f.icon:"❔"}</div><div class="fish-name" style="color:${st.text};">${own?f.name:"？？？"}</div><div style="color:${st.star};font-size:10px;">${"★".repeat(f.rarityStars||1)}</div><div class="fish-meta" style="color:${st.text};">${own?`平均 ${fmtSize(f.avgSize)}cm<br/>累計 ${own.count}匹<br/>自己最大 ${own.maxSize?`${fmtSize(own.maxSize)}cm`:"-"}`:"まだ見つけていません"}<br/><span class="record" style="color:${st.star};">世界記録 ${g?`${fmtSize(g.sizeCm)}cm / ${esc(g.recordHolder||"-")}`:"未登録"}</span>${own?`<br/>${f.description}`:""}</div>`;el.encyList.appendChild(c);});
-      el.encyList.appendChild(bossHeader);
-      BOSS_FISHES.forEach(f=>{const own=state.encyclopedia[f.id];const g=globalRecords[f.id];const st=getStarStyle(4);const c=document.createElement("div");c.className=`fish-card ${own?"":"unknown"}`;c.style.cssText=`background:${st.bg};color:${st.text};border:2px solid #ff4444;`;
-        c.innerHTML=`<div class="fish-art">${own?f.icon:"❔"}</div><div class="fish-name" style="color:${st.text};">${own?f.name:"？？？"}</div><div style="color:${st.star};font-size:10px;">★★★★</div><div class="fish-meta" style="color:${st.text};">${own?`平均 ${fmtSize(f.avgSize)}cm<br/>累計 ${own.count}匹<br/>捕獲率 ${(f.catchRate*100).toFixed(1)}%`:"まだ見つけていません"}<br/><span class="record" style="color:${st.star};">世界記録 ${g?`${fmtSize(g.sizeCm)}cm / ${esc(g.recordHolder||"-")}`:"未登録"}</span>${own?`<br/>${f.description}`:""}</div>`;el.encyList.appendChild(c);});
-    }
-    function renderSettings(){el.settingsDisplayName.textContent=state.user.displayName||"釣り人";el.displayNameInput.value=state.user.displayName||"釣り人";el.lastSavedAt.textContent=state.lastSavedAt?fmtDateTime(state.lastSavedAt):"-";}
-    function renderUserPill(){el.userPill.innerHTML=`${esc(state.user.displayName||"釣り人")}<br/>${state.user.isGuest?"ローカル":"Google"}`;}
-    function updateSync(){if(firebaseReady&&firebaseSyncOk&&!state.user.isGuest)el.syncStatus.textContent="Firebase同期中";else if(firebaseReady&&auth?.currentUser?.isAnonymous)el.syncStatus.textContent="匿名接続中";else el.syncStatus.textContent="ローカルのみ";}
-    function renderMailIndicators(){const uo=getUnreadMail("official").length,up=getUnreadMail("peer").length,pp=getPeerMail();if(el.mailNavDot)el.mailNavDot.classList.toggle("show",uo>0);const hasMsg=pp.length>0||up>0;[el.roomMessageBtn,el.fishingMessageBtn].forEach(b=>{if(b)b.style.display=hasMsg?"grid":"none";});[el.roomMessageDot,el.fishingMessageDot].forEach(d=>{if(d)d.classList.toggle("show",up>0);});const mapBtn=document.getElementById("roomFishPredictBtn");if(mapBtn)mapBtn.style.right=hasMsg?"134px":"96px";}
-    // === BOSS SYSTEM ===
-    function getBossSpawns(dateStr){
-      let seed=0;for(let i=0;i<dateStr.length;i++)seed=((seed<<5)-seed+dateStr.charCodeAt(i))|0;
-      function rng(){seed=(seed*16807+0)%2147483647;return(seed&0x7fffffff)/2147483647;}
-      const count=12;const spawns=[];let cursor=0;
-      for(let i=0;i<count;i++){
-        const gap=40+Math.floor(rng()*40); // 40-80 min gap
-        cursor+=gap;
-        const startMs=cursor*60000;
-        const bossIdx=Math.floor(rng()*BOSS_FISHES.length);
-        const px=0.15+rng()*0.7;const py=0.2+rng()*0.6;
-        spawns.push({boss:BOSS_FISHES[bossIdx],startMs,endMs:startMs+3600000,x:px,y:py,id:dateStr+"_"+i,cost:10000});
-      }
-      return spawns;
-    }
-    function getActiveBoss(){
-      const dk=todayKey();const spawns=getBossSpawns(dk);
-      const now=new Date();const todayMs=(now.getHours()*60+now.getMinutes())*60000+now.getSeconds()*1000;
-      return spawns.find(s=>todayMs>=s.startMs&&todayMs<s.endMs)||null;
-    }
-    function bossTimeRemaining(boss){
-      const now=new Date();const todayMs=(now.getHours()*60+now.getMinutes())*60000+now.getSeconds()*1000;
-      return Math.max(0,boss.endMs-todayMs);
-    }
-    function updateBossUI(){
-      const boss=getActiveBoss();
-      const bubble=document.getElementById("bossBubble");
-      if(bubble)bubble.style.display=boss?"block":"none";
-      // Auto-set boss mode if boss active and not fishing
-      if(boss&&!state.fishing.inProgress&&state.ui.modeIndex!==4){
-        // Don't force, just show bubble
-      }
-    }
-    setInterval(updateBossUI,5000);setTimeout(updateBossUI,500);
-    // Map overlay
-    function openMapOverlay(){
-      const ov=document.getElementById("mapOverlay");if(!ov)return;ov.style.display="block";
-      renderMapBosses();
-    }
-    function closeMapOverlay(){const ov=document.getElementById("mapOverlay");if(ov)ov.style.display="none";}
-    document.getElementById("mapBackBtn")?.addEventListener("click",closeMapOverlay);
-    function renderMapBosses(){
-      const markers=document.getElementById("mapBossMarkers");const info=document.getElementById("mapBossInfo");
-      if(!markers||!info)return;markers.innerHTML="";info.innerHTML="";
-      const dk=todayKey();const spawns=getBossSpawns(dk);
-      const now=new Date();const todayMs=(now.getHours()*60+now.getMinutes())*60000+now.getSeconds()*1000;
-      spawns.forEach(s=>{
-        const active=todayMs>=s.startMs&&todayMs<s.endMs;
-        const future=todayMs<s.startMs;
-        const past=todayMs>=s.endMs;
-        const owned=!!state.encyclopedia[s.boss.id];
-        // Marker on map
-        const m=document.createElement("div");m.style.cssText=`position:absolute;left:${s.x*100}%;top:${s.y*100}%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:4px;pointer-events:auto;`;
-        const icon=document.createElement("div");
-        icon.style.cssText=`width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:18px;border:2px solid ${active?"#22c55e":past?"rgba(255,255,255,0.15)":"rgba(255,200,0,0.3)"};background:${active?"rgba(34,197,94,0.15)":past?"rgba(0,0,0,0.4)":"rgba(0,0,0,0.3)"};${past?"opacity:0.3;":""}`;
-        icon.textContent=owned?s.boss.icon:"❔";m.appendChild(icon);
-        if(active||future){
-          const label=document.createElement("div");label.style.cssText="font-size:10px;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.8);white-space:nowrap;";
-          if(active){const rem=Math.round((s.endMs-todayMs)/60000);label.innerHTML=`<b>${s.boss.name}</b><br>残り${rem}分`;}
-          else{const startH=Math.floor(s.startMs/3600000);const startM=Math.floor((s.startMs%3600000)/60000);label.innerHTML=`<span style="opacity:0.5">${startH}:${String(startM).padStart(2,"0")}~</span>`;}
-          m.appendChild(label);
-        }
-        markers.appendChild(m);
-        // Info list
-        if(active||future){
-          const row=document.createElement("div");row.style.cssText=`display:flex;align-items:center;gap:10px;padding:8px 12px;margin:4px 0;border-radius:12px;background:${active?"rgba(34,197,94,0.1)":"rgba(255,255,255,0.03)"};border:1px solid ${active?"rgba(34,197,94,0.2)":"rgba(255,255,255,0.06)"};`;
-          const startH=Math.floor(s.startMs/3600000);const startM=Math.floor((s.startMs%3600000)/60000);
-          const endH=Math.floor(s.endMs/3600000);const endM=Math.floor((s.endMs%3600000)/60000);
-          row.innerHTML=`<span style="font-size:24px;">${owned?s.boss.icon:"❔"}</span><div><div style="font-weight:700;font-size:13px;">${s.boss.name}</div><div style="font-size:10px;color:rgba(255,255,255,0.4);">${startH}:${String(startM).padStart(2,"0")}〜${endH}:${String(endM).padStart(2,"0")} / 捕獲率${(s.boss.catchRate*100).toFixed(1)}%</div></div>${active?'<span style="margin-left:auto;color:#22c55e;font-size:11px;font-weight:700;">出現中</span>':""}`;
-          info.appendChild(row);
-        }
-      });
-      if(!info.children.length)info.innerHTML='<div style="text-align:center;color:rgba(255,255,255,0.3);padding:20px;">今日のボスはすべて終了しました</div>';
-    }
-    // Fish predict → Map (defined above)
-    // Boss mode in renderModeCard
-    if(!MODE_NAMES.includes("ボス戦"))MODE_NAMES.push("ボス戦");
-    if(!MODE_NAMES.includes("のんびり"))MODE_NAMES.push("のんびり");
-    // Boss notification
-    let lastBossNotifId="";
-    function checkBossNotification(){
-      const boss=getActiveBoss();if(!boss)return;
-      if(boss.id===lastBossNotifId)return;lastBossNotifId=boss.id;
-      if(typeof Notification!=="undefined"&&Notification.permission==="granted"){new Notification("🐋 "+boss.boss.name+"が暴れている…！",{body:"ボスが出現中！今すぐ釣りに行こう",icon:"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><text y='32' font-size='32'>🐋</text></svg>"});}
-    }
-    setInterval(checkBossNotification,30000);setTimeout(checkBossNotification,2000);
-    function safePlay(v){if(!v)return;try{v.play()?.catch(()=>{});}catch{}}
-    function setVideoSrc(v,src){if(!v||!src)return;if(v.getAttribute("data-src")===src){safePlay(v);return;}v.setAttribute("data-src",src);v.src=src;v.load();safePlay(v);}
-    function updateRoomVideo(){const inRoom=!!state.room.inRoom;el.lobbyVideo.style.display=inRoom?"none":"block";el.roomVideo.style.display=inRoom?"block":"none";if(!inRoom){safePlay(el.lobbyVideo);return;}setVideoSrc(el.roomVideo,`boat${Math.max(1,Math.min(3,currentRoomData?.members?.length||1))}.mp4`);}
-    function updateFishingVideo(){setVideoSrc(el.fishingVideo,`fishing${Math.max(1,Math.min(3,currentRoomData?.members?.length||1))}.mp4`);}
-
-    // Store actions
-    function buyBait(b){if(b.dailyFree){if(state.shop.freeBaitClaimDate===todayKey())return;state.shop.freeBaitClaimDate=todayKey();}else{if(state.money<b.price){toast("所持金が足りません。");return;}state.money-=b.price;}state.baitCounts[b.id]=(state.baitCounts[b.id]||0)+b.packQty;toast(`${b.name} ×${b.packQty}を受け取りました。`);saveAll().catch(console.error);renderAll();}
-    function buyGift(g){if(state.money<g.price){toast("所持金が足りません。");return;}state.money-=g.price;state.giftCounts[g.id]=(state.giftCounts[g.id]||0)+1;toast(`${g.name}を購入しました。`);saveAll().catch(console.error);renderAll();}
-    function buyUpgrade(id){const lv=state.upgrades[id]||0,cost=getUpgradeCost(id,lv);if(state.money<cost){toast("所持金が足りません。");return;}state.money-=cost;state.upgrades[id]=lv+1;toast(`${UPGRADE_PARTS.find(p=>p.id===id).name} を Lv.${state.upgrades[id]} に強化しました。`);saveAll().catch(console.error);renderAll();}
-    function sellInv(uid,sp){const i=state.inventory.findIndex(v=>v.uid===uid);if(i<0)return;const[e]=state.inventory.splice(i,1);state.money+=sp;addEarnings(sp);toast(`${e.name} を ${sp}zz で売却。`);saveAll().catch(console.error);renderAll();}
-    function updateSetting(k,v){state.settings[k]=v;toast("設定を更新。");saveAll().catch(console.error);renderAll();}
-
-    // Mail functions
-    function getOfficialMail(){return[...(state.mailbox.items||[])].filter(i=>i.type!=="gift"&&i.type!=="peer").sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));}
-    function getPeerMail(){return[...(state.mailbox.items||[])].filter(i=>i.type==="gift"||i.type==="peer").sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));}
-    function getUnreadMail(mode){return(mode==="peer"?getPeerMail():getOfficialMail()).filter(i=>!i.opened);}
-    function openOfficialMailbox(){activeMailboxMode="official";openMailbox(null,"official");}
-    function openNextGiftMessage(){activeMailboxMode="peer";const u=getUnreadMail("peer"),p=getPeerMail();if(!p.length)return;const t=(u[0]||p[p.length-1]).id;markRead(t);openMailbox(t,"peer");}
-    function openMailbox(targetId=null,mode=activeMailboxMode){activeMailboxMode=mode;const items=mode==="peer"?getPeerMail():getOfficialMail();if(!items.length){toast(mode==="peer"?"メッセージなし":"お便りなし");return;}let idx=0;if(targetId)idx=Math.max(0,items.findIndex(i=>i.id===targetId));state.mailbox.activeIndex=idx;if(items[idx]&&!items[idx].opened)markRead(items[idx].id);renderMailbox();el.mailboxModal.classList.add("show");}
-    function closeMailbox(){el.mailboxModal.classList.remove("show");saveAll().catch(console.error);renderMailIndicators();renderAll();}
-    function stepMail(d){const items=activeMailboxMode==="peer"?getPeerMail():getOfficialMail();if(!items.length)return;state.mailbox.activeIndex=(state.mailbox.activeIndex+d+items.length)%items.length;if(items[state.mailbox.activeIndex]&&!items[state.mailbox.activeIndex].opened)markRead(items[state.mailbox.activeIndex].id);renderMailbox();}
-    function renderMailbox(){const items=activeMailboxMode==="peer"?getPeerMail():getOfficialMail();el.mailboxModalTitle.textContent=activeMailboxMode==="peer"?"メッセージ":"お便り";if(!items.length){el.mailboxPaper.innerHTML="<h3>なし</h3>";return;}const c=items[state.mailbox.activeIndex]||items[0];el.mailboxPaper.innerHTML=`<div class="mail-gift-icon">${c.icon||"💌"}</div><h3>${esc(c.title||"")}</h3><div class="sender">送り主：${esc(c.senderName||"不明")}</div><div class="mail-body">${esc(c.body||"")}</div>`;}
-    function markRead(id){const i=state.mailbox.items.find(m=>m.id===id);if(i)i.opened=true;saveAll().catch(console.error);}
-    function mergeInbox(remote){const cur=new Map((state.mailbox.items||[]).map(i=>[i.id,i]));remote.forEach(r=>{const e=cur.get(r.id);if(!e)cur.set(r.id,r);else cur.set(r.id,{...r,opened:e.opened||r.opened});});state.mailbox.items=[...cur.values()].sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));renderMailIndicators();saveLocalState(state);}
-
-    // Gift modal
-    function openGiftModalFn(member){selectedGiftTarget=member;el.giftModalTitle.textContent=`${member.name} にプレゼント`;renderGiftModalCards();el.giftShellInput.value="";el.giftModal.classList.add("show");}
-    function closeGiftModal(){selectedGiftTarget=null;el.giftModal.classList.remove("show");}
-    function renderGiftModalCards(){el.giftGrid.innerHTML="";GIFT_ITEMS.forEach(g=>{const o=state.giftCounts[g.id]||0;if(o<=0)return;const c=document.createElement("div");c.className="gift-card";c.innerHTML=`<div class="gift-name">${g.icon} ${g.name}<span class="owned-mini">×${o}</span></div><div class="gift-note">${g.comment}</div>`;if(g.id!=="gift_shell"){const btn=document.createElement("button");btn.className="btn primary";btn.textContent="送る";btn.addEventListener("click",()=>sendGift(g).catch(console.error));c.appendChild(btn);}el.giftGrid.appendChild(c);});const shellRow=document.getElementById("giftShellRow");const shellOwned=state.giftCounts.gift_shell||0;if(shellRow){shellRow.style.display=shellOwned>0?"flex":"none";}el.sendShellBtn.disabled=shellOwned<=0||!selectedGiftTarget;el.sendShellBtn.textContent=`お話貝を送る（×${shellOwned}）`;if(!el.giftGrid.children.length){el.giftGrid.innerHTML=`<div style="padding:20px;text-align:center;color:var(--muted);grid-column:1/-1;">送れるアイテムがありません。<br>ストアで購入してください。</div>`;}}
-
-    async function sendGift(g){if(!selectedGiftTarget||(state.giftCounts[g.id]||0)<=0)return;state.giftCounts[g.id]-=1;await pushMail(selectedGiftTarget.uid,{id:makeId(),type:"gift",title:g.name,icon:g.icon,senderName:state.user.displayName||"釣り人",body:g.comment,createdAt:Date.now(),opened:false});toast(`${selectedGiftTarget.name} に ${g.name} を送りました。`);closeGiftModal();saveAll().catch(console.error);renderAll();}
-    async function sendShell(){if(!selectedGiftTarget||(state.giftCounts.gift_shell||0)<=0)return;const t=safeGiftText(el.giftShellInput.value);if(!t){toast("6文字以内で入力。");return;}state.giftCounts.gift_shell-=1;await pushMail(selectedGiftTarget.uid,{id:makeId(),type:"gift",title:"お話貝",icon:"🐚",senderName:state.user.displayName||"釣り人",body:t,createdAt:Date.now(),opened:false});toast(`お話貝を送りました。`);closeGiftModal();saveAll().catch(console.error);renderAll();}
-    async function pushMail(uid,mail){if(!db||!uid)return;const ref=doc(db,"inboxes",uid);try{const s=await getDoc(ref);const cur=s.exists()&&Array.isArray(s.data()?.items)?s.data().items:[];await setDoc(ref,{items:[...cur,mail],updatedAt:serverTimestamp()},{merge:true});}catch(e){console.error(e);toast("送信失敗。");}}
-
-    // Auth
-    function openNameStep(mode){pendingAuthMode=mode;el.authDisplayNameInput.value=state.user.displayName||"釣り人";el.authChoiceStep.classList.remove("active");el.authNameStep.classList.add("active");}
-    function showAuthChoice(){pendingAuthMode=null;el.authNameStep.classList.remove("active");el.authChoiceStep.classList.add("active");}
-    async function confirmAuth(){pendingDisplayName=safeName(el.authDisplayNameInput.value)||"釣り人";if(pendingAuthMode==="google")await googleLogin();else await startGuest();}
-    async function googleLogin(){if(!firebaseReady||!auth){await startGuestLocal();return;}const p=new GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});try{await signInWithPopup(auth,p);}catch(e){console.error(e);if(isMobile()&&(String(e?.code||"").includes("popup-blocked")||String(e?.code||"").includes("cancelled"))){try{await signInWithRedirect(auth,p);}catch(e2){console.error(e2);toast(`ログイン失敗: ${humanAuthError(e2)}`);}}else{toast(`ログイン失敗: ${humanAuthError(e)}`);}}}    async function startGuest(){pendingGuestMobileIntro=isMobile();if(!firebaseReady||!auth){await startGuestLocal();return;}try{await signInAnonymously(auth);}catch(e){console.error(e);await startGuestLocal();}}
-    async function startGuestLocal(){state.user.isGuest=true;state.user.displayName=pendingDisplayName||"釣り人";authResolved=true;pendingAuthMode=null;const si=isMobile();pendingDisplayName=null;if(si)await playMobileIntro(true);else{el.authOverlay.style.display="none";toast("ローカル開始。");await saveAll();switchScreen("room");renderAll();maybeShowMobileHint();}}
-    async function playMobileIntro(local=false){try{el.authOverlay.style.display="none";el.mobileIntro.classList.add("show");el.mobileIntro.classList.remove("fadeout");const v=el.mobileIntroVideo;if(v){v.currentTime=0;await waitIntro(v,5200);}}catch(e){console.error(e);}finally{el.mobileIntro.classList.add("fadeout");setTimeout(()=>{el.mobileIntro.classList.remove("show","fadeout");toast(local?"ローカル開始。":"開始しました。");saveAll().catch(console.error);switchScreen("room");renderAll();maybeShowMobileHint();},760);}}
-    function waitIntro(v,ms=5000){return new Promise(r=>{let done=false;const fin=()=>{if(done)return;done=true;r(true);};setTimeout(()=>fin(),ms);v.addEventListener("ended",fin,{once:true});v.addEventListener("error",()=>fin(),{once:true});v.play().catch(()=>fin());});}
-    function maybeShowMobileHint(){if(!isMobile()||mobileHintShown)return;mobileHintShown=true;toast("全体表示にすると見やすいです。",5200);}
-    async function performLogout(){await leaveRoom(true);try{if(auth?.currentUser)await signOut(auth);}catch(e){console.error(e);}if(roomUnsub){roomUnsub();roomUnsub=null;}if(inboxUnsub){inboxUnsub();inboxUnsub=null;}state=deepMerge(cloneDefault(),{user:{playerToken:makeId()}});ensureWelcomeMail();currentRoomData=null;showAuthChoice();el.authOverlay.style.display="grid";saveLocalState(state);renderAll();}
-    function humanAuthError(e){const c=e?.code||"";if(c.includes("popup-blocked"))return"ポップアップがブロックされました";if(c.includes("popup-closed"))return"閉じられました";return c;}
-
-    // Save/load
-    async function loadRemoteUser(uid){if(!db)return null;try{const s=await getDoc(doc(db,"users",uid));return s.exists()?(s.data()?.state||null):null;}catch{return null;}}
-    async function saveRemoteUser(){if(!db||!firebaseSyncOk||!state.user.uid||state.user.isGuest)return;try{await setDoc(doc(db,"users",state.user.uid),{uid:state.user.uid,displayName:state.user.displayName||"釣り人",updatedAt:serverTimestamp(),state},{merge:true});}catch(e){console.error(e);}}
-    async function saveGlobalRecord(id,size,holder){if(!db)return;const c=globalRecords[id];if(c&&c.sizeCm>=size)return;try{await setDoc(doc(db,"globalFishRecords",id),{fishId:id,sizeCm:size,recordHolder:holder,updatedAt:serverTimestamp()},{merge:true});globalRecords[id]={sizeCm:size,recordHolder:holder};}catch(e){console.error(e);}}
-    async function loadGlobalRecords(){if(!db){globalRecords={};return;}try{const m={};await Promise.all(FISHES.slice(0,ENCY_TOP_LIMIT).map(async f=>{const s=await getDoc(doc(db,"globalFishRecords",f.id));if(s.exists()){const d=s.data();m[d.fishId]={sizeCm:d.sizeCm,recordHolder:d.recordHolder};}}));globalRecords=m;}catch(e){console.error(e);globalRecords={};}}
-    async function saveAll(force=false){state.lastSavedAt=Date.now();saveLocalState(state);if(force||(!state.user.isGuest&&firebaseSyncOk))await saveRemoteUser();renderSettings();}
-    function exportSave(){const b=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});const u=URL.createObjectURL(b);const a=document.createElement("a");a.href=u;a.download=`save_${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(u);}
-    async function importSave(e){const f=e.target.files?.[0];if(!f)return;try{mergeLoadedState(JSON.parse(await f.text()));toast("読み込みました。");await saveAll(true);renderAll();}catch(er){console.error(er);toast("読み込み失敗。");}finally{e.target.value="";}}
-    function mergeLoadedState(next){state=deepMerge(cloneDefault(),next||{});ensurePlayerToken();ensureWelcomeMail();applySelectors();renderAll();if(state.room.inRoom&&state.room.roomId)startRoomListener(state.room.roomId);}
-
-    // Misc
-    function handleFishingActivity(){if(!state.fishing.inProgress||!el.screens.fishing.classList.contains("active")||state.ui.focusMode)return;state.ui.fishingUiVisible=true;el.app.classList.remove("fishing-ui-faded");clearFishingUiTimeout();fishingUiTimeout=setTimeout(()=>{if(state.fishing.inProgress&&el.screens.fishing.classList.contains("active")&&!state.ui.focusMode){state.ui.fishingUiVisible=false;el.app.classList.add("fishing-ui-faded");}},FISHING_UI_IDLE_MS);}
-    // === Water Surface Background ===
-    let waterActive=false,waterAnim=null,waterFishes=[],waterDecoys=[],waterInited=false;
-    function toggleWaterSurface(){
-      const canvas=document.getElementById("waterSurface");if(!canvas)return;
-      waterActive=!waterActive;
-      if(waterActive){
-        canvas.style.display="block";canvas.style.zIndex="1";
-        const bg=canvas.previousElementSibling;if(bg)bg.style.visibility="hidden";
-        canvas.width=canvas.offsetWidth||360;canvas.height=canvas.offsetHeight||640;
-        if(!waterInited){initWaterFishes();waterInited=true;}
-        startWaterAnim(canvas);
-      }else{
-        canvas.style.display="none";
-        const bg=canvas.previousElementSibling;if(bg)bg.style.visibility="visible";
-        if(waterAnim){cancelAnimationFrame(waterAnim);waterAnim=null;}
-      }
-    }
-    let preRolledCatches=[];
-    function initWaterFishes(){
-      waterFishes=[];waterDecoys=[];preRolledCatches=[];
-      if(!state.fishing.inProgress)return;
-      const dm=state.fishing.durationMin||25;const count=getCatchCount(dm);
-      for(let i=0;i<count;i++){
-        const r=rollCatchMayBoss(state.fishing);preRolledCatches.push(r);
-        const stars=r.picked.rarityStars||1;
-        const sz=r.entry.sizeCm||20;const avg=r.picked.avgSize||20;
-        // Size based on ratio to average: bigger ratio = much bigger display
-        const sizeRatio=sz/Math.max(1,avg);
-        const baseSize=stars>=3?22:stars>=2?16:12;
-        const fishSize=Math.max(8,Math.min(80,baseSize*sizeRatio*(r.isHuge?2.5:1)));
-        const appearTime=Math.random()*dm*60000*0.85;
-        waterFishes.push({stars,sizeCm:Math.round(sz),x:Math.random()*0.8+0.1,y:0.4+Math.random()*0.35,vx:(Math.random()>0.5?1:-1)*0.00015,vy:0,
-          appeared:false,appearAt:appearTime,tunkAt:appearTime+Math.random()*(dm*60000*0.12),tunked:false,tunkDone:false,
-          size:fishSize,nextDash:Date.now()+2000+Math.random()*4000,dashing:false,dashEnd:0,
-          fleeAt:Date.now()+5000+Math.random()*8000,fleeing:false,fleeEnd:0});
-      }
-      for(let i=0;i<10+Math.floor(Math.random()*6);i++){
-        waterDecoys.push({x:Math.random(),y:0.3+Math.random()*0.5,vx:(Math.random()>0.5?1:-1)*(0.0001+Math.random()*0.0002),vy:0,size:5+Math.random()*4,alpha:0.1+Math.random()*0.06,
-          nextTurn:Date.now()+2000+Math.random()*4000});
-      }
-    }
-    function startWaterAnim(canvas){
-      const ctx=canvas.getContext("2d");const W=canvas.width,H=canvas.height;
-      const startTime=state.fishing.startAt||Date.now();
-      let floatPhase=0;
-      function drawFish(cx,cy,sz,halfH,color,facingRight){
-        ctx.save();ctx.translate(cx,cy);
-        if(!facingRight)ctx.scale(-1,1);
-        ctx.beginPath();ctx.fillStyle=color;
-        ctx.ellipse(0,0,sz,halfH,0,0,Math.PI*2);ctx.fill();
-        // Tail
-        ctx.beginPath();ctx.fillStyle=color;
-        ctx.moveTo(-sz,0);ctx.lineTo(-sz-sz*0.45,-halfH*0.8);ctx.lineTo(-sz-sz*0.45,halfH*0.8);ctx.closePath();ctx.fill();
-        // Eye
-        ctx.beginPath();ctx.fillStyle="rgba(255,255,255,0.3)";ctx.arc(sz*0.5,-halfH*0.2,halfH*0.2,0,Math.PI*2);ctx.fill();
-        ctx.restore();
-      }
-      function draw(){
-        waterAnim=requestAnimationFrame(draw);
-        const now=Date.now(),elapsed=now-startTime;floatPhase+=0.02;
-        ctx.fillStyle="#0a3d5c";ctx.fillRect(0,0,W,H);
-        // Ripples
-        for(let i=0;i<5;i++){ctx.beginPath();ctx.strokeStyle="rgba(120,200,240,"+(0.04+Math.sin(floatPhase+i)*0.02)+")";ctx.lineWidth=1;const y=H*0.3+i*H*0.12+Math.sin(floatPhase*0.5+i)*4;ctx.moveTo(0,y);for(let x=0;x<W;x+=20)ctx.lineTo(x,y+Math.sin(x*0.02+floatPhase+i)*3);ctx.stroke();}
-        // Decoys (natural movement)
-        waterDecoys.forEach(function(d){
-          if(now>d.nextTurn){d.vx=(Math.random()>0.5?1:-1)*(0.0001+Math.random()*0.0003);d.vy=(Math.random()-0.5)*0.0001;d.nextTurn=now+2000+Math.random()*5000;}
-          d.x+=d.vx;d.y+=d.vy;if(d.x<-0.05)d.x=1.05;if(d.x>1.05)d.x=-0.05;if(d.y<0.3)d.vy=Math.abs(d.vy);if(d.y>0.85)d.vy=-Math.abs(d.vy);
-          drawFish(d.x*W,d.y*H,d.size,d.size*0.45,"rgba(0,0,0,"+d.alpha+")",d.vx>0);
-        });
-        // Float
-        const fx=W*0.5,fy=H*0.32+Math.sin(floatPhase*1.5)*4;
-        let floatShake=0;waterFishes.forEach(function(f){if(f.tunked&&!f.tunkDone&&elapsed>=f.tunkAt&&elapsed<f.tunkAt+800){floatShake=Math.sin((elapsed-f.tunkAt)*0.05)*4;if(elapsed>=f.tunkAt+800)f.tunkDone=true;}});
-        ctx.beginPath();ctx.fillStyle="#e44";ctx.arc(fx+floatShake,fy-8,6,0,Math.PI*2);ctx.fill();
-        ctx.fillStyle="#fff";ctx.fillRect(fx-1.5+floatShake,fy-2,3,14);
-        // Catchable fish
-        waterFishes.forEach(function(f){
-          if(elapsed<f.appearAt)return;f.appeared=true;
-          // Flee from float periodically to prevent clustering
-          if(!f.fleeing&&now>f.fleeAt){f.fleeing=true;f.fleeEnd=now+1500+Math.random()*2000;
-            var fleeDir=Math.random()>0.5?1:-1;f.vx=fleeDir*(0.001+Math.random()*0.002);f.vy=(Math.random()-0.5)*0.001;}
-          if(f.fleeing&&now>f.fleeEnd){f.fleeing=false;f.fleeAt=now+4000+Math.random()*6000;f.vx*=0.3;f.vy*=0.3;}
-          // Occasional dash
-          if(!f.dashing&&!f.fleeing&&now>f.nextDash){f.dashing=true;f.dashEnd=now+200+Math.random()*400;
-            f.vx=(Math.random()-0.5)*0.004;f.vy=(Math.random()-0.5)*0.002;}
-          if(f.dashing&&now>f.dashEnd){f.dashing=false;f.nextDash=now+3000+Math.random()*5000;f.vx*=0.2;f.vy*=0.1;}
-          // Gentle drift toward float (only when not fleeing/dashing)
-          if(!f.dashing&&!f.fleeing){var dfx=(0.5-f.x)*0.000008,dfy=(0.38-f.y)*0.000005;f.vx+=dfx;f.vy+=dfy;f.vx*=0.995;f.vy*=0.995;}
-          f.x+=f.vx;f.y+=f.vy;
-          if(f.x<0.02){f.x=0.02;f.vx=Math.abs(f.vx);}if(f.x>0.98){f.x=0.98;f.vx=-Math.abs(f.vx);}
-          if(f.y<0.28){f.y=0.28;f.vy=Math.abs(f.vy);}if(f.y>0.88){f.y=0.88;f.vy=-Math.abs(f.vy);}
-          var color=state.fishing.bossMode?"rgba(255,255,255,0.3)":(f.stars>=3?"rgba(200,166,0,0.4)":f.stars>=2?"rgba(80,160,210,0.35)":"rgba(0,0,0,0.28)");
-          drawFish(f.x*W,f.y*H,f.size,f.size*0.45,color,f.vx>=0);
-          // Size label
-          ctx.globalAlpha=0.6;ctx.fillStyle="#fff";ctx.font="bold 8px sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";
-          ctx.fillText(f.sizeCm+"cm",f.x*W,f.y*H);ctx.globalAlpha=1;
-        });
-      }
-      draw();
-    }
-    function clearFishingUiTimeout(){if(fishingUiTimeout)clearTimeout(fishingUiTimeout);fishingUiTimeout=null;}
-    let roomRestFadeTimer=null;
-    function handleRoomRestActivity(){if(roomRestFadeTimer)clearTimeout(roomRestFadeTimer);if(state.ui.navCollapsed){state.ui.navCollapsed=false;applyNavState();}el.app.classList.remove("room-rest-faded");if(!el.screens.room.classList.contains("active"))return;roomRestFadeTimer=setTimeout(()=>{if(el.screens.room.classList.contains("active")){state.ui.navCollapsed=true;applyNavState();el.app.classList.add("room-rest-faded");}},10000);}
-    function maybeNotify(){if(state.settings.browserNotify&&typeof Notification!=="undefined"&&Notification.permission==="granted")new Notification("釣りが終わりました",{body:"回収しましょう。"});}
-    function playAudio(file,type){if(sfxMuted&&type==='stamp')return;const a=new Audio(file);a.volume=sfxVolume/100;a.play().catch(()=>{});}
-    function toast(msg,dur=3800){const n=document.createElement("div");n.className="toast";n.textContent=msg;n.style.animationDuration=`${dur/1000}s`;el.toastWrap.appendChild(n);setTimeout(()=>n.remove(),dur+300);}
-    function persistentNotify(msg,id,time){
-      if(!id)id=makeId();const key="zz_notif_"+id;if(localStorage.getItem(key)==="done")return;
-      if(!el.toastWrap)return;
-      const existing=el.toastWrap.querySelector('[data-nid="'+id+'"]');if(existing)return;
-      const n=document.createElement("div");n.className="toast";n.dataset.nid=id;
-      n.style.cssText="animation:none;opacity:1;display:flex;align-items:center;gap:8px;padding:8px 14px;position:relative;pointer-events:auto;z-index:999;";
-      const timeHtml=time?'<span style="font-size:10px;color:rgba(255,255,255,0.35);margin-left:4px;">'+esc(time)+'</span>':"";
-      const msgSpan=document.createElement("span");msgSpan.style.flex="1";msgSpan.innerHTML=esc(msg)+timeHtml;
-      const btn=document.createElement("button");
-      btn.style.cssText="border:0;background:var(--green);color:#fff;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:16px;cursor:pointer;flex-shrink:0;pointer-events:auto;-webkit-tap-highlight-color:transparent;";
-      btn.textContent="✓";
-      btn.onclick=function(e){e.stopPropagation();e.preventDefault();localStorage.setItem(key,"done");n.remove();};
-      n.appendChild(msgSpan);n.appendChild(btn);
-      el.toastWrap.appendChild(n);
-    }
-
-    // Helpers
-    function deepMerge(base,patch){if(patch==null||typeof patch!=="object")return base;Object.keys(patch).forEach(k=>{const pv=patch[k];if(Array.isArray(pv))base[k]=pv;else if(pv&&typeof pv==="object"){if(!base[k]||typeof base[k]!=="object"||Array.isArray(base[k]))base[k]={};base[k]=deepMerge(base[k],pv);}else base[k]=pv;});return base;}
-    function safeName(v){return String(v||"").trim().slice(0,16).replace(/[<>]/g,"");}
-    function safeGiftText(v){return String(v||"").trim().slice(0,6).replace(/[<>]/g,"");}
-    function todayKey(){const d=new Date();return`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;}
-    
-    function fmtMoney(n){return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,",");}
-    function fmtRemain(ms){const t=Math.ceil(ms/1000);return`${String(Math.floor(t/60)).padStart(2,"0")}:${String(t%60).padStart(2,"0")}`;}
-    function fmtSize(n){return Number(n||0).toFixed(1);}
-    function fmtDateTime(ts){const d=new Date(ts);return`${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,"0")}/${String(d.getDate()).padStart(2,"0")} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;}
-    function minToHr(m){const s=Math.max(0,Number(m||0));return`${Math.floor(s/60)}h${s%60}m`;}
-    function trWeather(w){return({sunny:"晴れ",cloudy:"曇り",rainy:"雨"})[w]||w;}
-    function trTime(t){return({day:"昼",evening:"夕方",night:"夜"})[t]||t;}
-    function greatness(s,a){if(!a||s<=a)return"ふつう";const p=(s-a)/a*100;if(p>=40)return"上位3%";if(p>=30)return"上位10%";if(p>=20)return"上位20%";if(p>=10)return"上位40%";return"ちょっと大きめ";}
-    function sizeDelta(s,a){const d=Math.round((s-a)*10)/10;const sign=d>0?"+":"";const cls=d>=0?"plus-size":"minus-size";return{raw:`${sign}${d.toFixed(1)}`,html:`<span class="${cls}">${sign}${d.toFixed(1)}cm</span>`};}
-    function wPick(list){const t=list.reduce((s,v)=>s+v.weight,0);let r=Math.random()*t;for(const i of list){r-=i.weight;if(r<=0)return i.entity;}return list[list.length-1].entity;}
-    function approxGaussian(){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
-    function seededNum(seed){let h=2166136261;for(let i=0;i<seed.length;i++){h^=seed.charCodeAt(i);h=Math.imul(h,16777619);}return Math.abs(h>>>0);}
-    function makeId(){return`${Date.now().toString(36)}_${Math.random().toString(36).slice(2,8)}`;}
-    function esc(s){return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");}
-
-    window.zzFishingDebug={state:()=>state,room:()=>currentRoomData,quickFinish:()=>{if(state.fishing.inProgress){state.fishing.endAt=Date.now();finishFishing();}},signOut:async()=>auth?signOut(auth):null};
-  </script>
-</body>
-</html>
+      if(stars>=3)return{bg:"linear-gradient(135deg,#c8a6
